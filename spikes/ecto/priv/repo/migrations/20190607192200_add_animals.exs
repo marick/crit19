@@ -5,6 +5,7 @@ defmodule Spikes.Repo.Migrations.AddAnimals do
     create table("animals") do
       add :name, :string, null: false
       add :species, :string, null: false
+      add :range, :daterange
       timestamps()
     end
 
