@@ -2,7 +2,8 @@ alias Spikes.Repo
 
 
 alias Spikes.Repo
-alias Spikes.{Animal, Procedure, ReservationBundle}
+alias Spikes.{Animal, Procedure, ReservationBundle, ScheduledUnavailability}
+alias Ecto2.InclusiveDateRange
 
 # This lets me repopulate the database without deleting the tables,
 # which is a pain because I've always got Postico open to the database.
@@ -15,20 +16,25 @@ bovine_bundle = Repo.insert!(%ReservationBundle{ name: "horses" })
 equine_bundle = Repo.insert!(%ReservationBundle{ name: "equine" })
 vm334 = Repo.insert!(%ReservationBundle{ name: "vm334" })
 
-Repo.insert! %Animal{
+bossie = Repo.insert! %Animal{
   name: "bossie",
   species: "bovine",
   reservation_bundles: [bovine_bundle, vm334]
 }
+Repo.insert! %ScheduledUnavailability{
+  animal: bossie,
+  interval: InclusiveDateRange.ending_at(~D[2002-02-02]),
+  reason: "Added to herd"
+}
 
 
-Repo.insert! %Animal{
+lassy = Repo.insert! %Animal{
   name: "lassy",
   species: "bovine",
   reservation_bundles: [bovine_bundle]
 }
 
-Repo.insert! %Animal{
+jake = Repo.insert! %Animal{
   name: "jake",
   species: "equine",
   reservation_bundles: [equine_bundle]
