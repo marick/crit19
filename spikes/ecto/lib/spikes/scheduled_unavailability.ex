@@ -3,7 +3,7 @@ defmodule Spikes.ScheduledUnavailability do
 
   schema "scheduled_unavailabilities" do
     belongs_to :animal, Spikes.Animal
-    field :interval, Ecto2.InclusiveDateRange
+    field :interval, Ecto2.Interval
     field :reason, :string
 
     timestamps()

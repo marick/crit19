@@ -3,12 +3,18 @@ alias Spikes.Repo
 
 alias Spikes.Repo
 alias Spikes.{Animal, Procedure, ReservationBundle, ScheduledUnavailability}
-alias Ecto2.InclusiveDateRange
 
 added_interval = fn (date) ->
     %ScheduledUnavailability{
-      interval: InclusiveDateRange.ending_at(date),
+      interval: Ecto2.Interval.infinite_down(date, :exclusive),
       reason: "Added to herd"
+    }
+end
+
+removed_interval = fn (date) ->
+    %ScheduledUnavailability{
+      interval: Ecto2.Interval.infinite_up(date, :inclusive),
+      reason: "Removed from herd"
     }
 end
 
@@ -28,7 +34,9 @@ Repo.insert! %Animal{
   name: "bossie",
   species: "bovine",
   reservation_bundles: [bovine_bundle, vm334],
-  scheduled_unavailabilities: [ added_interval.(~D[2001-01-01]) ] 
+  scheduled_unavailabilities: [ added_interval.(~D[2001-01-01]),
+                                removed_interval.(~D[2019-01-01])
+                              ]
 }
 
 Repo.insert! %Animal{
