@@ -25,7 +25,7 @@ Repo.delete_all(Procedure)
 Repo.delete_all(ReservationBundle)
 Repo.delete_all(ScheduledUnavailability)
 
-bovine_bundle = Repo.insert!(%ReservationBundle{ name: "horses" })
+bovine_bundle = Repo.insert!(%ReservationBundle{ name: "bovine" })
 equine_bundle = Repo.insert!(%ReservationBundle{ name: "equine" })
 vm334 = Repo.insert!(%ReservationBundle{ name: "vm334" })
 
