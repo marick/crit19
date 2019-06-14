@@ -46,23 +46,32 @@ defmodule Spikes.Snippets do
       select: %{animal_id: arb.animal_id}
   end
 
-  def excluded_animal_ids(datetime) do 
-    postgres_format = NaiveDateTime.to_string(datetime)
-
+  def excluded_animal_ids(desired_interval) do
+    {:ok, as_range} = Ecto2.Interval.dump desired_interval
     from a in Animal,
       join: s in assoc(a, :scheduled_unavailabilities),
-      where: fragment("? @> ?::timestamp without time zone", s.interval, ^datetime),
+      where: fragment("? && ?::tsrange", s.interval, ^as_range),
       select: %{animal_id: a.id}
   end
   
-  def included_animal_ids(bundle_id, datetime) do
+  def included_animal_ids(bundle_id, desired_interval) do
     from a in subquery(bundle_animal_ids(bundle_id)),
-      except_all: ^excluded_animal_ids(datetime)
+      except_all: ^excluded_animal_ids(desired_interval)
   end
       
-  def included_animals(bundle_id, datetime) do
+  def included_animals(bundle_id, desired_interval) do
     from a in Animal,
-      join: s in subquery(included_animal_ids(bundle_id, datetime)), on: a.id == s.animal_id
-  end  
+      join: s in subquery(included_animal_ids(bundle_id, desired_interval)),
+      on: a.id == s.animal_id
+  end
+
+  # reservation_period(~D[2001-01-01], 4, 1)
+  def reservation_period(date, ordinal_hour, ordinal_duration) do
+    {:ok, first_time} = Time.new(ordinal_hour, 0, 0, 0)
+    {:ok, first_naive} = NaiveDateTime.new(date, first_time)
+    last_naive = NaiveDateTime.add(first_naive, ordinal_duration * 60 * 60)
+    
+    Ecto2.Interval.interval(first_naive, last_naive)
+  end
 
 end
