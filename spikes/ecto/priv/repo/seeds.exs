@@ -25,9 +25,18 @@ Repo.delete_all(Procedure)
 Repo.delete_all(ReservationBundle)
 Repo.delete_all(ScheduledUnavailability)
 
-bovine_bundle = Repo.insert!(%ReservationBundle{ name: "bovine" })
-equine_bundle = Repo.insert!(%ReservationBundle{ name: "equine" })
-vm334 = Repo.insert!(%ReservationBundle{ name: "vm334" })
+bovine_bundle = Repo.insert!(%ReservationBundle{
+      name: "bovine",
+      relevant_during: Ecto2.Interval.infinite_up(~D[2001-01-01], :exclusive)
+   })
+equine_bundle = Repo.insert!(%ReservationBundle{
+      name: "equine", 
+      relevant_during: Ecto2.Interval.infinite_up(~D[2001-01-01], :exclusive)
+   })
+vm334 = Repo.insert!(%ReservationBundle{
+      name: "vm334", 
+      relevant_during: Ecto2.Interval.infinite_up(~D[2001-01-01], :exclusive)
+   })
 
 
 Repo.insert! %Animal{

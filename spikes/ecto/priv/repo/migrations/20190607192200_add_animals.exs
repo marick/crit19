@@ -26,6 +26,7 @@ defmodule Spikes.Repo.Migrations.AddAnimals do
 
     create table("reservation_bundles") do
       add :name, :string, null: false
+      add :relevant_during, :tsrange, null: false
       timestamps()
     end
 
