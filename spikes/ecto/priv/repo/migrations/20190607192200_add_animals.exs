@@ -43,5 +43,11 @@ defmodule Spikes.Repo.Migrations.AddAnimals do
     end
     create index("reservation_bundles__procedures", :reservation_bundle_id)
     create index("reservation_bundles__procedures", :procedure_id)
+
+    create table("all_notes") do
+      add :text, :text, null: false
+      add :animal_id, references(:animals), null: false
+      timestamps()
+    end
   end
 end
