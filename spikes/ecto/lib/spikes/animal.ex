@@ -8,6 +8,7 @@ defmodule Spikes.Animal do
       join_through: "animals__reservation_bundles"
     has_many :scheduled_unavailabilities, Spikes.ScheduledUnavailability
     has_many :notes, Spikes.Note
+    has_many :uses, Spikes.Use
     
     timestamps()
   end

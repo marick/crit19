@@ -4,6 +4,7 @@ defmodule Spikes.Snippets do
     Repo,
     Animal,
     Procedure,
+    Reservation,
     ReservationBundle,
     ScheduledUnavailability
   }
@@ -74,4 +75,21 @@ defmodule Spikes.Snippets do
     Ecto2.Interval.interval(first_naive, last_naive)
   end
 
+
+
+  # reservations on a particular date
+  def reservations_on_date(date) do
+    {:ok, day} = reservation_period(date, 0, 24) |> Ecto2.Interval.dump
+    from r in Reservation,
+      where: fragment("? && ?::tsrange", r.interval, ^day)
+  end
+
+  def reservation_animals(%Reservation{} = reservation),
+    do: reservation_animals(reservation.id)
+
+  def reservation_animals(reservation_id) do
+    from a in Animal,
+      join: u in Spikes.Use, on: a.id == u.animal_id,
+      where: u.reservation_id == ^reservation_id
+  end
 end

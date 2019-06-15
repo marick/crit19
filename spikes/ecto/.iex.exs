@@ -2,7 +2,8 @@ alias Spikes.{
   Repo,
   Animal,
   Procedure,
-  ReservationBundle
+  ReservationBundle,
+  Reservation
 }
 
 import Spikes.Snippets

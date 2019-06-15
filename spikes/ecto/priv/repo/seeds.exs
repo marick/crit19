@@ -2,7 +2,7 @@ alias Spikes.Repo
 
 
 alias Spikes.Repo
-alias Spikes.{Animal, Procedure, ReservationBundle, ScheduledUnavailability}
+alias Spikes.{Animal, Procedure, ReservationBundle, ScheduledUnavailability, Reservation, Use, Note,}
 
 added_interval = fn (date) ->
     %ScheduledUnavailability{
@@ -39,20 +39,21 @@ vm334 = Repo.insert!(%ReservationBundle{
    })
 
 
-Repo.insert! %Animal{
+bossie = Repo.insert! %Animal{
   name: "bossie",
   species: "bovine",
   reservation_bundles: [bovine_bundle, vm334],
   scheduled_unavailabilities: [ added_interval.(~D[2001-01-01]),
                                 removed_interval.(~D[2019-01-01])
-                              ]
+                              ],
+  notes: [%Note{text: "Bossie is a good girl."}]
 }
 
-Repo.insert! %Animal{
+lassy = Repo.insert! %Animal{
   name: "lassy",
   species: "bovine",
   reservation_bundles: [bovine_bundle],
-  scheduled_unavailabilities: [ added_interval.(~D[2002-02-02]) ] 
+  scheduled_unavailabilities: [ added_interval.(~D[2002-02-02]) ],
 }
 
 Repo.insert! %Animal{
@@ -63,7 +64,7 @@ Repo.insert! %Animal{
 }
 
 
-Repo.insert! %Procedure{
+cow_procedure = Repo.insert! %Procedure{
   name: "cow procedure",
   reservation_bundles: [bovine_bundle, vm334]
 }
@@ -78,4 +79,11 @@ Repo.insert! %Procedure{
   reservation_bundles: [equine_bundle]
 }
 
-
+reservation = Repo.insert! %Reservation{
+  interval: Ecto2.Interval.interval(~N{2002-02-03 12:00:00}, ~N{2002-02-03 13:00:00}),
+  uses: [
+    %Use{
+      animal: lassy,
+      procedure: cow_procedure,
+    }]
+}

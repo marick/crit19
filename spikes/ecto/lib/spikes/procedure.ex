@@ -6,6 +6,7 @@ defmodule Spikes.Procedure do
     field :species, :string
     many_to_many :reservation_bundles, Spikes.ReservationBundle,
       join_through: "reservation_bundles__procedures"
+    has_many :uses, Spikes.Use
 
     timestamps()
   end
