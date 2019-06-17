@@ -3,7 +3,7 @@ defmodule Spikes.Reservation do
 
   schema "reservations" do
     has_many :uses, Spikes.Use
-    field :interval, Ecto2.Interval
+    field :timespan, Ecto2.Timespan
     timestamps()
   end
 end

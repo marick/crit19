@@ -1,7 +1,7 @@
 # Derived from https://github.com/aliou/radch
 
 
-defmodule Ecto2.Interval do
+defmodule Ecto2.Timespan do
 
   @behaviour Ecto.Type
 
@@ -16,7 +16,7 @@ defmodule Ecto2.Interval do
     result
   end
 
-  defp new(first, last, lower_inclusive, upper_inclusive) do 
+  def new(first, last, lower_inclusive, upper_inclusive) do 
     %__MODULE__{
       first: normalize(first),
       last: normalize(last),
@@ -37,9 +37,9 @@ defmodule Ecto2.Interval do
   def infinite_up(first, :inclusive), do: new(first, nil, true, false)
   def infinite_up(first, :exclusive), do: new(first, nil, false, false)
 
-  def interval(first, last), do: new(first, last, true, false)
+  def customary(first, last), do: new(first, last, true, false)
 
-  def point_to_interval(point), do: new(point, point, true, true)
+  def for_instant(instant), do: new(instant, instant, true, true)
 
   @impl Ecto.Type
   def type, do: :tsrange

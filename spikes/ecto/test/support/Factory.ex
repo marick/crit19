@@ -3,9 +3,10 @@ defmodule Spikes.Factory do
   alias Spikes.{ReservationBundle, Animal}
 
   def reservation_bundle_factory() do
+    start = Faker.NaiveDateTime.backward(4)
     %ReservationBundle{
       name: sequence(:bundle_name, &"bundle#{&1}"),
-      relevant_during: Ecto2.Interval.infinite_up(Date.utc_today, :exclusive),
+      relevant_during: Ecto2.Timespan.infinite_up(start, :exclusive),
     }
   end
 

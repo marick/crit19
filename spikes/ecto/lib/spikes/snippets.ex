@@ -20,7 +20,7 @@ defmodule Spikes.Snippets do
 
     from a in Animal,
       join: s in assoc(a, :scheduled_unavailabilities),
-      where: fragment("? @> ?::timestamp without time zone", s.interval, ^datetime),
+      where: fragment("? @> ?::timestamp without time zone", s.timespan, ^datetime),
       group_by: a.id,
       select: %{id: a.id, name: a.name, count: count(a.id)}
   end
@@ -47,22 +47,22 @@ defmodule Spikes.Snippets do
       select: %{animal_id: arb.animal_id}
   end
 
-  def excluded_animal_ids(desired_interval) do
-    {:ok, as_range} = Ecto2.Interval.dump desired_interval
+  def excluded_animal_ids(desired_timespan) do
+    {:ok, as_range} = Ecto2.Timespan.dump desired_timespan
     from a in Animal,
       join: s in assoc(a, :scheduled_unavailabilities),
-      where: fragment("? && ?::tsrange", s.interval, ^as_range),
+      where: fragment("? && ?::tsrange", s.timespan, ^as_range),
       select: %{animal_id: a.id}
   end
   
-  def included_animal_ids(bundle_id, desired_interval) do
+  def included_animal_ids(bundle_id, desired_timespan) do
     from a in subquery(bundle_animal_ids(bundle_id)),
-      except_all: ^excluded_animal_ids(desired_interval)
+      except_all: ^excluded_animal_ids(desired_timespan)
   end
       
-  def included_animals(bundle_id, desired_interval) do
+  def included_animals(bundle_id, desired_timespan) do
     from a in Animal,
-      join: s in subquery(included_animal_ids(bundle_id, desired_interval)),
+      join: s in subquery(included_animal_ids(bundle_id, desired_timespan)),
       on: a.id == s.animal_id
   end
 
@@ -72,16 +72,16 @@ defmodule Spikes.Snippets do
     {:ok, first_naive} = NaiveDateTime.new(date, first_time)
     last_naive = NaiveDateTime.add(first_naive, ordinal_duration * 60 * 60)
     
-    Ecto2.Interval.interval(first_naive, last_naive)
+    Ecto2.Timespan.timespan(first_naive, last_naive)
   end
 
 
 
   # reservations on a particular date
   def reservations_on_date(date) do
-    {:ok, day} = reservation_period(date, 0, 24) |> Ecto2.Interval.dump
+    {:ok, day} = reservation_period(date, 0, 24) |> Ecto2.Timespan.dump
     from r in Reservation,
-      where: fragment("? && ?::tsrange", r.interval, ^day)
+      where: fragment("? && ?::tsrange", r.timespan, ^day)
   end
 
   def reservation_animals(%Reservation{} = reservation),

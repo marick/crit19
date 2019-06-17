@@ -12,6 +12,5 @@ defmodule Spikes.ReservationBundleTest do
     bundle = insert!(build(:reservation_bundle,
           animals: [build(:animal)],
         ))
-    IO.inspect(bundle)
   end
 end
