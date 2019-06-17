@@ -29,12 +29,10 @@ use Mix.Config
 #
 #     import_config "#{Mix.env()}.exs"
 
-
-config :spikes, Spikes.Repo,
-  database: "spikes",
-  username: "bem",
-  password: "postgres",
-  hostname: "localhost"
-
-
 config :spikes, :ecto_repos, [Spikes.Repo]
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env()}.exs"
+
+
