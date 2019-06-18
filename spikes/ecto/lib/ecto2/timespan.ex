@@ -2,8 +2,8 @@
 
 
 defmodule Ecto2.Timespan do
-
   @behaviour Ecto.Type
+  import Ecto.Query
 
   # It's silly to duplicate Postgrex.Range.
   @enforce_keys [:first, :last, :lower_inclusive, :upper_inclusive]
@@ -68,5 +68,12 @@ defmodule Ecto2.Timespan do
   end
 
   def dump(_), do: :error
+
+
+  defmacro overlaps(span1, span2) do
+    quote do 
+      fragment("? && ?::tsrange", unquote(span1), unquote(span2))
+    end
+  end
 
 end

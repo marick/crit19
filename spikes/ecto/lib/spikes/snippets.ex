@@ -8,7 +8,9 @@ defmodule Spikes.Snippets do
     ReservationBundle,
     ScheduledUnavailability
   }
-
+  alias Ecto2.Timespan
+  import Ecto2.Timespan
+  
   import Ecto.Query
   import Ecto.Changeset
 
@@ -51,7 +53,7 @@ defmodule Spikes.Snippets do
     {:ok, as_range} = Ecto2.Timespan.dump desired_timespan
     from a in Animal,
       join: s in assoc(a, :scheduled_unavailabilities),
-      where: fragment("? && ?::tsrange", s.timespan, ^as_range),
+      where: overlaps(s.timespan, ^as_range),
       select: %{animal_id: a.id}
   end
   
