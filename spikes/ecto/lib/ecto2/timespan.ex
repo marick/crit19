@@ -12,8 +12,13 @@ defmodule Ecto2.Timespan do
   defp normalize(%NaiveDateTime{} = value), do: value
   # An empty bound comes from the database as `:unbound`
   defp normalize(:unbound = value), do: value
+
+  # Default date conversions are only accurate to microseconds. Using
+  # them means a Timespan round-tripped through Postgres would come
+  # back with extra digits of zeroes, which breaks tests.
+  @zero_in_microseconds Time.from_erl!({0, 0, 0}, {0, 6})
   defp normalize(%Date{} = date) do
-    {:ok, result} = NaiveDateTime.new(date, ~T[00:00:00.000])
+    {:ok, result} = NaiveDateTime.new(date, @zero_in_microseconds)
     result
   end
 
