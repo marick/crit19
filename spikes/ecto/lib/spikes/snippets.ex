@@ -74,7 +74,7 @@ defmodule Spikes.Snippets do
     {:ok, first_naive} = NaiveDateTime.new(date, first_time)
     last_naive = NaiveDateTime.add(first_naive, ordinal_duration * 60 * 60)
     
-    Ecto2.Timespan.timespan(first_naive, last_naive)
+    Ecto2.Timespan.customary(first_naive, last_naive)
   end
 
 

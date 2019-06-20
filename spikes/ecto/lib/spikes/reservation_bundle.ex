@@ -1,5 +1,9 @@
 defmodule Spikes.ReservationBundle do
   use Ecto.Schema
+  import Ecto.Query
+  import Ecto.Changeset
+  alias Ecto2.Timespan
+  import Ecto2.Timespan
 
   schema "reservation_bundles" do
     field :name, :string
@@ -12,5 +16,18 @@ defmodule Spikes.ReservationBundle do
       join_through: "reservation_bundles__procedures"
 
     timestamps()
+  end
+
+  # Queries
+
+  def bundle_animal_ids(bundle_id, timespan) do
+    from arb in "animals__reservation_bundles",
+      where: arb.reservation_bundle_id == ^bundle_id,
+      select: %{animal_id: arb.animal_id}
+  end
+
+  def bundles(desired_timespan) do
+    from b in __MODULE__,
+      where: contains(b.relevant_during, ^Timespan.dump!(desired_timespan))
   end
 end

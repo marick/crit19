@@ -84,9 +84,21 @@ defmodule Ecto2.Timespan do
   def dump(_), do: :error
 
 
+  def dump!(x) do
+    {:ok, result} = dump(x)
+    result
+  end
+
+
   defmacro overlaps(span1, span2) do
-    quote do 
-      fragment("? && ?::tsrange", unquote(span1), unquote(span2))
+    quote do
+      fragment("?::tsrange && ?::tsrange", unquote(span1), unquote(span2))
+    end
+  end
+
+  defmacro contains(container, contained) do
+    quote do
+      fragment("?::tsrange @> ?::tsrange", unquote(container), unquote(contained))
     end
   end
 
