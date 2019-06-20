@@ -64,6 +64,10 @@ defmodule Ecto2.TimespanTest do
     assert Timespan.customary(@early, @later) == Timespan.new(@early, @later, true, false)
 
     assert Timespan.for_instant(@early) == Timespan.new(@early, @early, true, true)
+
+    assert Timespan.plus(~N{2001-02-03 12:04:00}, 1, :minute) ==
+      Timespan.customary(~N{2001-02-03 12:04:00},
+                         ~N{2001-02-03 12:05:00})
   end
 
 

@@ -45,7 +45,15 @@ defmodule Ecto2.Timespan do
 
   def customary(first, last), do: new(first, last, true, false)
 
+  def plus(first, addition, :minute) do
+    customary(first, NaiveDateTime.add(first, addition * 60, :second))
+  end
+  
+
   def for_instant(instant), do: new(instant, instant, true, true)
+
+
+  
 
   @impl Ecto.Type
   def type, do: :tsrange
