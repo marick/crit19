@@ -15,13 +15,13 @@ defmodule Spikes.Repo.Migrations.AddAnimals do
 
     create table("scheduled_unavailabilities") do
       add :animal_id, references("animals", on_delete: :delete_all), null: false
-      add :interval, :tsrange
+      add :timespan, :tsrange
       add :reason, :text, null: false
       
       timestamps()
     end
     create index("scheduled_unavailabilities", :animal_id)
-    create index("scheduled_unavailabilities", :interval, using: :gist)
+    create index("scheduled_unavailabilities", :timespan, using: :gist)
 
 
     create table("reservation_bundles") do
@@ -45,7 +45,7 @@ defmodule Spikes.Repo.Migrations.AddAnimals do
     create index("reservation_bundles__procedures", :procedure_id)
 
     create table("reservations") do
-      add :interval, :tsrange, null: false
+      add :timespan, :tsrange, null: false
       timestamps()
     end
 
