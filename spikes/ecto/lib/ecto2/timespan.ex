@@ -10,7 +10,8 @@ defmodule Ecto2.Timespan do
   defstruct @enforce_keys
 
   defp normalize(%NaiveDateTime{} = value), do: value
-  defp normalize(nil = value), do: value
+  # An empty bound comes from the database as `:unbound`
+  defp normalize(:unbound = value), do: value
   defp normalize(%Date{} = date) do
     {:ok, result} = NaiveDateTime.new(date, ~T[00:00:00.000])
     result
@@ -27,15 +28,15 @@ defmodule Ecto2.Timespan do
 
   # extends to negative infinity
   def infinite_down(last, :inclusive) do
-    new(nil, last, false, true)
+    new(:unbound, last, false, true)
   end
   def infinite_down(last, :exclusive) do
-    new(nil, last, false, false)
+    new(:unbound, last, false, false)
   end
 
   
-  def infinite_up(first, :inclusive), do: new(first, nil, true, false)
-  def infinite_up(first, :exclusive), do: new(first, nil, false, false)
+  def infinite_up(first, :inclusive), do: new(first, :unbound, true, false)
+  def infinite_up(first, :exclusive), do: new(first, :unbound, false, false)
 
   def customary(first, last), do: new(first, last, true, false)
 
@@ -60,8 +61,8 @@ defmodule Ecto2.Timespan do
   def dump(%__MODULE__{} = range) do
     {:ok,
      %Postgrex.Range{
-      lower: range.first,
-      upper: range.last,
+      lower: range.first || :unbound,
+      upper: range.last || :unbound,
       lower_inclusive: range.lower_inclusive,
       upper_inclusive: range.upper_inclusive
     }}

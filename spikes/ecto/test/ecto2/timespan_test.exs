@@ -24,12 +24,12 @@ defmodule Ecto2.TimespanTest do
         upper_inclusive: false,
       }
 
-    # nils are allowed and represent unbounded past or future
+    # :unbounds are allowed and represent unbounded past or future
     
-    assert Timespan.new(nil, nil, false, true) ==
+    assert Timespan.new(:unbound, :unbound, false, true) ==
       %Timespan{
-        first: nil,
-        last: nil,
+        first: :unbound,
+        last: :unbound,
         lower_inclusive: false,
         upper_inclusive: true,
       }
@@ -54,11 +54,11 @@ defmodule Ecto2.TimespanTest do
 
 
   test "variant ways of creating" do
-    assert Timespan.infinite_down(@early, :inclusive) == Timespan.new(nil, @early, false, true)
-    assert Timespan.infinite_down(@early, :exclusive) == Timespan.new(nil, @early, false, false)
+    assert Timespan.infinite_down(@early, :inclusive) == Timespan.new(:unbound, @early, false, true)
+    assert Timespan.infinite_down(@early, :exclusive) == Timespan.new(:unbound, @early, false, false)
     
-    assert Timespan.infinite_up(@later, :inclusive) == Timespan.new(@later, nil, true, false)
-    assert Timespan.infinite_up(@later, :exclusive) == Timespan.new(@later, nil, false, false)
+    assert Timespan.infinite_up(@later, :inclusive) == Timespan.new(@later, :unbound, true, false)
+    assert Timespan.infinite_up(@later, :exclusive) == Timespan.new(@later, :unbound, false, false)
 
     # The most common timespan is inclusive on the bottom, exclusive at the top.
     assert Timespan.customary(@early, @later) == Timespan.new(@early, @later, true, false)
@@ -66,15 +66,20 @@ defmodule Ecto2.TimespanTest do
     assert Timespan.for_instant(@early) == Timespan.new(@early, @early, true, true)
   end
 
+
   test "round-tripping to database format" do
-    assert :error == Timespan.cast("bad value")
-    assert :error == Timespan.load("bad value")
+      assert :error == Timespan.cast("bad value")
+      assert :error == Timespan.load("bad value")
 
-    original = Timespan.customary(@early, @later)
-    {:ok, roundtripped} = original |> Timespan.dump |> elem(1) |> Timespan.load
 
-    assert original == roundtripped
-    
+      round_trip = fn(original) ->
+        {:ok, roundtripped} = original |> Timespan.dump |> elem(1) |> Timespan.load
+        assert original == roundtripped
+      end
+      
+      round_trip.(Timespan.customary(@early, @later))
+      round_trip.(Timespan.infinite_up(@early, :inclusive))
+      round_trip.(Timespan.infinite_down(@later, :exclusive))
   end
   
 end
