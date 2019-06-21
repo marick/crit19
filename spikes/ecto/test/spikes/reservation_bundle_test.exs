@@ -1,6 +1,6 @@
 defmodule Spikes.ReservationBundleTest do
   use ExUnit.Case, async: true
-  alias Spikes.{Repo, ReservationBundle.Query}
+  alias Spikes.{Repo}
   alias Ecto2.Timespan
   import Spikes.Factory
   import Spikes.Repo
@@ -13,7 +13,9 @@ defmodule Spikes.ReservationBundleTest do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Spikes.Repo)
   end
 
-  describe "queries" do 
+  describe "queries" do
+    alias Spikes.ReservationBundle.Query
+
 
     test "only animals in a bundle are fetched" do
       in_bundle = insert_some!(:animal)
@@ -46,9 +48,27 @@ defmodule Spikes.ReservationBundleTest do
     end
   end
 
-  
-  
+  describe "io" do
+    alias Spikes.ReservationBundle.Db
 
+    test "fetching values to display in a name list" do 
+      desired_timespan = @timespan
+      omitted_timespan = hour_starting_at(@timespan_past_end)
+    
+      desired = insert_some!(:reservation_bundle, relevant_during: desired_timespan)
+      _omitted = insert_some!(:reservation_bundle, relevant_during: omitted_timespan)
+
+      [actual] = Db.bundles_for_list(desired_timespan)
+      assert actual.id == desired.id
+      assert actual.name == desired.name
+      assert true == unloaded?(desired.animals)
+      assert true == unloaded?(desired.procedures)
+    end
+  end
+
+  defp unloaded?(%Ecto.Association.NotLoaded{}), do: true
+  defp unloaded?(_), do: false
+  
 
   defp hour_starting_at(from) do
     Timespan.plus(from, 60, :minute)
