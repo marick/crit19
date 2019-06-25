@@ -3,7 +3,7 @@ defmodule Crit.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :active, :boolean, default: false
+    field :active, :boolean, default: true
     field :email, :string
     field :name, :string
     field :password_hash, :string
