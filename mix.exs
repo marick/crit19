@@ -5,7 +5,7 @@ defmodule Crit.MixProject do
     [
       app: :crit,
       version: "0.1.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -20,7 +20,7 @@ defmodule Crit.MixProject do
   def application do
     [
       mod: {Crit.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :calendar]
     ]
   end
 
@@ -41,8 +41,12 @@ defmodule Crit.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:jason, "~> 1.1"},
+      {:plug_cowboy, "~> 2.0"},
+      {:calendar, "~> 0.17"},
+      {:faker, "~> 0.12", only: :test},
+      {:ex_machina, "~> 2.3"},
+      {:pbkdf2_elixir, "~> 1.0"}
     ]
   end
 
