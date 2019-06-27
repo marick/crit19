@@ -10,7 +10,7 @@ defmodule CritWeb.Admin.UserController do
   end
 
   def new(conn, _params) do
-    changeset = Accounts.change_user(%User{})
+    changeset = Accounts.changeset(%User{})
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -33,7 +33,7 @@ defmodule CritWeb.Admin.UserController do
 
   def edit(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
-    changeset = Accounts.change_user(user)
+    changeset = Accounts.changeset(user)
     render(conn, "edit.html", user: user, changeset: changeset)
   end
 

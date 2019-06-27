@@ -12,28 +12,29 @@ defmodule Crit.Accounts.User do
     timestamps()
   end
 
-  @creation_required_fields [:name, :email, :password]
-  @creation_optional_fields [:active]
+  @creation_required_attrs [:name, :email, :password]
+  @creation_optional_attrs [:active]
 
+  @update_required_attrs [:name, :email, :active]
+  @update_optional_attrs []
 
-  defp change_field(changeset, :password = field) do
+  defp check_attr(:password = field, changeset) do
     changeset
     |> validate_length(field, min: 6, max: 100)
-    |> put_password_hash
   end
 
-  defp change_field(changeset, :email = field) do
+  defp check_attr(:email = field, changeset) do
     changeset
     |> validate_length(field, min: 5, max: 100, count: :codepoints)
     |> unique_constraint(field, name: :unique_active_email)
   end
 
-  defp change_field(changeset, :name = field) do 
+  defp check_attr(:name = field, changeset) do 
     changeset
     |> validate_length(field, min: 2, max: 100, count: :codepoints)
   end
 
-  defp change_field(changeset, _), do: changeset
+  defp check_attr(_, changeset), do: changeset
 
   
   defp put_password_hash(changeset) do
@@ -46,26 +47,31 @@ defmodule Crit.Accounts.User do
     end
   end
 
-  defp change_required_fields(user, required_fields, optional_fields, attrs) do
-    all_fields = required_fields ++ optional_fields
+
+  
+  # Util
+  defp check_attrs(user, required_attrs, optional_attrs, attrs) do
+    all_fields = required_attrs ++ optional_attrs
     changeset =
       user
       |> cast(attrs, all_fields)
-      |> validate_required(required_fields)
-    Enum.reduce(all_fields, changeset, &(change_field &2, &1))
+      |> validate_required(required_attrs)
+    Enum.reduce(all_fields, changeset, &check_attr/2)
   end
 
   def create_changeset(attrs) do
-    change_required_fields(
-      %__MODULE__{},
-      @creation_required_fields, @creation_optional_fields,
-      attrs)
+    %__MODULE__{}
+    |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
+    |> put_password_hash
+  end
+    
+  def update_changeset(user, attrs) do
+    user
+    |> check_attrs(@update_required_attrs, @update_optional_attrs, attrs)
   end
     
 
-  def changeset(user, attrs) do
-    user
-    |> cast(attrs, [:name, :email, :password_hash, :active])
-    |> validate_required([:name, :email, :password, :active])
+  def edit_changeset(user) do
+    check_attrs(user, @creation_required_attrs, @creation_optional_attrs, %{})
   end
 end
