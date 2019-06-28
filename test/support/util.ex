@@ -11,8 +11,7 @@ defmodule Crit.Test.Util do
   end
 
   def user_attrs(attrs \\ %{}) do 
-    {:ok, user} = Factory.build(:user, attrs)
-    string_keys(user)
+    Factory.build(:user, attrs) |> string_keys
   end
 
   

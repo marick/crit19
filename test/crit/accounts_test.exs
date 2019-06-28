@@ -18,10 +18,10 @@ defmodule Crit.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      params = string_keys(Factory.build(:user))
-      assert {:ok, %User{} = user} = Accounts.create_user(params)
-      assert_same_values(user, params, [:active, :email, :name])
-      assert String.length(user.password_hash) > 10
+      attrs = user_attrs()
+      assert {:ok, %User{} = user} = Accounts.create_user(attrs)
+      assert_same_values(user, attrs, [:active, :email, :name])
+      assert String.length(user.password_hash) > 100
     end
 
     test "create_user/1 with missing data returns error changeset" do
@@ -38,7 +38,7 @@ defmodule Crit.AccountsTest do
     test "create_user/1 prevents duplicate emails" do
       unique = "unique@unique.com"
       saved_user(email: unique)
-      new_user_attrs = Factory.build(:user, email: unique) |> string_keys
+      new_user_attrs = user_attrs(email: unique)
       assert {:error, changeset} = Accounts.create_user(new_user_attrs)
       assert_has_exactly_these_keys(changeset.errors, [:email])
     end
