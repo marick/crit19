@@ -21,6 +21,5 @@ Repo.delete_all(User)
 {:ok, _} = Accounts.create_user %{
   name: "Brian Marick",
   email: "marick@exampler.com",
-  # password: "password",
-  password_hash: "ldkjdlfj",
+  password: "password",
 }

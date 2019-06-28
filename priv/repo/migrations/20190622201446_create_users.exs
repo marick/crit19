@@ -11,7 +11,7 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
-    create unique_index("users", [:email, :active], name: :unique_active_email)
+    create unique_index("users", [:email], name: :unique_email)
 
 
   end
