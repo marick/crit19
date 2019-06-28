@@ -2,7 +2,6 @@ defmodule Crit.AccountsTest do
   use Crit.DataCase
 
   alias Crit.Accounts
-  alias Crit.Factory
 
   describe "users" do
     alias Crit.Accounts.User

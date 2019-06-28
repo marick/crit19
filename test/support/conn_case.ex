@@ -20,6 +20,8 @@ defmodule CritWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       alias CritWeb.Router.Helpers, as: Routes
+      import Crit.Test.Util
+      alias Crit.Factory
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint
