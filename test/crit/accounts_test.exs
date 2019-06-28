@@ -7,12 +7,6 @@ defmodule Crit.AccountsTest do
   describe "users" do
     alias Crit.Accounts.User
 
-    def saved_user(attrs \\ %{}) do
-      {:ok, user} = Factory.build(:user, attrs) |> Repo.insert
-      # attrs will have virtual field, but result structure will not.
-      %{user | password: nil}
-    end
-
     test "list_users/0 returns all users" do
       user = saved_user()
       assert Accounts.list_users() == [user]
@@ -68,32 +62,5 @@ defmodule Crit.AccountsTest do
       assert changeset.data == user
       assert changeset.action == nil
     end
-  end
-
-  defp assert_same_values(one_maplike, other_maplike, keys) do
-    one_map = string_keys(one_maplike)
-    other_map = string_keys(other_maplike)
-    for k <- stringify(keys) do
-      assert Map.has_key?(one_map, k)
-      assert Map.has_key?(other_map, k)
-      assert one_map[k] == other_map[k]
-    end
-  end
-
-  defp string_keys(maplike) do
-    keys = Map.keys(maplike)
-    Enum.reduce(keys, %{},
-      fn (k, acc) ->
-        Map.put(acc, stringify(k), Map.get(maplike, k))
-      end)
-  end
-
-  defp stringify(x) when is_atom(x), do: Atom.to_string(x)
-  defp stringify(x) when is_binary(x), do: x
-  defp stringify(x) when is_list(x), do: Enum.map(x, &stringify/1)
-        
-  
-  defp assert_has_exactly_these_keys(keylist, keys) do
-    assert MapSet.new(Keyword.keys(keylist)) == MapSet.new(keys)
   end
 end
