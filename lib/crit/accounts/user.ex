@@ -1,6 +1,7 @@
 defmodule Crit.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Crit.Repo
 
   schema "users" do
     field :active, :boolean, default: true
@@ -36,18 +37,25 @@ defmodule Crit.Accounts.User do
 
   defp check_attr(_, changeset), do: changeset
 
-  
   defp put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
         put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(pass))
-        
       _ ->
         changeset
     end
   end
 
+  def authenticate_user(email, proposed_password) do
+    user = Repo.get_by(__MODULE__, email: email)
 
+    if user && Pbkdf2.verify_pass(proposed_password, user.password_hash) do
+      {:ok, user}
+    else
+      Pbkdf2.no_user_verify()
+      :error
+    end
+  end
   
   # Util
   defp check_attrs(user, required_attrs, optional_attrs, attrs) do

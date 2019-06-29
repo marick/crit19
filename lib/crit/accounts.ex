@@ -25,6 +25,9 @@ defmodule Crit.Accounts do
     |> Repo.update()
   end
 
+  def authenticate_user(email, password) do
+    User.authenticate_user(email, password)
+  end
 
   def changeset(%User{} = user) do
     User.edit_changeset(user)

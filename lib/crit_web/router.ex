@@ -25,6 +25,14 @@ defmodule CritWeb.Router do
     resources "/users", UserController, except: [:delete]
   end
 
+  scope "/auth", CritWeb do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+    post "/identity/callback", AuthController, :identity_callback
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", CritWeb do
   #   pipe_through :api

@@ -20,7 +20,8 @@ defmodule Crit.MixProject do
   def application do
     [
       mod: {Crit.Application, []},
-      extra_applications: [:logger, :runtime_tools, :calendar]
+      extra_applications: [:logger, :runtime_tools, :calendar,
+                           :ueberauth_identity]
     ]
   end
 
@@ -46,7 +47,8 @@ defmodule Crit.MixProject do
       {:calendar, "~> 0.17"},
       {:faker, "~> 0.12", only: :test},
       {:ex_machina, "~> 2.3"},
-      {:pbkdf2_elixir, "~> 1.0"}
+      {:pbkdf2_elixir, "~> 1.0"},
+      {:ueberauth_identity, "~> 0.2"},
     ]
   end
 

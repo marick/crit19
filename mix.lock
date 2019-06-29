@@ -34,5 +34,7 @@
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.4", "f0eafff810d2041e93f915ef59899c923f4568f4585904d010387ed74988e77b", [:make, :mix, :rebar3], []},
   "telemetry": {:hex, :telemetry, "0.4.0", "8339bee3fa8b91cb84d14c2935f8ecf399ccd87301ad6da6b71c09553834b2ab", [:rebar3], []},
   "tzdata": {:hex, :tzdata, "1.0.0", "fe4da40f76348d2ca0d16491196089fe75f57d6164e2a0ef8adf2804b9a2b3fa", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, optional: false]}]},
+  "ueberauth": {:hex, :ueberauth, "0.6.1", "9e90d3337dddf38b1ca2753aca9b1e53d8a52b890191cdc55240247c89230412", [:mix], [{:plug, "~> 1.5", [hex: :plug, optional: false]}]},
+  "ueberauth_identity": {:hex, :ueberauth_identity, "0.2.3", "216f18ca24347f6b3dd0e5f4342b6fef7a4027fad0d133f1c454d51b7eaac55b", [:mix], [{:plug, "~> 1.0", [hex: :plug, optional: false]}, {:ueberauth, "~> 0.2", [hex: :ueberauth, optional: false]}]},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.4.1", "d869e4c68901dd9531385bb0c8c40444ebf624e60b6962d95952775cac5e90cd", [:rebar3], []},
 }
