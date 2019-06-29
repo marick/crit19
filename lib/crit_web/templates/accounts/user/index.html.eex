@@ -20,12 +20,12 @@
       <td><%= user.active %></td>
 
       <td>
-        <%= link "Show", to: Routes.admin_user_path(@conn, :show, user) %>
-        <%= link "Edit", to: Routes.admin_user_path(@conn, :edit, user) %>
+        <%= link "Show", to: Routes.accounts_user_path(@conn, :show, user) %>
+        <%= link "Edit", to: Routes.accounts_user_path(@conn, :edit, user) %>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
 
-<span><%= link "New User", to: Routes.admin_user_path(@conn, :new) %></span>
+<span><%= link "New User", to: Routes.accounts_user_path(@conn, :new) %></span>

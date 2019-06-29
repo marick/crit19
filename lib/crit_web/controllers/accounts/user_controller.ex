@@ -1,4 +1,4 @@
-defmodule CritWeb.Admin.UserController do
+defmodule CritWeb.Accounts.UserController do
   use CritWeb, :controller
 
   alias Crit.Accounts
@@ -19,7 +19,7 @@ defmodule CritWeb.Admin.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: Routes.admin_user_path(conn, :show, user))
+        |> redirect(to: Routes.accounts_user_path(conn, :show, user))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
@@ -44,7 +44,7 @@ defmodule CritWeb.Admin.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: Routes.admin_user_path(conn, :show, user))
+        |> redirect(to: Routes.accounts_user_path(conn, :show, user))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)

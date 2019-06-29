@@ -19,7 +19,7 @@ defmodule CritWeb.Router do
     get "/", PageController, :index
   end
 
-  scope "/admin", CritWeb.Admin, as: :admin do
+  scope "/accounts", CritWeb.Accounts, as: :accounts do
     pipe_through :browser
 
     resources "/users", UserController, except: [:delete]
