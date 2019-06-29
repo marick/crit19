@@ -9,6 +9,7 @@ defmodule Crit.Factory do
       email: sequence(:email, &"email-#{&1}@example.com"),
       name: Name.name(),
       password: String.base64(32),
+      password_hash: "THIS SHOULD BE OVERWRITTEN"
     }
   end
 end

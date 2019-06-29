@@ -62,4 +62,32 @@ defmodule Crit.AccountsTest do
       assert changeset.action == nil
     end
   end
+
+  describe "user authentication" do
+    setup do
+      data = %{ 
+        id: "valid@example.com",
+        password: "a valid password",
+        different_id: "DIFFERENT@example.com",
+        different_password: "a DIFFERENT PASSWORD",
+      }
+
+      user = saved_user(email: data.id, password: data.password)
+      
+      [data: Map.put(data, :user, user)]
+    end
+
+    test "success case", %{data: data} do
+      user = data.user
+      assert {:ok, ^user} = Accounts.authenticate_user(data.id, data.password)
+    end
+
+    test "unknown user", %{data: data} do
+      assert :error = Accounts.authenticate_user(data.different_id, data.password)
+    end
+
+    test "bad password", %{data: data} do
+      assert :error = Accounts.authenticate_user(data.id, data.different_password)
+    end
+  end
 end

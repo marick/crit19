@@ -2,10 +2,11 @@ defmodule Crit.Test.Util do
   use ExUnit.CaseTemplate
   alias Crit.Factory
   alias Crit.Repo
+  alias Crit.Accounts
 
 
   def saved_user(attrs \\ %{}) do
-    {:ok, user} = Factory.build(:user, attrs) |> Repo.insert
+    {:ok, user} = user_attrs(attrs) |> Accounts.create_user
     # attrs will have virtual field, but result structure will not.
     %{user | password: nil}
   end
