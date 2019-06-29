@@ -15,12 +15,6 @@ defmodule CritWeb.AuthController do
     |> redirect(to: "/")
   end
 
-  def identity_callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
-    conn
-    |> put_flash(:error, "Failed to log in.")
-    |> redirect(to: "/")
-  end
-
   def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     email = auth.info.email
     password = auth.credentials.other.password
