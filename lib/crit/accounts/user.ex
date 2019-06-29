@@ -20,7 +20,7 @@ defmodule Crit.Accounts.User do
 
   defp check_attr(:password = field, changeset) do
     changeset
-    |> validate_length(field, min: 6, max: 100)
+    |> validate_length(field, min: 8, max: 128)
   end
 
   defp check_attr(:email = field, changeset) do
