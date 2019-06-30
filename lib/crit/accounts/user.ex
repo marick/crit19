@@ -3,19 +3,24 @@ defmodule Crit.Accounts.User do
   import Ecto.Changeset
   alias Crit.Repo
 
+  @no_password_hash "never set"
+  def no_password_hash, do: @no_password_hash
+  def has_password_hash?(user), do: user.password_hash != @no_password_hash
+  
+
   schema "users" do
     field :display_name, :string
     field :auth_id, :string
     field :email, :string
     # Note: for some organizations, the auth_id and display email may be the same.
     field :password, :string, virtual: true
-    field :password_hash, :string
+    field :password_hash, :string, default: @no_password_hash
     field :active, :boolean, default: true
 
     timestamps()
   end
 
-  @creation_required_attrs [:display_name, :auth_id, :email, :password]
+  @creation_required_attrs [:display_name, :auth_id, :email]
   @creation_optional_attrs [:active]
 
   @update_required_attrs [:display_name, :email, :active]
@@ -63,7 +68,7 @@ defmodule Crit.Accounts.User do
       :error
     end
   end
-  
+
   # Util
   defp check_attrs(user, required_attrs, optional_attrs, attrs) do
     all_fields = required_attrs ++ optional_attrs

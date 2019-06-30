@@ -5,27 +5,23 @@
     </div>
   <% end %>
 
-  <%= label f, :display_name %>
-  <%= text_input f, :display_name %>
+  <%= label f, :display_name, "Name" %>
+  <%= text_input f, :display_name, placeholder: "Like \"Dr. Dawn Marick\" (without quotes)" %>
   <%= error_tag f, :display_name %>
 
-  <%= label f, :auth_id %>
-  <%= text_input f, :auth_id %>
-  <%= error_tag f, :auth_id %>
-
   <%= label f, :email %>
-  <%= text_input f, :email %>
+  <%= text_input f, :email, placeholder: "This address will receive email about setting a password" %>
   <%= error_tag f, :email %>
 
-  <%= label f, :password %>
-  <%= text_input f, :password %>
-  <%= error_tag f, :password %>
+  <%= label f, :auth_id, "Login Id" %>
+  <%= text_input f, :auth_id, placeholder: "May be the same as the email address" %>
+  <%= error_tag f, :auth_id %>
 
   <%= label f, :active %>
   <%= checkbox f, :active %>
   <%= error_tag f, :active %>
 
   <div>
-    <%= submit "Save" %>
+    <%= submit "Create the account and send email" %>
   </div>
 <% end %>

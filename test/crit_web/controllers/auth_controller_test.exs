@@ -22,7 +22,8 @@ defmodule CritWeb.AuthControllerTest do
       
       [data: Map.put(data, :user, user)]
     end
-    
+
+    @tag :skip
     test "succeeds", %{conn: conn, data: data} do
       conn = post(conn, Routes.auth_path(conn, :identity_callback),
         auth_id: data.auth_id, password: data.password)
