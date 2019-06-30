@@ -49,6 +49,7 @@ defmodule Crit.MixProject do
       {:ex_machina, "~> 2.3"},
       {:pbkdf2_elixir, "~> 1.0"},
       {:ueberauth_identity, "~> 0.2"},
+      {:puid, "~> 1.0"},
     ]
   end
 
