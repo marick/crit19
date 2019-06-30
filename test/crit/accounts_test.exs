@@ -92,4 +92,18 @@ defmodule Crit.AccountsTest do
       assert :error = Accounts.authenticate_user(data.auth_id, data.different_password)
     end
   end
+
+
+  describe "password tokens" do
+    test "creation" do
+      user = saved_user()
+      token = Accounts.create_password_token(user)
+      assert String.length(token) > 10
+
+      {:ok, id} = Accounts.id_from_token(token)
+      assert id == user.id
+
+      assert :error = Accounts.id_from_token("bogus")
+    end
+  end
 end
