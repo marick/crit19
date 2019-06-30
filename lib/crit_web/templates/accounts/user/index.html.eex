@@ -4,8 +4,8 @@
   <thead>
     <tr>
       <th>Name</th>
+      <th>Login id</th>
       <th>Email</th>
-      <th>Password hash</th>
       <th>Active</th>
 
       <th></th>
@@ -14,9 +14,9 @@
   <tbody>
 <%= for user <- @users do %>
     <tr>
-      <td><%= user.name %></td>
+      <td><%= user.display_name %></td>
+      <td><%= user.auth_id %></td>
       <td><%= user.email %></td>
-      <td><%= user.password_hash %></td>
       <td><%= user.active %></td>
 
       <td>

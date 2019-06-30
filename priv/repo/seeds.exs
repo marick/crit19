@@ -19,7 +19,8 @@ alias Crit.Accounts.User
 Repo.delete_all(User)
 
 {:ok, _} = Accounts.create_user %{
-  name: "Brian Marick",
+  display_name: "Brian Marick",
+  auth_id: "marick@exampler.com",
   email: "marick@exampler.com",
   password: "password",
 }

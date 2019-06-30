@@ -3,16 +3,15 @@ defmodule Crit.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-      add :name, :string, null: false
-      add :email, :citext, null: false
+      add :auth_id, :citext, null: false
       add :password_hash, :string
+      add :display_name, :string, null: false
+      add :email, :citext, null: false
       add :active, :boolean, default: true, null: false
 
       timestamps()
     end
 
-    create unique_index("users", [:email], name: :unique_email)
-
-
+    create unique_index("users", [:auth_id], name: :unique_auth_id)
   end
 end

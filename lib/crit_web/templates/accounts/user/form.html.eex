@@ -5,9 +5,13 @@
     </div>
   <% end %>
 
-  <%= label f, :name %>
-  <%= text_input f, :name %>
-  <%= error_tag f, :name %>
+  <%= label f, :display_name %>
+  <%= text_input f, :display_name %>
+  <%= error_tag f, :display_name %>
+
+  <%= label f, :auth_id %>
+  <%= text_input f, :auth_id %>
+  <%= error_tag f, :auth_id %>
 
   <%= label f, :email %>
   <%= text_input f, :email %>

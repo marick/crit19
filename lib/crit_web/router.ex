@@ -31,6 +31,7 @@ defmodule CritWeb.Router do
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/identity/callback", AuthController, :identity_callback
+    delete "/", AuthController, :delete
   end
 
   # Other scopes may use custom stacks.

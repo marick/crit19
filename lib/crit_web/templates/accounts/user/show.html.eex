@@ -4,17 +4,17 @@
 
   <li>
     <strong>Name:</strong>
-    <%= @user.name %>
+    <%= @user.display_name %>
+  </li>
+
+  <li>
+    <strong>Login id:</strong>
+    <%= @user.auth_id %>
   </li>
 
   <li>
     <strong>Email:</strong>
     <%= @user.email %>
-  </li>
-
-  <li>
-    <strong>Password hash:</strong>
-    <%= @user.password_hash %>
   </li>
 
   <li>

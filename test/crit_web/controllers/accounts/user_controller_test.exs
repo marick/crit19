@@ -41,10 +41,10 @@ defmodule CritWeb.Accounts.UserControllerTest do
   describe "update user" do
     test "redirects when data is valid", %{conn: conn} do
       original = Faker.Name.name()
-      user = saved_user(name: original)
+      user = saved_user(display_name: original)
 
       updated = original <> "xyzzy"
-      update = %{"name" => updated}
+      update = %{"display_name" => updated}
 
       conn = put(conn, Routes.accounts_user_path(conn, :update, user), user: update)
       assert redirected_to(conn) == Routes.accounts_user_path(conn, :show, user)
@@ -55,7 +55,7 @@ defmodule CritWeb.Accounts.UserControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn} do
       user = saved_user()
-      invalid = %{"name" => ""}
+      invalid = %{"display_name" => ""}
       conn = put(conn, Routes.accounts_user_path(conn, :update, user), user: invalid)
       assert html_response(conn, 200) =~ "Edit User"
     end

@@ -16,9 +16,9 @@ defmodule CritWeb.AuthController do
   end
 
   def identity_callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    email = auth.info.email
+    auth_id = auth.extra.raw_info["auth_id"]
     password = auth.credentials.other.password
-    case Accounts.authenticate_user(email, password) do
+    case Accounts.authenticate_user(auth_id, password) do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
