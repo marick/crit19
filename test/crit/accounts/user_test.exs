@@ -6,12 +6,12 @@ defmodule Crit.Accounts.UserTest do
 
   test "list_users/0 returns all users" do
     user = saved_user()
-    assert Accounts.list_users() == [user]
+    assert_close_enough(Accounts.list_users(), [user])
   end
 
   test "get_user!/1 returns the user with given id" do
     user = saved_user()
-    assert Accounts.get_user!(user.id) == user
+    assert_close_enough(Accounts.get_user!(user.id), user)
   end
 
   test "create_user/1 with valid data creates a user" do
@@ -19,6 +19,7 @@ defmodule Crit.Accounts.UserTest do
     assert {:ok, %User{} = user} = Accounts.create_user(attrs)
     assert_same_values(user, attrs, [:active, :email, :display_name, :auth_id])
     refute User.has_password_hash?(user)
+    assert String.length(user.password_token.text) >= 10
   end
 
   test "create_user/1 with missing data returns error changeset" do

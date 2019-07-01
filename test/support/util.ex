@@ -3,6 +3,7 @@ defmodule Crit.Test.Util do
   alias Crit.Factory
   alias Crit.Repo
   alias Crit.Accounts
+  alias Crit.Accounts.User
 
 
   def saved_user(attrs \\ %{}) do
@@ -15,6 +16,16 @@ defmodule Crit.Test.Util do
     Factory.build(:user, attrs) |> string_keys
   end
 
+  # Avoid fields that don't matter for correctness and tend to
+  # produce spurious miscomparisons
+  def masked(%User{} = user), do: %{user | password: nil, password_token: nil}
+
+
+  def assert_close_enough(x, y) when is_list(x) and is_list(y),
+    do: Enum.map(x, &masked/1) == Enum.map(y, &masked/1)
+
+  def assert_close_enough(x, y),
+    do: masked(x) == masked(y)
   
   def assert_same_values(one_maplike, other_maplike, keys) do
     one_map = string_keys(one_maplike)
@@ -25,6 +36,8 @@ defmodule Crit.Test.Util do
       assert one_map[k] == other_map[k]
     end
   end
+
+  
 
   def assert_has_exactly_these_keys(keylist, keys) do
     assert MapSet.new(Keyword.keys(keylist)) == MapSet.new(keys)

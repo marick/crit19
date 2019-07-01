@@ -60,6 +60,9 @@ defmodule Crit.Accounts.User do
     end
   end
 
+  defp put_password_token(changeset), do:
+    put_change(changeset, :password_token, %{text: PasswordToken.suitable_text()})
+
   def authenticate_user(auth_id, proposed_password) do
     user = Repo.get_by(__MODULE__, auth_id: auth_id)
 
@@ -85,6 +88,7 @@ defmodule Crit.Accounts.User do
     %__MODULE__{}
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
     |> put_password_hash
+    |> put_password_token
   end
     
   def update_changeset(user, attrs) do

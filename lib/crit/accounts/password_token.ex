@@ -5,11 +5,13 @@ defmodule Crit.Accounts.PasswordToken do
   alias Crit.Accounts.User
 
   schema "password_tokens" do
-    field :token, :string
+    field :text, :string
     belongs_to :user, User
 
     timestamps()
   end
+
+  def suitable_text(), do: Crit.Puid.generate()
 
   @expiration_in_seconds (7 * 24 * 60 * 60)
 
@@ -22,12 +24,11 @@ defmodule Crit.Accounts.PasswordToken do
       where: r.inserted_at < ^expiration_threshold()
   end
 
-
-  def user_from_unexpired_token(token) do
+  def user_from_unexpired_token(token_text) do
     Repo.delete_all(expired())
     query =
       from __MODULE__,
-      where: [token: ^token],
+      where: [text: ^token_text],
       preload: [:user]
 
     row = Repo.one(query)

@@ -30,14 +30,6 @@ defmodule Crit.Accounts do
     User.edit_changeset(user)
   end
 
-  def create_password_token(%User{} = user) do
-    token = Crit.Puid.generate()
-    {:ok, result} = 
-      %PasswordToken{user_id: user.id, token: token}
-      |> Repo.insert
-    result.token
-  end
-
   def user_from_unexpired_token(token),
     do: PasswordToken.user_from_unexpired_token(token)
 end

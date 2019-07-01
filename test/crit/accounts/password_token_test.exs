@@ -7,31 +7,21 @@ defmodule Crit.Accounts.PasswordTokenTest do
   alias Crit.Repo
 
   setup do
-    user = saved_user()
-    token = Accounts.create_password_token(user)
-
-    [user: user, token: token]
+    user = saved_user(password_token: %{text: PasswordToken.suitable_text()})
+    [user: user, token: user.password_token]
   end
   
-  test "creation", %{token: token} do
-    assert String.length(token) > 10
-
-    assert {:ok, user} = Accounts.user_from_unexpired_token(token)
-
-    assert :error = Accounts.user_from_unexpired_token("bogus")
-  end
-
-  test "reads are destructive", %{token: token} do
-    assert {:ok, user} = Accounts.user_from_unexpired_token(token)
-    assert :error = Accounts.user_from_unexpired_token(token)
+  test "reads are destructive", %{user: original, token: token} do
+    assert {:ok, fetched_user} = Accounts.user_from_unexpired_token(token.text)
+    assert_close_enough(original, fetched_user)
+    assert :error = Accounts.user_from_unexpired_token(token.text)
   end
 
   test "reads expire after a time", %{token: token} do
-    row = Repo.get_by(PasswordToken, token: token)
-    barely_valid = PasswordToken.expiration_threshold(row.inserted_at)
+    barely_valid = PasswordToken.expiration_threshold(token.inserted_at)
     expired = NaiveDateTime.add(barely_valid, -1)
-    Changeset.change(row, inserted_at: expired) |> Repo.update
+    Changeset.change(token, inserted_at: expired) |> Repo.update
 
-    assert :error = Accounts.user_from_unexpired_token(token)
+    assert :error = Accounts.user_from_unexpired_token(token.text)
   end
 end
