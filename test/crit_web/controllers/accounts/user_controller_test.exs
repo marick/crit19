@@ -22,9 +22,8 @@ defmodule CritWeb.Accounts.UserControllerTest do
       assert redirected_to(conn) == Routes.accounts_user_path(conn, :new)
     end
 
-    @tag :skip
     test "renders errors when data is invalid", %{conn: conn} do
-      attrs = user_attrs(password: "")
+      attrs = user_attrs(display_name: "")
       conn = post(conn, Routes.accounts_user_path(conn, :create), user: attrs)
       assert html_response(conn, 200) =~ "New User"
     end
