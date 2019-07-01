@@ -1,9 +1,10 @@
-defmodule Crit.Accounts.PasswordTokenTestg do
+defmodule Crit.Accounts.PasswordTokenTest do
   use Crit.DataCase
 
   alias Crit.Accounts
   alias Ecto.Changeset
   alias Crit.Accounts.PasswordToken
+  alias Crit.Repo
 
   setup do
     user = saved_user()
@@ -12,18 +13,17 @@ defmodule Crit.Accounts.PasswordTokenTestg do
     [user: user, token: token]
   end
   
-  test "creation", %{user: user, token: token} do
+  test "creation", %{token: token} do
     assert String.length(token) > 10
 
-    assert {:ok, id} = Accounts.id_from_unexpired_tokens(token)
-    assert id == user.id
+    assert {:ok, user} = Accounts.user_from_unexpired_token(token)
 
-    assert :error = Accounts.id_from_unexpired_tokens("bogus")
+    assert :error = Accounts.user_from_unexpired_token("bogus")
   end
 
   test "reads are destructive", %{token: token} do
-    assert {:ok, _} = Accounts.id_from_unexpired_tokens(token)
-    assert :error = Accounts.id_from_unexpired_tokens(token)
+    assert {:ok, user} = Accounts.user_from_unexpired_token(token)
+    assert :error = Accounts.user_from_unexpired_token(token)
   end
 
   test "reads expire after a time", %{token: token} do
@@ -32,6 +32,6 @@ defmodule Crit.Accounts.PasswordTokenTestg do
     expired = NaiveDateTime.add(barely_valid, -1)
     Changeset.change(row, inserted_at: expired) |> Repo.update
 
-    assert :error = Accounts.id_from_unexpired_tokens(token)
+    assert :error = Accounts.user_from_unexpired_token(token)
   end
 end

@@ -2,7 +2,6 @@ defmodule Crit.Accounts.UserTest do
   use Crit.DataCase
 
   alias Crit.Accounts
-  alias Ecto.Changeset
   alias Crit.Accounts.User
 
   test "list_users/0 returns all users" do
