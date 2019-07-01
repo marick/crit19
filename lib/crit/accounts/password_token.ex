@@ -1,10 +1,11 @@
 defmodule Crit.Accounts.PasswordToken do
   use Ecto.Schema
   import Ecto.Query
+  alias Crit.Accounts.User
 
   schema "password_tokens" do
     field :token, :string
-    field :user_id, :id
+    belongs_to :user, User
 
     timestamps()
   end

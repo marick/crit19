@@ -2,6 +2,7 @@ defmodule Crit.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Repo
+  alias Crit.Accounts.PasswordToken
 
   @no_password_hash "never set"
   def no_password_hash, do: @no_password_hash
@@ -16,6 +17,7 @@ defmodule Crit.Accounts.User do
     field :password, :string, virtual: true
     field :password_hash, :string, default: @no_password_hash
     field :active, :boolean, default: true
+    has_one :password_token, PasswordToken
 
     timestamps()
   end
