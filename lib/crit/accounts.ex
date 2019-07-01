@@ -38,9 +38,11 @@ defmodule Crit.Accounts do
     result.token
   end
 
-  def id_from_token(token) do
+  def id_from_unexpired_tokens(token) do
+    PasswordToken.expired() |> Repo.delete_all
     row = Repo.get_by(PasswordToken, token: token)
     if row do
+      Repo.delete(row)    # tokens are single-use
       {:ok, row.user_id}
     else
       :error
