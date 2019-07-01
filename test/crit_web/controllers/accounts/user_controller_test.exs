@@ -16,14 +16,10 @@ defmodule CritWeb.Accounts.UserControllerTest do
   end
 
   describe "create user" do
-    test "redirects to show when data is valid", %{conn: conn} do
+    test "redirects to provide another form when data is valid", %{conn: conn} do
       attrs = user_attrs()
       conn = post(conn, Routes.accounts_user_path(conn, :create), user: attrs)
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.accounts_user_path(conn, :show, id)
-
-      conn = get(conn, Routes.accounts_user_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Show User"
+      assert redirected_to(conn) == Routes.accounts_user_path(conn, :new)
     end
 
     @tag :skip
