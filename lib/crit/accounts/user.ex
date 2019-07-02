@@ -33,6 +33,21 @@ defmodule Crit.Accounts.User do
   defp validate_password_length(changeset, field),
     do: validate_length(changeset, field, min: 8, max: 128)
 
+  defp validate_password_confirmation(changeset) do
+    password = changeset.changes.new_password
+
+    # It's possible the confirmation field could be missing, so
+    # we fail softly in that case.
+    confirmation = changeset.changes[:new_password_confirmation]
+
+    if password == confirmation do
+      changeset
+    else
+      add_error(changeset, :new_password_confirmation,
+        "should be the same as the new password")
+    end
+  end
+
   defp check_attr(:password = field, changeset) do 
     changeset
     |> validate_password_length(field)
@@ -41,6 +56,7 @@ defmodule Crit.Accounts.User do
   defp check_attr(:new_password = field, changeset) do
     changeset
     |> validate_password_length(field)
+    |> validate_password_confirmation
     |> put_password_hash
   end
 
@@ -92,7 +108,7 @@ defmodule Crit.Accounts.User do
       user
       |> cast(attrs, all_fields)
       |> validate_required(required_attrs)
-    Enum.reduce(all_fields, changeset, &check_attr/2)
+    Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
 
   def create_changeset(attrs) do

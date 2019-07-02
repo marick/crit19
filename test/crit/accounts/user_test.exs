@@ -50,16 +50,56 @@ defmodule Crit.Accounts.UserTest do
     assert_same_values(original, updated, [:password_hash, :active, :auth_id, :email])
   end
 
-  describe "update_user - first time password" do 
-    test "update password for the first time (does not require confirmation)" do
+  describe "update_user - first time password" do
+    setup do
+      user = saved_user()
+      refute  User.has_password_hash?(user)
+      
+      [user: user, 
+       try: fn new, confirmation ->
+         Accounts.update_user(user,
+           %{new_password: new, new_password_confirmation: confirmation})
+         end,
+      ]
+    end
+    
+    test "update password for the first time (does not require confirmation)",
+      %{try: try, user: original} do
       new_password = "correct horse battery staple"
-      original = saved_user()
-      refute User.has_password_hash?(original)
-      assert {:ok, updated} = Accounts.update_user(original,
-        %{new_password: new_password, new_password_confirmation: new_password})
+      assert {:ok, updated} = try.(new_password, new_password)
+      
       assert User.has_password_hash?(updated)
       assert Accounts.authenticate_user(original.auth_id, new_password)
     end
+
+    test "password too short", %{try: try} do
+      new_password = "tooshor"
+      assert {:error, changeset} = try.(new_password, new_password)
+      
+      assert Map.has_key?(errors_on(changeset), :new_password)
+    end
+
+    test "password too long", %{try: try} do
+      new_password = Faker.String.base64(129)
+      assert {:error, changeset} = try.(new_password, new_password)
+      
+      assert Map.has_key?(errors_on(changeset), :new_password)
+    end
+
+    test "password confirmation must match", %{try: try} do
+      new = Faker.String.base64(8)
+      assert {:error, changeset} = try.(new, new <> "1")
+
+      assert Map.has_key?(errors_on(changeset), :new_password_confirmation)
+    end
+
+
+    test "password confirmation must be present" , %{try: try} do
+      new = Faker.String.base64(8)
+      assert {:error, changeset} = try.(new, nil)
+      assert Map.has_key?(errors_on(changeset), :new_password_confirmation)
+    end
+
   end
 
   test "changeset/1 returns a user changeset" do
