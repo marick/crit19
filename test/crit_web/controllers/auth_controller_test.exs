@@ -1,6 +1,7 @@
 defmodule CritWeb.AuthControllerTest do
   use CritWeb.ConnCase
   alias Ueberauth.Strategy.Helpers
+  alias Crit.Accounts.PasswordToken
 
   describe "request" do
     test "renders the login page", %{conn: conn} do
@@ -37,6 +38,14 @@ defmodule CritWeb.AuthControllerTest do
         auth_id: data.wrong_id, password: data.password)
       assert redirected_to(conn) == Routes.page_path(conn, :index)
       assert get_session(conn, :phoenix_flash)["error"] =~ "wrong"
+    end
+  end
+
+  describe "handling new password token" do
+    test "no token found" do
+      # token_text = PasswordToken.suitable_text()
+      # conn = get(conn, Routes.auth_path(conn, :new_fresh_password, token_text))
+      # assert redirected_to(conn) == Routes.page_path(conn, :index)
     end
   end
 

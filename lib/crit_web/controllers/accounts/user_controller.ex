@@ -17,7 +17,7 @@ defmodule CritWeb.Accounts.UserController do
   def create(conn, %{"user" => user_params}) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
-        url = Routes.auth_url(conn, :set_password, user.password_token.text)
+        url = Routes.auth_url(conn, :new_fresh_password, user.password_token.text)
         conn
         |> put_flash(:info, "Send #{user.email} email with this URL: #{url}")
         |> redirect(to: Routes.accounts_user_path(conn, :new))

@@ -31,7 +31,7 @@ defmodule CritWeb.Router do
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/identity/callback", AuthController, :identity_callback
-    get "/confirm_account/:token_text", AuthController, :set_password
+    get "/fresh_password/:token_text", AuthController, :new_fresh_password
     delete "/", AuthController, :delete
   end
 

@@ -31,4 +31,7 @@ defmodule CritWeb.AuthController do
         |> redirect(to: "/")
     end
   end
+
+  def new_fresh_password(conn, %{"token_text" => token_text}) do
+  end
 end
