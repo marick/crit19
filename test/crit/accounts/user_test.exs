@@ -14,38 +14,52 @@ defmodule Crit.Accounts.UserTest do
     assert_close_enough(Accounts.get_user!(user.id), user)
   end
 
-  test "create_user/1 with valid data creates a user" do
-    attrs = user_attrs()
-    assert {:ok, %User{} = user} = Accounts.create_user(attrs)
-    assert_same_values(user, attrs, [:active, :email, :display_name, :auth_id])
-    refute User.has_password_hash?(user)
-    assert String.length(user.password_token.text) >= 10
-  end
+  describe "create_user/1" do 
+    test "create_user/1 with valid data creates a user" do
+      attrs = user_attrs()
+      assert {:ok, %User{} = user} = Accounts.create_user(attrs)
+      assert_same_values(user, attrs, [:active, :email, :display_name, :auth_id])
+      refute User.has_password_hash?(user)
+      assert String.length(user.password_token.text) >= 10
+    end
+    
+    test "create_user/1 with missing data returns error changeset" do
+      assert {:error, changeset} = Accounts.create_user(%{})
+      assert_has_exactly_these_keys(changeset.errors, [:email, :display_name, :auth_id])
+    end
 
-  test "create_user/1 with missing data returns error changeset" do
-    assert {:error, changeset} = Accounts.create_user(%{})
-    assert_has_exactly_these_keys(changeset.errors, [:email, :display_name, :auth_id])
-  end
-  
-  test "create_user/1 with invalid data returns error changeset" do
-    assert {:error, changeset} = Accounts.create_user(
-      %{"display_name" => "a", "auth_id" => "b", "email" => "a@b"})
-    assert_has_exactly_these_keys(changeset.errors, [:email, :display_name, :auth_id])
-  end
-
-  test "create_user/1 prevents duplicate auth ids" do
-    unique = "unique@unique.com"
-    saved_user(auth_id: unique)
-    new_user_attrs = user_attrs(auth_id: unique)
-    assert {:error, changeset} = Accounts.create_user(new_user_attrs)
-    assert_has_exactly_these_keys(changeset.errors, [:auth_id])
+    test "create_user/1 with invalid data returns error changeset" do
+      assert {:error, changeset} = Accounts.create_user(
+        %{"display_name" => "a", "auth_id" => "b", "email" => "a@b"})
+      assert_has_exactly_these_keys(changeset.errors, [:email, :display_name, :auth_id])
+    end
+    
+    test "create_user/1 prevents duplicate auth ids" do
+      unique = "unique@unique.com"
+      saved_user(auth_id: unique)
+      new_user_attrs = user_attrs(auth_id: unique)
+      assert {:error, changeset} = Accounts.create_user(new_user_attrs)
+      assert_has_exactly_these_keys(changeset.errors, [:auth_id])
+    end
   end
 
   test "update_user/2 with valid non-password fields" do
-    original = saved_user(%{display_name: "First name"})
+    original = saved_user(%{display_name: "Original name"})
     assert {:ok, updated} = Accounts.update_user(original, %{display_name: "Second name"})
     assert updated.display_name == "Second name"
     assert_same_values(original, updated, [:password_hash, :active, :auth_id, :email])
+  end
+
+  describe "update_user - first time password" do 
+    test "update password for the first time (does not require confirmation)" do
+      new_password = "correct horse battery staple"
+      original = saved_user()
+      refute User.has_password_hash?(original)
+      assert {:ok, updated} = Accounts.update_user(original,
+        %{new_password: new_password, new_password_confirmation: new_password})
+      assert User.has_password_hash?(updated)
+      assert Accounts.authenticate_user(original.auth_id, new_password)
+    end
   end
 
   test "changeset/1 returns a user changeset" do

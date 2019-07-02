@@ -9,8 +9,6 @@ defmodule Crit.Factory do
       display_name: Name.name(),
       auth_id: sequence(:auth_id, &"visible-id-#{&1}"),
       email: sequence(:email, &"email-#{&1}@example.com"),
-      password: String.base64(32),
-      password_hash: "THIS SHOULD BE OVERWRITTEN"
     }
   end
 end

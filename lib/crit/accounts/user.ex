@@ -15,6 +15,8 @@ defmodule Crit.Accounts.User do
     field :email, :string
     # Note: for some organizations, the auth_id and display email may be the same.
     field :password, :string, virtual: true
+    field :new_password, :string, virtual: true
+    field :new_password_confirmation, :string, virtual: true
     field :password_hash, :string, default: @no_password_hash
     field :active, :boolean, default: true
     has_one :password_token, PasswordToken
@@ -26,11 +28,20 @@ defmodule Crit.Accounts.User do
   @creation_optional_attrs [:active]
 
   @update_required_attrs [:display_name, :email, :active]
-  @update_optional_attrs []
+  @update_optional_attrs [:password, :new_password, :new_password_confirmation]
 
-  defp check_attr(:password = field, changeset) do
+  defp validate_password_length(changeset, field),
+    do: validate_length(changeset, field, min: 8, max: 128)
+
+  defp check_attr(:password = field, changeset) do 
     changeset
-    |> validate_length(field, min: 8, max: 128)
+    |> validate_password_length(field)
+  end
+
+  defp check_attr(:new_password = field, changeset) do
+    changeset
+    |> validate_password_length(field)
+    |> put_password_hash
   end
 
   defp check_attr(:email = field, changeset) do
@@ -53,7 +64,7 @@ defmodule Crit.Accounts.User do
 
   defp put_password_hash(changeset) do
     case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+      %Ecto.Changeset{valid?: true, changes: %{new_password: pass}} ->
         put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(pass))
       _ ->
         changeset
@@ -87,7 +98,6 @@ defmodule Crit.Accounts.User do
   def create_changeset(attrs) do
     %__MODULE__{}
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
-    |> put_password_hash
     |> put_password_token
   end
     
