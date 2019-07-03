@@ -3,6 +3,8 @@ defmodule CritWeb.Accounts.UserController do
 
   alias Crit.Accounts
   alias Crit.Accounts.User
+  import Phoenix.HTML.Link, only: [link: 2]
+  import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
 
   def index(conn, _params) do
     users = Accounts.list_users()
@@ -17,9 +19,12 @@ defmodule CritWeb.Accounts.UserController do
   def create(conn, %{"user" => user_params}) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
-        url = Routes.auth_url(conn, :new_fresh_password, user.password_token.text)
-        conn
-        |> put_flash(:info, "Send #{user.email} email with this URL: #{url}")
+        url = Routes.auth_url(conn, :fresh_password_form, user.password_token.text)
+        token_link = link(url, to: url) |> safe_to_string()
+        email_link = link(user.email, to: "mailto://#{user.email}") |> safe_to_string()
+        flash = "Send #{email_link} email with this URL: #{token_link}"
+         conn
+        |> put_flash(:info, raw(flash))
         |> redirect(to: Routes.accounts_user_path(conn, :new))
 
       {:error, %Ecto.Changeset{} = changeset} ->
