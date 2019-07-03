@@ -22,8 +22,7 @@ defmodule CritWeb.AuthController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
-        |> put_session(:current_user, user)
-        |> configure_session(renew: true)
+        |> create_session(user)
         |> redirect(to: "/")
       :error ->
         conn
@@ -32,6 +31,26 @@ defmodule CritWeb.AuthController do
     end
   end
 
-  def new_fresh_password(conn, %{"token_text" => token_text}) do
+  defp create_session(conn, user) do
+    conn
+    |> put_session(:current_user, user)
+    |> configure_session(renew: true)
   end
+
+  def fresh_password_form(conn, %{"token_text" => token_text}) do
+    case Accounts.user_from_unexpired_token(token_text) do
+      {:ok, user} ->
+        conn
+        |> create_session(user)
+        |> render("fresh_password.html", path: Routes.auth_path(conn, :fresh_password))
+      :error -> 
+        conn
+        |> put_flash(:error, "The account creation token does not exist. (It has probably expired.)")
+        |> redirect(to: Routes.page_path(conn, :index))
+    end
+  end
+
+  def fresh_password(conn, params) do
+  end
+    
 end

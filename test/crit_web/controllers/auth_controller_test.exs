@@ -41,13 +41,23 @@ defmodule CritWeb.AuthControllerTest do
     end
   end
 
-  describe "handling new password token" do
-    test "no token found" do
-      # token_text = PasswordToken.suitable_text()
-      # conn = get(conn, Routes.auth_path(conn, :new_fresh_password, token_text))
-      # assert redirected_to(conn) == Routes.page_path(conn, :index)
+  describe "setting a new password" do
+    test "there is no matching token", %{conn: conn} do
+      conn = get(conn, Routes.auth_path(conn, :fresh_password_form, "bogus token"))
+      assert redirected_to(conn) == Routes.page_path(conn, :index)
+      assert get_session(conn, :phoenix_flash)["error"] =~ "does not exist"
+      assert get_session(conn, :phoenix_flash)["error"] =~ ~r{has.*expired}
+    end
+
+    test "there is a matching token", %{conn: conn} do
+      user = saved_user()
+      token_text = user.password_token.text
+      conn = get(conn, Routes.auth_path(conn, :fresh_password_form, token_text))
+      assert html_response(conn, 200) =~ "method=\"post\""
+      assert html_response(conn, 200) =~ "action=\"#{Routes.auth_path(conn, :fresh_password)}\""
     end
   end
+  
 
   describe "deleting the session" do
     @tag :skip
