@@ -9,7 +9,9 @@ defmodule Crit.Accounts do
     Repo.all(User)
   end
 
+  # TODO: the ! version needs to go away
   def get_user!(id), do: Repo.get!(User, id)
+  def get_user(id), do: Repo.get(User, id)
 
   def create_user(attrs \\ %{}) do
     User.create_changeset(attrs)
