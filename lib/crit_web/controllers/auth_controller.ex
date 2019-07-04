@@ -38,8 +38,7 @@ defmodule CritWeb.AuthController do
         conn
         |> SessionPlug.login(user)
         |> render("fresh_password.html",
-              path: Routes.auth_path(conn, :fresh_password),
-              token_text: token_text)
+              path: Routes.auth_path(conn, :fresh_password))
       :error -> 
         conn
         |> put_flash(:error, "The account creation token does not exist. (It has probably expired.)")
