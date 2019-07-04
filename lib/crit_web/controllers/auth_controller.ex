@@ -3,6 +3,7 @@ defmodule CritWeb.AuthController do
   plug Ueberauth
   alias Ueberauth.Strategy.Helpers
   alias Crit.Accounts
+  alias CritWeb.SessionPlug
 
   def request(conn, _params) do
     render(conn, "request.html", url: Helpers.callback_url(conn))
@@ -22,7 +23,7 @@ defmodule CritWeb.AuthController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
-        |> create_session(user)
+        |> SessionPlug.login(user)
         |> redirect(to: "/")
       :error ->
         conn
@@ -31,17 +32,11 @@ defmodule CritWeb.AuthController do
     end
   end
 
-  defp create_session(conn, user) do
-    conn
-    |> put_session(:current_user, user)
-    |> configure_session(renew: true)
-  end
-
   def fresh_password_form(conn, %{"token_text" => token_text}) do
     case Accounts.user_from_unexpired_token(token_text) do
       {:ok, user} ->
         conn
-        |> create_session(user)
+        |> SessionPlug.login(user)
         |> render("fresh_password.html",
               path: Routes.auth_path(conn, :fresh_password),
               token_text: token_text)
@@ -53,6 +48,5 @@ defmodule CritWeb.AuthController do
   end
 
   def fresh_password(conn, params) do
-  end
-    
+  end    
 end
