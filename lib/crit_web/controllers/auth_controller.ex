@@ -3,6 +3,7 @@ defmodule CritWeb.AuthController do
   plug Ueberauth
   alias Ueberauth.Strategy.Helpers
   alias Crit.Accounts
+  alias Crit.Accounts.User
   alias CritWeb.SessionPlug
 
   def request(conn, _params) do
@@ -38,7 +39,8 @@ defmodule CritWeb.AuthController do
         conn
         |> SessionPlug.login(user)
         |> render("fresh_password.html",
-              path: Routes.auth_path(conn, :fresh_password))
+              path: Routes.auth_path(conn, :fresh_password),
+              changeset: User.update_changeset(%User{}, %{})) # TODO: Should not have direct reach into user
       :error -> 
         conn
         |> put_flash(:error, "The account creation token does not exist. (It has probably expired.)")
@@ -47,5 +49,11 @@ defmodule CritWeb.AuthController do
   end
 
   def fresh_password(conn, params) do
+    case Accounts.update_user(conn.assigns.current_user, params) do
+      {:error, changeset} ->
+        render(conn, "fresh_password.html",
+          path: Routes.auth_path(conn, :fresh_password),
+          changeset: changeset)
+    end
   end    
 end

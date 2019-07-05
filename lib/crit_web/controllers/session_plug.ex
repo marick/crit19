@@ -1,6 +1,5 @@
 defmodule CritWeb.SessionPlug do
   import Plug.Conn
-  import Phoenix.Controller
 
   alias CritWeb.Router.Helpers, as: Routes
 

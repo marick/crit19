@@ -1,7 +1,6 @@
 defmodule CritWeb.AuthControllerTest do
   use CritWeb.ConnCase
   alias Ueberauth.Strategy.Helpers
-  alias Crit.Accounts.PasswordToken
 
   describe "request" do
     test "renders the login page", %{conn: conn} do
@@ -47,7 +46,7 @@ defmodule CritWeb.AuthControllerTest do
       conn = assign(conn, :current_user, user)
       token_text = user.password_token.text
 
-      [user: user, token_text: token_text]
+      [user: user, token_text: token_text, conn: conn]
     end
 
     
@@ -59,27 +58,23 @@ defmodule CritWeb.AuthControllerTest do
     end
 
     test "getting the form: there is a matching token",
-      %{conn: conn, user: user, token_text: token_text} do
+      %{conn: conn, token_text: token_text} do
       conn = get(conn, Routes.auth_path(conn, :fresh_password_form, token_text))
       assert html_response(conn, 200) =~ "method=\"post\""
       assert html_response(conn, 200) =~ "action=\"#{Routes.auth_path(conn, :fresh_password)}\""
     end
 
-    @tag :skip
-    test "receiving the form: it's rejected by the business logic",
-      %{conn: conn, user: user, token_text: token_text} do
+    test "receiving the form: it's rejected by the business logic", %{conn: conn} do
       conn = post(conn, Routes.auth_path(conn, :fresh_password),
-        new_password: "one version", password_confirmation: "WRONG WRONG WRONG",
-        token_text: token_text)
-      assert redirected_to(conn) == Routes.auth_path(conn, :fresh_password_form, token_text)
-      assert get_session(conn, :phoenix_flash)["error"] =~ "should be the same"
+        new_password: "one version", password_confirmation: "WRONG WRONG WRONG")
+      assert html_response(conn, 200) =~ "should be the same as the new password"
     end
   end
   
 
   describe "deleting the session" do
     @tag :skip
-    test "is logout", %{conn: conn} do
+    test "is logout", %{conn: _conn} do
     end
   end
 end
