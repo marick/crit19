@@ -3,6 +3,7 @@ defmodule Crit.Users.User do
   import Ecto.Changeset
   alias Crit.Repo
   alias Crit.Users.Permission
+  alias Crit.Users.PasswordToken
 
   schema "users" do
     field :auth_id, :string
@@ -10,6 +11,7 @@ defmodule Crit.Users.User do
     field :email, :string
     field :active, :boolean, default: true
     has_many :permissions, Permission
+    has_one :password_token, PasswordToken
 
     timestamps()
   end
