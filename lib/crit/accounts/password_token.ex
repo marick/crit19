@@ -33,7 +33,6 @@ defmodule Crit.Accounts.PasswordToken do
 
     row = Repo.one(query)
     if row do
-      Repo.delete(row)    # tokens are single-use
       {:ok, row.user}
     else
       :error

@@ -11,10 +11,12 @@ defmodule Crit.Accounts.PasswordTokenTest do
     [user: user, token: user.password_token]
   end
   
-  test "reads are destructive", %{user: original, token: token} do
+  test "reads are NOT destructive", %{user: original, token: token} do
     assert {:ok, fetched_user} = Accounts.user_from_unexpired_token(token.text)
     assert_close_enough(original, fetched_user)
-    assert :error = Accounts.user_from_unexpired_token(token.text)
+
+    assert {:ok, fetched_user} = Accounts.user_from_unexpired_token(token.text)
+    assert_close_enough(original, fetched_user)
   end
 
   test "reads expire after a time", %{token: token} do
