@@ -12,7 +12,6 @@
       <section class="container">
         <nav role="navigation">
           <ul>
-            <li> <%= link "Login", to: Routes.auth_path(@conn, :request, :identity) %> </li>
           </ul>
         </nav>
       </section>

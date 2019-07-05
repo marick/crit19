@@ -11,16 +11,4 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Crit.Repo
-alias Crit.Accounts
-alias Crit.Accounts.User
 
-# This lets me repopulate the database without deleting the tables,
-# which is a pain because I've always got Postico open to the database.
-Repo.delete_all(User)
-
-{:ok, _} = Accounts.create_user %{
-  display_name: "Brian Marick",
-  auth_id: "marick@exampler.com",
-  email: "marick@exampler.com",
-  password: "password",
-}

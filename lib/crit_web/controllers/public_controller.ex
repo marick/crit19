@@ -1,4 +1,4 @@
-defmodule CritWeb.PageController do
+defmodule CritWeb.PublicController do
   use CritWeb, :controller
 
   def index(conn, _params) do

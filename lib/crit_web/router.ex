@@ -7,7 +7,6 @@ defmodule CritWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug CritWeb.SessionPlug
   end
 
   pipeline :api do
@@ -17,24 +16,7 @@ defmodule CritWeb.Router do
   scope "/", CritWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
-  end
-
-  scope "/accounts", CritWeb.Accounts, as: :accounts do
-    pipe_through :browser
-
-    resources "/users", UserController, except: [:delete]
-  end
-
-  scope "/auth", CritWeb do
-    pipe_through :browser
-
-    get "/:provider", AuthController, :request
-    get "/:provider/callback", AuthController, :callback
-    post "/identity/callback", AuthController, :identity_callback
-    get "/fresh_password/:token_text", AuthController, :fresh_password_form
-    post "/fresh_password", AuthController, :fresh_password
-    delete "/", AuthController, :delete
+    get "/", PublicController, :index
   end
 
   # Other scopes may use custom stacks.
