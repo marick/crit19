@@ -6,7 +6,7 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       add :auth_id, :citext, null: false
       add :display_name, :string, null: false
       add :email, :string, null: false
-      add :active, :boolean, default: true, null: false
+      add :active, :boolean, null: false
 
       timestamps()
     end
