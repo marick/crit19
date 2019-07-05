@@ -11,4 +11,13 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Crit.Repo
+alias Crit.Users.User
 
+Repo.insert %User{
+  display_name: "Brian Marick",
+  auth_id: "marick",
+  email: "marick@exampler.com",
+  permissions: [ %{permission_id: 0} ] 
+}
+
+  
