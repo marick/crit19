@@ -21,31 +21,19 @@ defmodule Crit.Users do
     end
   end
       
-  def set_password(user_id, params) do
+  def set_password(auth_id, params) do
     result =
-      %Password{user_id: user_id}
+      %Password{auth_id: auth_id}
       |> Password.changeset(params)
-      |> Repo.insert(on_conflict: :replace_all, conflict_target: :user_id)
+      |> Repo.insert(on_conflict: :replace_all, conflict_target: :auth_id)
     case result do
       {:ok, _} -> :ok
     end
   end
 
-  def hash_for_auth_id(auth_id) do
-    query =
-      from u in User,
-      where: u.auth_id == ^auth_id,
-      join: p in Password, on: p.user_id == u.id,
-      select: [p.hash]
-    case Repo.one(query) do
-      [hash] -> hash
-      nil -> nil
-    end
-  end
-
   def check_password(auth_id, proposed_password) do
-    hash = hash_for_auth_id(auth_id)
-    if hash && Pbkdf2.verify_pass(proposed_password, hash) do
+    password = Repo.get_by(Password, auth_id: auth_id)
+    if password && Pbkdf2.verify_pass(proposed_password, password.hash) do
       :ok
     else
       Pbkdf2.no_user_verify()

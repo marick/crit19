@@ -13,7 +13,6 @@ defmodule Crit.Users.User do
     field :active, :boolean, default: true
     has_many :permissions, Permission
     has_one :password_token, PasswordToken
-    has_one :password, Password
 
     timestamps()
   end

@@ -7,14 +7,14 @@ defmodule Crit.Users.Password do
 
   schema "passwords" do
     field :hash, :string
-    belongs_to :user, User
+    belongs_to :user, User, foreign_key: :auth_id, type: :string
     field :new_password, :string, virtual: true
     field :new_password_confirmation, :string, virtual: true
   end
 
   def changeset(password, attrs) do
     password
-    |> cast(attrs, [:user_id, :new_password, :new_password_confirmation])
+    |> cast(attrs, [:auth_id, :new_password, :new_password_confirmation])
     |> validate_password_length(:new_password)
     |> validate_password_confirmation()
     |> put_password_hash()
