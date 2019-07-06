@@ -1,10 +1,11 @@
 defmodule Crit.Test.Util do
   use ExUnit.CaseTemplate
   alias Crit.Factory
+  alias Crit.Users.User
 
 
-  def user_attrs(attrs \\ %{}) do 
-    Factory.build(:user, attrs) |> string_keys
+  def user_creation_params(attrs \\ %{}) do
+    Factory.build(:user, attrs) |> Map.take(User.creation_attrs()) |> string_keys
   end
 
   # def saved_user(attrs \\ %{}) do
@@ -12,8 +13,8 @@ defmodule Crit.Test.Util do
   #   user
   # end
 
-  # # Avoid fields that don't matter for correctness and tend to
-  # # produce spurious miscomparisons
+  # Avoid fields that don't matter for correctness and tend to
+  # produce spurious miscomparisons
   # def masked(%User{} = user), do: %{user | password: nil, password_token: nil}
 
 

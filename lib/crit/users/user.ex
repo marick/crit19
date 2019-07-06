@@ -4,6 +4,7 @@ defmodule Crit.Users.User do
   alias Crit.Repo
   alias Crit.Users.Permission
   alias Crit.Users.PasswordToken
+  alias Crit.Users.Password
 
   schema "users" do
     field :auth_id, :string
@@ -12,12 +13,14 @@ defmodule Crit.Users.User do
     field :active, :boolean, default: true
     has_many :permissions, Permission
     has_one :password_token, PasswordToken
+    has_one :password, Password
 
     timestamps()
   end
 
   @creation_required_attrs [:display_name, :auth_id, :email]
   @creation_optional_attrs [:active]
+  def creation_attrs, do: @creation_required_attrs ++ @creation_optional_attrs
 
   defp check_attr(:email = field, changeset) do
     changeset

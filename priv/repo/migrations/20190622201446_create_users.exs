@@ -24,7 +24,7 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       add :hash, :string, null: false
       add :user_id, references(:users, on_delete: :delete_all), null: false
     end
-    create index(:passwords, [:hash])
+    create unique_index(:passwords, [:user_id])
 
     create table(:permissions) do
       add :permission_id, :int, null: false

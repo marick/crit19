@@ -5,6 +5,7 @@ alias Crit.{
 alias Crit.Users.{
   User, 
   Permission,
+  PasswordToken,
 }
 
 
