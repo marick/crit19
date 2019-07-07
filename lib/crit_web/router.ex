@@ -19,6 +19,12 @@ defmodule CritWeb.Router do
     get "/", PublicController, :index
   end
 
+  scope "/user_management", CritWeb.UserManagement, as: :user_management do
+    pipe_through :browser
+    resources "/users", UserController, except: [:delete]
+  end
+  
+
   # Other scopes may use custom stacks.
   # scope "/api", CritWeb do
   #   pipe_through :api

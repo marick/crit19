@@ -49,7 +49,7 @@ defmodule Crit.Users.User do
     Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
 
-  def create_changeset(attrs) do
+  def create_changeset(attrs \\ %{}) do
     %__MODULE__{}
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
   end
