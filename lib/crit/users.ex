@@ -40,5 +40,4 @@ defmodule Crit.Users do
       :error
     end
   end
-  
 end

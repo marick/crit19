@@ -10,7 +10,7 @@ defmodule Crit.Users.Permission do
 
   def replace(user_id, permissions) do
     Repo.delete_all(by_user(user_id))
-    Repo.insert_all(__MODULE__, IO.inspect(to_rows(user_id, permissions)))
+    Repo.insert_all(__MODULE__, to_rows(user_id, permissions))
   end
 
   def permissions(user_id) do

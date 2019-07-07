@@ -36,5 +36,4 @@ defmodule Crit.Users.Workflow.NewUserTest do
     supply_new_password(user.auth_id, new_password)
     assert :ok = Users.check_password(user.auth_id, new_password)
   end
-
 end
