@@ -23,6 +23,12 @@ defmodule CritWeb.Router do
     pipe_through :browser
     resources "/users", UserController, except: [:delete]
   end
+
+  scope "/reflexive_user", CritWeb.ReflexiveUser, as: :reflexive_user do
+    pipe_through :browser
+    get "/password_using/:token_text", AuthorizationController, :fresh_password_form
+
+  end
   
 
   # Other scopes may use custom stacks.
