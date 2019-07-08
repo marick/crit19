@@ -33,6 +33,7 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       add :manage_and_create_users, :boolean, null: false
       add :manage_animals, :boolean, null: false
       add :make_reservations, :boolean, null: false
+      add :view_reservations, :boolean, null: false
     end
     create index("permission_lists", :user_id)
   end
