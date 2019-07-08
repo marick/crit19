@@ -28,11 +28,12 @@ defmodule Crit.Repo.Migrations.CreateUsers do
     end
     create unique_index(:passwords, [:auth_id])
 
-    create table(:permissions) do
-      add :permission_id, :int, null: false
+    create table(:permission_lists) do
       add :user_id, references(:users, on_delete: :delete_all), null: false
+      add :manage_and_create_users, :boolean, null: false
+      add :manage_animals, :boolean, null: false
+      add :make_reservations, :boolean, null: false
     end
-    create index("permissions", :permission_id)
-    create index("permissions", :user_id)
+    create index("permission_lists", :user_id)
   end
 end

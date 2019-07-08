@@ -17,7 +17,7 @@ Repo.insert %User{
   display_name: "Brian Marick",
   auth_id: "marick",
   email: "marick@exampler.com",
-  permissions: [ %{permission_id: 0} ] 
 }
 
   
+IO.inspect %Crit.Users.PermissionList{}
