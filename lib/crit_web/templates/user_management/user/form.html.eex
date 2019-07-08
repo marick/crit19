@@ -17,10 +17,14 @@
   <%= text_input f, :auth_id, placeholder: "May be the same as the email address" %>
   <%= error_tag f, :auth_id %>
 
-  <%= label f, :active %>
-  <%= checkbox f, :active %>
-  <%= error_tag f, :active %>
+  <h3>Permissions</h3>
 
+  <%= inputs_for f, :permission_list, fn p -> %>
+    <%= compact_checkbox p, :view_reservations %>
+    <%= compact_checkbox p, :make_reservations %>
+    <%= compact_checkbox p, :manage_animals %>
+    <%= compact_checkbox p, :manage_and_create_users %> 
+  <% end %>
   <div>
     <%= submit "Create the account and send email" %>
   </div>

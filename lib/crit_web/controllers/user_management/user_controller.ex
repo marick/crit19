@@ -3,6 +3,7 @@ defmodule CritWeb.UserManagement.UserController do
 
   alias Crit.Users
   alias Crit.Users.User
+  alias Crit.Users.PermissionList
 
   defp not_done(conn) do
     conn
@@ -17,7 +18,13 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def new(conn, _params) do
-    changeset = User.create_changeset()
+    # embedded_changeset = PermissionList.changeset(%PermissionList{})
+    # changeset = User.changeset(%User{permission_list: embedded_changeset})
+    changeset = User.changeset(%User{})
+    IO.inspect changeset
+    IO.puts "988888888888888"
+    IO.inspect changeset.data
+
     render(conn, "new.html", changeset: changeset)
   end
 

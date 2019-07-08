@@ -2,7 +2,7 @@ defmodule Crit.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Repo
-  alias Crit.Users.Permission
+  alias Crit.Users.PermissionList
   alias Crit.Users.PasswordToken
   alias Crit.Users.Password
 
@@ -11,14 +11,14 @@ defmodule Crit.Users.User do
     field :display_name, :string
     field :email, :string
     field :active, :boolean, default: true
-    has_many :permissions, Permission
+    has_one :permission_list, PermissionList
     has_one :password_token, PasswordToken
 
     timestamps()
   end
 
   @creation_required_attrs [:display_name, :auth_id, :email]
-  @creation_optional_attrs [:active]
+  @creation_optional_attrs []
   def creation_attrs, do: @creation_required_attrs ++ @creation_optional_attrs
 
   defp check_attr(:email = field, changeset) do
@@ -49,8 +49,16 @@ defmodule Crit.Users.User do
     Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
 
+  def changeset(struct, attrs \\ %{}) do
+    struct
+    |> cast(attrs, [:display_name, :auth_id, :email])
+    |> cast_assoc(:permission_list)
+  end
+
   def create_changeset(attrs \\ %{}) do
-    %__MODULE__{}
+    %__MODULE__{permission_list: %PermissionList{}}
+    |> cast(attrs, [:display_name, :auth_id, :email])
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
+    |> cast_assoc(:permission_list, required: true)
   end
 end
