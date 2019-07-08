@@ -19,29 +19,45 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #   end
   # end
 
+  defp path(conn, tag),
+    do: Routes.user_management_user_path(conn, tag)
+
+  defp get_via_action(conn, tag),
+    do: get(conn, path(conn, tag))
+
+  defp post_to_action(conn, tag, attrs \\ %{}),
+    do: post(conn, path(conn, tag), attrs)
+
+
+  defp template_file(file),
+    do: "user_management/user/" <> file
+
+  defp assert_rendered(conn, file),
+    do: assert html_response(conn, 200) =~ template_file(file)
+
   describe "new user" do
     test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.user_management_user_path(conn, :new))
+      conn = get_via_action(conn, :new)
       assert html_response(conn, 200) =~ "New User"
     end
   end
 
-  # describe "create user" do
-  #   test "redirects to show when data is valid", %{conn: conn} do
-  #     conn = post(conn, Routes.user_management_user_path(conn, :create), user: @create_attrs)
+  describe "create user" do
+    test "redirects to provide another new-user form when data is valid",
+      %{conn: conn} do
+      attrs = user_creation_params()
+      conn = post_to_action(conn, :create, user: attrs)
+      assert redirected_to(conn) == path(conn, :new)
+    end
 
-  #     assert %{id: id} = redirected_params(conn)
-  #     assert redirected_to(conn) == Routes.user_management_user_path(conn, :show, id)
+    test "renders errors when data is invalid", %{conn: conn} do
+      attrs = user_creation_params(display_name: "")
+      conn = post_to_action(conn, :create, user: attrs)
+      assert_rendered conn, "new.html"
+      assert html_response(conn, 200) =~ standard_blank_error()
+    end
+  end
 
-  #     conn = get(conn, Routes.user_management_user_path(conn, :show, id))
-  #     assert html_response(conn, 200) =~ "Show User"
-  #   end
-
-  #   test "renders errors when data is invalid", %{conn: conn} do
-  #     conn = post(conn, Routes.user_management_user_path(conn, :create), user: @invalid_attrs)
-  #     assert html_response(conn, 200) =~ "New User"
-  #   end
-  # end
 
   # describe "edit user" do
   #   setup [:create_user]

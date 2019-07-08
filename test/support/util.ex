@@ -3,6 +3,9 @@ defmodule Crit.Test.Util do
   alias Crit.Factory
   alias Crit.Users.{User, PermissionList}
 
+  def standard_blank_error, do: "can&#39;t be blank"
+  
+
   def user_creation_params(attrs \\ %{}) do
     original = Factory.build(:user, attrs)
     permissions = original.permission_list
