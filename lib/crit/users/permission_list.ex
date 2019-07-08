@@ -12,7 +12,9 @@ defmodule Crit.Users.PermissionList do
     field :view_reservations, :boolean, default: true
   end
 
-  @fields [:manage_and_create_users, :manage_animals, :make_reservations, :view_reservations]
+  @fields [:manage_and_create_users, :manage_animals, :make_reservations,
+           :view_reservations]
+
 
   def changeset(permission_list, params \\ %{}) do
     permission_list

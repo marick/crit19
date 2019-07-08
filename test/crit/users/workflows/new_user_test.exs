@@ -7,8 +7,10 @@ defmodule Crit.Users.Workflow.NewUserTest do
 
   def creation_and_first_save(params) do
     assert {:ok, user} = Users.user_needing_activation(params)
-
-    assert_same_values(user, params, User.creation_attrs)
+    
+    # Just a spot check; unit tests have more
+    assert params["email"] == user.email
+    assert params["permission_list"]["manage_animals"] == user.permission_list.manage_animals
     assert is_binary(user.password_token.text)
 
     user

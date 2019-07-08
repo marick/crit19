@@ -1,11 +1,15 @@
 defmodule Crit.Test.Util do
   use ExUnit.CaseTemplate
   alias Crit.Factory
-  alias Crit.Users.User
-
+  alias Crit.Users.{User, PermissionList}
 
   def user_creation_params(attrs \\ %{}) do
-    Factory.build(:user, attrs) |> Map.take(User.creation_attrs()) |> string_keys
+    original = Factory.build(:user, attrs)
+    permissions = original.permission_list
+
+    original
+    |> string_keys()
+    |> Map.put("permission_list", string_keys(permissions))
   end
 
   # def saved_user(attrs \\ %{}) do

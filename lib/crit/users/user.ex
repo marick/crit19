@@ -19,7 +19,6 @@ defmodule Crit.Users.User do
 
   @creation_required_attrs [:display_name, :auth_id, :email]
   @creation_optional_attrs []
-  def creation_attrs, do: @creation_required_attrs ++ @creation_optional_attrs
 
   defp check_attr(:email = field, changeset) do
     changeset
@@ -56,7 +55,7 @@ defmodule Crit.Users.User do
   end
 
   def create_changeset(attrs \\ %{}) do
-    %__MODULE__{permission_list: %PermissionList{}}
+    %__MODULE__{}
     |> cast(attrs, [:display_name, :auth_id, :email])
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
     |> cast_assoc(:permission_list, required: true)

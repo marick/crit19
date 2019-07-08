@@ -4,6 +4,8 @@ defmodule CritWeb.UserManagement.UserController do
   alias Crit.Users
   alias Crit.Users.User
   alias Crit.Users.PermissionList
+  import Phoenix.HTML.Link, only: [link: 2]
+  import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
 
   defp not_done(conn) do
     conn
@@ -18,27 +20,22 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def new(conn, _params) do
-    # embedded_changeset = PermissionList.changeset(%PermissionList{})
-    # changeset = User.changeset(%User{permission_list: embedded_changeset})
-    changeset = User.changeset(%User{})
-    IO.inspect changeset
-    IO.puts "988888888888888"
-    IO.inspect changeset.data
-
+    embedded_changeset = PermissionList.changeset(%PermissionList{})
+    changeset = User.changeset(%User{permission_list: embedded_changeset})
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"user" => _user_params}) do
-    not_done(conn)
-    # case Users.create_user(user_params) do
-    #   {:ok, user} ->
-    #     conn
-    #     |> put_flash(:info, "User created successfully.")
-    #     |> redirect(to: Routes.user_management_user_path(conn, :show, user))
+  def create(conn, %{"user" => user_params}) do
+    case Users.user_needing_activation(user_params) do
+      {:ok, user} ->
+        flash = instructions_in_lieue_of_email(conn, user)
+        conn
+        |> put_flash(:info, raw(flash))
+        |> redirect(to: Routes.user_management_user_path(conn, :new))
 
-    #   {:error, %Ecto.Changeset{} = changeset} ->
-    #     render(conn, "new.html", changeset: changeset)
-    # end
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
+    end
   end
 
   def show(conn, %{"id" => _id}) do
@@ -67,5 +64,15 @@ defmodule CritWeb.UserManagement.UserController do
     #   {:error, %Ecto.Changeset{} = changeset} ->
     #     render(conn, "edit.html", user: user, changeset: changeset)
     # end
+  end
+
+
+  defp instructions_in_lieue_of_email(conn, user) do
+    url = Routes.reflexive_user_authorization_url(conn,
+      :fresh_password_form,
+      user.password_token.text)
+    token_link = link(url, to: url) |> safe_to_string()
+    email_link = link(user.email, to: "mailto://#{user.email}") |> safe_to_string()
+    "Send #{email_link} email with this URL: #{token_link}"
   end
 end
