@@ -2,7 +2,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
   use CritWeb.ConnCase
   alias Crit.Users
   alias CritWeb.ReflexiveUser.AuthorizationController, as: Own
-
+  use Crit.Test.Controller, controller: Own
 
   describe "displaying a token to get a form" do
     setup do
@@ -10,7 +10,6 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       [token_text: user.password_token.text]
     end
 
-    
     test "getting the form: there is no matching token", %{conn: conn} do
       conn = get_via_action [conn, :fresh_password_form, "bogus token"]
       assert redirected_to(conn) == Routes.public_path(conn, :index)
@@ -28,16 +27,4 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert html_response(conn, 200) =~ "action=\"#{post_to}\""
     end
   end
-
-  defp flash_error(conn),
-    do: get_session(conn, :phoenix_flash)["error"]
-
-  defp get_via_action(args) do 
-    conn = hd(args)
-    get(conn, Own.path(args))
-  end
-
-  defp assert_rendered(conn, file),
-    do: assert html_response(conn, 200) =~ Own.template_file(file)
-
 end
