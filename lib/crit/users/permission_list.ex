@@ -1,8 +1,6 @@
 defmodule Crit.Users.PermissionList do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
-  alias Crit.Repo
 
   schema "permission_lists" do
     belongs_to :user, Crit.Users.User

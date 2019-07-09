@@ -1,7 +1,5 @@
 defmodule Crit.Users.PasswordToken do
   use Ecto.Schema
-  import Ecto.Query
-  alias Crit.Repo
   alias Crit.Users.User
 
   schema "password_tokens" do

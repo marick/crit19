@@ -2,12 +2,6 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
   use CritWeb, :controller
   alias Crit.Users
 
-  defp not_done(conn) do
-    conn
-    |> put_status(:not_found)
-    |> text("not implemented")
-  end
-
   def fresh_password_form(conn, %{"token_text" => token_text}) do
     case Users.user_id_from_token(token_text) do
       {:ok, user_id} ->

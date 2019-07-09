@@ -2,7 +2,6 @@ defmodule Crit.Users.Workflow.NewUserTest do
   use Crit.DataCase
 
   alias Crit.Users
-  alias Crit.Users.User
   import Crit.Test.Util
 
   def creation_and_first_save(params) do

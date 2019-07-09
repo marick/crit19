@@ -1,6 +1,6 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
-  alias Faker.{Name,String}
+  alias Faker.{Name}
   alias Crit.Users.{User,PermissionList}
 
   def user_factory() do

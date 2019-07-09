@@ -1,7 +1,5 @@
 defmodule Crit.Users.Password do
   use Ecto.Schema
-  import Ecto.Query
-  alias Crit.Repo
   alias Crit.Users.User
   import Ecto.Changeset
 

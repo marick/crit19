@@ -1,10 +1,8 @@
 defmodule Crit.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Repo
   alias Crit.Users.PermissionList
   alias Crit.Users.PasswordToken
-  alias Crit.Users.Password
 
   schema "users" do
     field :auth_id, :string

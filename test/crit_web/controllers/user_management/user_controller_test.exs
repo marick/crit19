@@ -1,12 +1,6 @@
 defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
 
-  alias Crit.Users
-
-  # @create_attrs %{}
-  # @update_attrs %{}
-  # @invalid_attrs %{}
-
   # def fixture(:user) do
   #   {:ok, user} = Users.create_user(@create_attrs)
   #   user
@@ -18,29 +12,6 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #     assert html_response(conn, 200) =~ "Listing Users"
   #   end
   # end
-
-  defp path(conn, tag),
-    do: Routes.user_management_user_path(conn, tag)
-
-  defp get_via_action(conn, tag),
-    do: get(conn, path(conn, tag))
-
-  defp post_to_action(conn, tag, attrs \\ %{}),
-    do: post(conn, path(conn, tag), attrs)
-
-
-  defp template_file(file),
-    do: "user_management/user/" <> file
-
-  defp assert_rendered(conn, file),
-    do: assert html_response(conn, 200) =~ template_file(file)
-
-  describe "new user" do
-    test "renders form", %{conn: conn} do
-      conn = get_via_action(conn, :new)
-      assert html_response(conn, 200) =~ "New User"
-    end
-  end
 
   describe "create user" do
     test "redirects to provide another new-user form when data is valid",
@@ -101,4 +72,31 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #   user = fixture(:user)
   #   {:ok, user: user}
   # end
+
+
+  defp path(conn, tag),
+    do: Routes.user_management_user_path(conn, tag)
+
+  defp get_via_action(conn, tag),
+    do: get(conn, path(conn, tag))
+
+  defp post_to_action(conn, tag, attrs),
+    do: post(conn, path(conn, tag), attrs)
+
+
+  defp template_file(file),
+    do: "user_management/user/" <> file
+
+  defp assert_rendered(conn, file),
+    do: assert html_response(conn, 200) =~ template_file(file)
+
+  describe "new user" do
+    test "renders form", %{conn: conn} do
+      conn = get_via_action(conn, :new)
+      assert html_response(conn, 200) =~ "New User"
+    end
+  end
+
+
+  
 end

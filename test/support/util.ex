@@ -1,7 +1,6 @@
 defmodule Crit.Test.Util do
   use ExUnit.CaseTemplate
   alias Crit.Factory
-  alias Crit.Users.{User, PermissionList}
 
   def standard_blank_error, do: "can&#39;t be blank"
 
