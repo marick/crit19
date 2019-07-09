@@ -7,9 +7,9 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
     case Users.user_id_from_token(token_text) do
-      {:ok, user_id} ->
+      {:ok, _} ->
         conn
-        # |> SessionPlug.login(user)
+        |> put_session(:token_text, token_text)
         |> render("fresh_password.html",
               path: path([conn, :fresh_password]),
               changeset: Users.fresh_password_changeset())

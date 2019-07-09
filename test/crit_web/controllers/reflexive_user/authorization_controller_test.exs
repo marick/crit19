@@ -25,6 +25,8 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert html_response(conn, 200) =~ "method=\"post\""
       post_to = Own.path([conn, :fresh_password])
       assert html_response(conn, 200) =~ "action=\"#{post_to}\""
+
+      assert get_session(conn, :token_text) == token_text
     end
   end
 end
