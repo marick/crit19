@@ -11,7 +11,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
         conn
         |> put_session(:token_text, token_text)
         |> render("fresh_password.html",
-              path: path([conn, :fresh_password]),
+              path: path([conn, :set_fresh_password]),
               changeset: Users.fresh_password_changeset())
       :error -> 
         conn

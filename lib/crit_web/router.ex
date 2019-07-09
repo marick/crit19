@@ -27,7 +27,7 @@ defmodule CritWeb.Router do
   scope "/reflexive_user", CritWeb.ReflexiveUser, as: :reflexive_user do
     pipe_through :browser
     get "/password_using/:token_text", AuthorizationController, :fresh_password_form
-    post "/fresh_password", AuthorizationController, :fresh_password
+    post "/fresh_password", AuthorizationController, :set_fresh_password
 
   end
   
