@@ -1,10 +1,6 @@
 defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
-
-  # def fixture(:user) do
-  #   {:ok, user} = Users.create_user(@create_attrs)
-  #   user
-  # end
+  alias CritWeb.UserManagement.UserController, as: Own
 
   # describe "index" do
   #   test "lists all users", %{conn: conn} do
@@ -13,17 +9,27 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #   end
   # end
 
+  describe "new user" do
+    test "renders form", %{conn: conn} do
+      conn = get_via_action [conn, :new]
+      assert_rendered conn, "new.html"
+    end
+  end
+
   describe "create user" do
+    setup do
+      [act: fn conn, params -> post_to_action([conn, :create], user: params) end]
+    end
+    
     test "redirects to provide another new-user form when data is valid",
-      %{conn: conn} do
-      attrs = user_creation_params()
-      conn = post_to_action(conn, :create, user: attrs)
-      assert redirected_to(conn) == path(conn, :new)
+      %{conn: conn, act: act} do
+      conn = act.(conn, user_creation_params())
+      assert redirected_to(conn) == Own.path [conn, :new]
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      attrs = user_creation_params(display_name: "")
-      conn = post_to_action(conn, :create, user: attrs)
+    test "renders errors when data is invalid",
+      %{conn: conn, act: act} do
+      conn = act.(conn, user_creation_params(display_name: ""))
       assert_rendered conn, "new.html"
       assert html_response(conn, 200) =~ standard_blank_error()
     end
@@ -56,47 +62,17 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #   end
   # end
 
-  # describe "delete user" do
-  #   setup [:create_user]
 
-  #   test "deletes chosen user", %{conn: conn, user: user} do
-  #     conn = delete(conn, Routes.user_management_user_path(conn, :delete, user))
-  #     assert redirected_to(conn) == Routes.user_management_user_path(conn, :index)
-  #     assert_error_sent 404, fn ->
-  #       get(conn, Routes.user_management_user_path(conn, :show, user))
-  #     end
-  #   end
-  # end
-
-  # defp create_user(_) do
-  #   user = fixture(:user)
-  #   {:ok, user: user}
-  # end
-
-
-  defp path(conn, tag),
-    do: Routes.user_management_user_path(conn, tag)
-
-  defp get_via_action(conn, tag),
-    do: get(conn, path(conn, tag))
-
-  defp post_to_action(conn, tag, attrs),
-    do: post(conn, path(conn, tag), attrs)
-
-
-  defp template_file(file),
-    do: "user_management/user/" <> file
-
-  defp assert_rendered(conn, file),
-    do: assert html_response(conn, 200) =~ template_file(file)
-
-  describe "new user" do
-    test "renders form", %{conn: conn} do
-      conn = get_via_action(conn, :new)
-      assert html_response(conn, 200) =~ "New User"
-    end
+  defp get_via_action(args) do 
+    conn = hd(args)
+    get(conn, Own.path(args))
   end
 
+  defp post_to_action(path_args, post_params) do
+    conn = hd(path_args)
+    post(conn, Own.path(path_args), post_params)
+  end
 
-  
+  defp assert_rendered(conn, file),
+    do: assert html_response(conn, 200) =~ Own.template_file(file)
 end

@@ -2,7 +2,5 @@
 
 <!-- for testing: user_management/user/new.html -->
 
-
-
 <%= render "form.html", Map.put(assigns, :action, Routes.user_management_user_path(@conn, :create)) %>
 

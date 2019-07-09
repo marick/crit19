@@ -1,7 +1,7 @@
-defmodule CritWeb.UserManagement.AuthorizationControllerTest do
+defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
   use CritWeb.ConnCase
-
   alias Crit.Users
+  alias CritWeb.ReflexiveUser.AuthorizationController, as: Own
 
 
   describe "displaying a token to get a form" do
@@ -21,9 +21,10 @@ defmodule CritWeb.UserManagement.AuthorizationControllerTest do
     test "getting the form: there is a matching token",
       %{conn: conn, token_text: token_text} do
       conn = get_via_action [conn, :fresh_password_form, token_text]
-      assert html_response(conn, 200) =~ "method=\"post\""
 
-      post_to = path([conn, :fresh_password])
+      assert_rendered(conn, "fresh_password.html")
+      assert html_response(conn, 200) =~ "method=\"post\""
+      post_to = Own.path([conn, :fresh_password])
       assert html_response(conn, 200) =~ "action=\"#{post_to}\""
     end
   end
@@ -31,12 +32,12 @@ defmodule CritWeb.UserManagement.AuthorizationControllerTest do
   defp flash_error(conn),
     do: get_session(conn, :phoenix_flash)["error"]
 
-  defp path(args) do
-    apply(Routes, :reflexive_user_authorization_path, args)
-  end
-
   defp get_via_action(args) do 
     conn = hd(args)
-    get(conn, path(args))
+    get(conn, Own.path(args))
   end
+
+  defp assert_rendered(conn, file),
+    do: assert html_response(conn, 200) =~ Own.template_file(file)
+
 end
