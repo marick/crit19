@@ -36,7 +36,7 @@ defmodule CritWeb.UserManagement.UserController do
         flash = instructions_in_lieue_of_email(conn, user)
         conn
         |> put_flash(:info, raw(flash))
-        |> redirect(to: Routes.user_management_user_path(conn, :new))
+        |> redirect(to: path([conn, :new]))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)

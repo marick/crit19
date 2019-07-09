@@ -1,6 +1,7 @@
 defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.UserManagement.UserController, as: Own
+  use Crit.Test.Controller, controller: Own
 
   # describe "index" do
   #   test "lists all users", %{conn: conn} do
@@ -63,16 +64,5 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   # end
 
 
-  defp get_via_action(args) do 
-    conn = hd(args)
-    get(conn, Own.path(args))
-  end
 
-  defp post_to_action(path_args, post_params) do
-    conn = hd(path_args)
-    post(conn, Own.path(path_args), post_params)
-  end
-
-  defp assert_rendered(conn, file),
-    do: assert html_response(conn, 200) =~ Own.template_file(file)
 end

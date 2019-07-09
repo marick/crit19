@@ -2,8 +2,6 @@ defmodule Crit.Test.Util do
   use ExUnit.CaseTemplate
   alias Crit.Factory
 
-  def standard_blank_error, do: "can&#39;t be blank"
-
   def saved_user(attrs \\ []),
     do: Factory.build(:user, attrs) |> Factory.insert
 
@@ -15,6 +13,8 @@ defmodule Crit.Test.Util do
     |> string_keys()
     |> Map.put("permission_list", string_keys(permissions))
   end
+
+
 
   # def saved_user(attrs \\ %{}) do
   #   {:ok, user} = user_attrs(attrs) |> Accounts.create_user
