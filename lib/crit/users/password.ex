@@ -12,7 +12,7 @@ defmodule Crit.Users.Password do
     field :new_password_confirmation, :string, virtual: true
   end
 
-  def changeset(password, attrs) do
+  def changeset(password, attrs \\ %{}) do
     password
     |> cast(attrs, [:auth_id, :new_password, :new_password_confirmation])
     |> validate_password_length(:new_password)

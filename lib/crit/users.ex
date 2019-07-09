@@ -18,8 +18,13 @@ defmodule Crit.Users do
     case Repo.get_by(PasswordToken, text: token_text) do
       %PasswordToken{user_id: user_id} ->
         {:ok, user_id}
+      nil ->
+        :error
     end
   end
+
+  def fresh_password_changeset(),
+    do: change(%Password{})
       
   def set_password(auth_id, params) do
     result =
