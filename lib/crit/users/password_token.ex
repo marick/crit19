@@ -38,4 +38,15 @@ defmodule Crit.Users.PasswordToken do
   #     :error
   #   end
   # end
+
+  defmodule Query do
+    import Ecto.Query
+    alias Crit.Users.PasswordToken
+
+    def matching_user(token_text) do
+      from u in User,
+      join: pt in PasswordToken, on: u.id == pt.user_id,
+      where: pt.text == ^token_text
+    end
+  end
 end

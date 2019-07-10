@@ -16,8 +16,8 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   def present_password_token(token_text) do
-    assert {:ok, user_id} = Users.user_id_from_token(token_text)
-    user_id
+    assert {:ok, auth_id} = Users.auth_id_from_token(token_text)
+    auth_id
   end
 
   def supply_new_password(user_id, new_password) do
@@ -29,8 +29,8 @@ defmodule Crit.Users.Workflow.NewUserTest do
   test "successful creation through activation" do
     user = creation_and_first_save(user_creation_params())
 
-    user_id = present_password_token(user.password_token.text)
-    assert user.id == user_id
+    auth_id = present_password_token(user.password_token.text)
+    assert user.auth_id == user.auth_id
 
     new_password = "something horse something something"
     assert :error = Users.check_password(user.auth_id, new_password)

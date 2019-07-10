@@ -2,6 +2,7 @@ defmodule Crit.Users do
   import Ecto.Query, warn: false
   alias Crit.Repo
   import Ecto.Changeset
+  import Crit.Util
 
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
@@ -14,13 +15,12 @@ defmodule Crit.Users do
     |> Repo.insert()
   end
 
-  def user_id_from_token(token_text) do
-    case Repo.get_by(PasswordToken, text: token_text) do
-      %PasswordToken{user_id: user_id} ->
-        {:ok, user_id}
-      nil ->
-        :error
-    end
+  def auth_id_from_token(token_text) do
+    token_text
+    |> PasswordToken.Query.matching_user
+    |> select([u], u.auth_id)
+    |> Repo.one
+    |> to_Error("missing token") 
   end
 
   def fresh_password_changeset(),
