@@ -1,8 +1,6 @@
 defmodule Crit.Users.UsersTest do
   use Crit.DataCase
   alias Crit.Users
-  alias Crit.Users.{PasswordToken, User}
-  import Crit.Test.Util
 
   setup do
     # Not using insert_pair because both would have same password token.

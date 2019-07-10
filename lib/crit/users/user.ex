@@ -60,7 +60,6 @@ defmodule Crit.Users.User do
   end
 
   defmodule Query do
-    alias Crit.Users.PasswordToken
     alias Crit.Users.User
     import Ecto.Query
 
