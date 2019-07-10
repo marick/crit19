@@ -66,7 +66,7 @@ defmodule Crit.Users.User do
 
     def by_token(token_text) do
       from u in User,
-        join: pt in PasswordToken,
+        join: pt in assoc(u, :password_token),
         where: pt.text == ^token_text
     end
   end
