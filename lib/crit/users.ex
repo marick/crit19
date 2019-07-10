@@ -15,10 +15,9 @@ defmodule Crit.Users do
     |> Repo.insert()
   end
 
-  def auth_id_from_token(token_text) do
+  def user_from_token(token_text) do
     token_text
-    |> PasswordToken.Query.matching_user
-    |> select([u], u.auth_id)
+    |> User.Query.by_token
     |> Repo.one
     |> to_Error("missing token") 
   end

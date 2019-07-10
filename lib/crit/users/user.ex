@@ -58,4 +58,16 @@ defmodule Crit.Users.User do
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
     |> cast_assoc(:permission_list, required: true)
   end
+
+  defmodule Query do
+    alias Crit.Users.PasswordToken
+    alias Crit.Users.User
+    import Ecto.Query
+
+    def by_token(token_text) do
+      from u in User,
+        join: pt in PasswordToken,
+        where: pt.text == ^token_text
+    end
+  end
 end
