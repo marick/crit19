@@ -3,6 +3,9 @@ defmodule Crit.Test.Controller do
   def flash_error(conn),
     do: Plug.Conn.get_session(conn, :phoenix_flash)["error"]
 
+  def flash_info(conn),
+    do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
+
   def standard_blank_error, do: "can&#39;t be blank"
 
   defmacro __using__(controller: controller) do

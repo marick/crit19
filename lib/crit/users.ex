@@ -44,4 +44,10 @@ defmodule Crit.Users do
       :error
     end
   end
+
+  def delete_password_token(user_id),
+    do: user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all
+
+  def user_has_password_token?(user_id),
+    do: user_id |> PasswordToken.Query.by_user_id |> Repo.exists?
 end

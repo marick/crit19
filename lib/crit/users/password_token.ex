@@ -48,5 +48,8 @@ defmodule Crit.Users.PasswordToken do
       join: pt in PasswordToken, on: u.id == pt.user_id,
       where: pt.text == ^token_text
     end
+
+    def by_user_id(user_id),
+      do: from PasswordToken, where: [user_id: ^user_id]
   end
 end
