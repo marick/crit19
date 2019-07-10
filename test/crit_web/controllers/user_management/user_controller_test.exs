@@ -19,7 +19,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
 
   describe "create user" do
     setup do
-      [act: fn conn, params -> post_to_action([conn, :create], user: params) end]
+      [act: fn conn, params -> post_to_action([conn, :create], :user, params) end]
     end
     
     test "redirects to provide another new-user form when data is valid",

@@ -21,7 +21,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
     end
   end
 
-  def set_fresh_password(conn, params) do
+  def set_fresh_password(conn, %{"password" => params}) do
     case Users.user_from_token(get_session(conn, :token_text)) do
       {:ok, user} ->
         case Users.set_password(user.auth_id, params) do

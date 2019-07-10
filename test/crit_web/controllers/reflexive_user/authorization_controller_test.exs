@@ -38,11 +38,8 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
     test "the token test is found and the password is acceptable",
       %{conn: conn, valid_password: valid_password, user: user} do
 
-      
-      conn = post_to_action([conn, :set_fresh_password],
-        new_password: valid_password,
-        new_password_confirmation: valid_password)
-
+      conn = post_to_action([conn, :set_fresh_password], :password,
+        %{new_password: valid_password, new_password_confirmation: valid_password})
       assert :ok == Users.check_password(user.auth_id, valid_password)
       assert get_session(conn, :user_id) == user.id
       refute get_session(conn, :token_text)
