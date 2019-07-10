@@ -10,7 +10,7 @@
   <%= error_tag f, :display_name %>
 
   <%= label f, :email %>
-  <%= text_input f, :email, placeholder: "This address will receive email about setting a password" %>
+  <%= email_input f, :email, placeholder: "This address will receive email about setting a password" %>
   <%= error_tag f, :email %>
 
   <%= label f, :auth_id, "Login Id" %>
