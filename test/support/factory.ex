@@ -2,6 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Faker.{Name}
   alias Crit.Users.{User,PermissionList,PasswordToken}
+  alias Crit.EmailToken
 
   def user_factory() do
     %User{
@@ -24,7 +25,7 @@ defmodule Crit.Factory do
 
   def password_token_factory() do
     %PasswordToken{
-      text: Crit.Puid.generate()
+      text: EmailToken.generate()
     }
   end
 

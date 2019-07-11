@@ -1,6 +1,7 @@
 defmodule Crit.Users.PasswordToken do
   use Ecto.Schema
   alias Crit.Users.User
+  alias Crit.EmailToken
 
   schema "password_tokens" do
     field :text, :string
@@ -9,7 +10,7 @@ defmodule Crit.Users.PasswordToken do
     timestamps()
   end
 
-  def suitable_text(), do: Crit.Puid.generate()
+  def suitable_text(), do: EmailToken.generate()
   def unused(), do: %__MODULE__{text: suitable_text()}
 
 

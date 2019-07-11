@@ -1,3 +1,3 @@
-defmodule Crit.Puid do
+defmodule Crit.EmailToken do
   use Puid, charset: :safe32
 end
