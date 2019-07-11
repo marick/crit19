@@ -3,11 +3,12 @@ defmodule Crit.Users.User do
   import Ecto.Changeset
   alias Crit.Users.PermissionList
   alias Crit.Users.PasswordToken
+  alias Crit.Ecto.TrimmedString
 
   schema "users" do
-    field :auth_id, :string
-    field :display_name, :string
-    field :email, :string
+    field :auth_id, TrimmedString
+    field :display_name, TrimmedString
+    field :email, TrimmedString
     field :active, :boolean, default: true
     has_one :permission_list, PermissionList
     has_one :password_token, PasswordToken
@@ -58,6 +59,7 @@ defmodule Crit.Users.User do
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
     |> cast_assoc(:permission_list, required: true)
   end
+
 
   defmodule Query do
     alias Crit.Users.User

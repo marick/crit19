@@ -22,6 +22,12 @@ defmodule Crit.Users do
     |> to_Error("missing token") 
   end
 
+  def user_from_auth_id(auth_id) do
+    User
+    |> Repo.get_by(auth_id: auth_id)
+    |> to_Error("no such user")
+  end
+
   def fresh_password_changeset(),
     do: change(%Password{})
       

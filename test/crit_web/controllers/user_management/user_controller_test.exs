@@ -2,6 +2,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.UserManagement.UserController, as: Own
   use Crit.Test.Controller, controller: Own
+  alias Crit.Users
 
   # describe "index" do
   #   test "lists all users", %{conn: conn} do
@@ -9,6 +10,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #     assert html_response(conn, 200) =~ "Listing Users"
   #   end
   # end
+
 
   describe "new user" do
     test "renders form", %{conn: conn} do
@@ -25,17 +27,40 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     test "redirects to provide another new-user form when data is valid",
       %{conn: conn, act: act} do
       conn = act.(conn, user_creation_params())
-      assert redirected_to(conn) == Own.path [conn, :new]
+      assert ready_for_new_user?(conn)
     end
 
     test "renders errors when data is invalid",
       %{conn: conn, act: act} do
       conn = act.(conn, user_creation_params(display_name: ""))
-      assert_rendered conn, "new.html"
+      assert_retry_same_user(conn)
       assert html_response(conn, 200) =~ standard_blank_error()
+    end
+
+
+    test "blanks are trimmed",
+      %{conn: conn, act: act} do
+
+      odd_user = user_creation_params(
+        display_name: "     lots of blanks       ",
+        auth_id: "   blank filled      ",
+        email: "     test@exampler.com      "
+      )
+      conn = act.(conn, odd_user)
+      assert ready_for_new_user?(conn)
+
+      assert {:ok, user} = Users.user_from_auth_id("blank filled")
+      assert "lots of blanks" == user.display_name
+      assert "test@exampler.com" == user.email
     end
   end
 
+
+  def ready_for_new_user?(conn),
+    do: redirected_to(conn) == Own.path [conn, :new]
+
+  def assert_retry_same_user(conn), 
+    do: assert_rendered conn, "new.html"
 
   # describe "edit user" do
   #   setup [:create_user]
