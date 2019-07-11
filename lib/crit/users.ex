@@ -2,7 +2,7 @@ defmodule Crit.Users do
   import Ecto.Query, warn: false
   alias Crit.Repo
   import Ecto.Changeset
-  import Crit.Util
+  import Crit.OkError
 
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
@@ -19,13 +19,13 @@ defmodule Crit.Users do
     token_text
     |> User.Query.by_token
     |> Repo.one
-    |> to_Error("missing token") 
+    |> lift_nullable("missing token #{token_text}")
   end
 
   def user_from_auth_id(auth_id) do
     User
     |> Repo.get_by(auth_id: auth_id)
-    |> to_Error("no such user")
+    |> lift_nullable("no such user #{auth_id}")
   end
 
   def fresh_password_changeset(),
