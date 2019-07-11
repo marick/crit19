@@ -6,7 +6,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
 
   describe "displaying a token to get a form" do
     setup do
-      {:ok, user} = user_creation_params() |> Users.user_needing_activation
+      {:ok, user} = string_params_for_new_user() |> Users.user_needing_activation
       [token_text: user.password_token.text, user: user]
     end
 
@@ -32,7 +32,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
 
   describe "setting the password for the first time" do
     setup %{conn: conn} do
-      {:ok, user} = user_creation_params() |> Users.user_needing_activation
+      {:ok, user} = string_params_for_new_user() |> Users.user_needing_activation
 
       conn = Plug.Test.init_test_session(conn, token_text: user.password_token.text)
       [conn: conn, valid_password: "something horse something something", user: user]
