@@ -1,6 +1,6 @@
 defmodule Crit.Users.UserTest do
   use Crit.DataCase
-  alias Crit.Users
+  # alias Crit.Users
 
   describe "fetching a user by the auth id" do
     @tag :skip

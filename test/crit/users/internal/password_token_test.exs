@@ -1,6 +1,7 @@
 defmodule Crit.Users.Internal.PasswordTokenTest do
   use Crit.DataCase
-  alias Crit.Users
+
+  # Most tests are in ../password_token_test.exs
 
   @tag :skip
   test "" do

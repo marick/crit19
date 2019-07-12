@@ -9,9 +9,7 @@ defmodule Crit.Test.Util do
 
     Map.put(original, "permission_list", permission_list)
   end
-
-
-
+  
   # Avoid fields that don't matter for correctness and tend to
   # produce spurious miscomparisons
   # def masked(%User{} = user), do: %{user | password: nil, password_token: nil}
