@@ -21,4 +21,23 @@ defmodule Pile.Changeset do
     value = current_value(changeset, field)
     value == nil || value == ""
   end
+
+  # Hiding textual values out of an excess of caution
+
+  @hidden_string "--hidden--"
+
+  def hide(changeset, fields) when is_list(fields) do
+    Enum.reduce(fields, changeset, &hide(&2, &1))
+  end
+
+  def hide(changeset, field),
+    do: put_in(changeset, path_to(field), @hidden_string)
+
+  def hidden?(changeset, field) do
+    has_changes_for?(changeset, field) == false &&
+      get_in(changeset, path_to(field)) == @hidden_string
+  end
+  
+  defp path_to(field), do: [Access.key(:data), Access.key(field)]
+    
 end

@@ -3,10 +3,8 @@ defmodule Crit.Users.User do
   import Ecto.Changeset
   alias Crit.Users.PermissionList
   alias Crit.Users.PasswordToken
-  alias Crit.Users.Password
   alias Crit.Ecto.TrimmedString
   import Ecto.Query
-  alias Crit.Repo
 
   schema "users" do
     field :auth_id, TrimmedString

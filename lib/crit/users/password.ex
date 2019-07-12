@@ -4,6 +4,7 @@ defmodule Crit.Users.Password do
   import Ecto.Changeset
   import Ecto.Query
   alias Crit.Repo
+  import Pile.Changeset
 
   schema "passwords" do
     field :hash, :string
@@ -12,6 +13,9 @@ defmodule Crit.Users.Password do
     field :new_password_confirmation, :string, virtual: true
   end
 
+  def fresh_password_changeset(),
+    do: change(%__MODULE__{}) |> hide([:hash, :auth_id])
+  
   def changeset(password, attrs \\ %{}) do
     password
     |> cast(attrs, [:new_password, :new_password_confirmation])
@@ -55,8 +59,5 @@ defmodule Crit.Users.Password do
       select: count(p.id)
     Repo.one(query)
   end
-
-
-
 
 end
