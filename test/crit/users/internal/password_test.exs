@@ -2,6 +2,7 @@ defmodule Crit.Users.Internal.PasswordTest do
   use Crit.DataCase
   alias Crit.Users.Password
   alias Pile.Changeset
+  alias Faker.String
 
   # Most tests are in ../password_test.exs
 
@@ -14,6 +15,40 @@ defmodule Crit.Users.Internal.PasswordTest do
     assert Changeset.hidden?(changeset, :hash)
     assert Changeset.hidden?(changeset, :auth_id)
   end
-  
+
+  describe "kinds of errors" do
+    test "lower bound" do
+      too_short = String.base64(7)
+      just_right = String.base64(8)
+
+      
+      refute attempt_to_set(too_short, too_short).valid?
+      assert attempt_to_set(just_right, just_right).valid?
+    end
+
+    test "upper bound" do
+      just_right = String.base64(128)
+      too_long = String.base64(129)
+      
+      refute attempt_to_set(too_long, too_long).valid?
+      assert attempt_to_set(just_right, just_right).valid?
+    end
+
+    test "confirmation mismatch" do
+      result = attempt_to_set("new password", "confirmation")
+
+      assert %{new_password_confirmation: ["should be the same as the new password"]}
+      == errors_on(result)
+    end
+
+
+  end
+
+  def attempt_to_set(new_password, confirmation) do
+    Password.changeset(
+      Password.fresh_password_changeset(),
+      %{"new_password" => new_password, "new_password_confirmation" => confirmation}
+    )
+  end          
 
 end
