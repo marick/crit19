@@ -2,6 +2,8 @@ defmodule Crit.Users.Password do
   use Ecto.Schema
   alias Crit.Users.User
   import Ecto.Changeset
+  import Ecto.Query
+  alias Crit.Repo
 
   schema "passwords" do
     field :hash, :string
@@ -12,7 +14,7 @@ defmodule Crit.Users.Password do
 
   def changeset(password, attrs \\ %{}) do
     password
-    |> cast(attrs, [:auth_id, :new_password, :new_password_confirmation])
+    |> cast(attrs, [:new_password, :new_password_confirmation])
     |> validate_password_length(:new_password)
     |> validate_password_confirmation()
     |> put_password_hash()
@@ -44,4 +46,17 @@ defmodule Crit.Users.Password do
         changeset
     end
   end
+
+  # Utilities
+  def count_for(auth_id) do
+    query =
+      from p in __MODULE__,
+      where: p.auth_id == ^auth_id,
+      select: count(p.id)
+    Repo.one(query)
+  end
+
+
+
+
 end
