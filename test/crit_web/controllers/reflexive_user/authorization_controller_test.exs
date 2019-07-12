@@ -35,14 +35,20 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       {:ok, user} = string_params_for_new_user() |> Users.user_needing_activation
 
       conn = Plug.Test.init_test_session(conn, token_text: user.password_token.text)
-      [conn: conn, valid_password: "something horse something something", user: user]
+
+      run = fn conn, new_password, confirmation ->
+        post_to_action([conn, :set_fresh_password], :password,
+          %{new_password: new_password, new_password_confirmation: confirmation})
+      end
+      
+      [conn: conn, valid_password: "something horse something something",
+       user: user, run: run]
     end
 
     test "the token is found and the password is acceptable",
-      %{conn: conn, valid_password: valid_password, user: user} do
+      %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
-      conn = post_to_action([conn, :set_fresh_password], :password,
-        %{new_password: valid_password, new_password_confirmation: valid_password})
+      conn = run.(conn, valid_password, valid_password)
       assert :ok == Users.check_password(user.auth_id, valid_password)
       assert get_session(conn, :user_id) == user.id
       refute get_session(conn, :token_text)
@@ -53,12 +59,31 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert flash_info(conn) =~ "You have been logged in"
     end
 
-    @tag :skip
-    test "the token is not found (should be impossible)" do
+    test "the token is not found (should be impossible)",
+      %{conn: conn, valid_password: valid_password, run: run} do
+      conn =
+        conn
+        |> put_session(:token_text, "WRONG")
+        |> run.(valid_password, valid_password)
+
+      assert redirected_to(conn) == Routes.public_path(conn, :index)
+      assert flash_error(conn) =~ "Something has gone wrong"
+      assert flash_error(conn) =~ "Please report this problem:"
+      assert flash_error(conn) =~ "missing token 'WRONG'"
     end
 
-    @tag :skip
-    test "something is wrong with the password" do
+    test "something is wrong with the password", 
+      %{conn: conn, user: user, valid_password: valid_password, run: run} do
+
+      conn = run.(conn, valid_password, "WRONG")
+      refute :ok == Users.check_password(user.auth_id, valid_password)
+      assert_rendered(conn, "fresh_password.html")
+      assert_will_post_to(conn, :set_fresh_password)
+
+      assert html_response(conn, 200) =~ "Please fix the following problem"
+      assert html_response(conn, 200) =~ "should be the same as the new password"
+      # The token is not deleted.
+      assert Users.user_has_password_token?(user.id)
     end
   end
 end

@@ -54,7 +54,7 @@ defmodule Crit.Users do
     token_text
     |> User.Query.by_token
     |> Repo.one
-    |> lift_nullable("missing token #{token_text}")
+    |> lift_nullable("missing token '#{token_text}'")
   end
 
   def delete_password_token(user_id),
