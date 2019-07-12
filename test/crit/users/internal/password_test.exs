@@ -17,6 +17,12 @@ defmodule Crit.Users.Internal.PasswordTest do
   end
 
   describe "kinds of errors" do
+    test "missing values" do
+      refute attempt_to_set("PASSWORD", nil).valid?
+      refute attempt_to_set(nil, "PASSWORD").valid?
+    end
+
+    
     test "lower bound" do
       too_short = String.base64(7)
       just_right = String.base64(8)

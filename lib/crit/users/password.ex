@@ -19,6 +19,7 @@ defmodule Crit.Users.Password do
   def changeset(password, attrs \\ %{}) do
     password
     |> cast(attrs, [:new_password, :new_password_confirmation])
+    |> validate_required([:new_password, :new_password_confirmation])
     |> validate_password_length(:new_password)
     |> validate_password_confirmation()
     |> put_password_hash()
@@ -28,10 +29,7 @@ defmodule Crit.Users.Password do
     do: validate_length(changeset, field, min: 8, max: 128)
 
   defp validate_password_confirmation(changeset) do
-    password = changeset.changes.new_password
-
-    # It's possible the confirmation field could be missing, so
-    # we fail softly in that case.
+    password = changeset.changes[:new_password]
     confirmation = changeset.changes[:new_password_confirmation]
 
     if password == confirmation do
