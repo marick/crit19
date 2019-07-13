@@ -51,8 +51,8 @@ defmodule Crit.Users do
 
   def user_from_token(token_text) do
     PasswordToken.delete_expired_tokens
-    token_text
-    |> User.Query.by_token
+    token_text 
+    |> PasswordToken.Query.matching_user
     |> Repo.one
     |> lift_nullable("missing token '#{token_text}'")
   end
