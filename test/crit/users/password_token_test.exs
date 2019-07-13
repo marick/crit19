@@ -91,7 +91,6 @@ defmodule Crit.Users.PasswordTokenTest do
       assert {:error, _} = Users.user_from_token(token.text)
     end
 
-    @tag :skip
     test "reading a token updates its 'time to live'", %{token: token} do
       set_expiration_plus_seconds(token, 30) # 30 seconds to live
 
