@@ -41,7 +41,6 @@ defmodule Crit.Users do
     end
   end
 
-
   # Primarily about tokens
 
   def user_needing_activation(params) do
@@ -51,15 +50,21 @@ defmodule Crit.Users do
   end
 
   def user_from_token(token_text) do
+    PasswordToken.delete_expired_tokens
     token_text
     |> User.Query.by_token
     |> Repo.one
     |> lift_nullable("missing token '#{token_text}'")
   end
 
-  def delete_password_token(user_id),
-    do: user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all
 
   def user_has_password_token?(user_id),
     do: user_id |> PasswordToken.Query.by_user_id |> Repo.exists?
+
+  def delete_password_token(user_id) do
+    user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all
+    # There is no need for deletion information to leak out
+    :ok
+  end
+
 end
