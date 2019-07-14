@@ -18,7 +18,7 @@ defmodule Crit.Users do
 
   # Primarily about passwords
 
-  def fresh_password_changeset(), do: Password.fresh_password_changeset()
+  def fresh_password_changeset(), do: Password.default_changeset()
       
   def set_password(auth_id, params) do
     result =

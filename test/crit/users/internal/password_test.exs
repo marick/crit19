@@ -7,7 +7,7 @@ defmodule Crit.Users.Internal.PasswordTest do
   # Most tests are in ../password_test.exs
 
   test "a blank changeset" do
-    assert changeset = Password.fresh_password_changeset()
+    assert changeset = Password.default_changeset()
     refute Changeset.represents_form_errors?(changeset)
     assert Changeset.empty_text_field?(changeset, :new_password)
     assert Changeset.empty_text_field?(changeset, :new_password_confirmation)
@@ -52,7 +52,7 @@ defmodule Crit.Users.Internal.PasswordTest do
 
   def attempt_to_set(new_password, confirmation) do
     Password.changeset(
-      Password.fresh_password_changeset(),
+      Password.default_changeset(),
       %{"new_password" => new_password, "new_password_confirmation" => confirmation}
     )
   end          

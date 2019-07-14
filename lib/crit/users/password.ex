@@ -13,7 +13,8 @@ defmodule Crit.Users.Password do
     field :new_password_confirmation, :string, virtual: true
   end
 
-  def fresh_password_changeset(),
+  # A changeset with only default or empty fields. For `new` actions.
+  def default_changeset(),
     do: change(%__MODULE__{}) |> hide([:hash, :auth_id])
   
   def changeset(password, attrs \\ %{}) do
