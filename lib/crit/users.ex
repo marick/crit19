@@ -12,8 +12,13 @@ defmodule Crit.Users do
   # Primarily about users
 
   def fresh_user_changeset() do
-    embedded_changeset = PermissionList.changeset(%PermissionList{})
-    User.default_changeset(%User{permission_list: embedded_changeset})
+    User.default_changeset(%User{permission_list: %PermissionList{}})
+    # I used to think you needed an embedded changeset (within the
+    # `data` field of the changeset so as to prevent the changeset
+    # being marked dirty, but apparently not. If it turns out I was
+    # right before, here's the alternate code. 
+    #    embedded_changeset = PermissionList.changeset(%PermissionList{})
+    #    User.default_changeset(%User{permission_list: embedded_changeset})
   end
   
 

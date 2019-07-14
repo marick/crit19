@@ -49,11 +49,12 @@ defmodule Crit.Users.User do
   end
 
   # A changeset with only default or empty fields. For `new` actions.
-  def default_changeset(struct, attrs \\ %{}) do
-    struct
-    |> cast(attrs, [:display_name, :auth_id, :email])
-    |> cast_assoc(:permission_list)
-  end
+  # Note that the caller can supply non-default values via the starting
+  # structure. This is most useful to set up a starting
+  # `PermissionList`. A second attributes argument can't be used for that
+  # because the changeset will be marked dirty, which will produce confusing
+  # errors.
+  def default_changeset(struct), do: change(struct)
 
   def create_changeset(attrs \\ %{}) do
     %__MODULE__{}
