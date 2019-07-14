@@ -13,7 +13,7 @@ defmodule Crit.Users do
   def user_from_auth_id(auth_id) do
     User
     |> Repo.get_by(auth_id: auth_id)
-    |> lift_nullable("no such user #{auth_id}")
+    |> lift_nullable("no such user '#{auth_id}'")
   end
 
   # Primarily about passwords
