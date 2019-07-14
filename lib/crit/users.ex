@@ -50,7 +50,7 @@ defmodule Crit.Users do
   end
 
   def user_from_token(token_text) do
-    PasswordToken.expired_tokens |> Repo.delete_all
+    PasswordToken.Query.expired_tokens |> Repo.delete_all
 
     user =
       token_text 

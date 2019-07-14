@@ -39,16 +39,13 @@ defmodule Crit.Users.PasswordToken do
         join: pt in assoc(u, :password_token),
         where: pt.text == ^token_text
     end
-
+    
     def by_user_id(user_id),
       do: from PasswordToken, where: [user_id: ^user_id]
-  end
-
-  def expired_tokens do
-    from r in PasswordToken,
-      where: r.updated_at < ^expiration_threshold()
-  end
-
-
   
+    def expired_tokens do
+      from r in PasswordToken,
+        where: r.updated_at < ^PasswordToken.expiration_threshold()
+    end
+  end
 end
