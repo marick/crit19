@@ -6,7 +6,7 @@ defmodule Crit.Users.PasswordTokenTest do
 
   defp fresh_user(attrs \\ []) do 
     params = string_params_for_new_user(attrs)
-    {:ok, user} = Users.user_needing_activation(params)
+    assert {:ok, user} = Users.user_needing_activation(params)
     assert user.password_token.user_id == user.id
     user
   end
