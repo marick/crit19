@@ -73,8 +73,17 @@ defmodule Crit.Users.Internal.UserTest do
       refute changeset.changes[:password_token]
     end
 
-    @tag :skip
-    test "selected error checks" do
+    test "selected error checks", %{typical: typical} do
+      atypical =
+        typical
+        |> Map.put("auth_id", "    ")
+        |> Map.put("display_name", "a")
+        |> Map.delete("email")
+
+      errors = User.create_changeset(atypical) |> errors_on
+      assert "can't be blank" in errors.auth_id
+      assert "can't be blank" in errors.email
+      assert "should be at least 2 character(s)" in errors.display_name
     end
   end
 end
