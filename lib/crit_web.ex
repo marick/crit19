@@ -24,6 +24,7 @@ defmodule CritWeb do
       import Plug.Conn
       import CritWeb.Gettext
       alias CritWeb.Router.Helpers, as: Routes
+      alias CritWeb.Controller.Common
     end
   end
 

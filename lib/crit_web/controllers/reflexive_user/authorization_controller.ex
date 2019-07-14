@@ -34,7 +34,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
     else
       {:error, %Changeset{} = changeset} ->
         conn
-        |> put_flash(:error, "Please fix the following problem.")
+        |> Common.form_error_flash
         |> render_password_creation_form(changeset)
         
       # Missing token should be impossible.
