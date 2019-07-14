@@ -7,8 +7,15 @@ defmodule Crit.Users do
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
   alias Crit.Users.Password
+  alias Crit.Users.PermissionList
 
   # Primarily about users
+
+  def fresh_user_changeset() do
+    embedded_changeset = PermissionList.changeset(%PermissionList{})
+    User.default_changeset(%User{permission_list: embedded_changeset})
+  end
+  
 
   def user_from_auth_id(auth_id) do
     User

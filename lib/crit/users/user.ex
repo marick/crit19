@@ -48,7 +48,8 @@ defmodule Crit.Users.User do
     Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
 
-  def changeset(struct, attrs \\ %{}) do
+  # A changeset with only default or empty fields. For `new` actions.
+  def default_changeset(struct, attrs \\ %{}) do
     struct
     |> cast(attrs, [:display_name, :auth_id, :email])
     |> cast_assoc(:permission_list)

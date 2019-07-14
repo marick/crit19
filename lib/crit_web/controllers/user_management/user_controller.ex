@@ -2,8 +2,6 @@ defmodule CritWeb.UserManagement.UserController do
   use CritWeb, :controller
 
   alias Crit.Users
-  alias Crit.Users.User
-  alias Crit.Users.PermissionList
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
 
@@ -25,9 +23,7 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def new(conn, _params) do
-    embedded_changeset = PermissionList.changeset(%PermissionList{})
-    changeset = User.changeset(%User{permission_list: embedded_changeset})
-    render(conn, "new.html", changeset: changeset)
+    render(conn, "new.html", changeset: Users.fresh_user_changeset)
   end
 
   def create(conn, %{"user" => user_params}) do
