@@ -1,16 +1,17 @@
 defmodule Crit.Users.UserTest do
   use Crit.DataCase
-  # alias Crit.Users
+  alias Crit.Users
 
   describe "fetching a user by the auth id" do
-    @tag :skip
     test "success" do
-      # failure
+      user = Factory.insert(:user)
+      assert {:ok, fetched} = Users.user_from_auth_id(user.auth_id)
+      assert fetched.auth_id == user.auth_id
     end
 
-    @tag :skip
     test "failure" do
-      # failure
+      assert {:error, message} = Users.user_from_auth_id("missing")
+      assert message =~ "no such user 'missing'"
     end
   end
 
