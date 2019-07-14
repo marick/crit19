@@ -23,37 +23,12 @@ defmodule Crit.Users.PasswordToken do
     NaiveDateTime.add(now, -1 * @expiration_in_seconds)
   end
 
-  def delete_expired_tokens do
-    query = 
-      from r in __MODULE__,
-      where: r.updated_at < ^expiration_threshold()
-    Repo.delete_all(query)
-  end
-
   def force_update(token, datetime) do
     for_postgres = NaiveDateTime.truncate(datetime, :second)
 
     change(token, updated_at: for_postgres) |> Repo.update
     :ok
   end
-
-
-
-
-  # def user_from_unexpired_token(token_text) do
-  #   Repo.delete_all(expired())
-  #   query =
-  #     from __MODULE__,
-  #     where: [text: ^token_text],
-  #     preload: [:user]
-
-  #   row = Repo.one(query)
-  #   if row do
-  #     {:ok, row.user}
-  #   else
-  #     :error
-  #   end
-  # end
 
   defmodule Query do
     import Ecto.Query
@@ -67,6 +42,11 @@ defmodule Crit.Users.PasswordToken do
 
     def by_user_id(user_id),
       do: from PasswordToken, where: [user_id: ^user_id]
+  end
+
+  def expired_tokens do
+    from r in PasswordToken,
+      where: r.updated_at < ^expiration_threshold()
   end
 
 
