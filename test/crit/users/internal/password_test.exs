@@ -51,7 +51,7 @@ defmodule Crit.Users.Internal.PasswordTest do
   end
 
   def attempt_to_set(new_password, confirmation) do
-    Password.changeset(
+    Password.create_changeset(
       Password.default_changeset(),
       %{"new_password" => new_password, "new_password_confirmation" => confirmation}
     )

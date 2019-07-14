@@ -23,7 +23,7 @@ defmodule Crit.Users do
   def set_password(auth_id, params) do
     result =
       %Password{auth_id: auth_id}
-      |> Password.changeset(params)
+      |> Password.create_changeset(params)
       |> Repo.insert(on_conflict: :replace_all, conflict_target: :auth_id)
     case result do
       {:ok, _} -> :ok  # Results should never be of interest

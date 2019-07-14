@@ -16,8 +16,8 @@ defmodule Crit.Users.Password do
   # A changeset with only default or empty fields. For `new` actions.
   def default_changeset(),
     do: change(%__MODULE__{}) |> hide([:hash, :auth_id])
-  
-  def changeset(password, attrs \\ %{}) do
+
+  def create_changeset(password, attrs \\ %{}) do
     password
     |> cast(attrs, [:new_password, :new_password_confirmation])
     |> validate_required([:new_password, :new_password_confirmation])
@@ -26,6 +26,9 @@ defmodule Crit.Users.Password do
     |> put_password_hash()
   end
 
+
+  # Util
+  
   defp validate_password_length(changeset, field),
     do: validate_length(changeset, field, min: 8, max: 128)
 
