@@ -20,7 +20,6 @@ defmodule Crit.Users do
     #    embedded_changeset = PermissionList.changeset(%PermissionList{})
     #    User.default_changeset(%User{permission_list: embedded_changeset})
   end
-  
 
   def user_from_auth_id(auth_id) do
     User

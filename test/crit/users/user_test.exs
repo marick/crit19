@@ -15,6 +15,11 @@ defmodule Crit.Users.UserTest do
     
     # for further tests, see `/internal`.
   end
+
+  @tag :skip
+  test "trying to reuse an auth id" do
+  end
+  
     
 
   describe "fetching a user by the auth id" do

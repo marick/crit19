@@ -17,8 +17,28 @@ defmodule Crit.Users.User do
     timestamps()
   end
 
+  # These are up here to make it more likely they'll be changed when the schema is.
   @creation_required_attrs [:display_name, :auth_id, :email]
   @creation_optional_attrs []
+
+
+  # A changeset with only default or empty fields. For `new` actions.
+  # Note that the caller can supply non-default values via the starting
+  # structure. This is most useful to set up a starting
+  # `PermissionList`. A second attributes argument can't be used for that
+  # because the changeset will be marked dirty, which will produce confusing
+  # errors.
+  def default_changeset(struct), do: change(struct)
+
+  def create_changeset(attrs \\ %{}) do
+    %__MODULE__{}
+    |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
+    |> cast_assoc(:permission_list, required: true)
+  end
+
+
+  # Util
+
 
   defp check_attr(:email = field, changeset) do
     changeset
@@ -48,18 +68,4 @@ defmodule Crit.Users.User do
     Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
 
-  # A changeset with only default or empty fields. For `new` actions.
-  # Note that the caller can supply non-default values via the starting
-  # structure. This is most useful to set up a starting
-  # `PermissionList`. A second attributes argument can't be used for that
-  # because the changeset will be marked dirty, which will produce confusing
-  # errors.
-  def default_changeset(struct), do: change(struct)
-
-  def create_changeset(attrs \\ %{}) do
-    %__MODULE__{}
-    |> cast(attrs, [:display_name, :auth_id, :email])
-    |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
-    |> cast_assoc(:permission_list, required: true)
-  end
 end
