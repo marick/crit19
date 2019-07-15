@@ -23,9 +23,6 @@ defmodule Crit.Test.Controller do
           %{payload_key => payload_params})
       end
 
-      defp assert_rendered(conn, file),
-        do: assert html_response(conn, 200) =~ unquote(controller).template_file(file)
-
       defp assert_purpose(conn, purpose),
         do: assert html_response(conn, 200) =~
           ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/

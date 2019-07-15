@@ -7,7 +7,6 @@ defmodule CritWeb.UserManagement.UserController do
 
 
   # Test support
-  def template_file(file), do: "user_management/user/" <> file
   def path(args), do: apply(Routes, :user_management_user_path, args)
 
   defp not_done(conn) do

@@ -1,6 +1,6 @@
 <h1>New User</h1>
 
-<!-- for testing: user_management/user/new.html -->
+<!-- Purpose: <%= Purpose.form_for_creating_new_user %> -->
 
 <%= render "form.html", Map.put(assigns, :action, Routes.user_management_user_path(@conn, :create)) %>
 

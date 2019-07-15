@@ -15,7 +15,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   describe "new user" do
     test "renders form", %{conn: conn} do
       conn = get_via_action [conn, :new]
-      assert_rendered conn, "new.html"
+      assert_purpose conn, form_for_creating_new_user()
     end
   end
 
@@ -60,7 +60,8 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     do: redirected_to(conn) == Own.path [conn, :new]
 
   def assert_retry_same_user(conn), 
-    do: assert_rendered conn, "new.html"
+    do: assert_purpose conn, form_for_creating_new_user()
+
 
   # describe "edit user" do
   #   setup [:create_user]
