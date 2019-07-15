@@ -17,6 +17,7 @@ defmodule CritWeb.Router do
     pipe_through :browser
 
     get "/", PublicController, :index
+    get "/login", PublicController, :redirect_to_login
   end
 
   scope "/user_management", CritWeb.UserManagement, as: :user_management do

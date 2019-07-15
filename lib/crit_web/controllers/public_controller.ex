@@ -4,4 +4,9 @@ defmodule CritWeb.PublicController do
   def index(conn, _params) do
     render(conn, "index.html")
   end
+
+  def redirect_to_login(conn, _params) do
+    path = Routes.reflexive_user_authorization_path(conn, :get_login_form)
+    redirect(conn, to: path)
+  end
 end
