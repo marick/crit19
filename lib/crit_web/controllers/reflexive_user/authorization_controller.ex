@@ -61,15 +61,22 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
   end
 
   def try_login(conn, %{"login" => params}) do
-    render_login(conn, params)
+    auth_id = params["auth_id"]
+    password = params["password"]
+    case Users.check_password(auth_id, password) do
+      :ok ->
+        redirect(conn, to: Routes.public_path(conn, :index))
+      :error ->     
+        render_login(conn, params)
+    end
   end
 
   defp render_login(conn, params) do
     conn
     |> Common.form_error_flash
     |> render("login_form.html",
-           auth_id: params["auth_id"],
-           path: path([conn, :try_login]))
+         auth_id: params["auth_id"],
+         path: path([conn, :try_login]))
   end
     
 end

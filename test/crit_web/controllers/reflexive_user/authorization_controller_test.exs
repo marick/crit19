@@ -105,8 +105,14 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert html_response(conn, 200) =~ Common.form_error_message
       assert html_response(conn, 200) =~ auth_id
       refute html_response(conn, 200) =~ password
-      
-      
+    end
+
+    test "successful login", %{conn: conn} do
+      password = "password"
+      user = user_with_password(password)
+      conn = post_to_action([conn, :try_login], :login,
+        %{auth_id: user.auth_id, password: password})
+      assert redirected_to(conn) == Routes.public_path(conn, :index)
     end
   end
 end
