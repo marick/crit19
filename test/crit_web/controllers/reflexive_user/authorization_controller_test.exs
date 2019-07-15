@@ -38,7 +38,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
 
       run = fn conn, new_password, confirmation ->
         post_to_action([conn, :set_fresh_password], :password,
-          %{new_password: new_password, new_password_confirmation: confirmation})
+          password_params(new_password, confirmation))
       end
       
       [conn: conn, valid_password: "something horse something something",

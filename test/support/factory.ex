@@ -1,13 +1,12 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
-  alias Faker.{Name}
-  alias Crit.Users.{User,PermissionList,PasswordToken}
+  alias Crit.Users.{User,PermissionList,PasswordToken,Password}
   alias Crit.EmailToken
 
   def user_factory() do
     %User{
       active: true,
-      display_name: Name.name(),
+      display_name: Faker.Name.name(),
       auth_id: sequence(:auth_id, &"auth-id-#{&1}"),
       email: sequence(:email, &"email-#{&1}@example.com"),
       permission_list: build(:permission_list)

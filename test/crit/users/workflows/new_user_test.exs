@@ -20,8 +20,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   def supply_new_password(user_id, new_password) do
-    params = %{"new_password" => new_password,
-               "new_password_confirmation" => new_password}
+    params = password_params(new_password, new_password)
     assert :ok = Users.set_password(user_id, params)
   end
 

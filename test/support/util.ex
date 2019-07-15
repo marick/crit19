@@ -1,6 +1,8 @@
 defmodule Crit.Test.Util do
   use ExUnit.CaseTemplate
   alias Crit.Factory
+  alias Crit.Users.{Password}
+  alias Crit.Users
 
   # We don't want Ex Machina generating a password.
   def string_params_for_new_user(attrs \\ []) do
@@ -9,6 +11,36 @@ defmodule Crit.Test.Util do
 
     Map.put(original, "permission_list", permission_list)
   end
+
+  def password_params(password),
+    do: password_params(password, password)
+  
+  def password_params(password, confirmation) do
+    %{"new_password" => password,
+      "new_password_confirmation" => confirmation
+    }
+  end
+
+
+  def user_without_password do
+    user = Factory.insert(:user)
+    assert Password.count_for(user.auth_id) == 0
+    user
+  end
+
+  def user_with_password(password) do
+    user = user_without_password()
+    assert :ok == Users.set_password(user.auth_id, password_params(password, password))
+    assert Password.count_for(user.auth_id) == 1
+    user
+  end
+
+  
+
+
+#  def add_password(user, password) do
+    
+  
   
   # Avoid fields that don't matter for correctness and tend to
   # produce spurious miscomparisons

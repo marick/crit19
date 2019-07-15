@@ -17,7 +17,7 @@ defmodule Crit.Users.PasswordTest do
     test "successfully, for the first time", %{user: user} do
       password = "password"
 
-      assert :ok == Users.set_password(user.auth_id, params(password))
+      assert :ok == Users.set_password(user.auth_id, password_params(password))
       assert Password.count_for(user.auth_id) == 1
       assert :ok == Users.check_password(user.auth_id, password)
     end
@@ -26,8 +26,8 @@ defmodule Crit.Users.PasswordTest do
       password__old = "password"
       password__NEW = "different"
 
-      assert :ok == Users.set_password(user.auth_id, params(password__old))
-      assert :ok == Users.set_password(user.auth_id, params(password__NEW))
+      assert :ok == Users.set_password(user.auth_id, password_params(password__old))
+      assert :ok == Users.set_password(user.auth_id, password_params(password__NEW))
       
       assert Password.count_for(user.auth_id) == 1
       assert :ok == Users.check_password(user.auth_id, password__NEW)
@@ -38,8 +38,8 @@ defmodule Crit.Users.PasswordTest do
       password__old = "password"
       password__NEW = "di"
 
-      assert :ok == Users.set_password(user.auth_id, params(password__old))
-      assert {:error, _} = Users.set_password(user.auth_id, params(password__NEW))
+      assert :ok == Users.set_password(user.auth_id, password_params(password__old))
+      assert {:error, _} = Users.set_password(user.auth_id, password_params(password__NEW))
       
       assert Password.count_for(user.auth_id) == 1
       assert :ok == Users.check_password(user.auth_id, password__old)
@@ -60,26 +60,4 @@ defmodule Crit.Users.PasswordTest do
       assert :error == Users.check_password(user.auth_id, "WRONG_password")
     end
   end
-
-
-  # UTIL
-
-  def user_without_password do
-    user = Factory.insert(:user)
-    assert Password.count_for(user.auth_id) == 0
-    user
-  end
-
-  def user_with_password(password) do
-    user = user_without_password()
-    assert :ok == Users.set_password(user.auth_id, params(password))
-    assert Password.count_for(user.auth_id) == 1
-    user
-  end
-    
-
-  def params(password),
-    do: %{"new_password" => password, "new_password_confirmation" => password}
-
-
 end

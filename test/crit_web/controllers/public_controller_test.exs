@@ -1,6 +1,5 @@
 defmodule CritWeb.PublicControllerTest do
   use CritWeb.ConnCase
-  alias CritWeb.ReflexiveUser.AuthorizationController
 
   test "GET /", %{conn: conn} do
     assert conn = get(conn, "/")
