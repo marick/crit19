@@ -80,8 +80,11 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
 
-      assert html_response(conn, 200) =~ Common.form_error_message
-      assert html_response(conn, 200) =~ "should be the same as the new password"
+      assert_user_sees(conn, 
+        [ Common.form_error_message(),
+          "should be the same as the new password",
+        ])
+        
       # The token is not deleted.
       assert Users.user_has_password_token?(user.id)
     end
@@ -102,9 +105,8 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
         %{auth_id: auth_id, password: password})
 
       assert_purpose conn, show_login_form()
-      assert html_response(conn, 200) =~ Common.form_error_message
-      assert html_response(conn, 200) =~ auth_id
-      refute html_response(conn, 200) =~ password
+      assert_user_sees(conn, [Common.form_error_message, auth_id])
+      refute_user_sees(conn, password)
     end
 
     test "successful login", %{conn: conn} do

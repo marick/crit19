@@ -34,7 +34,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       %{conn: conn, act: act} do
       conn = act.(conn, string_params_for_new_user(display_name: ""))
       assert_retry_same_user(conn)
-      assert html_response(conn, 200) =~ standard_blank_error()
+      assert_user_sees(conn, standard_blank_error())
     end
 
 

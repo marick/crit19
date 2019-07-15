@@ -35,8 +35,6 @@ defmodule Crit.Test.Util do
     user
   end
 
-  
-
 
 #  def add_password(user, password) do
     
