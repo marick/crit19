@@ -29,6 +29,10 @@ defmodule CritWeb.Router do
     get "/password_using/:token_text", AuthorizationController, :fresh_password_form
     post "/fresh_password", AuthorizationController, :set_fresh_password
 
+
+    get "/login", AuthorizationController, :get_login_form
+    post "/login", AuthorizationController, :try_login
+
   end
   
 

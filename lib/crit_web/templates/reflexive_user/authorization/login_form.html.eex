@@ -1,0 +1,13 @@
+<!-- Purpose: <%= Purpose.show_login_form %> -->
+
+<%= form_for :login, @path, fn f -> %>
+  <%= label f, :auth_id, "Login Id" %>
+  <%= text_input f, :auth_id, value: @auth_id %>
+
+  <%= label f, :password %>
+  <%= password_input f, :password %>
+  <div>
+    <%= submit "Login" %>
+  </div>
+<% end %>
+

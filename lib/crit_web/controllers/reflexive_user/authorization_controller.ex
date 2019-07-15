@@ -3,7 +3,6 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
   alias Crit.Users
   alias Ecto.Changeset
 
-  def template_file(file), do: "reflexive_user/authorization/" <> file
   def path(args), do: apply(Routes, :reflexive_user_authorization_path, args)
 
 
@@ -54,4 +53,23 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
       changeset: changeset)
   end
 
+
+  # 
+
+  def get_login_form(conn, _params) do
+    render_login(conn, %{})
+  end
+
+  def try_login(conn, %{"login" => params}) do
+    render_login(conn, params)
+  end
+
+  defp render_login(conn, params) do
+    conn
+    |> Common.form_error_flash
+    |> render("login_form.html",
+           auth_id: params["auth_id"],
+           path: path([conn, :try_login]))
+  end
+    
 end

@@ -86,4 +86,27 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert Users.user_has_password_token?(user.id)
     end
   end
+
+  describe "handling a login" do
+    test "first time has empty fields", %{conn: conn} do
+      conn = get_via_action([conn, :get_login_form])
+      assert_will_post_to(conn, :try_login)
+      assert_purpose conn, show_login_form()
+    end
+
+    test "login failure leaves auth id visible but zeroes password field",
+      %{conn: conn} do
+      auth_id = "bogus auth id"
+      password = "this is a bogus password"
+      conn = post_to_action([conn, :try_login], :login,
+        %{auth_id: auth_id, password: password})
+
+      assert_purpose conn, show_login_form()
+      assert html_response(conn, 200) =~ Common.form_error_message
+      assert html_response(conn, 200) =~ auth_id
+      refute html_response(conn, 200) =~ password
+      
+      
+    end
+  end
 end
