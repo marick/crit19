@@ -4,7 +4,6 @@ defmodule Crit.Users.User do
   alias Crit.Users.PermissionList
   alias Crit.Users.PasswordToken
   alias Crit.Ecto.TrimmedString
-  import Ecto.Query
 
   schema "users" do
     field :auth_id, TrimmedString

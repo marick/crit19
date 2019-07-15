@@ -1,9 +1,10 @@
 defmodule CritWeb.Controller.Common do
   use Phoenix.Controller, namespace: CritWeb
-  import Plug.Conn
+
+  def form_error_message(), do: "Unfortunately, that did not work."
 
   def form_error_flash(conn) do 
-    put_flash(conn, :error, "Unfortunately, that didn't work.")
+    put_flash(conn, :error, form_error_message())
   end
 end
 
