@@ -43,6 +43,7 @@ defmodule CritWeb do
       import CritWeb.ErrorHelpers
       import CritWeb.Gettext
       alias CritWeb.Router.Helpers, as: Routes
+      alias CritWeb.Templates.Purpose
     end
   end
 

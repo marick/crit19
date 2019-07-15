@@ -22,6 +22,8 @@ defmodule CritWeb.ConnCase do
       alias CritWeb.Router.Helpers, as: Routes
       import Crit.Test.Util
       alias Crit.Factory
+      import CritWeb.Templates.Purpose
+      alias CritWeb.Controller.Common
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint

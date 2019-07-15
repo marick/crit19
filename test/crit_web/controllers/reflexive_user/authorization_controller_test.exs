@@ -21,7 +21,7 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       %{conn: conn, token_text: token_text, user: user} do
       conn = get_via_action [conn, :fresh_password_form, token_text]
 
-      assert_rendered(conn, "fresh_password.html")
+      assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       assert get_session(conn, :token_text) == token_text
 
@@ -77,10 +77,10 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
 
       conn = run.(conn, valid_password, "WRONG")
       refute :ok == Users.check_password(user.auth_id, valid_password)
-      assert_rendered(conn, "fresh_password.html")
+      assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
 
-      assert html_response(conn, 200) =~ "Please fix the following problem"
+      assert html_response(conn, 200) =~ Common.form_error_message
       assert html_response(conn, 200) =~ "should be the same as the new password"
       # The token is not deleted.
       assert Users.user_has_password_token?(user.id)

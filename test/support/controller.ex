@@ -26,6 +26,10 @@ defmodule Crit.Test.Controller do
       defp assert_rendered(conn, file),
         do: assert html_response(conn, 200) =~ unquote(controller).template_file(file)
 
+      defp assert_purpose(conn, purpose),
+        do: assert html_response(conn, 200) =~
+          ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/
+
       defp assert_will_post_to(conn, action) do
         assert html_response(conn, 200) =~ "method=\"post\""
         post_to = unquote(controller).path([conn, action])
