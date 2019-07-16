@@ -12,6 +12,7 @@
       <section class="container">
         <nav role="navigation">
           <ul>
+            <li><%= appropriate_session_link @conn %> </li>
           </ul>
         </nav>
       </section>
