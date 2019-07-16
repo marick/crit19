@@ -1,7 +1,7 @@
 defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnCase
-  alias CritWeb.CurrentUser.SessionController, as: Own
-  use Crit.Test.Controller, controller: Own
+  alias CritWeb.CurrentUser.SessionController, as: UnderTest
+  use CritWeb.ConnShorthand, controller: UnderTest
 
   describe "handling a login" do
     test "first time has empty fields", %{conn: conn} do

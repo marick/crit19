@@ -24,6 +24,7 @@ defmodule CritWeb.ConnCase do
       alias Crit.Factory
       import CritWeb.Templates.Purpose
       alias CritWeb.Controller.Common
+      import CritWeb.ConnExtras
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint

@@ -1,7 +1,7 @@
 defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
-  alias CritWeb.UserManagement.UserController, as: Own
-  use Crit.Test.Controller, controller: Own
+  alias CritWeb.UserManagement.UserController, as: UnderTest
+  use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users
 
   # describe "index" do
@@ -57,7 +57,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
 
 
   def ready_for_new_user?(conn),
-    do: redirected_to(conn) == Own.path [conn, :new]
+    do: redirected_to(conn) == UnderTest.path [conn, :new]
 
   def assert_retry_same_user(conn), 
     do: assert_purpose conn, form_for_creating_new_user()
