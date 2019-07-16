@@ -117,4 +117,22 @@ defmodule CritWeb.ReflexiveUser.AuthorizationControllerTest do
       assert redirected_to(conn) == Routes.public_path(conn, :index)
     end
   end
+
+  describe "logout" do
+    test "you can't log out if you're already logged out", %{conn: conn} do
+      conn = delete_via_action([conn, :logout])
+      assert redirected_to(conn) == Routes.public_path(conn, :index)
+      assert get_flash(conn, :error) =~ "You must be logged in"
+    end
+
+
+    test "logout clears session", %{conn: conn} do
+      conn = assign(conn, :current_user, Factory.build(:user))
+      conn = delete_via_action([conn, :logout])
+
+      assert redirected_to(conn) == Routes.public_path(conn, :index)
+      assert get_flash(conn, :info) =~ "You have been logged out"
+      refute get_session(conn, :user_id)
+    end
+  end
 end

@@ -7,6 +7,7 @@ defmodule CritWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug CritWeb.Plug.Session
   end
 
   pipeline :api do
@@ -32,7 +33,9 @@ defmodule CritWeb.Router do
 
 
     get "/login", AuthorizationController, :get_login_form
-    post "/login", AuthorizationController, :try_login
+    post "/login", AuthorizationController, :try_login 
+    delete "/logout", AuthorizationController, :logout
+
 
   end
   

@@ -36,6 +36,11 @@ defmodule Crit.Test.Controller do
           %{payload_key => payload_params})
       end
 
+      defp delete_via_action(path_args) do
+        conn = hd(path_args)
+        delete(conn, unquote(controller).path(path_args))
+      end
+
       defp assert_purpose(conn, purpose),
         do: assert html_response(conn, 200) =~
           ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/

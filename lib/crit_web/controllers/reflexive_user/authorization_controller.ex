@@ -2,6 +2,10 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
   use CritWeb, :controller
   alias Crit.Users
   alias Ecto.Changeset
+  import CritWeb.Plugs.Authorize
+
+  plug :must_be_logged_in when action in [:logout]
+  plug :must_be_logged_out when action not in [:logout]
 
   def path(args), do: apply(Routes, :reflexive_user_authorization_path, args)
 
@@ -71,6 +75,13 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
     end
   end
 
+  def logout(conn, _params) do
+    conn
+    |> configure_session(drop: true)
+    |> put_flash(:info, "You have been logged out.")
+    |> redirect(to: Routes.public_path(conn, :index))
+  end
+
   defp render_login(conn, params) do
     conn
     |> Common.form_error_flash
@@ -78,5 +89,5 @@ defmodule CritWeb.ReflexiveUser.AuthorizationController do
          auth_id: params["auth_id"],
          path: path([conn, :try_login]))
   end
-    
+
 end

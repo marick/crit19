@@ -27,6 +27,9 @@ defmodule Crit.Users do
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
+  def user_from_id(id), do: Repo.get(User, id)
+    
+
   # Primarily about passwords
 
   def fresh_password_changeset(), do: Password.default_changeset()
