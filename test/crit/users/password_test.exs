@@ -9,8 +9,12 @@ defmodule Crit.Users.PasswordTest do
   See also users/internal/password_test.exs
   """
 
+  
   setup do
-    [user: user_without_password()]
+    user = Factory.insert(:user)
+    assert Password.count_for(user.auth_id) == 0
+
+    [user: user]
   end
   
   describe "setting a password..." do

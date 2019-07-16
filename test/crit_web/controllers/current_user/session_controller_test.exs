@@ -48,4 +48,5 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       refute get_session(conn, :user_id)
     end
   end
+  
 end

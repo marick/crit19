@@ -26,13 +26,13 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     
     test "redirects to provide another new-user form when data is valid",
       %{conn: conn, act: act} do
-      conn = act.(conn, string_params_for_new_user())
+      conn = act.(conn, Factory.string_params_for(:user))
       assert ready_for_new_user?(conn)
     end
 
     test "renders errors when data is invalid",
       %{conn: conn, act: act} do
-      conn = act.(conn, string_params_for_new_user(display_name: ""))
+      conn = act.(conn, Factory.string_params_for(:user, display_name: ""))
       assert_retry_same_user(conn)
       assert_user_sees(conn, standard_blank_error())
     end
@@ -41,7 +41,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     test "blanks are trimmed",
       %{conn: conn, act: act} do
 
-      odd_user = string_params_for_new_user(
+      odd_user = Factory.string_params_for(:user,
         display_name: "     lots of blanks       ",
         auth_id: "   blank filled      ",
         email: "     test@exampler.com      "

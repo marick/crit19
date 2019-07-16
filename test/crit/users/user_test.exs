@@ -18,10 +18,10 @@ defmodule Crit.Users.UserTest do
 
   # See password_token_tests for other tests of initial user creation.
   test "trying to reuse an auth id" do
-    first_params = string_params_for_new_user()
+    first_params = Factory.string_params_for(:user)
     assert {:ok, _} = Users.user_needing_activation(first_params)
 
-    second_params = string_params_for_new_user(auth_id: first_params["auth_id"])
+    second_params = Factory.string_params_for(:user, auth_id: first_params["auth_id"])
     assert {:error, changeset} = Users.user_needing_activation(second_params)
 
     assert errors_on(changeset) == %{auth_id: ["has already been taken"]}

@@ -25,7 +25,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   test "successful creation through activation" do
-    user = creation_and_first_save(string_params_for_new_user())
+    user = creation_and_first_save(Factory.string_params_for(:user))
 
     present_password_token(user)
 
