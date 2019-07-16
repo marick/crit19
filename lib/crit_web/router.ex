@@ -28,13 +28,13 @@ defmodule CritWeb.Router do
 
   scope "/current_user", CritWeb.CurrentUser, as: :current_user do
     pipe_through :browser
-    get "/password_using/:token_text", AuthorizationController, :fresh_password_form
-    post "/fresh_password", AuthorizationController, :set_fresh_password
+    get "/password_using/:token_text", WhoController, :fresh_password_form
+    post "/fresh_password", WhoController, :set_fresh_password
 
 
-    get "/login", AuthorizationController, :get_login_form
-    post "/login", AuthorizationController, :try_login 
-    delete "/logout", AuthorizationController, :logout
+    get "/login", WhoController, :get_login_form
+    post "/login", WhoController, :try_login 
+    delete "/logout", WhoController, :logout
 
 
   end

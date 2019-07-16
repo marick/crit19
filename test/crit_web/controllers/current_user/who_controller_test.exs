@@ -1,7 +1,7 @@
-defmodule CritWeb.CurrentUser.AuthorizationControllerTest do
+defmodule CritWeb.CurrentUser.WhoControllerTest do
   use CritWeb.ConnCase
   alias Crit.Users
-  alias CritWeb.CurrentUser.AuthorizationController, as: Own
+  alias CritWeb.CurrentUser.WhoController, as: Own
   use Crit.Test.Controller, controller: Own
 
   describe "displaying a token to get a form" do

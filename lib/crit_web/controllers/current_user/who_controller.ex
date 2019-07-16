@@ -1,4 +1,4 @@
-defmodule CritWeb.CurrentUser.AuthorizationController do
+defmodule CritWeb.CurrentUser.WhoController do
   use CritWeb, :controller
   alias Crit.Users
   alias Ecto.Changeset
@@ -7,7 +7,7 @@ defmodule CritWeb.CurrentUser.AuthorizationController do
   plug :must_be_logged_in when action in [:logout]
   plug :must_be_logged_out when action not in [:logout]
 
-  def path(args), do: apply(Routes, :current_user_authorization_path, args)
+  def path(args), do: apply(Routes, :current_user_who_path, args)
 
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do

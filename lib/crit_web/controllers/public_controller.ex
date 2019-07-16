@@ -6,7 +6,7 @@ defmodule CritWeb.PublicController do
   end
 
   def redirect_to_login(conn, _params) do
-    path = Routes.current_user_authorization_path(conn, :get_login_form)
+    path = Routes.current_user_who_path(conn, :get_login_form)
     redirect(conn, to: path)
   end
 end

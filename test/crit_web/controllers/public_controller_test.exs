@@ -8,6 +8,6 @@ defmodule CritWeb.PublicControllerTest do
   test "shortcut login form", %{conn: conn} do
     assert conn = get(conn, "/login")
     assert redirected_to(conn) ==
-      Routes.current_user_authorization_path(conn, :get_login_form)
+      Routes.current_user_who_path(conn, :get_login_form)
   end
 end
