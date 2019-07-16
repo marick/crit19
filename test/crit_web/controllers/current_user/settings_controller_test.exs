@@ -3,6 +3,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias Crit.Users
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
+  alias Crit.Examples.PasswordFocused
 
   describe "displaying a token to get a form" do
     setup do
@@ -38,7 +39,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
       run = fn conn, new_password, confirmation ->
         post_to_action([conn, :set_fresh_password], :password,
-          password_params(new_password, confirmation))
+          PasswordFocused.params(new_password, confirmation))
       end
       
       [conn: conn, valid_password: "something horse something something",

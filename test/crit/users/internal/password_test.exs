@@ -3,6 +3,7 @@ defmodule Crit.Users.Internal.PasswordTest do
   alias Crit.Users.Password
   alias Pile.Changeset
   alias Faker.String
+  alias Crit.Examples.PasswordFocused
 
   # Most tests are in ../password_test.exs
 
@@ -52,7 +53,7 @@ defmodule Crit.Users.Internal.PasswordTest do
 
   def attempt_to_set(new_password, confirmation) do
     Password.create_changeset(
-      Password.default_changeset(), password_params(new_password, confirmation)
+      Password.default_changeset(), PasswordFocused.params(new_password, confirmation)
     )
   end          
 

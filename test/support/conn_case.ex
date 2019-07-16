@@ -20,7 +20,6 @@ defmodule CritWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       alias CritWeb.Router.Helpers, as: Routes
-      import Crit.Test.Util
       alias Crit.Factory
       import CritWeb.Templates.Purpose
       alias CritWeb.Controller.Common

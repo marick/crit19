@@ -3,6 +3,7 @@ defmodule Crit.Users.PasswordTest do
   alias Crit.Users
   # alias Crit.Users.User
   alias Crit.Users.Password
+  alias Crit.Examples.PasswordFocused
 
   @moduledoc """
   Working with passwords through the Users interface. 
@@ -21,7 +22,7 @@ defmodule Crit.Users.PasswordTest do
     test "successfully, for the first time", %{user: user} do
       password = "password"
 
-      assert :ok == Users.set_password(user.auth_id, password_params(password))
+      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password))
       assert Password.count_for(user.auth_id) == 1
       assert :ok == Users.check_password(user.auth_id, password)
     end
@@ -30,8 +31,8 @@ defmodule Crit.Users.PasswordTest do
       password__old = "password"
       password__NEW = "different"
 
-      assert :ok == Users.set_password(user.auth_id, password_params(password__old))
-      assert :ok == Users.set_password(user.auth_id, password_params(password__NEW))
+      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__old))
+      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__NEW))
       
       assert Password.count_for(user.auth_id) == 1
       assert :ok == Users.check_password(user.auth_id, password__NEW)
@@ -42,8 +43,8 @@ defmodule Crit.Users.PasswordTest do
       password__old = "password"
       password__NEW = "di"
 
-      assert :ok == Users.set_password(user.auth_id, password_params(password__old))
-      assert {:error, _} = Users.set_password(user.auth_id, password_params(password__NEW))
+      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__old))
+      assert {:error, _} = Users.set_password(user.auth_id, PasswordFocused.params(password__NEW))
       
       assert Password.count_for(user.auth_id) == 1
       assert :ok == Users.check_password(user.auth_id, password__old)
@@ -60,7 +61,7 @@ defmodule Crit.Users.PasswordTest do
     end
     
     test "incorrect password: does not leak that fact" do
-      user = user_with_password("password")
+      user = PasswordFocused.user("password")
       assert :error == Users.check_password(user.auth_id, "WRONG_password")
     end
   end

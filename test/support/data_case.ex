@@ -22,7 +22,6 @@ defmodule Crit.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Crit.DataCase
-      import Crit.Test.Util
       alias Crit.Factory
     end
   end

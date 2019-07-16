@@ -2,7 +2,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   use Crit.DataCase
 
   alias Crit.Users
-  import Crit.Test.Util
+  alias Crit.Examples.PasswordFocused
 
   def creation_and_first_save(params) do
     assert {:ok, user} = Users.user_needing_activation(params)
@@ -20,7 +20,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   def supply_new_password(user_id, new_password) do
-    params = password_params(new_password, new_password)
+    params = PasswordFocused.params(new_password, new_password)
     assert :ok = Users.set_password(user_id, params)
   end
 

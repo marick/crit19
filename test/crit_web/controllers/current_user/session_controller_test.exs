@@ -2,6 +2,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.CurrentUser.SessionController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
+  alias Crit.Examples.PasswordFocused
 
   describe "handling a login" do
     test "first time has empty fields", %{conn: conn} do
@@ -24,7 +25,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
     test "successful login", %{conn: conn} do
       password = "password"
-      user = user_with_password(password)
+      user = PasswordFocused.user(password)
       conn = post_to_action([conn, :try_login], :login,
         %{auth_id: user.auth_id, password: password})
       assert redirected_to(conn) == Routes.public_path(conn, :index)
