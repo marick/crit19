@@ -26,7 +26,7 @@ defmodule CritWeb.Router do
     resources "/users", UserController, except: [:delete]
   end
 
-  scope "/reflexive_user", CritWeb.ReflexiveUser, as: :reflexive_user do
+  scope "/current_user", CritWeb.CurrentUser, as: :current_user do
     pipe_through :browser
     get "/password_using/:token_text", AuthorizationController, :fresh_password_form
     post "/fresh_password", AuthorizationController, :set_fresh_password

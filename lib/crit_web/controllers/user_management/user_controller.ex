@@ -68,7 +68,7 @@ defmodule CritWeb.UserManagement.UserController do
 
 
   defp instructions_in_lieue_of_email(conn, user) do
-    url = Routes.reflexive_user_authorization_url(conn,
+    url = Routes.current_user_authorization_url(conn,
       :fresh_password_form,
       user.password_token.text)
     token_link = link(url, to: url) |> safe_to_string()
