@@ -26,19 +26,15 @@ defmodule CritWeb.Router do
     resources "/users", UserController, except: [:delete]
   end
 
-  scope "/current_user", CritWeb.CurrentUser, as: :current_user do
+  scope "/user", CritWeb.CurrentUser, as: :current_user do
     pipe_through :browser
-    get "/password_using/:token_text", WhoController, :fresh_password_form
-    post "/fresh_password", WhoController, :set_fresh_password
+    get "/create_password/:token_text", SettingsController, :fresh_password_form
+    post "/fresh_password", SettingsController, :set_fresh_password
 
-
-    get "/login", WhoController, :get_login_form
-    post "/login", WhoController, :try_login 
-    delete "/logout", WhoController, :logout
-
-
+    get "/login", SessionController, :get_login_form
+    post "/login", SessionController, :try_login 
+    delete "/logout", SessionController, :logout
   end
-  
 
   # Other scopes may use custom stacks.
   # scope "/api", CritWeb do
