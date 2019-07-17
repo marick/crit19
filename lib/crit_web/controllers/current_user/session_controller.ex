@@ -19,8 +19,10 @@ defmodule CritWeb.CurrentUser.SessionController do
     case Users.check_password(auth_id, password) do
       :ok ->
         redirect(conn, to: Routes.public_path(conn, :index))
-      :error ->     
-        render_login(conn, params)
+      :error ->
+        conn
+        |> Common.form_error_flash
+        |> render_login(params)
     end
   end
 
@@ -33,7 +35,6 @@ defmodule CritWeb.CurrentUser.SessionController do
 
   defp render_login(conn, params) do
     conn
-    |> Common.form_error_flash
     |> render("login_form.html",
          auth_id: params["auth_id"],
          path: path([conn, :try_login]))

@@ -8,6 +8,9 @@ defmodule CritWeb.ConnExtras do
   def flash_info(conn),
     do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
 
+  def assert_no_flash(conn),
+    do: refute Plug.Conn.get_session(conn, :phoenix_flash)
+
   def standard_blank_error, do: "can&#39;t be blank"
 
   def assert_user_sees(conn, claims) when is_list(claims), 

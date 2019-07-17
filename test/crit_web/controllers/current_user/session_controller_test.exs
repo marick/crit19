@@ -9,6 +9,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       conn = get_via_action([conn, :get_login_form])
       assert_will_post_to(conn, :try_login)
       assert_purpose conn, show_login_form()
+      assert_no_flash(conn)
     end
 
     test "login failure leaves auth id visible but zeroes password field",
