@@ -34,6 +34,7 @@ defmodule Crit.Users.UserTest do
       user = Factory.insert(:user)
       assert {:ok, fetched} = Users.user_from_auth_id(user.auth_id)
       assert fetched.auth_id == user.auth_id
+      assert_without_permissions(fetched)
     end
 
     test "failure" do
@@ -42,6 +43,16 @@ defmodule Crit.Users.UserTest do
     end
   end
 
-  
+  describe "getting a fully permissioned user" do
+    test "does not exist" do
+      refute Users.permissioned_user_from_id(3838)
+    end
+
+    test "does exist" do
+      original = Factory.insert(:user)
+      assert fetched = Users.permissioned_user_from_id(original.id)
+      assert fetched.permission_list == original.permission_list
+    end
+  end
 end
 

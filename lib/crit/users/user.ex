@@ -67,4 +67,15 @@ defmodule Crit.Users.User do
     Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
 
+  defmodule Query do
+    import Ecto.Query
+    alias Crit.Users.User
+
+    def permissioned_user(id) do
+      from u in User,
+        where: u.id == ^id,
+        preload: :permission_list
+    end
+  end
+
 end

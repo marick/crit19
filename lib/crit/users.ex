@@ -27,8 +27,9 @@ defmodule Crit.Users do
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
-  def user_from_id(id), do: Repo.get(User, id)
-    
+  def permissioned_user_from_id(id) do
+    id |> User.Query.permissioned_user |> Repo.one
+  end  
 
   # Primarily about passwords
 

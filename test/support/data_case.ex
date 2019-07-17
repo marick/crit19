@@ -23,6 +23,7 @@ defmodule Crit.DataCase do
       import Ecto.Query
       import Crit.DataCase
       alias Crit.Factory
+      import Crit.DataExtras
     end
   end
 

@@ -10,8 +10,8 @@ defmodule CritWeb.Plugs.FetchUser do
       # This clause supports testing
       conn.assigns[:current_user] ->
         conn
-        
-      user = user_id && Crit.Users.user_from_id(user_id) -> 
+
+      user = user_id && Crit.Users.permissioned_user_from_id(user_id) -> 
         assign(conn, :current_user, user)
 
       true ->
