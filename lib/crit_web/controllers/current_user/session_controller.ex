@@ -31,7 +31,6 @@ defmodule CritWeb.CurrentUser.SessionController do
   def logout(conn, _params) do
     conn
     |> configure_session(drop: true)
-    |> put_flash(:info, "You have been logged out.")
     |> redirect(to: Routes.public_path(conn, :index))
   end
 
