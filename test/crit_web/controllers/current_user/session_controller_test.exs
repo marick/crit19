@@ -54,7 +54,6 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       conn = delete_via_action([conn, :logout])
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
-      assert get_flash(conn, :info) =~ "You have been logged out"
       refute get_session(conn, :user_id)
     end
   end
