@@ -46,9 +46,13 @@ defmodule Crit.Users do
   end
 
   def check_password(auth_id, proposed_password) do
-    password = Repo.get_by(Password, auth_id: auth_id)
+    password =
+      Password.Query.by_auth_id(auth_id)
+      |> Password.Query.preloading_user
+      |> Repo.one
+    
     if password && Pbkdf2.verify_pass(proposed_password, password.hash) do
-      :ok
+      {:ok, password.user.id}
     else
       Pbkdf2.no_user_verify()
       :error

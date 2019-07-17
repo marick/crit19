@@ -50,7 +50,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
       conn = run.(conn, valid_password, valid_password)
-      assert :ok == Users.check_password(user.auth_id, valid_password)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password)
       assert get_session(conn, :user_id) == user.id
       refute get_session(conn, :token_text)
 

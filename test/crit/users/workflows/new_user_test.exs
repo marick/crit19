@@ -32,6 +32,6 @@ defmodule Crit.Users.Workflow.NewUserTest do
     new_password = "something horse something something"
     assert :error = Users.check_password(user.auth_id, new_password)
     supply_new_password(user.auth_id, new_password)
-    assert :ok = Users.check_password(user.auth_id, new_password)
+    assert {:ok, user.id} == Users.check_password(user.auth_id, new_password)
   end
 end

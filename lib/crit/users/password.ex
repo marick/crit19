@@ -62,4 +62,25 @@ defmodule Crit.Users.Password do
     Repo.one(query)
   end
 
+
+  defmodule Query do
+    import Ecto.Query
+    alias Crit.Users.Password
+
+    def by_auth_id(auth_id) do
+      from p in Password,
+        where: p.auth_id == ^auth_id
+    end
+      
+    # This seems ridiculously overcomplicated, but I can't make 
+    # a plain preload work without the join.
+    def preloading_user(query) do
+      query
+      |> join(:inner, [p], u in User, on: p.auth_id == u.auth_id)
+      |> preload([p, u], [user: u])
+    end
+
+  end
+  
+
 end

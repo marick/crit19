@@ -24,7 +24,7 @@ defmodule Crit.Users.PasswordTest do
 
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password))
       assert Password.count_for(user.auth_id) == 1
-      assert :ok == Users.check_password(user.auth_id, password)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, password)
     end
 
     test "successfully replacing the old one", %{user: user} do
@@ -35,7 +35,7 @@ defmodule Crit.Users.PasswordTest do
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__NEW))
       
       assert Password.count_for(user.auth_id) == 1
-      assert :ok == Users.check_password(user.auth_id, password__NEW)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, password__NEW)
       assert :error == Users.check_password(user.auth_id, password__old)
     end
 
@@ -47,7 +47,7 @@ defmodule Crit.Users.PasswordTest do
       assert {:error, _} = Users.set_password(user.auth_id, PasswordFocused.params(password__NEW))
       
       assert Password.count_for(user.auth_id) == 1
-      assert :ok == Users.check_password(user.auth_id, password__old)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, password__old)
       assert :error == Users.check_password(user.auth_id, password__NEW)
     end
   end

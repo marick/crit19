@@ -17,8 +17,10 @@ defmodule CritWeb.CurrentUser.SessionController do
     auth_id = params["auth_id"]
     password = params["password"]
     case Users.check_password(auth_id, password) do
-      :ok ->
-        redirect(conn, to: Routes.public_path(conn, :index))
+      {:ok, user_id} ->
+        conn
+        |> put_session(:user_id, user_id)
+        |> redirect(to: Routes.public_path(conn, :index))
       :error ->
         conn
         |> Common.form_error_flash
