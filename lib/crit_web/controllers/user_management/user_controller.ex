@@ -4,8 +4,11 @@ defmodule CritWeb.UserManagement.UserController do
   alias Crit.Users
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
+  import CritWeb.Plugs.Authorize
 
+  plug :must_be_able_to, :manage_and_create_users
 
+  
   # Test support
   def path(args), do: apply(Routes, :user_management_user_path, args)
 

@@ -1,6 +1,7 @@
 defmodule CritWeb.ConnExtras do
   use Phoenix.ConnTest
   import ExUnit.Assertions
+  alias Crit.Factory
 
   def flash_error(conn),
     do: Plug.Conn.get_session(conn, :phoenix_flash)["error"]
@@ -24,5 +25,12 @@ defmodule CritWeb.ConnExtras do
 
   def assert_purpose(conn, purpose),
     do: assert html_response(conn, 200) =~
-           ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/
+      ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/
+
+  def logged_in_as_user_manager(conn) do
+    permissions = Factory.build(:permission_list, manage_and_create_users: true)
+    manager = Factory.build(:user, permission_list: permissions)
+    assign(conn, :current_user, manager)
+  end
+  
 end

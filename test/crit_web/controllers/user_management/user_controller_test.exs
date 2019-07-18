@@ -11,6 +11,9 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   #   end
   # end
 
+  setup %{conn: conn} do
+    [conn: logged_in_as_user_manager(conn)]
+  end
 
   describe "new user" do
     test "renders form", %{conn: conn} do
