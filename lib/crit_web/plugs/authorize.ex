@@ -21,7 +21,7 @@ defmodule CritWeb.Plugs.Authorize do
       "You are not authorized to visit that page.")
   end
 
-  def run(conn, bool, message) do
+  defp run(conn, bool, message) do
     if bool do
       conn
     else
@@ -29,7 +29,7 @@ defmodule CritWeb.Plugs.Authorize do
     end
   end
 
-  def oops(conn, message) do
+  defp oops(conn, message) do
     conn
     |> Controller.put_flash(:error, message)
     |> Controller.redirect(to: Routes.public_path(conn, :index))
