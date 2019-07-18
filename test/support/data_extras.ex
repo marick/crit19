@@ -1,5 +1,4 @@
 defmodule Crit.DataExtras do
-  use Phoenix.ConnTest
   import ExUnit.Assertions
 
   alias Crit.Users.PermissionList

@@ -2,14 +2,9 @@ defmodule CritWeb.Plugs.AuthorizeTest do
   use CritWeb.ConnCase, async: true
   alias CritWeb.Plugs.Authorize
   import Crit.DataExtras
+  import Crit.PlugExtras
 
-  setup %{conn: conn} do
-    conn =
-      conn
-      |> bypass_through(CritWeb.Router, :browser)
-      |> get("/")
-    [conn: conn]
-  end
+  setup %{conn: conn}, do: plug_setup(conn)
 
   def logged_in_with_irrelevant_permissions(conn) do
     user = Factory.build(:user)
