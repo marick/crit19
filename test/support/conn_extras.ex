@@ -2,6 +2,7 @@ defmodule CritWeb.ConnExtras do
   use Phoenix.ConnTest
   import ExUnit.Assertions
   alias Crit.Factory
+  alias CritWeb.PublicController
 
   def flash_error(conn),
     do: Plug.Conn.get_session(conn, :phoenix_flash)["error"]
@@ -27,10 +28,22 @@ defmodule CritWeb.ConnExtras do
     do: assert html_response(conn, 200) =~
       ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/
 
-  def logged_in_as_user_manager(conn) do
-    permissions = Factory.build(:permission_list, manage_and_create_users: true)
+
+  def logged_in_with_permissions(conn, permissions) do
     manager = Factory.build(:user, permission_list: permissions)
     assign(conn, :current_user, manager)
   end
+
+  def logged_in_as_user_manager(conn) do
+    permissions = Factory.build(:permission_list, manage_and_create_users: true)
+    logged_in_with_permissions(conn, permissions)
+  end
+
+  def assert_redirected_to_authorization_failure_path(conn),
+    do: assert redirected_to(conn) == PublicController.path([conn, :index])
   
+  def assert_failed_authorization(conn) do
+    assert_redirected_to_authorization_failure_path(conn)
+    assert flash_error(conn) =~ "not authorized"
+  end    
 end
