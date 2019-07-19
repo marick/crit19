@@ -10,7 +10,7 @@ defmodule Crit.Users.PasswordToken do
     field :text, :string
     belongs_to :user, User
 
-    timestamps()
+    timestamps(created_at: false)
   end
 
   def suitable_text(), do: EmailToken.generate()
