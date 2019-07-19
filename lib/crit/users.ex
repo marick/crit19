@@ -29,7 +29,12 @@ defmodule Crit.Users do
 
   def permissioned_user_from_id(id) do
     id |> User.Query.permissioned_user |> Repo.one
-  end  
+  end
+
+  def active_users do
+    User.Query.active_users |> Repo.all
+  end
+  
 
   # Primarily about passwords
 

@@ -54,5 +54,13 @@ defmodule Crit.Users.UserTest do
       assert fetched.permission_list == original.permission_list
     end
   end
+
+  test "fetching all *active* users" do
+    visible = Factory.insert(:user)
+    _invisible = Factory.insert(:user, active: false)
+
+    assert [retrieved] = Users.active_users()
+    assert retrieved.auth_id == visible.auth_id
+  end
 end
 

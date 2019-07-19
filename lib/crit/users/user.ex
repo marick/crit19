@@ -76,6 +76,11 @@ defmodule Crit.Users.User do
         where: u.id == ^id,
         preload: :permission_list
     end
+
+    def active_users() do
+      from u in User,
+        where: u.active == true
+    end
   end
 
 end
