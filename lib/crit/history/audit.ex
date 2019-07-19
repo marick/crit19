@@ -4,14 +4,14 @@ defmodule Crit.History.Audit do
 
   schema "audit_log" do
     field :version, :integer, default: 1
-    field :user_responsible, :id
+    field :event_owner, :id
     field :event, :string
     field :data, :map
 
     timestamps(updated_at: false)
   end
 
-  @fields [:version, :user_responsible, :event, :data]
+  @fields [:version, :event_owner, :event, :data]
 
   def changeset(audit, attrs) do
     audit
