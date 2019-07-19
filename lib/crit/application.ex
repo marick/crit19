@@ -11,9 +11,9 @@ defmodule Crit.Application do
       # Start the Ecto repository
       Crit.Repo,
       # Start the endpoint when the application starts
-      CritWeb.Endpoint
+      CritWeb.Endpoint,
       # Starts a worker by calling: Crit.Worker.start_link(arg)
-      # {Crit.Worker, arg},
+      Servers.Audit,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
