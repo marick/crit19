@@ -7,6 +7,9 @@ defmodule CritWeb.Templates.Purpose do
   def form_for_creating_new_user, 
     do: "form for creating new user"
 
+  def list_active_users, 
+    do: "list active users"
+
   def show_login_form, 
     do: "show login form"
 

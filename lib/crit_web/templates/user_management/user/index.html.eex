@@ -1,24 +1,24 @@
-<h1>Listing Users</h1>
+<!-- Purpose: <%= Purpose.list_active_users %> -->
+
+
+<span><%= link "Create a User", to: Routes.user_management_user_path(@conn, :new) %></span>
 
 <table>
   <thead>
     <tr>
-
-      <th></th>
+      <th>Name</th>
+      <th>Login id</th>
+      <th>Email</th>
     </tr>
   </thead>
   <tbody>
-<%= for user <- @users do %>
-    <tr>
-
-      <td>
-        <%= link "Show", to: Routes.user_management_user_path(@conn, :show, user) %>
-        <%= link "Edit", to: Routes.user_management_user_path(@conn, :edit, user) %>
-        <%= link "Delete", to: Routes.user_management_user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"] %>
-      </td>
-    </tr>
-<% end %>
+    <%= for user <- @users do %>
+        <tr>
+          <td><%= user.display_name %></td>
+          <td><%= user.auth_id %></td>
+          <td><%= user.email %></td>
+        </tr>
+   <% end %>
   </tbody>
 </table>
 
-<span><%= link "New User", to: Routes.user_management_user_path(@conn, :new) %></span>

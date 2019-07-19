@@ -20,9 +20,8 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def index(conn, _params) do
-    not_done(conn)
-    # users = Users.list_users()
-    # render(conn, "index.html", users: users)
+    users = Users.active_users()
+    render(conn, "index.html", users: users)
   end
 
   def new(conn, _params) do

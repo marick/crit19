@@ -45,5 +45,10 @@ defmodule CritWeb.ConnExtras do
   def assert_failed_authorization(conn) do
     assert_redirected_to_authorization_failure_path(conn)
     assert flash_error(conn) =~ "not authorized"
-  end    
+  end
+
+  def assert_links_to(conn, path) do
+    href = "href=\"#{path}\""
+    assert_user_sees(conn, href)
+  end
 end

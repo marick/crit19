@@ -4,16 +4,27 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users
 
-  # describe "index" do
-  #   test "lists all users", %{conn: conn} do
-  #     conn = get(conn, Routes.user_management_user_path(conn, :index))
-  #     assert html_response(conn, 200) =~ "Listing Users"
-  #   end
-  # end
-
   setup %{conn: conn} do
     [conn: logged_in_as_user_manager(conn)]
   end
+
+
+  describe "index" do
+    test "boilerplate", %{conn: conn} do
+      conn = get_via_action [conn, :index]
+      assert_purpose conn, list_active_users()
+      assert_links_to conn, UnderTest.path([conn, :new])
+    end
+
+    test "lists all users", %{conn: conn} do
+      # Note that the user manager isn't stored in the database
+      user = Factory.insert(:user)
+      conn = get_via_action [conn, :index]
+      assert_user_sees(conn, [user.auth_id, user.display_name, user.email])
+    end
+  end
+
+  
 
   describe "new user" do
     test "renders form", %{conn: conn} do
