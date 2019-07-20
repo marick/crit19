@@ -21,20 +21,20 @@ defmodule Crit.HistoryTest do
 
   describe "selecting the most recent audit record" do
     test "nothing there" do
-      assert History.no_audit_match == History.single_most_recent("some_event")
+      assert History.no_audit_match == History.last_audit("some_event")
     end
 
     test "something there, but not of the desired event" do
       desired = "some event"
       actual = "some other event"
       History.record(actual, @user_id, %{})
-      assert History.no_audit_match == History.single_most_recent(desired)
+      assert History.no_audit_match == History.last_audit(desired)
     end
 
     test "something there, of the desired event" do
       event = "some event"
       original = History.record(event, @user_id, %{})
-      {:ok, actual} = History.single_most_recent(event)
+      {:ok, actual} = History.last_audit(event)
       assert_audit_record(original, actual)
     end
 
@@ -44,14 +44,14 @@ defmodule Crit.HistoryTest do
       age(Audit, earlier.id, 10)
       later = History.record(event, @user_id, %{})
 
-      {:ok, fetched} = History.single_most_recent(event)
+      {:ok, fetched} = History.last_audit(event)
       assert_audit_record(later, fetched)
     end
   end
 
   describe "selecting the N most recent audit records" do
     test "nothing there" do
-      assert [] == History.n_most_recent(3, "some event")
+      assert [] == History.last_n_audits(3, "some event")
     end
 
     test "in ascending order" do 
@@ -65,7 +65,7 @@ defmodule Crit.HistoryTest do
 
       later = History.record(desired, @user_id, %{tag: "later"})
 
-      assert [top, lower] = History.n_most_recent(2, desired)
+      assert [top, lower] = History.last_n_audits(2, desired)
 
       assert_audit_record(later, top)
       assert_audit_record(earlier, lower)
@@ -76,9 +76,10 @@ defmodule Crit.HistoryTest do
       History.record("event", @user_id, %{})
       History.record("event", @user_id, %{})
 
-      assert [fetched1, fetched2] = History.n_most_recent(2, "event")
+      assert [fetched1, fetched2] = History.last_n_audits(2, "event")
     end
   end
 
   def assert_audit_record(desired, actual), do: assert desired.id == actual.id
+
 end

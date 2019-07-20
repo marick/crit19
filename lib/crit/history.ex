@@ -9,14 +9,14 @@ defmodule Crit.History do
     |> Repo.insert!
   end
 
-  def single_most_recent(event) do
-    case n_most_recent(1, event) do
+  def last_audit(event) do
+    case last_n_audits(1, event) do
       [] -> no_audit_match()
       [result] -> {:ok, result}
     end
   end
 
-  def n_most_recent(n, event) do
+  def last_n_audits(n, event) do
     Audit.Query.n_most_recent(n, event) |> Repo.all
   end
 
