@@ -8,6 +8,8 @@ defmodule Crit.Users.PermissionList do
     field :manage_animals, :boolean, default: false
     field :make_reservations, :boolean, default: false
     field :view_reservations, :boolean, default: true
+
+    timestamps()
   end
 
   @fields [:manage_and_create_users, :manage_animals, :make_reservations,

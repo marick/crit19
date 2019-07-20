@@ -11,6 +11,8 @@ defmodule Crit.Users.Password do
     belongs_to :user, User, foreign_key: :auth_id, type: :string
     field :new_password, :string, virtual: true
     field :new_password_confirmation, :string, virtual: true
+
+    timestamps()
   end
 
   # A changeset with only default or empty fields. For `new` actions.

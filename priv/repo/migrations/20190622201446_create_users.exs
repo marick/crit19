@@ -16,7 +16,7 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       add :text, :string, null: false
       add :user_id, references(:users, on_delete: :delete_all), null: false
 
-      timestamps(created_at: false)
+      timestamps(inserted_at: false)
     end
     create index(:password_tokens, [:text])
 
@@ -25,6 +25,8 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       add :auth_id,
         references(:users, column: :auth_id, type: :citext, on_delete: :delete_all),
         null: false
+
+      timestamps()
     end
     create unique_index(:passwords, [:auth_id])
 
@@ -34,6 +36,8 @@ defmodule Crit.Repo.Migrations.CreateUsers do
       add :manage_animals, :boolean, null: false
       add :make_reservations, :boolean, null: false
       add :view_reservations, :boolean, null: false
+
+      timestamps()
     end
     create index("permission_lists", :user_id)
   end
