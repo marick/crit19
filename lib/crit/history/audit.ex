@@ -18,4 +18,17 @@ defmodule Crit.History.Audit do
     |> cast(attrs, @fields)
     |> validate_required(@fields)
   end
+
+  defmodule Query do
+    import Ecto.Query
+    alias Crit.History.Audit
+
+    def n_most_recent(n, event) do
+      from a in Audit,
+        where: a.event == ^event,
+        order_by: [desc: a.inserted_at],
+        limit: ^n
+    end
+      
+  end
 end
