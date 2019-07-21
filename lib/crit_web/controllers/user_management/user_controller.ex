@@ -5,6 +5,7 @@ defmodule CritWeb.UserManagement.UserController do
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
   import CritWeb.Plugs.Authorize
+  alias Servers.Audit
 
   # It's possible this would be better in router.ex
   plug :must_be_able_to, :manage_and_create_users
@@ -31,6 +32,7 @@ defmodule CritWeb.UserManagement.UserController do
   def create(conn, %{"user" => user_params}) do
     case Users.user_needing_activation(user_params) do
       {:ok, user} ->
+        Audit.created_user(conn.assigns.current_user.id, user.id, user.auth_id)
         flash = instructions_in_lieue_of_email(conn, user)
         conn
         |> put_flash(:info, raw(flash))

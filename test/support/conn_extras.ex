@@ -30,7 +30,7 @@ defmodule CritWeb.ConnExtras do
 
 
   def logged_in_with_permissions(conn, permissions) do
-    manager = Factory.build(:user, permission_list: permissions)
+    manager = Factory.insert(:user, permission_list: permissions)
     assign(conn, :current_user, manager)
   end
 

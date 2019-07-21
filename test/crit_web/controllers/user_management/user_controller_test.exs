@@ -3,6 +3,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   alias CritWeb.UserManagement.UserController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users
+  alias Crit.History
 
   setup %{conn: conn} do
     [conn: logged_in_as_user_manager(conn)]
@@ -66,6 +67,13 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       assert {:ok, user} = Users.user_from_auth_id("blank filled")
       assert "lots of blanks" == user.display_name
       assert "test@exampler.com" == user.email
+    end
+
+    test "an audit record is created", %{conn: conn, act: act} do
+      params = Factory.string_params_for(:user)
+      act.(conn, params)
+      
+      {:ok, _record} = History.last_audit(:created_user)
     end
   end
 
