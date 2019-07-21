@@ -3,8 +3,8 @@ defmodule Crit.History.Audit do
   import Ecto.Changeset
 
   schema "audit_log" do
+    belongs_to :event_owner, Crit.Users.User
     field :version, :integer, default: 1
-    field :event_owner, :id
     field :event, :string
     field :data, :map
 

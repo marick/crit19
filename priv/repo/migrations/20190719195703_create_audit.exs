@@ -3,7 +3,7 @@ defmodule Crit.Repo.Migrations.CreateAudit do
 
   def change do
     create table(:audit_log) do
-      add :event_owner, :id, null: false
+      add :event_owner_id, references(:users), null: false
       add :event, :string, null: false
       add :version, :integer, null: false, default: 1
       add :data, :map, default: %{}
