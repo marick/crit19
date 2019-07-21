@@ -13,7 +13,7 @@ defmodule Crit.Application do
       # Start the endpoint when the application starts
       CritWeb.Endpoint,
       # Starts a worker by calling: Crit.Worker.start_link(arg)
-      Servers.Audit,
+      Servers.Audit.Impl,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

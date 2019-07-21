@@ -28,7 +28,7 @@ config :phoenix, :json_library, Jason
 
 ## Within-app interfaces
 
-config :crit, :audit_server, Servers.Audit
+config :crit, :audit_server_impl, Servers.Audit.Impl
 
 
 
