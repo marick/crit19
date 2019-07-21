@@ -4,59 +4,58 @@ defmodule Crit.HistoryTest do
 
   alias Crit.History
   alias Crit.History.Audit
+  alias Crit.History.AuditEvents
 
   @user_id 55
 
   test "audit logging" do
     data = %{string: "some data", int: 5}
-    assert %Audit{} = History.record("some_event", @user_id, data)
+    assert %Audit{} = History.record(:login, @user_id, data)
 
     [one] = Repo.all(Audit)
 
-    assert one.event == "some_event"
-    assert one.event_owner == @user_id
+    assert one.event == AuditEvents.to_string(:login)
+    assert one.event_owner_id == @user_id
     assert one.data["string"] == "some data"
     assert one.data["int"] == 5
   end
 
   describe "selecting the most recent audit record" do
     test "nothing there" do
-      assert History.no_audit_match == History.last_audit("some_event")
+      assert History.no_audit_match == History.last_audit(:login)
     end
 
     test "something there, but not of the desired event" do
-      desired = "some event"
-      actual = "some other event"
+      desired = :login
+      actual = :created_user
       History.record(actual, @user_id, %{})
       assert History.no_audit_match == History.last_audit(desired)
     end
 
     test "something there, of the desired event" do
-      event = "some event"
-      original = History.record(event, @user_id, %{})
-      {:ok, actual} = History.last_audit(event)
+      original = History.record(:login, @user_id, %{})
+      {:ok, actual} = History.last_audit(:login)
       assert_audit_record(original, actual)
     end
 
     test "gets the most recent" do
-      event = "some event"
-      earlier = History.record(event, @user_id, %{})
+      earlier = History.record(:login, @user_id, %{})
       age(Audit, earlier.id, 10)
-      later = History.record(event, @user_id, %{})
+      later = History.record(:login, @user_id, %{})
 
-      {:ok, fetched} = History.last_audit(event)
+      {:ok, fetched} = History.last_audit(:login)
       assert_audit_record(later, fetched)
     end
   end
 
   describe "selecting the N most recent audit records" do
     test "nothing there" do
-      assert [] == History.last_n_audits(3, "some event")
+      assert [] == History.last_n_audits(3, :login)
     end
 
     test "in ascending order" do 
-      desired = "some event"
-      undesired = "some other event"
+      desired = :login
+      undesired = :created_user
 
       earlier = History.record(desired, @user_id, %{tag: "earlier"})
       age(Audit, earlier.id, 10)
@@ -72,11 +71,11 @@ defmodule Crit.HistoryTest do
     end
 
     test "has a limit" do
-      History.record("event", @user_id, %{})
-      History.record("event", @user_id, %{})
-      History.record("event", @user_id, %{})
+      History.record(:login, @user_id, %{})
+      History.record(:login, @user_id, %{})
+      History.record(:login, @user_id, %{})
 
-      assert [fetched1, fetched2] = History.last_n_audits(2, "event")
+      assert [fetched1, fetched2] = History.last_n_audits(2, :login)
     end
   end
 

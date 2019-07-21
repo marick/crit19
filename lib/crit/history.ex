@@ -1,9 +1,13 @@
 defmodule Crit.History do
   alias Crit.History.Audit
   alias Crit.Repo
+  alias Crit.History.AuditEvents
   
-  def record(event, event_owner, data) do
-    map = %{event: event, event_owner: event_owner, data: data}
+  
+  def record(event, event_owner_id, data) do
+    map = %{event: AuditEvents.to_string(event),
+            event_owner_id: event_owner_id,
+            data: data}
     %Audit{}
     |> Audit.changeset(map)
     |> Repo.insert!
@@ -17,7 +21,9 @@ defmodule Crit.History do
   end
 
   def last_n_audits(n, event) do
-    Audit.Query.n_most_recent(n, event) |> Repo.all
+    n
+    |> Audit.Query.n_most_recent(AuditEvents.to_string(event))
+    |> Repo.all
   end
 
 
