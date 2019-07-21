@@ -3,7 +3,7 @@ defmodule Crit.History.Audit do
   import Ecto.Changeset
 
   schema "audit_log" do
-    belongs_to :event_owner, Crit.Users.User
+    field :event_owner_id, :id
     field :version, :integer, default: 1
     field :event, :string
     field :data, :map
@@ -11,7 +11,7 @@ defmodule Crit.History.Audit do
     timestamps(updated_at: false)
   end
 
-  @fields [:version, :event_owner, :event, :data]
+  @fields [:version, :event, :data, :event_owner_id]
 
   def changeset(audit, attrs) do
     audit
