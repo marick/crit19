@@ -1,5 +1,5 @@
 defmodule CritWeb.CurrentUser.SessionControllerTest do
-  use CritWeb.ConnCase
+  use CritWeb.ConnCase, async: true
   alias CritWeb.CurrentUser.SessionController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Examples.PasswordFocused

@@ -1,5 +1,5 @@
 defmodule CritWeb.PublicControllerTest do
-  use CritWeb.ConnCase
+  use CritWeb.ConnCase, async: true
 
   test "GET /", %{conn: conn} do
     assert conn = get(conn, "/")

@@ -1,5 +1,5 @@
 defmodule CritWeb.CurrentUser.SettingsControllerTest do
-  use CritWeb.ConnCase
+  use CritWeb.ConnCase, async: true
   alias Crit.Users
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest

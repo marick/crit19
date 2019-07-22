@@ -1,5 +1,5 @@
 defmodule Crit.HistoryTest do
-  use Crit.DataCase
+  use Crit.DataCase, async: true
   alias Crit.Repo
 
   alias Crit.History

@@ -1,5 +1,5 @@
 defmodule Crit.Users.Internal.UserTest do
-  use Crit.DataCase
+  use Crit.DataCase, async: true
   alias Crit.Users.User
   alias Pile.Changeset
 

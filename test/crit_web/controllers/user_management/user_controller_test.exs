@@ -1,5 +1,5 @@
 defmodule CritWeb.UserManagement.UserControllerTest do
-  use CritWeb.ConnCase
+  use CritWeb.ConnCase, async: true
   alias CritWeb.UserManagement.UserController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users

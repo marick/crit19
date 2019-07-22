@@ -1,5 +1,5 @@
 defmodule Crit.Users.Internal.PasswordTest do
-  use Crit.DataCase
+  use Crit.DataCase, async: true
   alias Crit.Users.Password
   alias Pile.Changeset
   alias Faker.String

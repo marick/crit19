@@ -1,5 +1,5 @@
 defmodule Crit.Users.PasswordTokenTest do
-  use Crit.DataCase
+  use Crit.DataCase, async: true
   alias Crit.Users
   alias Crit.Users.User
   alias Crit.Users.PasswordToken

@@ -1,5 +1,5 @@
 defmodule CritWeb.UserManagement.BlockingAuthorizationTest do
-  use CritWeb.ConnCase
+  use CritWeb.ConnCase, async: true
   alias CritWeb.UserManagement.UserController
 
   test "An attempt to reach the UserController without a login redirects",
