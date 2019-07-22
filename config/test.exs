@@ -16,3 +16,9 @@ config :crit, CritWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+
+## Within-app interfaces
+
+config :crit, :audit_server_impl, Doubles.AuditDouble
+

@@ -14,17 +14,17 @@ defmodule Servers.Audit.Impl do
   end
 
   def start_link(_),
-    do: GenServer.start_link(__MODULE__, :no_value, name: __MODULE__)
+    do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
 
   # Server part
 
-  def init(initial_val) do
-    {:ok, initial_val}
+  def init(:ok) do
+    {:ok, :no_state}
   end
 
-  def handle_cast({:log, event, event_owner_id, data}, _) do
+  def handle_cast({:log, event, event_owner_id, data}, _no_state) do
     History.record(event, event_owner_id, data)
-    {:noreply, :no_value}
+    {:noreply, :no_state}
   end
 
 end

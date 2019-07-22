@@ -3,9 +3,9 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   alias CritWeb.UserManagement.UserController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users
-  alias Crit.History
 
   setup %{conn: conn} do
+    start_supervised!(AuditDouble)
     [conn: logged_in_as_user_manager(conn)]
   end
 
@@ -72,8 +72,12 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     test "an audit record is created", %{conn: conn, act: act} do
       params = Factory.string_params_for(:user)
       act.(conn, params)
-      
-      {:ok, _record} = History.last_audit(:created_user)
+
+      assert {:ok, record} = AuditDouble.latest()
+
+      assert record.event == :created_user
+      assert record.event_owner_id == conn.assigns.current_user.id
+      assert record.data[:auth_id] == params["auth_id"]
     end
   end
 
