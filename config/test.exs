@@ -20,5 +20,5 @@ config :logger, level: :warn
 
 ## Within-app interfaces
 
-config :crit, :audit_server_impl, Doubles.AuditDouble
+# config :crit, :persistent_audit_log, AuditServerMock
 
