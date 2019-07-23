@@ -3,19 +3,18 @@ defmodule Crit.Audit do
 
   @persistent_audit_log Application.get_env(:crit, :persistent_audit_log)
   
-  def created_user(event_owner, user_id, auth_id) do
-    log("created user", event_owner, %{user_id: user_id, auth_id: auth_id})
+  def created_user(conn, user_id, auth_id) do
+    log(conn, "created user", %{user_id: user_id, auth_id: auth_id})
   end
 
 
   # Private
   
-  defp log(event, %{id: event_owner_id}, data),
-    do: log(event, event_owner_id, data)
-
-  defp log(event, id, data) do 
-    entry = %__MODULE__{event: event, event_owner_id: id, data: data}
+  defp log(conn, event, data) do
+    owner_id = Plug.Conn.get_session(conn, :user_id)
+    entry = %__MODULE__{event: event, event_owner_id: owner_id, data: data}
     @persistent_audit_log.put(entry)
+    conn
   end
 end
 

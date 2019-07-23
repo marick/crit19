@@ -31,9 +31,9 @@ defmodule CritWeb.UserManagement.UserController do
   def create(conn, %{"user" => user_params}) do
     case Users.user_needing_activation(user_params) do
       {:ok, user} ->
-        Audit.created_user(conn.assigns.current_user.id, user.id, user.auth_id)
         flash = instructions_in_lieue_of_email(conn, user)
         conn
+        |> Audit.created_user(user.id, user.auth_id)
         |> put_flash(:info, raw(flash))
         |> redirect(to: path([conn, :new]))
 
