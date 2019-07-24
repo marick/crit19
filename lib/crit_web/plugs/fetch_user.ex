@@ -1,5 +1,6 @@
 defmodule CritWeb.Plugs.FetchUser do
   import Plug.Conn
+  alias CritWeb.Plugs.ConnUser, as: Conn
 
   def init(opts), do: opts
 
@@ -8,7 +9,7 @@ defmodule CritWeb.Plugs.FetchUser do
 
     cond do
       # This clause supports testing
-      conn.assigns[:current_user] ->
+      Conn.has_user?(conn) ->
         conn
 
       user = user_id && Crit.Users.permissioned_user_from_id(user_id) -> 
