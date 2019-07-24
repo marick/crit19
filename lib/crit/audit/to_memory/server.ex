@@ -1,10 +1,7 @@
 defmodule Crit.Audit.ToMemory.Server do
   use GenServer
-  alias Crit.Audit.LogApi
-  @behaviour LogApi
 
-  @impl LogApi
-  def put(pid, %Crit.Audit{} = entry),
+  def put(pid, %CritWeb.Audit{} = entry),
     do: GenServer.call(pid, {:put, entry})
 
   def latest(pid), do: GenServer.call(pid, :latest)

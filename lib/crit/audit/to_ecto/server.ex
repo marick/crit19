@@ -2,11 +2,8 @@ defmodule Crit.Audit.ToEcto.Server do
   use GenServer
   alias Crit.Audit.ToEcto.Record
   alias Crit.Repo
-  alias Crit.Audit.LogApi
-  @behaviour LogApi
 
-  @impl LogApi
-  def put(_pid, %Crit.Audit{} = entry),
+  def put(_pid, %CritWeb.Audit{} = entry),
     do: GenServer.cast(__MODULE__, {:put, entry})
 
   def start_link(_),
