@@ -1,3 +1,3 @@
 defmodule Crit.Audit.LogApi do
-  @callback put(%Crit.Audit{}) :: any
+  @callback put(any, %Crit.Audit{}) :: any
 end

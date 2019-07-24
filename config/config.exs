@@ -28,10 +28,6 @@ config :phoenix, :json_library, Jason
 
 ## Within-app interfaces
 
-config :crit, :persistent_audit_log, Crit.Audit.ToEcto.Server
-
-
-
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

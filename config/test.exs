@@ -20,5 +20,3 @@ config :logger, level: :warn
 
 ## Within-app interfaces
 
-# config :crit, :persistent_audit_log, AuditServerMock
-

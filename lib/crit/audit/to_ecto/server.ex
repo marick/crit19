@@ -6,7 +6,7 @@ defmodule Crit.Audit.ToEcto.Server do
   @behaviour LogApi
 
   @impl LogApi
-  def put(%Crit.Audit{} = entry),
+  def put(_pid, %Crit.Audit{} = entry),
     do: GenServer.cast(__MODULE__, {:put, entry})
 
   def start_link(_),

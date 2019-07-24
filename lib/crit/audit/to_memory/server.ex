@@ -4,13 +4,13 @@ defmodule Crit.Audit.ToMemory.Server do
   @behaviour LogApi
 
   @impl LogApi
-  def put(%Crit.Audit{} = entry),
-    do: GenServer.call(__MODULE__, {:put, entry})
+  def put(pid, %Crit.Audit{} = entry),
+    do: GenServer.call(pid, {:put, entry})
 
-  def latest(), do: GenServer.call(__MODULE__, :latest)
+  def latest(pid), do: GenServer.call(pid, :latest)
 
   def start_link(_),
-    do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+    do: GenServer.start_link(__MODULE__, :ok)
 
   # Server part
 

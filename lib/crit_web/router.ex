@@ -8,6 +8,7 @@ defmodule CritWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug CritWeb.Plugs.FetchUser
+    plug CritWeb.Plugs.AddAuditLog
   end
 
   pipeline :api do

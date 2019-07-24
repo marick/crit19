@@ -5,8 +5,13 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   alias Crit.Users
 
   setup %{conn: conn} do
-    start_supervised!(AuditDouble)
-    [conn: logged_in_as_user_manager(conn)]
+    conn = 
+      conn
+      |> Plug.Test.init_test_session([])
+      |> logged_in_as_user_manager
+      |> assign(:audit_server, Crit.Audit.ToMemory.Server)
+      |> assign(:audit_pid, start_supervised!(Crit.Audit.ToMemory.Server))
+    [conn: conn]
   end
 
 
@@ -73,11 +78,11 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       params = Factory.string_params_for(:user)
       act.(conn, params)
 
-      assert {:ok, record} = AuditDouble.latest()
+      assert {:ok, audit} = Crit.Audit.ToMemory.Server.latest(conn.assigns.audit_pid)
 
-      assert record.event == :created_user
-      assert record.event_owner_id == conn.assigns.current_user.id
-      assert record.data[:auth_id] == params["auth_id"]
+      assert audit.event == "created user"
+      assert audit.event_owner_id == conn.assigns.current_user.id
+      assert audit.data.auth_id == params["auth_id"]
     end
   end
 

@@ -24,7 +24,7 @@ defmodule CritWeb.ConnCase do
       import CritWeb.Templates.Purpose
       alias CritWeb.Controller.Common
       import CritWeb.ConnExtras
-      alias Doubles.AuditDouble
+      alias Crit.Audit.ToMemory.Server, as: AuditServer
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint
