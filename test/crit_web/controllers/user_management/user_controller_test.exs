@@ -5,12 +5,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   alias Crit.Users
 
   setup %{conn: conn} do
-    conn = 
-      conn
-      |> Plug.Test.init_test_session([])
-      |> logged_in_as_user_manager
-      |> assign(:audit_server, Crit.Audit.ToMemory.Server)
-      |> assign(:audit_pid, start_supervised!(Crit.Audit.ToMemory.Server))
+    conn = logged_in_as_user_manager(conn)
     [conn: conn]
   end
 

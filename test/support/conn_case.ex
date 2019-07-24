@@ -38,6 +38,13 @@ defmodule CritWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Crit.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    audit_module = Crit.Audit.ToMemory.Server
+    audit_pid = start_supervised!(audit_module)
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Plug.Test.init_test_session([])
+      |> CritWeb.Plugs.ConnAudit.assign_audit(audit_module, audit_pid)
+
+    {:ok, conn: conn}
   end
 end
