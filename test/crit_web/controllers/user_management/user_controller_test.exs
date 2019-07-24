@@ -4,11 +4,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users
 
-  setup %{conn: conn} do
-    conn = logged_in_as_user_manager(conn)
-    [conn: conn]
-  end
-
+  setup :logged_in_as_user_manager
 
   describe "index" do
     test "boilerplate", %{conn: conn} do

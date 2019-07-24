@@ -4,16 +4,11 @@ defmodule CritWeb.ConnExtras do
   alias Crit.Factory
   alias CritWeb.PublicController
 
-  def flash_error(conn),
-    do: Plug.Conn.get_session(conn, :phoenix_flash)["error"]
 
-  def flash_info(conn),
-    do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
+  # ASSERTIONS
 
   def assert_no_flash(conn),
     do: refute Plug.Conn.get_session(conn, :phoenix_flash)
-
-  def standard_blank_error, do: "can&#39;t be blank"
 
   def assert_user_sees(conn, claims) when is_list(claims), 
     do: for claim <- claims, do: assert_user_sees(conn, claim)
@@ -28,19 +23,6 @@ defmodule CritWeb.ConnExtras do
     do: assert html_response(conn, 200) =~
       ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/
 
-
-  def logged_in_with_permissions(conn, permissions) do
-    manager = Factory.insert(:user, permission_list: permissions)
-    conn
-    |> assign(:current_user, manager)
-    |> put_session(:user_id, manager.id)
-  end
-
-  def logged_in_as_user_manager(conn) do
-    permissions = Factory.build(:permission_list, manage_and_create_users: true)
-    logged_in_with_permissions(conn, permissions)
-  end
-
   def assert_redirected_to_authorization_failure_path(conn),
     do: assert redirected_to(conn) == PublicController.path([conn, :index])
   
@@ -53,4 +35,32 @@ defmodule CritWeb.ConnExtras do
     href = "href=\"#{path}\""
     assert_user_sees(conn, href)
   end
+
+
+  # CONN GETTERS
+
+  def flash_error(conn),
+    do: Plug.Conn.get_session(conn, :phoenix_flash)["error"]
+
+  def flash_info(conn),
+    do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
+
+  def standard_blank_error, do: "can&#39;t be blank"
+
+  # USERS
+
+  def logged_in_with_permissions(conn, permissions) do
+    manager = Factory.insert(:user, permission_list: permissions)
+    conn
+    |> assign(:current_user, manager)
+    |> put_session(:user_id, manager.id)
+  end
+
+  # For use with `setup`
+  def logged_in_as_user_manager(%{conn: conn}) do
+    permissions = Factory.build(:permission_list, manage_and_create_users: true)
+
+    [conn: logged_in_with_permissions(conn, permissions)]
+  end
+
 end
