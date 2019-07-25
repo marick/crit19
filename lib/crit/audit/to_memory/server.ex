@@ -1,7 +1,8 @@
 defmodule Crit.Audit.ToMemory.Server do
   use GenServer
+  alias Crit.Audit.CreationStruct
 
-  def put(pid, %CritWeb.Audit{} = entry),
+  def put(pid, %CreationStruct{} = entry),
     do: GenServer.call(pid, {:put, entry})
 
   def latest(pid), do: GenServer.call(pid, :latest)

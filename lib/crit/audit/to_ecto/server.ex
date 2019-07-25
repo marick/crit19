@@ -1,9 +1,10 @@
 defmodule Crit.Audit.ToEcto.Server do
   use GenServer
+  alias Crit.Audit.CreationStruct
   alias Crit.Audit.ToEcto.Record
   alias Crit.Repo
 
-  def put(_pid, %CritWeb.Audit{} = entry),
+  def put(_pid, %CreationStruct{} = entry),
     do: GenServer.cast(__MODULE__, {:put, entry})
 
   def start_link(_),
