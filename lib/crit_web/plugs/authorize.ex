@@ -2,11 +2,10 @@ defmodule CritWeb.Plugs.Authorize do
   alias Phoenix.Controller
   alias CritWeb.Router.Helpers, as: Routes
   import Plug.Conn
-  alias CritWeb.Plugs.ConnUser, as: Conn
-
+  import CritWeb.DataAccessors
 
   def must_be_logged_out(conn, _opts) do
-    if Conn.has_user?(conn) do
+    if has_user?(conn) do
       oops(conn, "You are already logged in.")
     else
       conn
@@ -14,10 +13,10 @@ defmodule CritWeb.Plugs.Authorize do
   end
 
   def must_be_logged_in(conn, _opts),
-    do: run conn, Conn.has_user?(conn), "You must be logged in."
+    do: run conn, has_user?(conn), "You must be logged in."
 
   def must_be_able_to(conn, what) do
-    user = Conn.current_user(conn)
+    user = current_user(conn)
     run(conn, user && Map.get(user.permission_list, what), 
       "You are not authorized to visit that page.")
   end

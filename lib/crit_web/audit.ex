@@ -1,6 +1,5 @@
 defmodule CritWeb.Audit do
-  alias CritWeb.Plugs.ConnAudit
-  alias CritWeb.Plugs.ConnUser
+  import CritWeb.DataAccessors
   alias Crit.Audit.CreationStruct
 
   def created_user(conn, user_id, auth_id) do
@@ -10,11 +9,14 @@ defmodule CritWeb.Audit do
   ## UTIL
 
   defp log(conn, event, data) do
-    owner_id = ConnUser.user_id(conn)
-    entry = %CreationStruct{event: event, event_owner_id: owner_id, data: data}
-    ConnAudit.send_struct(conn, entry)
+    send_struct(conn,
+      %CreationStruct{event: event,
+                      event_owner_id: user_id(conn),
+                      data: data})
     conn
   end
 
+  defp send_struct(conn, struct),
+    do: apply(audit_server(conn), :put, [audit_pid(conn), struct])
 end
 

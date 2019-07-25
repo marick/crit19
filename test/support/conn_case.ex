@@ -43,7 +43,7 @@ defmodule CritWeb.ConnCase do
     conn =
       Phoenix.ConnTest.build_conn()
       |> Plug.Test.init_test_session([])
-      |> CritWeb.Plugs.ConnAudit.assign_audit(audit_module, audit_pid)
+      |> CritWeb.DataAccessors.assign_audit(audit_module, audit_pid)
 
     {:ok, conn: conn}
   end
