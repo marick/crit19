@@ -1,7 +1,7 @@
 defmodule CritWeb.LayoutView do
   use CritWeb, :view
   alias CritWeb.CurrentUser.SessionController
-  import CritWeb.DataAccessors
+  import CritWeb.SingletonIsh
 
   def appropriate_session_link(conn) do
     if has_user?(conn) do

@@ -1,5 +1,5 @@
 defmodule CritWeb.Plugs.AddAuditLog do
-  import CritWeb.DataAccessors
+  import CritWeb.SingletonIsh
 
   def init(opts), do: opts
 
