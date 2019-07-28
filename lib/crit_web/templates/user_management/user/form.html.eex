@@ -1,17 +1,7 @@
-<div class="container">
-  <div class="columns is-centered">
-    <div class="column is-5-tablet is-5-desktop is-5-widescreen">
-
-
-
-
+<%= start_centered_form() %>
 
 <%= form_for @changeset, @action, [class: "box"], fn f -> %>
-<%= if @changeset.action do %>
-    <div class="has-text-danger has-text-weight-bold has-text-centered">
-      Please fix the errors shown below.
-    </div>
-  <% end %>
+  <%= note_existence_of_any_form_errors @changeset %>
 
   <%= labeled_text_field f, :display_name, "Name",
         placeholder: "Like \"Dr. Dawn Marick\" (without quotes)",
@@ -25,20 +15,18 @@
   <%= labeled_text_field f, :auth_id, "Login Id",
         placeholder: "May be the same as the email address",
         required: true %>
-  
+
+  <div class="field">
   <%= inputs_for f, :permission_list, fn p -> %>
     <%= compact_checkbox p, :view_reservations %>
     <%= compact_checkbox p, :make_reservations %>
     <%= compact_checkbox p, :manage_animals %>
     <%= compact_checkbox p, :manage_and_create_users %> 
   <% end %>
+  </div>
 
   <%= form_button "Create the account and send email" %>
 
 <% end %>
 
-
-
-    </div>
-  </div>
-</div>
+<%= end_centered_form() %>
