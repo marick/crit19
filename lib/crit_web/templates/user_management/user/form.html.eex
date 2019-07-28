@@ -1,31 +1,44 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Please fix the errors shown below.</p>
+<div class="container">
+  <div class="columns is-centered">
+    <div class="column is-5-tablet is-5-desktop is-5-widescreen">
+
+
+
+
+
+<%= form_for @changeset, @action, [class: "box"], fn f -> %>
+<%= if @changeset.action do %>
+    <div class="has-text-danger has-text-weight-bold has-text-centered">
+      Please fix the errors shown below.
     </div>
   <% end %>
 
-  <%= label f, :display_name, "Name" %>
-  <%= text_input f, :display_name, placeholder: "Like \"Dr. Dawn Marick\" (without quotes)" %>
-  <%= error_tag f, :display_name %>
+  <%= labeled_text_field f, :display_name, "Name",
+        placeholder: "Like \"Dr. Dawn Marick\" (without quotes)",
+        required: true %>
 
-  <%= label f, :email %>
-  <%= email_input f, :email, placeholder: "This address will receive email about setting a password" %>
-  <%= error_tag f, :email %>
+  <%= labeled_text_field f, :email, "Email",
+        type: "email",
+        placeholder: "This address will receive email about setting a password",
+        required: true %>
 
-  <%= label f, :auth_id, "Login Id" %>
-  <%= text_input f, :auth_id, placeholder: "May be the same as the email address" %>
-  <%= error_tag f, :auth_id %>
-
-  <h3>Permissions</h3>
-
+  <%= labeled_text_field f, :auth_id, "Login Id",
+        placeholder: "May be the same as the email address",
+        required: true %>
+  
   <%= inputs_for f, :permission_list, fn p -> %>
     <%= compact_checkbox p, :view_reservations %>
     <%= compact_checkbox p, :make_reservations %>
     <%= compact_checkbox p, :manage_animals %>
     <%= compact_checkbox p, :manage_and_create_users %> 
   <% end %>
-  <div>
-    <%= submit "Create the account and send email" %>
-  </div>
+
+  <%= form_button "Create the account and send email" %>
+
 <% end %>
+
+
+
+    </div>
+  </div>
+</div>

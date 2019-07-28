@@ -1,13 +1,35 @@
 <!-- Purpose: <%= Purpose.show_login_form %> -->
 
-<%= form_for :login, @path, fn f -> %>
-  <%= label f, :auth_id, "Login Id" %>
-  <%= text_input f, :auth_id, value: @auth_id %>
+<div class="container">
+  <div class="columns is-centered">
+    <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+      <div class="field has-text-centered">
+        <img src="/images/dawn-penlight.jpg" width="250">
+      </div>
+      
 
-  <%= label f, :password %>
-  <%= password_input f, :password %>
-  <div>
-    <%= submit "Login" %>
+<%= form_for :login, @path, [class: "box"], fn f -> %>
+  <div class="field">      
+    <%= label f, :auth_id, "Login Id", class: "label" %>
+    <div class="control">
+      <%= text_input f, :auth_id, value: @auth_id, class: "input", required: true %>
+    </div>
   </div>
+
+  <div class="field">      
+    <%= label f, :password, class: "label" %>
+    <div class="control has-icons-left">
+      <%= password_input f, :password, class: "input", required: true %>
+      <span class="icon is-small is-left">
+        <i class="fa fa-lock"></i>
+      </span>
+    </div>
+  </div>
+
+  <%= form_button "Login" %>
 <% end %>
 
+
+    </div>
+  </div>
+</div>
