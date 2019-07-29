@@ -24,8 +24,8 @@ alias Crit.Users
     make_reservations: true,
     view_reservations: true,
   }
-}
+}, prefix: "demo"
 
-:ok = Users.set_password("marick",
-  %{"new_password" => "merchant-province-weepy-communal",
-    "new_password_confirmation" => "merchant-province-weepy-communal"})
+# :ok = Users.set_password("marick",
+#   %{"new_password" => "merchant-province-weepy-communal",
+#     "new_password_confirmation" => "merchant-province-weepy-communal"})
