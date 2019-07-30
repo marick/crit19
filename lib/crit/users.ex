@@ -23,16 +23,16 @@ defmodule Crit.Users do
 
   def user_from_auth_id(auth_id) do
     User
-    |> Repo.get_by(auth_id: auth_id)
+    |> Repo.get_by([auth_id: auth_id], prefix: "demo")
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
   def permissioned_user_from_id(id) do
-    id |> User.Query.permissioned_user |> Repo.one
+    id |> User.Query.permissioned_user |> Repo.one(prefix: "demo")
   end
 
   def active_users do
-    User.Query.active_users |> Repo.all
+    User.Query.active_users |> Repo.all(prefix: "demo")
   end
   
 
@@ -44,7 +44,8 @@ defmodule Crit.Users do
     result =
       %Password{auth_id: auth_id}
       |> Password.create_changeset(params)
-      |> Repo.insert(on_conflict: :replace_all, conflict_target: :auth_id)
+      |> Repo.insert(on_conflict: :replace_all, conflict_target: :auth_id,
+                     prefix: "demo")
     case result do
       {:ok, _} -> :ok  # Results should never be of interest
       error -> error
@@ -55,7 +56,7 @@ defmodule Crit.Users do
     password =
       Password.Query.by_auth_id(auth_id)
       |> Password.Query.preloading_user
-      |> Repo.one
+      |> Repo.one(prefix: "demo")
     
     if password && Pbkdf2.verify_pass(proposed_password, password.hash) do
       {:ok, password.user.id}
@@ -70,17 +71,17 @@ defmodule Crit.Users do
   def user_needing_activation(params) do
     User.create_changeset(params)
     |> put_change(:password_token, PasswordToken.unused())
-    |> Repo.insert()
+    |> Repo.insert(prefix: "demo")
   end
 
   def user_from_token(token_text) do
-    PasswordToken.Query.expired_tokens |> Repo.delete_all
+    PasswordToken.Query.expired_tokens |> Repo.delete_all(prefix: "demo")
 
     user =
       token_text 
       |> PasswordToken.Query.matching_user
       |> preload(:password_token)
-      |> Repo.one
+      |> Repo.one(prefix: "demo")
 
     if user,
       do: PasswordToken.force_update(user.password_token, NaiveDateTime.utc_now)
@@ -90,10 +91,10 @@ defmodule Crit.Users do
 
 
   def user_has_password_token?(user_id),
-    do: user_id |> PasswordToken.Query.by_user_id |> Repo.exists?
+    do: user_id |> PasswordToken.Query.by_user_id |> Repo.exists?(prefix: "demo")
 
   def delete_password_token(user_id) do
-    user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all
+    user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all(prefix: "demo")
     # There is no need for deletion information to leak out
     :ok
   end

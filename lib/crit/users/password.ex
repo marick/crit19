@@ -61,7 +61,7 @@ defmodule Crit.Users.Password do
       from p in __MODULE__,
       where: p.auth_id == ^auth_id,
       select: count(p.id)
-    Repo.one(query)
+    Repo.one(query, prefix: "demo")
   end
 
 

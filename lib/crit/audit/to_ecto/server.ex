@@ -21,7 +21,7 @@ defmodule Crit.Audit.ToEcto.Server do
   def handle_cast({:put, entry}, _no_state) do
     %Record{}
     |> Record.changeset(Map.from_struct(entry))
-    |> Repo.insert!
+    |> Repo.insert!(prefix: "demo")
     {:noreply, :no_state}
   end
 

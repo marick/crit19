@@ -3,6 +3,7 @@ defmodule CritWeb.ConnExtras do
   import ExUnit.Assertions
   alias Crit.Factory
   alias CritWeb.PublicController
+  alias Crit.Repo
 
 
   # ASSERTIONS
@@ -50,7 +51,7 @@ defmodule CritWeb.ConnExtras do
   # USERS
 
   def logged_in_with_permissions(conn, permissions) do
-    manager = Factory.insert(:user, permission_list: permissions)
+    manager = Factory.build(:user, permission_list: permissions) |> Repo.insert!(prefix: "demo")
     conn
     |> assign(:current_user, manager)
     |> put_session(:user_id, manager.id)

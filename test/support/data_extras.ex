@@ -11,9 +11,9 @@ defmodule Crit.DataExtras do
   end
 
   def age(module, id, seconds) do
-    current = Repo.get(module, id)
+    current = Repo.get(module, id, prefix: "demo")
     current
     |> change(inserted_at: NaiveDateTime.add(current.inserted_at, -1 * seconds))
-    |> Repo.update
+    |> Repo.update(prefix: "demo")
     end
 end

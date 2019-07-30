@@ -31,7 +31,7 @@ defmodule Crit.Users.UserTest do
 
   describe "fetching a user by the auth id" do
     test "success" do
-      user = Factory.insert(:user)
+      user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
       assert {:ok, fetched} = Users.user_from_auth_id(user.auth_id)
       assert fetched.auth_id == user.auth_id
       assert_without_permissions(fetched)
@@ -49,15 +49,15 @@ defmodule Crit.Users.UserTest do
     end
 
     test "does exist" do
-      original = Factory.insert(:user)
+      original = Factory.build(:user) |> Repo.insert!(prefix: "demo")
       assert fetched = Users.permissioned_user_from_id(original.id)
       assert fetched.permission_list == original.permission_list
     end
   end
 
   test "fetching all *active* users" do
-    visible = Factory.insert(:user)
-    _invisible = Factory.insert(:user, active: false)
+    visible = Factory.build(:user) |> Repo.insert!(prefix: "demo")
+    _invisible = Factory.build(:user, active: false) |> Repo.insert!(prefix: "demo")
 
     assert [retrieved] = Users.active_users()
     assert retrieved.auth_id == visible.auth_id

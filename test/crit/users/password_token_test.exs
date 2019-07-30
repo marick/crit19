@@ -15,15 +15,15 @@ defmodule Crit.Users.PasswordTokenTest do
   describe "creating a PasswordToken" do
     test "a successful creation" do
       user = fresh_user()
-      assert token = Repo.get_by(PasswordToken, text: user.password_token.text)
-      assert Repo.get(User, token.user_id)
+      assert token = Repo.get_by(PasswordToken, [text: user.password_token.text], prefix: "demo")
+      assert Repo.get(User, token.user_id, prefix: "demo")
     end
 
     test "bad user data prevents a token from being created" do
       params = Factory.string_params_for(:user, auth_id: "")
       {:error, _} = Users.user_needing_activation(params)
 
-      assert [] = Repo.all(PasswordToken)
+      assert [] = Repo.all(PasswordToken, prefix: "demo")
     end
   end
 
@@ -95,7 +95,7 @@ defmodule Crit.Users.PasswordTokenTest do
       set_expiration_plus_seconds(token, 30) # 30 seconds to live
 
       token_time = fn text -> 
-        %PasswordToken{updated_at: retval} = Repo.get_by(PasswordToken, text: text)
+        %PasswordToken{updated_at: retval} = Repo.get_by(PasswordToken, [text: text], prefix: "demo")
         retval
       end
 

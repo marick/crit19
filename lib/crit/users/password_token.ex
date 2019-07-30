@@ -26,7 +26,7 @@ defmodule Crit.Users.PasswordToken do
   def force_update(token, datetime) do
     for_postgres = NaiveDateTime.truncate(datetime, :second)
 
-    change(token, updated_at: for_postgres) |> Repo.update
+    change(token, updated_at: for_postgres) |> Repo.update(prefix: "demo")
     :ok
   end
 

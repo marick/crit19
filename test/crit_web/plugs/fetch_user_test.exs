@@ -3,6 +3,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   alias CritWeb.Plugs.FetchUser
   import Crit.DataExtras
   import Crit.PlugExtras
+  alias Crit.Repo
 
   setup %{conn: conn}, do: plug_setup(conn)
 
@@ -39,7 +40,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   end
 
   test "fetch user from database", %{conn: conn} do
-    user = Factory.insert(:user)
+    user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
     conn =
       conn
       |> put_session(:user_id, user.id)

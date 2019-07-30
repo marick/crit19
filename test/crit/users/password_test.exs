@@ -12,7 +12,7 @@ defmodule Crit.Users.PasswordTest do
 
   
   setup do
-    user = Factory.insert(:user)
+    user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
     assert Password.count_for(user.auth_id) == 0
 
     [user: user]

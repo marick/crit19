@@ -17,7 +17,7 @@ defmodule Crit.Audit.ToEcto.AuditTest do
 
     Server.put(:ignored, %Entry{event_owner_id: id, event: event, data: data})
     wait_for_cast_to_complete()
-    assert [one] = Repo.all(Record)
+    assert [one] = Repo.all(Record, prefix: "demo")
 
     assert one.event_owner_id == id
     assert one.event == event
