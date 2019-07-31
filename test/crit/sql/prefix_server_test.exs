@@ -6,18 +6,10 @@ defmodule Crit.Sql.PrefixServerTest do
   alias Crit.Audit.ToEcto.Record  # It's one of the simplest table types.
 
 
-  @institution "institution"
+  @institution "demo institution"
   @prefix "demo"
 
-  setup do
-    demo_prefix_server = start_supervised!({Sql.PrefixServer, @prefix})
-    start_supervised!({Sql, %{@institution => demo_prefix_server}})
-    []
-  end
-    
-
   test "use of the server" do
-
     assert {:ok, direct} = Repo.insert(something(), prefix: @prefix)
     assert {:ok, indirect} = Sql.insert(something(), Sql.server_for(@institution))
 

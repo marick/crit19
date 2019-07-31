@@ -6,6 +6,7 @@ defmodule Crit.Application do
   use Application
 
   def start(_type, _args) do
+
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
@@ -14,6 +15,7 @@ defmodule Crit.Application do
       CritWeb.Endpoint,
       # Starts a worker by calling: Crit.Worker.start_link(arg)
       Crit.Audit.ToEcto.Server,
+      Crit.Sql
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
