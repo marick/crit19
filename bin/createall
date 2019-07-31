@@ -1,24 +1,26 @@
 mix ecto.create
 MIX_ENV=test mix ecto.create
 
-psql -d crit_dev -c "CREATE SCHEMA common"
+psql -d crit_dev -c "CREATE SCHEMA clients"
 psql -d crit_dev -c "CREATE SCHEMA demo"
 psql -d crit_dev -c "CREATE SCHEMA illinois"
 
-psql -d crit_test -c "CREATE SCHEMA common"
+psql -d crit_test -c "CREATE SCHEMA clients"
 psql -d crit_test -c "CREATE SCHEMA demo"
 
 EXTENSIONS=priv/repo/migrations/extensions/
-COMMON=priv/repo/migrations/common/
+CLIENTS=priv/repo/migrations/clients/
 ONE=priv/repo/migrations/one_institution
 
 mix ecto.migrate --migrations-path $EXTENSIONS
-mix ecto.migrate --migrations-path $COMMON
+mix ecto.migrate --migrations-path $CLIENTS --prefix clients
 mix ecto.migrate --migrations-path $ONE --prefix demo 
 mix ecto.migrate --migrations-path $ONE --prefix illinois 
 
 MIX_ENV=test mix ecto.migrate --migrations-path $EXTENSIONS
-MIX_ENV=test mix ecto.migrate --migrations-path $COMMON
+MIX_ENV=test mix ecto.migrate --migrations-path $CLIENTS --prefix clients
 MIX_ENV=test mix ecto.migrate --migrations-path $ONE --prefix demo 
 
 mix run priv/repo/seeds.exs
+mix run priv/repo/institutions.exs
+MIX_ENV=test mix run priv/repo/test_institutions.exs
