@@ -1,8 +1,7 @@
-defmodule Crit.Sql.PrefixServerTest do
-
+defmodule Crit.Clients.PrefixServerTest do
   use Crit.DataCase
   alias Crit.Repo
-  alias Crit.Sql
+  alias Crit.Clients.Sql
   alias Crit.Audit.ToEcto.Record  # It's one of the simplest table types.
 
 

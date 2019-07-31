@@ -1,6 +1,6 @@
-defmodule Crit.Sql do
+defmodule Crit.Clients.Sql do
   use Agent
-  alias Crit.Sql.PrefixServer
+  alias Crit.Clients.Sql.PrefixServer
   alias Crit.Clients.Institution
   alias Crit.Repo
 
