@@ -28,9 +28,6 @@ config :phoenix, :json_library, Jason
 
 ## Within-app interfaces
 
-config :crit, :institutions_in_schemas, [{"demo institution", "demo"}]
-config :crit, :institutions_with_own_repo, []
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

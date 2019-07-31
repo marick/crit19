@@ -6,7 +6,7 @@ defmodule Crit.Sql.PrefixServerTest do
   alias Crit.Audit.ToEcto.Record  # It's one of the simplest table types.
 
 
-  @institution "demo institution"
+  @institution "critter4us"
   @prefix "demo"
 
   test "use of the server" do
