@@ -55,7 +55,7 @@ defmodule CritWeb.ConnExtras do
     logged_in(conn, manager)
   end
 
-  def logged_in(conn, user \\ (Factory.build(:user) |> Repo.insert!(prefix: "demo"))) do
+  def logged_in(conn, user \\ Factory.build(:user)) do
     conn
     |> assign(:current_user, user)
     |> put_session(:user_id, user.id)

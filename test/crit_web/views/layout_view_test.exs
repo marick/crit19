@@ -18,7 +18,7 @@ defmodule CritWeb.LayoutViewTest do
     test "logged in", %{conn: conn} do
       actual =
         conn
-        |> assign(:current_user, "irrelevant")
+        |> logged_in()
         |> appropriate_session_link
         |> safe_to_string
       assert actual =~ "Log out"

@@ -50,7 +50,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
 
     test "logout clears session", %{conn: conn} do
-      conn = assign(conn, :current_user, Factory.build(:user))
+      conn = logged_in(conn)
       conn = delete_via_action([conn, :logout])
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)

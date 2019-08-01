@@ -1,6 +1,5 @@
 defmodule CritWeb.PublicControllerTest do
   use CritWeb.ConnCase, async: true
-  alias CritWeb.PublicController
   alias CritWeb.CurrentUser.SessionController
   import CritWeb.ConnExtras
   

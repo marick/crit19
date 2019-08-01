@@ -75,7 +75,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       assert {:ok, audit} = Crit.Audit.ToMemory.Server.latest(conn.assigns.audit_pid)
 
       assert audit.event == "created user"
-      assert audit.event_owner_id == conn.assigns.current_user.id
+      assert audit.event_owner_id == user_id(conn)
       assert audit.data.auth_id == params["auth_id"]
     end
   end

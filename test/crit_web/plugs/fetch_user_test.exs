@@ -10,7 +10,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   def logged_in_with_irrelevant_permissions(conn) do
     user = Factory.build(:user)
     assert_without_permissions(user)
-    assign(conn, :current_user, user)
+    logged_in(conn, user)
   end
     
   test "works fine if there's nothing in the session", %{conn: conn} do
@@ -27,7 +27,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
       |> assign(:current_user, user)
       |> FetchUser.call([])
     refute conn.halted
-    assert conn.assigns.current_user == user
+    assert current_user(conn) == user
   end
 
   test "user id doesn't exist in database (should be impossible)", %{conn: conn} do
@@ -36,7 +36,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
       |> put_session(:user_id, 7573333)
       |> FetchUser.call([])
     refute conn.halted   # It doesn't count as an error.
-    refute conn.assigns.current_user
+    refute current_user(conn)
   end
 
   test "fetch user from database", %{conn: conn} do
@@ -46,7 +46,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
       |> put_session(:user_id, user.id)
       |> FetchUser.call([])
     refute conn.halted
-    assert conn.assigns.current_user.id == user.id
+    assert current_user(conn).id == user.id
   end
 
 end
