@@ -25,7 +25,7 @@ defmodule CritWeb.ConnExtras do
       ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/
 
   def assert_redirected_to_authorization_failure_path(conn),
-    do: assert redirected_to(conn) == PublicController.path([conn, :index])
+    do: assert redirected_to(conn) == PublicController.path(:index)
   
   def assert_failed_authorization(conn) do
     assert_redirected_to_authorization_failure_path(conn)

@@ -3,7 +3,7 @@ defmodule CritWeb.PublicController do
   import CritWeb.SingletonIsh, only: [has_user?: 1]
 
   # Test support
-  def path(args), do: apply(Routes, :public_path, args)
+  def path(action), do: Routes.public_path(Endpoint, action)
   
   def index(conn, params) do
     if has_user?(conn) do 

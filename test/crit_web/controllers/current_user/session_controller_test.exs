@@ -3,6 +3,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   alias CritWeb.CurrentUser.SessionController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Examples.PasswordFocused
+  alias CritWeb.PublicController
 
   setup %{conn: conn} do
     [conn: Plug.Test.init_test_session(conn, [])]
@@ -36,7 +37,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
       conn = post_to_action([conn, :try_login], :login,
         %{auth_id: user.auth_id, password: password})
-      assert redirected_to(conn) == Routes.public_path(conn, :index)
+      assert redirected_to(conn) == PublicController.path(:index)
       assert get_session(conn, :user_id) == user.id
     end
   end

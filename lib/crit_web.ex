@@ -25,6 +25,7 @@ defmodule CritWeb do
       import CritWeb.Gettext
       alias CritWeb.Router.Helpers, as: Routes
       alias CritWeb.Controller.Common
+      alias CritWeb.Endpoint
     end
   end
 
