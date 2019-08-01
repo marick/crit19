@@ -6,6 +6,8 @@ defmodule CritWeb.CurrentUser.SettingsController do
   # No plugs are needed yet.
 
   def path(args), do: apply(Routes, :current_user_settings_path, args)
+  def path__new(action), do: Routes.current_user_settings_path(Endpoint, action)
+  def path__new(action, param), do: Routes.current_user_settings_path(Endpoint, action, param)
 
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do

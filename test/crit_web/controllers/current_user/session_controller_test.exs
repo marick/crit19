@@ -11,7 +11,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   
   describe "handling login fields" do
     test "first time has empty fields", %{conn: conn} do
-      conn = get_via_action([conn, :get_login_form])
+      conn = get_via_action__new(conn, :get_login_form)
       assert_will_post_to(conn, :try_login)
       assert_purpose conn, show_login_form()
       assert_no_flash(conn)
@@ -21,8 +21,8 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       %{conn: conn} do
       auth_id = "bogus auth id"
       password = "this is a bogus password"
-      conn = post_to_action([conn, :try_login], :login,
-        %{auth_id: auth_id, password: password})
+      conn = post_to_action__new(conn, :try_login,
+        under(:login, auth_id: auth_id, password: password))
 
       assert_purpose conn, show_login_form()
       assert_user_sees(conn, [Common.form_error_message, auth_id])
@@ -35,8 +35,8 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       user = PasswordFocused.user(password)
       refute get_session(conn, :user_id)
 
-      conn = post_to_action([conn, :try_login], :login,
-        %{auth_id: user.auth_id, password: password})
+      conn = post_to_action__new(conn, :try_login,
+        under(:login, auth_id: user.auth_id, password: password))
       assert redirected_to(conn) == PublicController.path(:index)
       assert get_session(conn, :user_id) == user.id
     end

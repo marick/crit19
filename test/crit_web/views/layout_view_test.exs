@@ -12,7 +12,7 @@ defmodule CritWeb.LayoutViewTest do
         |> safe_to_string
 
       assert actual =~ "Log in"
-      assert actual =~ SessionController.path([conn, :try_login])
+      assert actual =~ SessionController.path__new(:try_login)
     end
 
     test "logged in", %{conn: conn} do
@@ -22,7 +22,7 @@ defmodule CritWeb.LayoutViewTest do
         |> appropriate_session_link
         |> safe_to_string
       assert actual =~ "Log out"
-      assert actual =~ SessionController.path([conn, :logout])
+      assert actual =~ SessionController.path__new(:logout)
     end
   end
   

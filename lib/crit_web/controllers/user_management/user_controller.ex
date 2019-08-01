@@ -12,6 +12,8 @@ defmodule CritWeb.UserManagement.UserController do
 
   # Test support
   def path(args), do: apply(Routes, :user_management_user_path, args)
+  def path__new(action), do: Routes.user_management_user_path(Endpoint, action)
+  def path__new(action, param), do: Routes.user_management_user_path(Endpoint, action, param)
 
   defp not_done(conn) do
     conn
