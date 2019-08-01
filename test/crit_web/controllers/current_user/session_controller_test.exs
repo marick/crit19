@@ -44,7 +44,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
   describe "logout" do
     test "you can't log out if you're already logged out", %{conn: conn} do
-      conn = delete_via_action([conn, :logout])
+      conn = delete_via_action__new(conn, :logout)
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       assert get_flash(conn, :error) =~ "You must be logged in"
     end
@@ -52,7 +52,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
     test "logout clears session", %{conn: conn} do
       conn = logged_in(conn)
-      conn = delete_via_action([conn, :logout])
+      conn = delete_via_action__new(conn, :logout)
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       refute get_session(conn, :user_id)

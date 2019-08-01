@@ -31,9 +31,8 @@ defmodule CritWeb.ConnShorthand do
       defp under(payload_key, params),
         do: %{payload_key => params}
 
-      defp delete_via_action(path_args) do
-        conn = hd(path_args)
-        delete(conn, unquote(controller).path(path_args))
+      defp delete_via_action__new(conn, action) do
+        delete(conn, unquote(controller).path__new(action))
       end
 
       defp assert_will_post_to(conn, action) do
