@@ -1,13 +1,25 @@
 defmodule CritWeb.PublicControllerTest do
   use CritWeb.ConnCase, async: true
+  alias CritWeb.PublicController
+  alias CritWeb.CurrentUser.SessionController
+  import CritWeb.ConnExtras
+  
 
-  test "GET /", %{conn: conn} do
-    assert conn = get(conn, "/")
+  setup %{conn: conn} do
+    [conn: Plug.Test.init_test_session(conn, [])]
   end
 
-  test "shortcut login form", %{conn: conn} do
-    assert conn = get(conn, "/login")
-    assert redirected_to(conn) ==
-      Routes.current_user_session_path(conn, :get_login_form)
+  describe "/" do 
+    test "show home page when logged in", %{conn: conn} do
+      conn
+      |> logged_in()
+      |> get("/")
+      |> assert_purpose(home_page_for_logged_in_user())
+    end
+  
+    test "without a logged in user, go to login form", %{conn: conn} do
+      assert conn = get(conn, "/")
+      assert redirected_to(conn) == SessionController.path([conn, :get_login_form])
+    end
   end
 end

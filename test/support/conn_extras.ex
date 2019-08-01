@@ -52,10 +52,15 @@ defmodule CritWeb.ConnExtras do
 
   def logged_in_with_permissions(conn, permissions) do
     manager = Factory.build(:user, permission_list: permissions) |> Repo.insert!(prefix: "demo")
-    conn
-    |> assign(:current_user, manager)
-    |> put_session(:user_id, manager.id)
+    logged_in(conn, manager)
   end
+
+  def logged_in(conn, user \\ (Factory.build(:user) |> Repo.insert!(prefix: "demo"))) do
+    conn
+    |> assign(:current_user, user)
+    |> put_session(:user_id, user.id)
+  end
+    
 
   # For use with `setup`
   def logged_in_as_user_manager(%{conn: conn}) do

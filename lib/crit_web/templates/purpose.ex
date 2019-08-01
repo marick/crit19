@@ -13,4 +13,6 @@ defmodule CritWeb.Templates.Purpose do
   def show_login_form, 
     do: "show login form"
 
+  def home_page_for_logged_in_user, 
+    do: "home page for logged in user"
 end
