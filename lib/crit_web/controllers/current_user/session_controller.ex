@@ -40,7 +40,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     conn
     |> render("login_form.html",
          auth_id: params["auth_id"],
-         path: path([conn, :try_login]))
+         path: path__new(:try_login))
   end
 
 end

@@ -26,7 +26,7 @@ defmodule CritWeb.ConnShorthand do
 
       defp assert_will_post_to(conn, action) do
         assert html_response(conn, 200) =~ "method=\"post\""
-        post_to = unquote(controller).path([conn, action])
+        post_to = unquote(controller).path__new(action)
         assert html_response(conn, 200) =~ "action=\"#{post_to}\""
       end
     end
