@@ -12,7 +12,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
     end
 
     test "getting the form: there is no matching token", %{conn: conn} do
-      conn = get_via_action__new(conn, :fresh_password_form, "bogus token")
+      conn = get_via_action(conn, :fresh_password_form, "bogus token")
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       assert flash_error(conn) =~ "does not exist"
       assert flash_error(conn) =~ "has probably expired"
@@ -20,7 +20,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
     test "getting the form: there is a matching token",
       %{conn: conn, token_text: token_text, user: user} do
-      conn = get_via_action__new(conn, :fresh_password_form, token_text)
+      conn = get_via_action(conn, :fresh_password_form, token_text)
 
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
@@ -38,7 +38,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       conn = Plug.Test.init_test_session(conn, token_text: user.password_token.text)
 
       run = fn conn, new_password, confirmation ->
-        post_to_action__new(conn, :set_fresh_password,
+        post_to_action(conn, :set_fresh_password,
           under(:password, PasswordFocused.params(new_password, confirmation)))
       end
       

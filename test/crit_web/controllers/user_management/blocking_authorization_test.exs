@@ -5,7 +5,7 @@ defmodule CritWeb.UserManagement.BlockingAuthorizationTest do
   test "An attempt to reach the UserController without a login redirects",
     %{conn: conn} do
     
-    conn = get conn, UserController.path__new(:new)
+    conn = get conn, UserController.path(:new)
     assert_failed_authorization(conn)
   end
 

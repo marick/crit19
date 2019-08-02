@@ -6,8 +6,8 @@ defmodule CritWeb.CurrentUser.SessionController do
   plug :must_be_logged_in when action in [:logout]
   plug :must_be_logged_out when action not in [:logout]
 
-  def path__new(action), do: Routes.current_user_session_path(Endpoint, action)
-  def path__new(action, param), do: Routes.current_user_session_path(Endpoint, action, param)
+  def path(action), do: Routes.current_user_session_path(Endpoint, action)
+  def path(action, param), do: Routes.current_user_session_path(Endpoint, action, param)
 
 
   def get_login_form(conn, _params) do
@@ -39,7 +39,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     conn
     |> render("login_form.html",
          auth_id: params["auth_id"],
-         path: path__new(:try_login))
+         path: path(:try_login))
   end
 
 end

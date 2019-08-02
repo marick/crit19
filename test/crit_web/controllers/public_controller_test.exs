@@ -18,7 +18,7 @@ defmodule CritWeb.PublicControllerTest do
   
     test "without a logged in user, go to login form", %{conn: conn} do
       assert conn = get(conn, "/")
-      assert redirected_to(conn) == SessionController.path__new(:get_login_form)
+      assert redirected_to(conn) == SessionController.path(:get_login_form)
     end
   end
 end

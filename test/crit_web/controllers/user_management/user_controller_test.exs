@@ -9,9 +9,9 @@ defmodule CritWeb.UserManagement.UserControllerTest do
 
   describe "index" do
     test "boilerplate", %{conn: conn} do
-      conn = get_via_action__new(conn, :index)
+      conn = get_via_action(conn, :index)
       assert_purpose conn, list_active_users()
-      assert_links_to conn, UnderTest.path__new(:new)
+      assert_links_to conn, UnderTest.path(:new)
     end
 
     # TODO: This test will fail when the user name has an apostrophe
@@ -19,7 +19,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     test "lists all users", %{conn: conn} do
       # Note that the user manager isn't stored in the database
       user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
-      conn = get_via_action__new(conn, :index)
+      conn = get_via_action(conn, :index)
       assert_user_sees(conn, [user.auth_id, user.display_name, user.email])
     end
   end
@@ -29,7 +29,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   describe "new user" do
     test "renders form", %{conn: conn} do
       conn
-      |> get_via_action__new(:new)
+      |> get_via_action(:new)
       |> assert_purpose(form_for_creating_new_user())
     end
   end
@@ -37,7 +37,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   describe "create user" do
     setup do
       [act: fn conn, params ->
-        post_to_action__new(conn, :create, under(:user, params))
+        post_to_action(conn, :create, under(:user, params))
       end]
     end
     
@@ -85,7 +85,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
 
 
   def ready_for_new_user?(conn),
-    do: redirected_to(conn) == UnderTest.path__new(:new)
+    do: redirected_to(conn) == UnderTest.path(:new)
 
   def assert_retry_same_user(conn), 
     do: assert_purpose conn, form_for_creating_new_user()
