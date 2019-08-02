@@ -1,5 +1,5 @@
 defmodule Crit.Users.PasswordTest do
-  use Crit.DataCase, async: true
+  use Crit.DataCase
   alias Crit.Users
   # alias Crit.Users.User
   alias Crit.Users.Password

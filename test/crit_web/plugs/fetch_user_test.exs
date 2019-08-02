@@ -1,5 +1,5 @@
 defmodule CritWeb.Plugs.FetchUserTest do
-  use CritWeb.ConnCase, async: true
+  use CritWeb.ConnCase
   alias CritWeb.Plugs.FetchUser
   import Crit.DataExtras
   import Crit.PlugExtras

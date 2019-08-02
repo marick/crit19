@@ -1,5 +1,5 @@
 defmodule CritWeb.Plugs.AuthorizeTest do
-  use CritWeb.ConnCase, async: true
+  use CritWeb.ConnCase
   alias CritWeb.Plugs.Authorize
   import Crit.PlugExtras
 

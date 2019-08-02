@@ -30,4 +30,7 @@ defmodule CritWeb.SingletonIsh do
   end
 
   def audit_assigned?(conn), do: Map.has_key?(conn.assigns, :audit_server)
+
+
+  def institution(_conn), do: "demo"
 end

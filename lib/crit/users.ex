@@ -8,6 +8,9 @@ defmodule Crit.Users do
   alias Crit.Users.PasswordToken
   alias Crit.Users.Password
   alias Crit.Users.PermissionList
+  alias Crit.Sql
+
+  @default_institution "critter4us"
 
   # Primarily about users
 
@@ -21,17 +24,17 @@ defmodule Crit.Users do
     #    User.default_changeset(%User{permission_list: embedded_changeset})
   end
 
-  def user_from_auth_id(auth_id) do
+  def user_from_auth_id(auth_id, institution \\ @default_institution) do
     User
     |> Repo.get_by([auth_id: auth_id], prefix: "demo")
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
-  def permissioned_user_from_id(id) do
+  def permissioned_user_from_id(id, institution \\ @default_institution) do
     id |> User.Query.permissioned_user |> Repo.one(prefix: "demo")
   end
 
-  def active_users do
+  def active_users(institution \\ @default_institution) do
     User.Query.active_users |> Repo.all(prefix: "demo")
   end
   
@@ -40,19 +43,20 @@ defmodule Crit.Users do
 
   def fresh_password_changeset(), do: Password.default_changeset()
       
-  def set_password(auth_id, params) do
+  def set_password(auth_id, params, institution \\ @default_institution) do
+    conflict_behavior = [on_conflict: :replace_all, conflict_target: :auth_id]
+    
     result =
       %Password{auth_id: auth_id}
       |> Password.create_changeset(params)
-      |> Repo.insert(on_conflict: :replace_all, conflict_target: :auth_id,
-                     prefix: "demo")
+      |> Sql.insert(conflict_behavior, institution)
     case result do
       {:ok, _} -> :ok  # Results should never be of interest
       error -> error
     end
   end
 
-  def check_password(auth_id, proposed_password) do
+  def check_password(auth_id, proposed_password, institution \\ @default_institution) do
     password =
       Password.Query.by_auth_id(auth_id)
       |> Password.Query.preloading_user
@@ -68,13 +72,13 @@ defmodule Crit.Users do
 
   # Primarily about tokens
 
-  def user_needing_activation(params) do
+  def user_needing_activation(params, institution \\ @default_institution) do
     User.create_changeset(params)
     |> put_change(:password_token, PasswordToken.unused())
-    |> Repo.insert(prefix: "demo")
+    |> Sql.insert(institution)
   end
 
-  def user_from_token(token_text) do
+  def user_from_token(token_text, institution \\ @default_institution) do
     PasswordToken.Query.expired_tokens |> Repo.delete_all(prefix: "demo")
 
     user =
@@ -90,10 +94,10 @@ defmodule Crit.Users do
   end
 
 
-  def user_has_password_token?(user_id),
+  def user_has_password_token?(user_id, institution \\ @default_institution),
     do: user_id |> PasswordToken.Query.by_user_id |> Repo.exists?(prefix: "demo")
 
-  def delete_password_token(user_id) do
+  def delete_password_token(user_id, institution \\ @default_institution) do
     user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all(prefix: "demo")
     # There is no need for deletion information to leak out
     :ok
