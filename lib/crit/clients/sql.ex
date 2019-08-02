@@ -10,8 +10,8 @@ defmodule Crit.Clients.Sql do
     Agent.start_link(fn -> servers end, name: __MODULE__)
   end
 
-  def server_for(institution) do
-    Agent.get(__MODULE__, &Map.get(&1, institution))
+  def server_for(institution_short_name) do
+    Agent.get(__MODULE__, &Map.get(&1, institution_short_name))
   end
 
   # Server part delegates to a particular server "subclass"
@@ -19,9 +19,8 @@ defmodule Crit.Clients.Sql do
   def insert(struct_or_changeset, opts \\ [], server), 
     do: GenServer.call(server, {:insert, [struct_or_changeset], opts})
 
-    defp start_one %{short_name: short_name, prefix: prefix} do
-      {:ok, pid} = PrefixServer.start_link(prefix)
-      {short_name, pid}
-    end
-
+  defp start_one %{short_name: short_name, prefix: prefix} do
+    {:ok, pid} = PrefixServer.start_link(prefix)
+    {short_name, pid}
+  end
 end
