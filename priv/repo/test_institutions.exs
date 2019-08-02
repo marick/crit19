@@ -1,5 +1,5 @@
 alias Crit.Repo
-alias Crit.Clients.{Institution}
+alias Crit.Institutions.{Institution}
 
 {:ok, _} = Repo.insert %Institution{
   display_name: "Critter4Us Demo",

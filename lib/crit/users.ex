@@ -74,6 +74,12 @@ defmodule Crit.Users do
     |> Repo.insert(prefix: "demo")
   end
 
+  def user_needing_activation__2(params, _institution_short_name) do
+    User.create_changeset(params)
+    |> put_change(:password_token, PasswordToken.unused())
+    |> Repo.insert(prefix: "demo")
+  end
+
   def user_from_token(token_text) do
     PasswordToken.Query.expired_tokens |> Repo.delete_all(prefix: "demo")
 

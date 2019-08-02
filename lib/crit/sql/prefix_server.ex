@@ -1,4 +1,4 @@
-defmodule Crit.Clients.Sql.PrefixServer do
+defmodule Crit.Sql.PrefixServer do
   use GenServer
   alias Crit.Repo
 
