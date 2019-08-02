@@ -6,7 +6,6 @@ defmodule CritWeb.CurrentUser.SessionController do
   plug :must_be_logged_in when action in [:logout]
   plug :must_be_logged_out when action not in [:logout]
 
-  def path(args), do: apply(Routes, :current_user_session_path, args)
   def path__new(action), do: Routes.current_user_session_path(Endpoint, action)
   def path__new(action, param), do: Routes.current_user_session_path(Endpoint, action, param)
 

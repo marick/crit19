@@ -11,7 +11,6 @@ defmodule CritWeb.UserManagement.UserController do
   plug :must_be_able_to, :manage_and_create_users
 
   # Test support
-  def path(args), do: apply(Routes, :user_management_user_path, args)
   def path__new(action), do: Routes.user_management_user_path(Endpoint, action)
   def path__new(action, param), do: Routes.user_management_user_path(Endpoint, action, param)
 
@@ -37,7 +36,7 @@ defmodule CritWeb.UserManagement.UserController do
         conn
         |> Audit.created_user(user.id, user.auth_id)
         |> put_flash(:info, raw(flash))
-        |> redirect(to: path([conn, :new]))
+        |> redirect(to: path__new(:new))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)

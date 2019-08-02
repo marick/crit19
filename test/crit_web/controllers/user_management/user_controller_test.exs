@@ -11,7 +11,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     test "boilerplate", %{conn: conn} do
       conn = get_via_action__new(conn, :index)
       assert_purpose conn, list_active_users()
-      assert_links_to conn, UnderTest.path([conn, :new])
+      assert_links_to conn, UnderTest.path__new(:new)
     end
 
     # TODO: This test will fail when the user name has an apostrophe
@@ -85,7 +85,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
 
 
   def ready_for_new_user?(conn),
-    do: redirected_to(conn) == UnderTest.path [conn, :new]
+    do: redirected_to(conn) == UnderTest.path__new(:new)
 
   def assert_retry_same_user(conn), 
     do: assert_purpose conn, form_for_creating_new_user()
