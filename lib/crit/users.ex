@@ -60,7 +60,7 @@ defmodule Crit.Users do
     password =
       Password.Query.by_auth_id(auth_id)
       |> Password.Query.preloading_user
-      |> Repo.one(prefix: "demo")
+      |> Sql.one(institution)
     
     if password && Pbkdf2.verify_pass(proposed_password, password.hash) do
       {:ok, password.user.id}
@@ -85,7 +85,7 @@ defmodule Crit.Users do
       token_text 
       |> PasswordToken.Query.matching_user
       |> preload(:password_token)
-      |> Repo.one(prefix: "demo")
+      |> Sql.one(institution)
 
     if user,
       do: PasswordToken.force_update(user.password_token, NaiveDateTime.utc_now)

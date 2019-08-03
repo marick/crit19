@@ -59,12 +59,12 @@ defmodule Crit.Users.Password do
   end
 
   # Utilities
-  def count_for(auth_id) do
+  def count_for(auth_id, institution \\ @default_institution) do
     query =
       from p in __MODULE__,
       where: p.auth_id == ^auth_id,
       select: count(p.id)
-    Repo.one(query, prefix: "demo")
+    Sql.one(query, institution)
   end
 
 
