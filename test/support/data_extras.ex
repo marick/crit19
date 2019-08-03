@@ -5,13 +5,14 @@ defmodule Crit.DataExtras do
   alias Crit.Users.PermissionList
   import Ecto.Changeset
 
+  @default_institution "critter4us"
 
   def assert_without_permissions(user) do
     refute %PermissionList{} == user.permission_list
   end
 
-  def age(module, id, seconds) do
-    current = Repo.get(module, id, prefix: "demo")
+  def age(module, id, seconds, institution \\ @default_institution) do
+    current = Repo.get(module, id, institution)
     current
     |> change(inserted_at: NaiveDateTime.add(current.inserted_at, -1 * seconds))
     |> Repo.update(prefix: "demo")
