@@ -11,4 +11,9 @@ defmodule Crit.Sql do
     GenServer.call(server, {:one, [queryable], opts})
   end
 
+  def get_by(queryable, clauses, opts \\ [], key) do
+    server = Servers.server_for(key)
+    GenServer.call(server, {:get_by, [queryable, clauses], opts})
+  end
+
 end

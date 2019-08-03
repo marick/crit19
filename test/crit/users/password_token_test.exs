@@ -3,6 +3,9 @@ defmodule Crit.Users.PasswordTokenTest do
   alias Crit.Users
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
+  alias Crit.Sql
+
+  @default_institution "critter4us"
 
   defp fresh_user(attrs \\ []) do 
     params = Factory.string_params_for(:user, attrs)
@@ -15,7 +18,7 @@ defmodule Crit.Users.PasswordTokenTest do
   describe "creating a PasswordToken" do
     test "a successful creation" do
       user = fresh_user()
-      assert token = Repo.get_by(PasswordToken, [text: user.password_token.text], prefix: "demo")
+      assert token = Sql.get_by(PasswordToken, [text: user.password_token.text], @default_institution)
       assert Repo.get(User, token.user_id, prefix: "demo")
     end
 

@@ -26,7 +26,7 @@ defmodule Crit.Users do
 
   def user_from_auth_id(auth_id, institution \\ @default_institution) do
     User
-    |> Repo.get_by([auth_id: auth_id], prefix: "demo")
+    |> Sql.get_by([auth_id: auth_id], institution)
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
