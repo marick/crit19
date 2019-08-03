@@ -4,6 +4,7 @@ defmodule Crit.Users.Password do
   import Ecto.Changeset
   import Ecto.Query
   alias Crit.Repo
+  alias Crit.Sql
   import Pile.Changeset
 
   schema "passwords" do
@@ -14,6 +15,8 @@ defmodule Crit.Users.Password do
 
     timestamps()
   end
+
+  @default_institution "critter4us"
 
   # A changeset with only default or empty fields. For `new` actions.
   def default_changeset(),

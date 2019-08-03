@@ -5,4 +5,7 @@ defmodule Crit.Sql.Api do
   opts :: Keyword.t()
 ) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
 
+@callback one(queryable :: Ecto.Queryable.t(), opts :: Keyword.t()) ::
+  Ecto.Schema.t() | nil
+
 end

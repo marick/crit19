@@ -30,8 +30,8 @@ defmodule Crit.Users do
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
-  def permissioned_user_from_id(id, institution \\ @default_institution) do
-    id |> User.Query.permissioned_user |> Repo.one(prefix: "demo")
+  def permissioned_user_from_id(id, institution \\ @default_institution) do    
+    id |> User.Query.permissioned_user |> Sql.one(institution)
   end
 
   def active_users(institution \\ @default_institution) do
