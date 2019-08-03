@@ -2,8 +2,8 @@ defmodule Crit.Audit.ToMemory.Server do
   use GenServer
   alias Crit.Audit.CreationStruct
 
-  def put(pid, %CreationStruct{} = entry),
-    do: GenServer.call(pid, {:put, entry})
+  def put(pid, %CreationStruct{} = entry, institution),
+    do: GenServer.call(pid, {:put, entry, institution})
 
   def latest(pid), do: GenServer.call(pid, :latest)
 
@@ -18,7 +18,7 @@ defmodule Crit.Audit.ToMemory.Server do
   end
 
   @impl GenServer
-  def handle_call({:put, entry}, _from, state) do
+  def handle_call({:put, entry, _institution}, _from, state) do
     {:reply, :ok, [entry | state]}
   end
 

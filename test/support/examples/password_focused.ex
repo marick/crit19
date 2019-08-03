@@ -4,6 +4,9 @@ defmodule Crit.Examples.PasswordFocused do
   alias Crit.Users.{Password}
   alias Crit.Users
   alias Crit.Repo
+  alias Crit.Sql
+  import CritWeb.SingletonIsh
+  
 
   def params(password),
     do: params(password, password)

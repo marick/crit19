@@ -32,5 +32,13 @@ defmodule Crit.Sql.Api do
   changeset :: Ecto.Changeset.t(),
   opts :: Keyword.t(),
   key :: String.t()
-) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}  
+) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
+
+
+@callback insert!(
+  struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(),
+  opts :: Keyword.t(),
+  key :: String.t()
+) :: Ecto.Schema.t()
+
 end

@@ -2,10 +2,10 @@ defmodule Crit.Audit.ToEcto.Server do
   use GenServer
   alias Crit.Audit.CreationStruct
   alias Crit.Audit.ToEcto.Record
-  alias Crit.Repo
+  alias Crit.Sql
 
-  def put(_pid, %CreationStruct{} = entry),
-    do: GenServer.cast(__MODULE__, {:put, entry})
+  def put(_pid, %CreationStruct{} = entry, institution),
+    do: GenServer.cast(__MODULE__, {:put, entry, institution})
 
   def start_link(_),
     do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -18,10 +18,10 @@ defmodule Crit.Audit.ToEcto.Server do
   end
 
   @impl GenServer
-  def handle_cast({:put, entry}, _no_state) do
+  def handle_cast({:put, entry, institution}, _no_state) do
     %Record{}
     |> Record.changeset(Map.from_struct(entry))
-    |> Repo.insert!(prefix: "demo")
+    |> Sql.insert!(institution)
     {:noreply, :no_state}
   end
 

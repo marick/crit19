@@ -3,7 +3,8 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   alias CritWeb.UserManagement.UserController, as: UnderTest
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Users
-  alias Crit.Repo
+  import CritWeb.SingletonIsh
+  alias Crit.Sql
 
   setup :logged_in_as_user_manager
 
@@ -18,7 +19,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     # (Because it gets turned into &#39).
     test "lists all users", %{conn: conn} do
       # Note that the user manager isn't stored in the database
-      user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
+      user = Factory.build(:user) |> Sql.insert!(institution(conn))
       conn = get_via_action(conn, :index)
       assert_user_sees(conn, [user.auth_id, user.display_name, user.email])
     end

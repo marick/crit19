@@ -17,6 +17,10 @@ defmodule CritWeb.Audit do
   end
 
   defp send_struct(conn, struct),
-    do: apply(audit_server(conn), :put, [audit_pid(conn), struct])
+    do: apply(
+          audit_server(conn),
+          :put,
+          [audit_pid(conn), struct, institution(conn)]
+        )
 end
 

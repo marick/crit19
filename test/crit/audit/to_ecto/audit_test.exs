@@ -10,12 +10,18 @@ defmodule Crit.Audit.ToEcto.AuditTest do
   alias Crit.Audit.ToEcto.Server
   alias Crit.Audit.ToEcto.Record
 
+  @default_institution "critter4us"
+  
   test "audit logging" do
     id = 3
     event = "event"
     data = %{s: "string", i: 44}
 
-    Server.put(:ignored, %Entry{event_owner_id: id, event: event, data: data})
+    Server.put(
+      :ignored,
+      %Entry{event_owner_id: id, event: event, data: data},
+      @default_institution
+    )
     wait_for_cast_to_complete()
     assert [one] = Repo.all(Record, prefix: "demo")
 

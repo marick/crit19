@@ -4,15 +4,18 @@ defmodule Crit.Users.PasswordTest do
   # alias Crit.Users.User
   alias Crit.Users.Password
   alias Crit.Examples.PasswordFocused
+  alias Crit.Sql
 
   @moduledoc """
   Working with passwords through the Users interface. 
   See also users/internal/password_test.exs
   """
 
+  @default_institution "critter4us"
+  
   
   setup do
-    user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
+    user = Factory.build(:user) |> Sql.insert!(@default_institution)
     assert Password.count_for(user.auth_id) == 0
 
     [user: user]
