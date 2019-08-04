@@ -1,6 +1,5 @@
 defmodule Crit.Users do
   import Ecto.Query, warn: false
-  alias Crit.Repo
   import Ecto.Changeset
   import Crit.OkError
 
@@ -79,7 +78,7 @@ defmodule Crit.Users do
   end
 
   def user_from_token(token_text, institution \\ @default_institution) do
-    PasswordToken.Query.expired_tokens |> Repo.delete_all(prefix: "demo")
+    PasswordToken.Query.expired_tokens |> Sql.delete_all(institution)
 
     user =
       token_text 
@@ -95,10 +94,10 @@ defmodule Crit.Users do
 
 
   def user_has_password_token?(user_id, institution \\ @default_institution),
-    do: user_id |> PasswordToken.Query.by_user_id |> Repo.exists?(prefix: "demo")
+    do: user_id |> PasswordToken.Query.by_user_id |> Sql.exists?(institution)
 
   def delete_password_token(user_id, institution \\ @default_institution) do
-    user_id |> PasswordToken.Query.by_user_id |> Repo.delete_all(prefix: "demo")
+    user_id |> PasswordToken.Query.by_user_id |> Sql.delete_all(institution)
     # There is no need for deletion information to leak out
     :ok
   end

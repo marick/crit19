@@ -11,15 +11,21 @@ defmodule Crit.Sql do
   end
 
   @impl true
-  def get(queryable, id, opts \\ [], key) do
+  def delete_all(queryable, opts \\ [], key) do
     server = Servers.server_for(key)
-    GenServer.call(server, {:get, [queryable, id], opts})
+    GenServer.call(server, {:delete_all, [queryable], opts})
   end
 
   @impl true
-  def delete_all(queryable, id, opts \\ [], key) do
+  def exists?(queryable, opts \\ [], key) do
     server = Servers.server_for(key)
-    GenServer.call(server, {:delete_all, [queryable, id], opts})
+    GenServer.call(server, {:exists?, [queryable], opts})
+  end
+
+  @impl true
+  def get(queryable, id, opts \\ [], key) do
+    server = Servers.server_for(key)
+    GenServer.call(server, {:get, [queryable, id], opts})
   end
 
   @impl true

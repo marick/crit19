@@ -11,7 +11,13 @@ defmodule Crit.Sql.Api do
   opts :: Keyword.t(),
   key :: String.t()
 ) :: {integer(), nil | [term()]}
-  
+
+@callback exists?(
+  queryable :: Ecto.Queryable.t(),
+  opts :: Keyword.t(),
+  key :: String.t()
+) :: boolean()
+
 @callback get(
   queryable :: Ecto.Queryable.t(),
   id :: term(),
