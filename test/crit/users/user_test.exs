@@ -4,6 +4,7 @@ defmodule Crit.Users.UserTest do
   alias Pile.Changeset
   alias Crit.Users.PermissionList
 
+  @default_institution "critter4us"
 
   test "the fresh/default user changeset contains permissions" do
     changeset = Users.fresh_user_changeset()
@@ -59,7 +60,7 @@ defmodule Crit.Users.UserTest do
     visible = Factory.build(:user) |> Repo.insert!(prefix: "demo")
     _invisible = Factory.build(:user, active: false) |> Repo.insert!(prefix: "demo")
 
-    assert [retrieved] = Users.active_users()
+    assert [retrieved] = Users.active_users(@default_institution)
     assert retrieved.auth_id == visible.auth_id
   end
 end

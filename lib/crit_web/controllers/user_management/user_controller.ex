@@ -6,6 +6,7 @@ defmodule CritWeb.UserManagement.UserController do
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
   import CritWeb.Plugs.Authorize
   alias CritWeb.Audit
+  import CritWeb.SingletonIsh, only: [institution: 1]
 
   # It's possible this would be better in router.ex
   plug :must_be_able_to, :manage_and_create_users
@@ -21,7 +22,7 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def index(conn, _params) do
-    users = Users.active_users()
+    users = Users.active_users(institution(conn))
     render(conn, "index.html", users: users)
   end
 

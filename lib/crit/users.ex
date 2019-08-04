@@ -33,7 +33,7 @@ defmodule Crit.Users do
     id |> User.Query.permissioned_user |> Sql.one(institution)
   end
 
-  def active_users(institution \\ @default_institution) do
+  def active_users(institution) do
     User.Query.active_users |> Sql.all(institution)
   end
   
