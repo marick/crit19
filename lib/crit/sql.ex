@@ -11,6 +11,24 @@ defmodule Crit.Sql do
   end
 
   @impl true
+  def get(queryable, id, opts \\ [], key) do
+    server = Servers.server_for(key)
+    GenServer.call(server, {:get, [queryable, id], opts})
+  end
+
+  @impl true
+  def delete_all(queryable, id, opts \\ [], key) do
+    server = Servers.server_for(key)
+    GenServer.call(server, {:delete_all, [queryable, id], opts})
+  end
+
+  @impl true
+  def get_by(queryable, clauses, opts \\ [], key) do
+    server = Servers.server_for(key)
+    GenServer.call(server, {:get_by, [queryable, clauses], opts})
+  end
+
+  @impl true
   def insert(struct_or_changeset, opts \\ [], key) do
     server = Servers.server_for(key)
     GenServer.call(server, {:insert, [struct_or_changeset], opts})
@@ -26,18 +44,6 @@ defmodule Crit.Sql do
   def one(queryable, opts \\ [], key) do
     server = Servers.server_for(key)
     GenServer.call(server, {:one, [queryable], opts})
-  end
-
-  @impl true
-  def get(queryable, id, opts \\ [], key) do
-    server = Servers.server_for(key)
-    GenServer.call(server, {:get, [queryable, id], opts})
-  end
-
-  @impl true
-  def get_by(queryable, clauses, opts \\ [], key) do
-    server = Servers.server_for(key)
-    GenServer.call(server, {:get_by, [queryable, clauses], opts})
   end
 
   @impl true

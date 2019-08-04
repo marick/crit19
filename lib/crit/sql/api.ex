@@ -5,20 +5,13 @@ defmodule Crit.Sql.Api do
   opts :: Keyword.t(),
   key :: String.t()
 ) :: [Ecto.Schema.t()]
-  
-@callback insert(
-  struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(),
-  opts :: Keyword.t(),
-  key :: String.t()
-) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
 
-@callback one(
+@callback delete_all(
   queryable :: Ecto.Queryable.t(),
   opts :: Keyword.t(),
   key :: String.t()
-) ::
-  Ecto.Schema.t() | nil
-
+) :: {integer(), nil | [term()]}
+  
 @callback get(
   queryable :: Ecto.Queryable.t(),
   id :: term(),
@@ -34,17 +27,30 @@ defmodule Crit.Sql.Api do
   key :: String.t()
 ) :: Ecto.Schema.t() | nil
 
-@callback update(
-  changeset :: Ecto.Changeset.t(),
+@callback insert(
+  struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(),
   opts :: Keyword.t(),
   key :: String.t()
 ) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
-
 
 @callback insert!(
   struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(),
   opts :: Keyword.t(),
   key :: String.t()
 ) :: Ecto.Schema.t()
+
+@callback one(
+  queryable :: Ecto.Queryable.t(),
+  opts :: Keyword.t(),
+  key :: String.t()
+) ::
+  Ecto.Schema.t() | nil
+
+@callback update(
+  changeset :: Ecto.Changeset.t(),
+  opts :: Keyword.t(),
+  key :: String.t()
+) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
+
 
 end
