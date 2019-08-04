@@ -26,7 +26,7 @@ defmodule Crit.Users.PasswordTokenTest do
       params = Factory.string_params_for(:user, auth_id: "")
       {:error, _} = Users.user_needing_activation(params)
 
-      assert [] = Repo.all(PasswordToken, prefix: "demo")
+      assert [] = Sql.all(PasswordToken, @default_institution)
     end
   end
 

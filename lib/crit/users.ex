@@ -35,7 +35,7 @@ defmodule Crit.Users do
   end
 
   def active_users(institution \\ @default_institution) do
-    User.Query.active_users |> Repo.all(prefix: "demo")
+    User.Query.active_users |> Sql.all(institution)
   end
   
 

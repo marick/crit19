@@ -1,5 +1,11 @@
 defmodule Crit.Sql.Api do
 
+@callback all(
+  queryable :: Ecto.Queryable.t(),
+  opts :: Keyword.t(),
+  key :: String.t()
+) :: [Ecto.Schema.t()]
+  
 @callback insert(
   struct_or_changeset :: Ecto.Schema.t() | Ecto.Changeset.t(),
   opts :: Keyword.t(),

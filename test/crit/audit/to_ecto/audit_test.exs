@@ -5,10 +5,10 @@ defmodule Crit.Audit.ToEcto.AuditTest do
   # this process share its connection with the GenServer process, I'll
   # just run it synchronously.
   use Crit.DataCase
-  alias Crit.Repo
   alias Crit.Audit.CreationStruct, as: Entry
   alias Crit.Audit.ToEcto.Server
   alias Crit.Audit.ToEcto.Record
+  alias Crit.Sql
 
   @default_institution "critter4us"
   
@@ -23,7 +23,7 @@ defmodule Crit.Audit.ToEcto.AuditTest do
       @default_institution
     )
     wait_for_cast_to_complete()
-    assert [one] = Repo.all(Record, prefix: "demo")
+    assert [one] = Sql.all(Record, @default_institution)
 
     assert one.event_owner_id == id
     assert one.event == event
