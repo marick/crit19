@@ -17,8 +17,14 @@ defmodule Crit.Users.PasswordTest do
   setup do
     user = Factory.build(:user) |> Sql.insert!(@default_institution)
     assert Password.count_for(user.auth_id) == 0
-
     [user: user]
+  end
+
+  setup do
+    institution = Atom.to_string(__MODULE__)
+    server = Sql.PrefixServer.start_link("irrelevant")
+    Sql.Servers.put(institution, server)
+    []
   end
   
   describe "setting a password..." do

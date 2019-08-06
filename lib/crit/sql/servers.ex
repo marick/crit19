@@ -17,7 +17,11 @@ defmodule Crit.Sql.Servers do
     Agent.get(__MODULE__, &Map.get(&1, tag))
   end
 
-  defp start_one %{short_name: short_name, prefix: prefix} do
+  def put(tag, server) do
+    Agent.update(__MODULE__, &Map.put(&1, tag, server))
+  end
+
+  def start_one %{short_name: short_name, prefix: prefix} do
     {:ok, pid} = PrefixServer.start_link(prefix)
     {short_name, pid}
   end
