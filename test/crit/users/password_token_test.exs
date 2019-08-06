@@ -77,7 +77,7 @@ defmodule Crit.Users.PasswordTokenTest do
 
   def set_expiration_plus_seconds(token, seconds) do
     expired = NaiveDateTime.add(PasswordToken.expiration_threshold(), seconds)
-    PasswordToken.force_update(token, expired)
+    PasswordToken.force_update(token, expired, @default_institution)
   end
 
   describe "tokens and time" do

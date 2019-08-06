@@ -85,7 +85,7 @@ defmodule Crit.Users do
       |> Sql.one(institution)
 
     if user,
-      do: PasswordToken.force_update(user.password_token, NaiveDateTime.utc_now)
+      do: PasswordToken.force_update(user.password_token, NaiveDateTime.utc_now, institution)
     
     lift_nullable(user, "missing token '#{token_text}'")
   end

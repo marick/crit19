@@ -14,7 +14,7 @@ defmodule Crit.Users.PasswordTest do
   
   setup do
     user = Factory.build(:user) |> Sql.insert!(@default_institution)
-    assert Password.count_for(user.auth_id) == 0
+    assert Password.count_for(user.auth_id, @default_institution) == 0
     [user: user]
   end
 
@@ -30,7 +30,7 @@ defmodule Crit.Users.PasswordTest do
       password = "password"
 
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password), @default_institution)
-      assert Password.count_for(user.auth_id) == 1
+      assert Password.count_for(user.auth_id, @default_institution) == 1
       assert {:ok, user.id} == Users.check_password(user.auth_id, password, @default_institution)
     end
 
@@ -41,7 +41,7 @@ defmodule Crit.Users.PasswordTest do
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__old), @default_institution)
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__NEW), @default_institution)
       
-      assert Password.count_for(user.auth_id) == 1
+      assert Password.count_for(user.auth_id, @default_institution) == 1
       assert {:ok, user.id} == Users.check_password(user.auth_id, password__NEW, @default_institution)
       assert :error == Users.check_password(user.auth_id, password__old, @default_institution)
     end
@@ -53,7 +53,7 @@ defmodule Crit.Users.PasswordTest do
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__old), @default_institution)
       assert {:error, _} = Users.set_password(user.auth_id, PasswordFocused.params(password__NEW), @default_institution)
       
-      assert Password.count_for(user.auth_id) == 1
+      assert Password.count_for(user.auth_id, @default_institution) == 1
       assert {:ok, user.id} == Users.check_password(user.auth_id, password__old, @default_institution)
       assert :error == Users.check_password(user.auth_id, password__NEW, @default_institution)
     end

@@ -6,9 +6,6 @@ defmodule Crit.Users.PasswordToken do
   import Ecto.Query
   alias Crit.Sql
 
-  @default_institution "critter4us"
-
-
   schema "password_tokens" do
     field :text, :string
     belongs_to :user, User
@@ -26,7 +23,7 @@ defmodule Crit.Users.PasswordToken do
     NaiveDateTime.add(now, -1 * @expiration_in_seconds)
   end
 
-  def force_update(token, datetime, institution \\ @default_institution) do
+  def force_update(token, datetime, institution) do
     for_postgres = NaiveDateTime.truncate(datetime, :second)
 
     change(token, updated_at: for_postgres) |> Sql.update(institution)

@@ -18,9 +18,9 @@ defmodule Crit.Examples.PasswordFocused do
 
   def user(password) do
     user = Factory.build(:user) |> Sql.insert!(@default_institution)
-    assert Password.count_for(user.auth_id) == 0
+    assert Password.count_for(user.auth_id, @default_institution) == 0
     assert :ok == Users.set_password(user.auth_id, params(password, password), @default_institution)
-    assert Password.count_for(user.auth_id) == 1
+    assert Password.count_for(user.auth_id, @default_institution) == 1
     user
   end
 end
