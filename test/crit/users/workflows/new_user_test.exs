@@ -21,7 +21,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
 
   def supply_new_password(user_id, new_password) do
     params = PasswordFocused.params(new_password, new_password)
-    assert :ok = Users.set_password(user_id, params)
+    assert :ok = Users.set_password(user_id, params, @default_institution)
   end
 
   test "successful creation through activation" do

@@ -2,6 +2,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb, :controller
   alias Crit.Users
   alias Ecto.Changeset
+  import CritWeb.SingletonIsh
 
   # No plugs are needed yet.
 
@@ -25,7 +26,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   def set_fresh_password(conn, %{"password" => params}) do
     with(
       {:ok, user} <- Users.user_from_token(get_session(conn, :token_text)),
-      :ok <- Users.set_password(user.auth_id, params)
+      :ok <- Users.set_password(user.auth_id, params, institution(conn))
     ) do
       Users.delete_password_token(user.id)
       conn

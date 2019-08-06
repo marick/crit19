@@ -42,7 +42,7 @@ defmodule Crit.Users do
 
   def fresh_password_changeset(), do: Password.default_changeset()
       
-  def set_password(auth_id, params, institution \\ @default_institution) do
+  def set_password(auth_id, params, institution) do
     conflict_behavior = [on_conflict: :replace_all, conflict_target: :auth_id]
     
     result =
