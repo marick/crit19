@@ -36,6 +36,21 @@ defmodule CritWeb.Bulma.Elements do
     """
   end
 
+  def labeled_select(f, tag, label, options, opts \\ []) do
+    wrapper = label f, tag, label, class: "label"
+    input = select f, tag, options, opts
+    ~E"""
+    <div class="field">
+      <%= wrapper %>
+      <div class="control">
+         <div class="select">
+           <%= input %>
+         </div>
+      </div>
+    </div>
+    """
+  end
+
 
   def start_centered_form do
     ~E"""
