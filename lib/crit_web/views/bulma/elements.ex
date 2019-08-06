@@ -38,13 +38,13 @@ defmodule CritWeb.Bulma.Elements do
 
   def labeled_select(f, tag, label, options, opts \\ []) do
     wrapper = label f, tag, label, class: "label"
-    input = select f, tag, options, opts
+    dropdown = select f, tag, options, opts
     ~E"""
     <div class="field">
       <%= wrapper %>
       <div class="control">
          <div class="select">
-           <%= input %>
+           <%= dropdown %>
          </div>
       </div>
     </div>

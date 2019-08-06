@@ -22,7 +22,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       auth_id = "bogus auth id"
       password = "this is a bogus password"
       conn = post_to_action(conn, :try_login,
-        under(:login, auth_id: auth_id, password: password))
+        under(:login, auth_id: auth_id, password: password, institution: @default_institution))
 
       assert_purpose conn, show_login_form()
       assert_user_sees(conn, [Common.form_error_message, auth_id])
@@ -36,7 +36,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       refute get_session(conn, :user_id)
 
       conn = post_to_action(conn, :try_login,
-        under(:login, auth_id: user.auth_id, password: password))
+        under(:login, auth_id: user.auth_id, password: password, institution: @default_institution))
       assert redirected_to(conn) == PublicController.path(:index)
       assert get_session(conn, :user_id) == user.id
     end
