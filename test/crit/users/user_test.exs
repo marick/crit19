@@ -3,8 +3,7 @@ defmodule Crit.Users.UserTest do
   alias Crit.Users
   alias Pile.Changeset
   alias Crit.Users.PermissionList
-
-  @default_institution "critter4us"
+  alias Crit.Sql
 
   test "the fresh/default user changeset contains permissions" do
     changeset = Users.fresh_user_changeset()
@@ -32,33 +31,33 @@ defmodule Crit.Users.UserTest do
 
   describe "fetching a user by the auth id" do
     test "success" do
-      user = Factory.build(:user) |> Repo.insert!(prefix: "demo")
-      assert {:ok, fetched} = Users.user_from_auth_id(user.auth_id)
+      user = Factory.build(:user) |> Sql.insert!(@default_institution)
+      assert {:ok, fetched} = Users.user_from_auth_id(user.auth_id, @default_institution)
       assert fetched.auth_id == user.auth_id
       assert_without_permissions(fetched)
     end
 
     test "failure" do
-      assert {:error, message} = Users.user_from_auth_id("missing")
+      assert {:error, message} = Users.user_from_auth_id("missing", @default_institution)
       assert message =~ "no such user 'missing'"
     end
   end
 
   describe "getting a fully permissioned user" do
     test "does not exist" do
-      refute Users.permissioned_user_from_id(3838)
+      refute Users.permissioned_user_from_id(3838, @default_institution)
     end
 
     test "does exist" do
-      original = Factory.build(:user) |> Repo.insert!(prefix: "demo")
-      assert fetched = Users.permissioned_user_from_id(original.id)
+      original = Factory.build(:user) |> Sql.insert!(@default_institution)
+      assert fetched = Users.permissioned_user_from_id(original.id, @default_institution)
       assert fetched.permission_list == original.permission_list
     end
   end
 
   test "fetching all *active* users" do
-    visible = Factory.build(:user) |> Repo.insert!(prefix: "demo")
-    _invisible = Factory.build(:user, active: false) |> Repo.insert!(prefix: "demo")
+    visible = Factory.build(:user) |> Sql.insert!(@default_institution)
+    _invisible = Factory.build(:user, active: false) |> Sql.insert!(@default_institution)
 
     assert [retrieved] = Users.active_users(@default_institution)
     assert retrieved.auth_id == visible.auth_id

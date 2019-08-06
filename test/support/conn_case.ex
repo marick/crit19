@@ -29,6 +29,7 @@ defmodule CritWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint
+      @default_institution "critter4us"
     end
   end
 

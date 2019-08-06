@@ -12,7 +12,8 @@ defmodule CritWeb.Plugs.FetchUser do
       has_user?(conn) ->
         conn
 
-      user = user_id && Crit.Users.permissioned_user_from_id(user_id) -> 
+      user = user_id &&
+          Crit.Users.permissioned_user_from_id(user_id, institution(conn)) -> 
         assign(conn, :current_user, user)
 
       true ->

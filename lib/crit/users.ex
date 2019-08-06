@@ -23,13 +23,13 @@ defmodule Crit.Users do
     #    User.default_changeset(%User{permission_list: embedded_changeset})
   end
 
-  def user_from_auth_id(auth_id, institution \\ @default_institution) do
+  def user_from_auth_id(auth_id, institution) do
     User
     |> Sql.get_by([auth_id: auth_id], institution)
     |> lift_nullable("no such user '#{auth_id}'")
   end
 
-  def permissioned_user_from_id(id, institution \\ @default_institution) do    
+  def permissioned_user_from_id(id, institution) do    
     id |> User.Query.permissioned_user |> Sql.one(institution)
   end
 
