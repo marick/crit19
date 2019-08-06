@@ -11,7 +11,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
 
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
-    case Users.user_from_token(token_text) do
+    case Users.user_from_token(token_text, institution(conn)) do
       {:ok, _} ->
         conn
         |> put_session(:token_text, token_text)
@@ -25,10 +25,10 @@ defmodule CritWeb.CurrentUser.SettingsController do
 
   def set_fresh_password(conn, %{"password" => params}) do
     with(
-      {:ok, user} <- Users.user_from_token(get_session(conn, :token_text)),
+      {:ok, user} <- Users.user_from_token(get_session(conn, :token_text), institution(conn)),
       :ok <- Users.set_password(user.auth_id, params, institution(conn))
     ) do
-      Users.delete_password_token(user.id)
+      Users.delete_password_token(user.id, institution(conn))
       conn
       |> put_session(:user_id, user.id)
       |> delete_session(:token_text)

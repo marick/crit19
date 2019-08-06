@@ -9,8 +9,6 @@ defmodule Crit.Users do
   alias Crit.Users.PermissionList
   alias Crit.Sql
 
-  @default_institution "critter4us"
-
   # Primarily about users
 
   def fresh_user_changeset() do
@@ -55,7 +53,7 @@ defmodule Crit.Users do
     end
   end
 
-  def check_password(auth_id, proposed_password, institution \\ @default_institution) do
+  def check_password(auth_id, proposed_password, institution) do
     password =
       Password.Query.by_auth_id(auth_id)
       |> Password.Query.preloading_user
@@ -71,13 +69,13 @@ defmodule Crit.Users do
 
   # Primarily about tokens
 
-  def user_needing_activation(params, institution \\ @default_institution) do
+  def user_needing_activation(params, institution) do
     User.create_changeset(params)
     |> put_change(:password_token, PasswordToken.unused())
     |> Sql.insert(institution)
   end
 
-  def user_from_token(token_text, institution \\ @default_institution) do
+  def user_from_token(token_text, institution) do
     PasswordToken.Query.expired_tokens |> Sql.delete_all(institution)
 
     user =
@@ -93,10 +91,10 @@ defmodule Crit.Users do
   end
 
 
-  def user_has_password_token?(user_id, institution \\ @default_institution),
+  def user_has_password_token?(user_id, institution),
     do: user_id |> PasswordToken.Query.by_user_id |> Sql.exists?(institution)
 
-  def delete_password_token(user_id, institution \\ @default_institution) do
+  def delete_password_token(user_id, institution) do
     user_id |> PasswordToken.Query.by_user_id |> Sql.delete_all(institution)
     # There is no need for deletion information to leak out
     :ok

@@ -2,6 +2,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   use CritWeb, :controller
   alias Crit.Users
   import CritWeb.Plugs.Authorize
+  import CritWeb.SingletonIsh
 
   plug :must_be_logged_in when action in [:logout]
   plug :must_be_logged_out when action not in [:logout]
@@ -17,7 +18,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   def try_login(conn, %{"login" => params}) do
     auth_id = params["auth_id"]
     password = params["password"]
-    case Users.check_password(auth_id, password) do
+    case Users.check_password(auth_id, password, institution(conn)) do
       {:ok, user_id} ->
         conn
         |> put_session(:user_id, user_id)

@@ -7,7 +7,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "displaying a token to get a form" do
     setup do
-      {:ok, user} = Factory.string_params_for(:user) |> Users.user_needing_activation
+      {:ok, user} = Factory.string_params_for(:user) |> Users.user_needing_activation(@default_institution)
       [token_text: user.password_token.text, user: user]
     end
 
@@ -27,13 +27,13 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert get_session(conn, :token_text) == token_text
 
       # The token is not deleted.
-      assert Users.user_has_password_token?(user.id)
+      assert Users.user_has_password_token?(user.id, @default_institution)
     end
   end
 
   describe "setting the password for the first time" do
     setup %{conn: conn} do
-      {:ok, user} = Factory.string_params_for(:user) |> Users.user_needing_activation
+      {:ok, user} = Factory.string_params_for(:user) |> Users.user_needing_activation(@default_institution)
 
       conn = Plug.Test.init_test_session(conn, token_text: user.password_token.text)
 
@@ -50,12 +50,12 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
       conn = run.(conn, valid_password, valid_password)
-      assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password, @default_institution)
       assert get_session(conn, :user_id) == user.id
       refute get_session(conn, :token_text)
 
       # Token has been deleted
-      refute Users.user_has_password_token?(user.id)
+      refute Users.user_has_password_token?(user.id, @default_institution)
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       assert flash_info(conn) =~ "You have been logged in"
     end
@@ -77,7 +77,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, user: user, valid_password: valid_password, run: run} do
 
       conn = run.(conn, valid_password, "WRONG")
-      refute :ok == Users.check_password(user.auth_id, valid_password)
+      refute :ok == Users.check_password(user.auth_id, valid_password, @default_institution)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
 
@@ -87,7 +87,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
         ])
         
       # The token is not deleted.
-      assert Users.user_has_password_token?(user.id)
+      assert Users.user_has_password_token?(user.id, @default_institution)
     end
   end
 

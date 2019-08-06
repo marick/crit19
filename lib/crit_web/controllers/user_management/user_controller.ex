@@ -31,7 +31,7 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    case Users.user_needing_activation(user_params) do
+    case Users.user_needing_activation(user_params, institution(conn)) do
       {:ok, user} ->
         flash = instructions_in_lieue_of_email(conn, user)
         conn

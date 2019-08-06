@@ -11,8 +11,6 @@ defmodule Crit.Users.PasswordTest do
   See also users/internal/password_test.exs
   """
 
-  @default_institution "critter4us"
-  
   
   setup do
     user = Factory.build(:user) |> Sql.insert!(@default_institution)
@@ -33,7 +31,7 @@ defmodule Crit.Users.PasswordTest do
 
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password), @default_institution)
       assert Password.count_for(user.auth_id) == 1
-      assert {:ok, user.id} == Users.check_password(user.auth_id, password)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, password, @default_institution)
     end
 
     test "successfully replacing the old one", %{user: user} do
@@ -44,8 +42,8 @@ defmodule Crit.Users.PasswordTest do
       assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__NEW), @default_institution)
       
       assert Password.count_for(user.auth_id) == 1
-      assert {:ok, user.id} == Users.check_password(user.auth_id, password__NEW)
-      assert :error == Users.check_password(user.auth_id, password__old)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, password__NEW, @default_institution)
+      assert :error == Users.check_password(user.auth_id, password__old, @default_institution)
     end
 
     test "UNsuccessfully replacing the old one", %{user: user} do
@@ -56,8 +54,8 @@ defmodule Crit.Users.PasswordTest do
       assert {:error, _} = Users.set_password(user.auth_id, PasswordFocused.params(password__NEW), @default_institution)
       
       assert Password.count_for(user.auth_id) == 1
-      assert {:ok, user.id} == Users.check_password(user.auth_id, password__old)
-      assert :error == Users.check_password(user.auth_id, password__NEW)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, password__old, @default_institution)
+      assert :error == Users.check_password(user.auth_id, password__NEW, @default_institution)
     end
   end
 
@@ -66,12 +64,12 @@ defmodule Crit.Users.PasswordTest do
     # Success case is tested above.
     
     test "no such user: does not leak that fact" do
-      assert :error == Users.check_password("bad auth id", "password")
+      assert :error == Users.check_password("bad auth id", "password", @default_institution)
     end
     
     test "incorrect password: does not leak that fact" do
       user = PasswordFocused.user("password")
-      assert :error == Users.check_password(user.auth_id, "WRONG_password")
+      assert :error == Users.check_password(user.auth_id, "WRONG_password", @default_institution)
     end
   end
 end
