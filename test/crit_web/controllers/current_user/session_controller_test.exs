@@ -79,7 +79,6 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       assert list == [{default.display_name, default.short_name}]
     end
 
-
     test "default comes first", %{default: default} do
       originally_first = %Institution{display_name: "AA", short_name: "aacup"}
 
@@ -89,6 +88,20 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       assert one == {default.display_name, default.short_name}
       assert two == {originally_first.display_name, originally_first.short_name}
     end      
+
+    test "results are sorted by display name", %{default: default} do
+      # Note that the short_names are in opposite orders of the display names.
+      zzz = %Institution{display_name: "zzz", short_name: "aa"}
+      aaa = %Institution{display_name: "aaa", short_name: "zz"}
+
+      assert {[one, two, three], _} =
+        UnderTest.institution_options(@irrelevant, [zzz, default, aaa])
+      
+      assert one == {default.display_name, default.short_name}
+      assert two == {aaa.display_name, aaa.short_name}
+      assert three == {zzz.display_name, zzz.short_name}
+    end      
+
   end
   
 end

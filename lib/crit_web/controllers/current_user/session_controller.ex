@@ -62,6 +62,8 @@ defmodule CritWeb.CurrentUser.SessionController do
       |> Enum.map(winnow)
       |> Pile.Enum.extract(is_default?)
 
-    { [ default | remainder ] , selected }
+    sorted_remainder = List.keysort(remainder, 0)
+
+    { [ default | sorted_remainder ] , selected }
   end
 end
