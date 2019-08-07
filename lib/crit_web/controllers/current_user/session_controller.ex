@@ -1,14 +1,13 @@
 defmodule CritWeb.CurrentUser.SessionController do
   use CritWeb, :controller
-  alias Crit.Users
+  use CritWeb.Controller.Path, :current_user_session_path
   import CritWeb.Plugs.Authorize
+  alias Crit.Users
   alias Crit.Institutions
+  
 
   plug :must_be_logged_in when action in [:logout]
   plug :must_be_logged_out when action not in [:logout]
-
-  def path(action), do: Routes.current_user_session_path(Endpoint, action)
-  def path(action, param), do: Routes.current_user_session_path(Endpoint, action, param)
 
   def get_login_form(conn, _params) do
     starting_institution = Institutions.default_institution.short_name

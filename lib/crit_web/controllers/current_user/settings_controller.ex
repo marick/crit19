@@ -1,14 +1,11 @@
 defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb, :controller
+  use CritWeb.Controller.Path, :current_user_settings_path
   alias Crit.Users
   alias Ecto.Changeset
   import CritWeb.SingletonIsh
 
   # No plugs are needed yet.
-
-  def path(action), do: Routes.current_user_settings_path(Endpoint, action)
-  def path(action, param), do: Routes.current_user_settings_path(Endpoint, action, param)
-
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
     case Users.user_from_token(token_text, institution(conn)) do

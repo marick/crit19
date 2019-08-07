@@ -1,19 +1,15 @@
 defmodule CritWeb.UserManagement.UserController do
   use CritWeb, :controller
-
-  alias Crit.Users
+  use CritWeb.Controller.Path, :user_management_user_path
+  import CritWeb.Plugs.Authorize
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
-  import CritWeb.Plugs.Authorize
-  alias CritWeb.Audit
   import CritWeb.SingletonIsh, only: [institution: 1]
+  alias Crit.Users
+  alias CritWeb.Audit
 
   # It's possible this would be better in router.ex
   plug :must_be_able_to, :manage_and_create_users
-
-  # Test support
-  def path(action), do: Routes.user_management_user_path(Endpoint, action)
-  def path(action, param), do: Routes.user_management_user_path(Endpoint, action, param)
 
   defp not_done(conn) do
     conn

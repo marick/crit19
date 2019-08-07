@@ -1,10 +1,8 @@
 defmodule CritWeb.PublicController do
   use CritWeb, :controller
+  use CritWeb.Controller.Path, :public_path
   import CritWeb.SingletonIsh, only: [has_user?: 1]
 
-  # Test support
-  def path(action), do: Routes.public_path(Endpoint, action)
-  
   def index(conn, params) do
     if has_user?(conn) do 
       render(conn, "index.html")
