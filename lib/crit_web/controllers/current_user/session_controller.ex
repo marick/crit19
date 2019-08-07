@@ -10,10 +10,9 @@ defmodule CritWeb.CurrentUser.SessionController do
   def path(action), do: Routes.current_user_session_path(Endpoint, action)
   def path(action, param), do: Routes.current_user_session_path(Endpoint, action, param)
 
-  @default_institution_selection "critter4us"
-
   def get_login_form(conn, _params) do
-    render_login(conn, %{}, institution_options(@default_institution_selection))
+    starting_institution = Institutions.default_institution.short_name
+    render_login(conn, %{}, institution_options(starting_institution))
   end
 
   def try_login(conn, %{"login" => params}) do
