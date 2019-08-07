@@ -2,11 +2,11 @@ defmodule Crit.InstitutionsTest do
   use Crit.DataCase
   alias Crit.Institutions
   alias Crit.Institutions.Institution
-  alias Crit.Repo
+  alias Crit.Clients
 
   test "the fresh/default user changeset contains permissions" do
 
-    assert [preloaded] = Repo.all(Institution, prefix: "clients")
+    assert [preloaded] = Clients.all(Institution)
     assert [retrieved] = Institutions.all()
     assert preloaded == retrieved
     assert retrieved.short_name == Institutions.default_institution.short_name

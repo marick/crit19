@@ -45,7 +45,7 @@ defmodule CritWeb.CurrentUser.SessionController do
          auth_id: params["auth_id"],
          path: path(:try_login),
          options: options,
-         selected: selected,
+         selected: selected
     )
   end
 
