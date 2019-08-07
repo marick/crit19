@@ -7,7 +7,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "displaying a token to get a form" do
     setup do
-      {:ok, user} = Factory.string_params_for(:user) |> Users.user_needing_activation(@default_institution)
+      {:ok, user} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_institution)
       [token_text: user.password_token.text, user: user]
     end
 
@@ -33,7 +33,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "setting the password for the first time" do
     setup %{conn: conn} do
-      {:ok, user} = Factory.string_params_for(:user) |> Users.user_needing_activation(@default_institution)
+      {:ok, user} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_institution)
 
       conn = Plug.Test.init_test_session(conn, token_text: user.password_token.text)
 

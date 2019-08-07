@@ -69,7 +69,7 @@ defmodule Crit.Users do
 
   # Primarily about tokens
 
-  def user_needing_activation(params, institution) do
+  def create_unactivated_user(params, institution) do
     User.create_changeset(params)
     |> put_change(:password_token, PasswordToken.unused())
     |> Sql.insert(institution)

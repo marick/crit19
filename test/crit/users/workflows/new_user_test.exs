@@ -5,7 +5,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   alias Crit.Examples.PasswordFocused
 
   def creation_and_first_save(params) do
-    assert {:ok, user} = Users.user_needing_activation(params, @default_institution)
+    assert {:ok, user} = Users.create_unactivated_user(params, @default_institution)
     
     # Just a spot check; unit tests have more
     assert params["email"] == user.email
