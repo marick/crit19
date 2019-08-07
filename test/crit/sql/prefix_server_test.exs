@@ -3,10 +3,10 @@ defmodule Crit.Sql.PrefixServerTest do
   alias Crit.Repo
   alias Crit.Sql
   alias Crit.Audit.ToEcto.Record  # It's one of the simplest table types.
+  alias Crit.Institutions
 
-
-  @institution "critter4us"
-  @prefix "demo"
+  @institution Institutions.default_institution.short_name
+  @prefix Institutions.default_institution.prefix
 
   test "use of the server" do
     assert {:ok, direct} = Repo.insert(something(), prefix: @prefix)

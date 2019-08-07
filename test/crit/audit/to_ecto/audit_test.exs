@@ -10,8 +10,6 @@ defmodule Crit.Audit.ToEcto.AuditTest do
   alias Crit.Audit.ToEcto.Record
   alias Crit.Sql
 
-  @default_institution "critter4us"
-  
   test "audit logging" do
     id = 3
     event = "event"

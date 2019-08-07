@@ -2,7 +2,6 @@ defmodule CritWeb.CurrentUser.SessionController do
   use CritWeb, :controller
   alias Crit.Users
   import CritWeb.Plugs.Authorize
-  import CritWeb.SingletonIsh
   alias Crit.Institutions
 
   plug :must_be_logged_in when action in [:logout]
@@ -50,9 +49,19 @@ defmodule CritWeb.CurrentUser.SessionController do
   end
 
   def institution_options(selected, institutions \\ Institutions.all()) do
-    {[{"Critter4Us Demo", "critter4us"},
-       {"University of Illinois", "illinois"}
-      ],
-      selected}
+    winnow = fn institution ->
+      {institution.display_name, institution.short_name}
+    end
+
+    is_default? = fn { _, short_name} ->
+      short_name == Institutions.default_institution.short_name
+    end
+
+    { default, remainder } =
+      institutions
+      |> Enum.map(winnow)
+      |> Pile.Enum.extract(is_default?)
+
+    { [ default | remainder ] , selected }
   end
 end

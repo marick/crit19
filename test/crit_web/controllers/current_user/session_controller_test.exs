@@ -4,6 +4,8 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnShorthand, controller: UnderTest
   alias Crit.Examples.PasswordFocused
   alias CritWeb.PublicController
+  alias Crit.Institutions
+  alias Crit.Institutions.{Institution}
 
   setup %{conn: conn} do
     [conn: Plug.Test.init_test_session(conn, [])]
@@ -57,6 +59,36 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       refute get_session(conn, :user_id)
     end
+  end
+
+  @irrelevant "irrelevant"
+
+  describe "turning a list of institutions into a simpler structure" do
+    setup do
+      [default: Institutions.default_institution]
+    end
+
+    test "`selected` argument is just returned", %{default: default} do
+      assert {_, "passed in"} =
+        UnderTest.institution_options("passed in", [default])
+    end
+    
+    test "just the default institution", %{default: default} do 
+      assert {list, _} =
+        UnderTest.institution_options(@irrelevant, [default])
+      assert list == [{default.display_name, default.short_name}]
+    end
+
+
+    test "default comes first", %{default: default} do
+      originally_first = %Institution{display_name: "AA", short_name: "aacup"}
+
+      assert {[one, two], _} =
+        UnderTest.institution_options(@irrelevant, [originally_first, default])
+      
+      assert one == {default.display_name, default.short_name}
+      assert two == {originally_first.display_name, originally_first.short_name}
+    end      
   end
   
 end
