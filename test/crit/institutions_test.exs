@@ -9,8 +9,8 @@ defmodule Crit.InstitutionsTest do
     assert [preloaded] = Repo.all(Institution, prefix: "clients")
     assert [retrieved] = Institutions.all()
     assert preloaded == retrieved
-    assert retrieved.short_name == "critter4us"
-    assert retrieved.prefix == "demo"
-    assert retrieved.display_name == "Critter4Us Demo"
+    assert retrieved.short_name == Institutions.default_institution.short_name
+    assert retrieved.prefix == Institutions.default_institution.prefix
+    assert retrieved.display_name == Institutions.default_institution.display_name
   end
 end

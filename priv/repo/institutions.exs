@@ -1,11 +1,8 @@
 alias Crit.Repo
 alias Crit.Institutions.{Institution}
+alias Crit.Institutions
 
-{:ok, _} = Repo.insert %Institution{
-  display_name: "Critter4Us Demo",
-  short_name: "critter4us",
-  prefix: "demo"
-}, prefix: "clients"
+{:ok, _} = Repo.insert(Institutions.default_institution, prefix: "clients")
 
 {:ok, _} = Repo.insert %Institution{
   display_name: "University of Illinois",
