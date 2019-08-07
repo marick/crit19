@@ -1,9 +1,9 @@
 defmodule CritWeb.CurrentUser.SettingsControllerTest do
   use CritWeb.ConnCase
-  alias Crit.Users
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
-  use CritWeb.ConnShorthand, controller: UnderTest
+  use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Examples.PasswordFocused
+  alias Crit.Users
 
   describe "displaying a token to get a form" do
     setup do

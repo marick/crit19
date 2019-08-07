@@ -1,7 +1,7 @@
 defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.UserManagement.UserController, as: UnderTest
-  use CritWeb.ConnShorthand, controller: UnderTest
+  use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Users
   import CritWeb.SingletonIsh
   alias Crit.Sql

@@ -1,4 +1,4 @@
-defmodule CritWeb.ConnShorthand do
+defmodule CritWeb.ConnMacros do
   use Phoenix.ConnTest
   import ExUnit.Assertions
 
