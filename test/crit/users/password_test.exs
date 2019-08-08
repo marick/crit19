@@ -18,13 +18,6 @@ defmodule Crit.Users.PasswordTest do
     [user: user]
   end
 
-  setup do
-    institution = Atom.to_string(__MODULE__)
-    server = Sql.PrefixServer.start_link("irrelevant")
-    Sql.Servers.put(institution, server)
-    []
-  end
-  
   describe "setting a password..." do
     test "successfully, for the first time", %{user: user} do
       password = "password"
