@@ -22,6 +22,7 @@ defmodule CritWeb.CurrentUser.SessionController do
       {:ok, user_id} ->
         conn
         |> put_session(:user_id, user_id)
+        |> put_session(:institution, institution)
         |> redirect(to: Routes.public_path(conn, :index))
       :error ->
         conn

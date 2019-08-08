@@ -41,6 +41,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
         under(:login, auth_id: user.auth_id, password: password, institution: @default_institution))
       assert redirected_to(conn) == PublicController.path(:index)
       assert get_session(conn, :user_id) == user.id
+      assert get_session(conn, :institution) == @default_institution
     end
   end
 
@@ -58,6 +59,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       refute get_session(conn, :user_id)
+      refute get_session(conn, :institution)
     end
   end
 
