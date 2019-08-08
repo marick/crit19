@@ -5,9 +5,11 @@ defmodule Crit.Users do
 
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
+  alias Crit.Users.PasswordToken2
   alias Crit.Users.Password
   alias Crit.Users.PermissionList
   alias Crit.Sql
+  alias Crit.Repo
 
   # Primarily about users
 
@@ -70,9 +72,18 @@ defmodule Crit.Users do
   # Primarily about tokens
 
   def create_unactivated_user(params, institution) do
-    User.create_changeset(params)
-    |> put_change(:password_token, PasswordToken.unused())
-    |> Sql.insert(institution)
+    result =
+      User.create_changeset(params)
+      |> put_change(:password_token, PasswordToken.unused())
+      |> Sql.insert(institution)
+
+    case result do
+      {:ok, user} ->
+        Repo.insert!(PasswordToken2.new(user.id, institution))
+        result
+      _ ->
+        result
+    end
   end
 
   def user_from_token(token_text, institution) do

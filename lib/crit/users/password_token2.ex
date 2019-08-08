@@ -1,19 +1,27 @@
-defmodule Crit.Institutions.PasswordToken2 do
+defmodule Crit.Users.PasswordToken2 do
   use Ecto.Schema
   alias Crit.EmailToken
-  import Ecto.Changeset
-  import Ecto.Query
-  alias Crit.Sql
-  alias Crit.Institutions.Institution
+#  import Ecto.Changeset
+#  import Ecto.Query
+#  alias Crit.Sql
+#  alias Crit.Institutions.Institution
 
   @schema_prefix "clients"
   
   schema "all_password_tokens" do
     field :text, :string
     field :user_id, :id
-    belongs_to :institution, Institution
+    field :institution_short_name, :string
 
     timestamps(inserted_at: false)
   end
 
+  def new(user_id, institution) do
+    %__MODULE__{user_id: user_id,
+                institution_short_name: institution,
+                text: EmailToken.generate()
+    }
+  end
+
+  
 end

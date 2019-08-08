@@ -3,23 +3,28 @@ defmodule Crit.Users.PasswordTokenTest do
   alias Crit.Users
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
+  alias Crit.Users.PasswordToken2
   alias Crit.Sql
+  alias Crit.Repo
 
   defp fresh_user(attrs \\ []) do 
     params = Factory.string_params_for(:user, attrs)
     assert {:ok, user} = Users.create_unactivated_user(params, @default_institution)
     assert user.password_token.user_id == user.id
+    assert Repo.get_by(PasswordToken2, user_id: user.id)
     user
   end
   
 
   describe "creating a PasswordToken" do
+    @tag :skip
     test "a successful creation" do
       user = fresh_user()
       assert token = Sql.get_by(PasswordToken, [text: user.password_token.text], @default_institution)
       assert Sql.get(User, token.user_id, @default_institution)
     end
 
+    @tag :skip
     test "bad user data prevents a token from being created" do
       params = Factory.string_params_for(:user, auth_id: "")
       {:error, _} = Users.create_unactivated_user(params, @default_institution)
@@ -29,17 +34,20 @@ defmodule Crit.Users.PasswordTokenTest do
   end
 
   describe "user_from_token" do
+    @tag :skip
     test "token matches" do
       user = fresh_user()
       assert {:ok, _} = Users.user_from_token(user.password_token.text, @default_institution)
     end
 
+    @tag :skip
     test "is not a destructive read" do
       user = fresh_user()
       assert {:ok, _} = Users.user_from_token(user.password_token.text, @default_institution)
       assert {:ok, _} = Users.user_from_token(user.password_token.text, @default_institution)
     end
 
+    @tag :skip
     test "no match" do
       _user = fresh_user()
       assert {:error, message} = Users.user_from_token("DIFFERENT TOKEN", @default_institution)
@@ -49,6 +57,7 @@ defmodule Crit.Users.PasswordTokenTest do
 
 
   describe "deleting a token" do
+    @tag :skip
     test "success" do
       retain = fresh_user()
       remove = fresh_user()
@@ -59,6 +68,7 @@ defmodule Crit.Users.PasswordTokenTest do
       assert {:ok, _} = Users.user_from_token(retain.password_token.text, @default_institution)
     end
 
+    @tag :skip
     test "missing token does not throw an error" do
       retain = fresh_user()
       assert :ok == Users.delete_password_token(retain.id, @default_institution)
@@ -67,6 +77,7 @@ defmodule Crit.Users.PasswordTokenTest do
   end
   
   describe "checking if a token exists" do
+    @tag :skip
     test "yes, then no" do
       user = fresh_user()
       assert Users.user_has_password_token?(user.id, @default_institution)
@@ -81,17 +92,20 @@ defmodule Crit.Users.PasswordTokenTest do
   end
 
   describe "tokens and time" do
+    @tag :skip
     setup do
       user = fresh_user()
       assert Users.user_has_password_token?(user.id, @default_institution)
       [user: user, token: user.password_token]
     end
     
+    @tag :skip
     test "tokens can expire before being 'redeemed'", %{token: token} do
       set_expiration_plus_seconds(token, -30) # too late by 30 seconds
       assert {:error, _} = Users.user_from_token(token.text, @default_institution)
     end
 
+    @tag :skip
     test "reading a token updates its 'time to live'", %{token: token} do
       set_expiration_plus_seconds(token, 30) # 30 seconds to live
 
