@@ -11,5 +11,13 @@ defmodule Crit.Repo.Migrations.CreateInstitutions do
       timestamps()
     end
 
+    create table(:all_password_tokens) do
+      add :text, :string, null: false
+      add :user_id, :id, null: false
+      add :institution_id, references(:institutions, on_delete: :delete_all), null: false
+
+      timestamps(inserted_at: false)
+    end
+    create index(:all_password_tokens, [:text])
   end
 end
