@@ -116,12 +116,28 @@ defmodule Crit.Users do
     lift_nullable(user, "missing token '#{token_text}'")
   end
 
+  def user_from_token2(token_text) do
+    case Repo.get_by(PasswordToken2, text: token_text) do
+      %PasswordToken2{user_id: user_id, institution_short_name: institution} ->
+        user = Sql.get(User, user_id, institution)
+        {:ok, user}
+      nil ->
+        lift_nullable(nil, "missing token '#{token_text}'")
+    end
+  end
+  
 
   def user_has_password_token?(user_id, institution),
     do: user_id |> PasswordToken.Query.by_user_id |> Sql.exists?(institution)
 
   def delete_password_token(user_id, institution) do
     user_id |> PasswordToken.Query.by_user_id |> Sql.delete_all(institution)
+    # There is no need for deletion information to leak out
+    :ok
+  end
+
+  def delete_password_token2(token_text) do
+    token_text |> PasswordToken2.Query.by_text |> Repo.delete_all
     # There is no need for deletion information to leak out
     :ok
   end

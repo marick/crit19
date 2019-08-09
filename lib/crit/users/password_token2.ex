@@ -23,5 +23,13 @@ defmodule Crit.Users.PasswordToken2 do
     }
   end
 
+  defmodule Query do
+    import Ecto.Query
+    alias Crit.Users.PasswordToken2
+
+    def by_text(text),
+      do: from PasswordToken2, where: [text: ^text]
+  
+  end
   
 end

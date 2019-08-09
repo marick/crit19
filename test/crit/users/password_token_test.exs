@@ -9,11 +9,12 @@ defmodule Crit.Users.PasswordTokenTest do
 
   defp fresh_user(attrs \\ []) do 
     params = Factory.string_params_for(:user, attrs)
-    assert {:ok, %{user: user, token: token}} =
-      Users.create_unactivated_user2(params, @default_institution)
+    result = Users.create_unactivated_user2(params, @default_institution)
+    assert {:ok, %{user: user, token: token}} = result
+      
     assert user.display_name == params["display_name"]
     assert Repo.get_by(PasswordToken2, user_id: user.id)
-    user
+    result
   end
   
 
@@ -33,45 +34,45 @@ defmodule Crit.Users.PasswordTokenTest do
   end
 
   describe "user_from_token" do
-    @tag :skip
-    test "token matches" do
-      user = fresh_user()
-      assert {:ok, _} = Users.user_from_token(user.password_token.text, @default_institution)
+    setup do
+      {:ok, %{user: inserted, token: token}} = fresh_user()
+      [user: inserted, token: token]
+    end
+      
+    test "token matches", %{user: inserted, token: token} do
+      assert {:ok, retrieved} = Users.user_from_token2(token.text)
+      assert inserted.auth_id == retrieved.auth_id
+      # Note that the permissions are not loaded.
+      refute Ecto.assoc_loaded?(retrieved.permission_list)
     end
 
-    @tag :skip
-    test "is not a destructive read" do
-      user = fresh_user()
-      assert {:ok, _} = Users.user_from_token(user.password_token.text, @default_institution)
-      assert {:ok, _} = Users.user_from_token(user.password_token.text, @default_institution)
+    test "is not a destructive read", %{token: token} do
+      assert {:ok, _} = Users.user_from_token2(token.text)
+      assert {:ok, _} = Users.user_from_token2(token.text)
     end
 
-    @tag :skip
     test "no match" do
-      _user = fresh_user()
-      assert {:error, message} = Users.user_from_token("DIFFERENT TOKEN", @default_institution)
+      assert {:error, message} = Users.user_from_token2("DIFFERENT TOKEN")
       assert message =~ "DIFFERENT TOKEN"
     end
   end
 
 
   describe "deleting a token" do
-    @tag :skip
     test "success" do
-      retain = fresh_user()
-      remove = fresh_user()
-      refute retain.password_token.text == remove.password_token.text
+      {:ok, %{token: retain}} = fresh_user()
+      {:ok, %{token: remove}} = fresh_user()
+      refute retain.text == remove.text
 
-      assert :ok == Users.delete_password_token(remove.id, @default_institution)
-      assert {:error, _} = Users.user_from_token(remove.password_token.text, @default_institution)
-      assert {:ok, _} = Users.user_from_token(retain.password_token.text, @default_institution)
+      assert :ok == Users.delete_password_token2(remove.text)
+      assert {:error, _} = Users.user_from_token2(remove.text)
+      assert {:ok, _} = Users.user_from_token2(retain.text)
     end
 
-    @tag :skip
     test "missing token does not throw an error" do
-      retain = fresh_user()
-      assert :ok == Users.delete_password_token(retain.id, @default_institution)
-      assert :ok == Users.delete_password_token(retain.id, @default_institution)
+      {:ok, %{token: retain}} = fresh_user()
+      assert :ok == Users.delete_password_token2(retain.text)
+      assert :ok == Users.delete_password_token2(retain.text)
     end
   end
   
