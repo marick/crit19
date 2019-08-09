@@ -1,9 +1,9 @@
 defmodule Crit.Users.PasswordToken2 do
   use Ecto.Schema
   alias Crit.EmailToken
-#  import Ecto.Changeset
+  import Ecto.Changeset
+  alias Crit.Repo
 #  import Ecto.Query
-#  alias Crit.Sql
 #  alias Crit.Institutions.Institution
 
   @schema_prefix "clients"
@@ -23,13 +23,32 @@ defmodule Crit.Users.PasswordToken2 do
     }
   end
 
+  @expiration_in_seconds (7 * 24 * 60 * 60)
+
+  def expiration_threshold(now \\ NaiveDateTime.utc_now) do
+    NaiveDateTime.add(now, -1 * @expiration_in_seconds)
+  end
+
+  def force_update(token, datetime) do
+    for_postgres = NaiveDateTime.truncate(datetime, :second)
+
+    change(token, updated_at: for_postgres) |> Repo.update
+    :ok
+  end
+
+
+  
   defmodule Query do
     import Ecto.Query
     alias Crit.Users.PasswordToken2
 
-    def by_text(text),
-      do: from PasswordToken2, where: [text: ^text]
+    def by(opts),
+      do: from PasswordToken2, where: ^opts
   
+    def expired_tokens do
+      from r in PasswordToken2,
+        where: r.updated_at < ^PasswordToken2.expiration_threshold()
+    end
   end
   
 end

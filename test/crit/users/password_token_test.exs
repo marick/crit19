@@ -2,7 +2,6 @@ defmodule Crit.Users.PasswordTokenTest do
   use Crit.DataCase
   alias Crit.Users
   alias Crit.Users.User
-  alias Crit.Users.PasswordToken
   alias Crit.Users.PasswordToken2
   alias Crit.Sql
   alias Crit.Repo
@@ -34,10 +33,7 @@ defmodule Crit.Users.PasswordTokenTest do
   end
 
   describe "user_from_token" do
-    setup do
-      {:ok, %{user: inserted, token: token}} = fresh_user()
-      [user: inserted, token: token]
-    end
+    setup :user_and_token
       
     test "token matches", %{user: inserted, token: token} do
       assert {:ok, retrieved} = Users.user_from_token2(token.text)
@@ -77,51 +73,52 @@ defmodule Crit.Users.PasswordTokenTest do
   end
   
   describe "checking if a token exists" do
-    @tag :skip
     test "yes, then no" do
-      user = fresh_user()
-      assert Users.user_has_password_token?(user.id, @default_institution)
-      assert :ok == Users.delete_password_token(user.id, @default_institution)
-      refute Users.user_has_password_token?(user.id, @default_institution)
+      {:ok, %{token: token}} = fresh_user()
+      assert Users.has_password_token2?(token.text)
+      assert :ok == Users.delete_password_token2(token.text)
+      refute Users.has_password_token2?(token.text)
     end
-  end
-
-  def set_expiration_plus_seconds(token, seconds) do
-    expired = NaiveDateTime.add(PasswordToken.expiration_threshold(), seconds)
-    PasswordToken.force_update(token, expired, @default_institution)
   end
 
   describe "tokens and time" do
-    @tag :skip
-    setup do
-      user = fresh_user()
-      assert Users.user_has_password_token?(user.id, @default_institution)
-      [user: user, token: user.password_token]
-    end
+    setup :user_and_token
     
-    @tag :skip
     test "tokens can expire before being 'redeemed'", %{token: token} do
-      set_expiration_plus_seconds(token, -30) # too late by 30 seconds
-      assert {:error, _} = Users.user_from_token(token.text, @default_institution)
+      move_expiration_backward_by_seconds(token, 30) # `now` is now too late.
+      assert {:error, _} = Users.user_from_token2(token.text)
     end
 
-    @tag :skip
     test "reading a token updates its 'time to live'", %{token: token} do
-      set_expiration_plus_seconds(token, 30) # 30 seconds to live
+      advance_expiration_by_seconds(token, 30) # 30 seconds to live
 
       token_time = fn text -> 
-        %PasswordToken{updated_at: retval} =
-          Sql.get_by(PasswordToken, [text: text], @default_institution)
+        %PasswordToken2{updated_at: retval} =
+          Repo.get_by(PasswordToken2, [text: text])
         retval
       end
 
       original_time = token_time.(token.text)
-      assert {:ok, user} = Users.user_from_token(token.text, @default_institution)
+      assert {:ok, user} = Users.user_from_token2(token.text)
       updated_time = token_time.(token.text)
 
       difference =  NaiveDateTime.diff(updated_time, original_time, :second)
       assert difference > 600  # greatly changed
     end
   end
+
+  defp advance_expiration_by_seconds(token, seconds) do
+    changed = NaiveDateTime.add(PasswordToken2.expiration_threshold(), seconds)
+    PasswordToken2.force_update(token, changed)
+  end
+
+  defp move_expiration_backward_by_seconds(token, seconds),
+    do: advance_expiration_by_seconds(token, -seconds)
+
+  defp user_and_token(_) do 
+    {:ok, %{user: inserted, token: token}} = fresh_user()
+    [user: inserted, token: token]
+  end
+  
 
 end  
