@@ -9,8 +9,9 @@ defmodule Crit.Users.PasswordTokenTest do
 
   defp fresh_user(attrs \\ []) do 
     params = Factory.string_params_for(:user, attrs)
-    assert {:ok, user} = Users.create_unactivated_user(params, @default_institution)
-    assert user.password_token.user_id == user.id
+    assert {:ok, %{user: user, token: token}} =
+      Users.create_unactivated_user2(params, @default_institution)
+    assert user.display_name == params["display_name"]
     assert Repo.get_by(PasswordToken2, user_id: user.id)
     user
   end
@@ -23,6 +24,7 @@ defmodule Crit.Users.PasswordTokenTest do
       assert Sql.get(User, token.user_id, token.institution_short_name)
     end
 
+    @tag :skip
     test "bad user data prevents a token from being created" do
       params = Factory.string_params_for(:user, auth_id: "")
       {:error, _} = Users.create_unactivated_user(params, @default_institution)

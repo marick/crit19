@@ -86,6 +86,21 @@ defmodule Crit.Users do
     end
   end
 
+  # Todo: use Repo.Multi
+  def create_unactivated_user2(params, institution) do
+    result =
+      User.create_changeset(params)
+      |> Sql.insert(institution)
+
+    case result do
+      {:ok, user} ->
+        token = Repo.insert!(PasswordToken2.new(user.id, institution))
+        {:ok, %{user: user, token: token}}
+      _ ->
+        result
+    end
+  end
+
   def user_from_token(token_text, institution) do
     PasswordToken.Query.expired_tokens |> Sql.delete_all(institution)
 
