@@ -11,9 +11,13 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Crit.Repo
+alias Crit.Users
 alias Crit.Users.{User,PermissionList}
+alias Crit.Sql
 
-{:ok, _} = Repo.insert %User{
+Application.ensure_all_started(:crit)
+
+{:ok, _} = Sql.insert %User{
   display_name: "Brian Marick",
   auth_id: "marick",
   email: "marick@exampler.com",
@@ -23,8 +27,9 @@ alias Crit.Users.{User,PermissionList}
     make_reservations: true,
     view_reservations: true,
   }
-}, prefix: "demo"
+}, "critter4us"
 
-# :ok = Users.set_password("marick",
-#   %{"new_password" => "merchant-province-weepy-communal",
-#     "new_password_confirmation" => "merchant-province-weepy-communal"})
+:ok = Users.set_password("marick",
+  %{"new_password" => "merchant-province-weepy-communal",
+    "new_password_confirmation" => "merchant-province-weepy-communal"},
+  "critter4us")
