@@ -71,7 +71,7 @@ defmodule Crit.Users do
 
 
   # Todo: use Repo.Multi
-  def create_unactivated_user2(params, institution) do
+  def create_unactivated_user(params, institution) do
     result =
       User.create_changeset(params)
       |> Sql.insert(institution)

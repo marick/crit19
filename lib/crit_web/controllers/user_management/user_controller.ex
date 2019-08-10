@@ -27,7 +27,7 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    case Users.create_unactivated_user2(user_params, institution(conn)) do
+    case Users.create_unactivated_user(user_params, institution(conn)) do
       {:ok, %{token: token, user: user}} ->
         flash = instructions_in_lieue_of_email(conn, user, token)
         conn
