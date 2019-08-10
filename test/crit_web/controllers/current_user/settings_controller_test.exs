@@ -5,7 +5,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias Crit.Examples.PasswordFocused
   alias Crit.Users
   alias Crit.Repo
-  alias Crit.Users.PasswordToken2
+  alias Crit.Users.PasswordToken
 
   describe "displaying a token to get a form" do
     setup do
@@ -29,7 +29,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert get_session(conn, :token_text) == token_text
 
       # The token is not deleted.
-      assert Repo.get_by(PasswordToken2, text: token_text)
+      assert Repo.get_by(PasswordToken, text: token_text)
     end
   end
 
@@ -62,7 +62,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       # Token has been deleted
       # Note that in real life, there could be duplicate user_ids in the table,
       # but that's not possible in a test.
-      refute Repo.get_by(PasswordToken2, user_id: user.id)
+      refute Repo.get_by(PasswordToken, user_id: user.id)
     end
 
     test "the token is not found (should be impossible)",
@@ -94,7 +94,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       # The token is not deleted.
       # Note that in real life, there could be duplicate user_ids in the table,
       # but that's not possible in a test.
-      assert Repo.get_by(PasswordToken2, user_id: user.id)
+      assert Repo.get_by(PasswordToken, user_id: user.id)
     end
   end
 

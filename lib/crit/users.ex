@@ -3,7 +3,7 @@ defmodule Crit.Users do
   import Crit.OkError
 
   alias Crit.Users.User
-  alias Crit.Users.PasswordToken2
+  alias Crit.Users.PasswordToken
   alias Crit.Users.Password
   alias Crit.Users.PermissionList
   alias Crit.Sql
@@ -78,7 +78,7 @@ defmodule Crit.Users do
 
     case result do
       {:ok, user} ->
-        token = Repo.insert!(PasswordToken2.new(user.id, institution))
+        token = Repo.insert!(PasswordToken.new(user.id, institution))
         {:ok, %{user: user, token: token}}
       _ ->
         result
@@ -86,13 +86,13 @@ defmodule Crit.Users do
   end
 
 
-  def user_from_token2(token_text) do
-    PasswordToken2.Query.expired_tokens |> Repo.delete_all()
+  def user_from_token(token_text) do
+    PasswordToken.Query.expired_tokens |> Repo.delete_all()
 
-    case Repo.get_by(PasswordToken2, text: token_text) do
-      %PasswordToken2{} = token ->
+    case Repo.get_by(PasswordToken, text: token_text) do
+      %PasswordToken{} = token ->
         user = Sql.get(User, token.user_id, token.institution_short_name)
-        PasswordToken2.force_update(token, NaiveDateTime.utc_now)
+        PasswordToken.force_update(token, NaiveDateTime.utc_now)
         {:ok, user}
       nil ->
         lift_nullable(nil, "missing token '#{token_text}'")
@@ -100,8 +100,8 @@ defmodule Crit.Users do
   end
   
 
-  def delete_password_token2(token_text) do
-    PasswordToken2.Query.by(text: token_text) |> Repo.delete_all
+  def delete_password_token(token_text) do
+    PasswordToken.Query.by(text: token_text) |> Repo.delete_all
     # There is no need for deletion information to leak out
     :ok
   end

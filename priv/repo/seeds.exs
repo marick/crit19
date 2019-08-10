@@ -12,7 +12,6 @@
 
 alias Crit.Repo
 alias Crit.Users.{User,PermissionList}
-alias Crit.Users
 
 {:ok, _} = Repo.insert %User{
   display_name: "Brian Marick",

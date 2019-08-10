@@ -1,13 +1,10 @@
-defmodule Crit.Users.PasswordToken2 do
+defmodule Crit.Users.PasswordToken do
   use Ecto.Schema
   alias Crit.EmailToken
   import Ecto.Changeset
   alias Crit.Repo
-#  import Ecto.Query
-#  alias Crit.Institutions.Institution
 
   @schema_prefix "clients"
-  
   schema "all_password_tokens" do
     field :text, :string
     field :user_id, :id
@@ -36,19 +33,16 @@ defmodule Crit.Users.PasswordToken2 do
     :ok
   end
 
-
-  
   defmodule Query do
     import Ecto.Query
-    alias Crit.Users.PasswordToken2
+    alias Crit.Users.PasswordToken
 
     def by(opts),
-      do: from PasswordToken2, where: ^opts
+      do: from PasswordToken, where: ^opts
   
     def expired_tokens do
-      from r in PasswordToken2,
-        where: r.updated_at < ^PasswordToken2.expiration_threshold()
+      from r in PasswordToken,
+        where: r.updated_at < ^PasswordToken.expiration_threshold()
     end
   end
-  
 end

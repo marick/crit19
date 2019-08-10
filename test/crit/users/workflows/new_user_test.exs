@@ -4,7 +4,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   alias Crit.Users
   alias Crit.Examples.PasswordFocused
   alias Crit.Repo
-  alias Crit.Users.PasswordToken2
+  alias Crit.Users.PasswordToken
 
   def creation_and_first_save(params) do
     assert {:ok, %{user: user, token: token}} = Users.create_unactivated_user2(params, @default_institution)
@@ -12,12 +12,12 @@ defmodule Crit.Users.Workflow.NewUserTest do
     # Just a spot check; unit tests have more
     assert params["email"] == user.email
     assert params["permission_list"]["manage_animals"] == user.permission_list.manage_animals
-    assert Repo.get_by(PasswordToken2, text: token.text)
+    assert Repo.get_by(PasswordToken, text: token.text)
     {user, token}
   end
 
   def present_password_token(token_text) do
-    assert {:ok, _} = Users.user_from_token2(token_text)
+    assert {:ok, _} = Users.user_from_token(token_text)
   end
 
   def supply_new_password(user_id, new_password) do
