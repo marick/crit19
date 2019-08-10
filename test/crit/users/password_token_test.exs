@@ -75,9 +75,9 @@ defmodule Crit.Users.PasswordTokenTest do
   describe "checking if a token exists" do
     test "yes, then no" do
       {:ok, %{token: token}} = fresh_user()
-      assert Users.has_password_token2?(token.text)
+      assert Repo.get_by(PasswordToken2, text: token.text)
       assert :ok == Users.delete_password_token2(token.text)
-      refute Users.has_password_token2?(token.text)
+      refute Repo.get_by(PasswordToken2, text: token.text)
     end
   end
 

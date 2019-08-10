@@ -1,7 +1,6 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
-  alias Crit.Users.{User,PermissionList,PasswordToken}
-  alias Crit.EmailToken
+  alias Crit.Users.{User,PermissionList}
 
   def user_factory() do
     %User{
@@ -19,12 +18,6 @@ defmodule Crit.Factory do
       manage_animals: some_boolean(), 
       make_reservations: some_boolean(), 
       view_reservations: some_boolean(), 
-    }
-  end
-
-  def password_token_factory() do
-    %PasswordToken{
-      text: EmailToken.generate()
     }
   end
 

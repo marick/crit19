@@ -12,10 +12,9 @@ defmodule CritWeb.SingletonIsh do
   # User information
   
   def user_id(conn), do: Plug.Conn.get_session(conn, :user_id)
-
   def current_user(conn), do: conn.assigns.current_user
-
   def has_user?(conn), do: Map.get(conn.assigns, :current_user)
+  def institution(_conn), do: "critter4us"
 
   # Audit information
 
@@ -30,6 +29,7 @@ defmodule CritWeb.SingletonIsh do
 
   def audit_assigned?(conn), do: Map.has_key?(conn.assigns, :audit_server)
 
-
-  def institution(_conn), do: "critter4us"
+  # Etc.
+  
+  def token_text(conn), do: Plug.Conn.get_session(conn, :token_text)
 end

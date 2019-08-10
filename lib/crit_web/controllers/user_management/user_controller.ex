@@ -27,9 +27,9 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    case Users.create_unactivated_user(user_params, institution(conn)) do
-      {:ok, user} ->
-        flash = instructions_in_lieue_of_email(conn, user)
+    case Users.create_unactivated_user2(user_params, institution(conn)) do
+      {:ok, %{token: token, user: user}} ->
+        flash = instructions_in_lieue_of_email(conn, user, token)
         conn
         |> Audit.created_user(user.id, user.auth_id)
         |> put_flash(:info, raw(flash))
@@ -69,10 +69,8 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
 
-  defp instructions_in_lieue_of_email(conn, user) do
-    url = Routes.current_user_settings_url(conn,
-      :fresh_password_form,
-      user.password_token.text)
+  defp instructions_in_lieue_of_email(conn, user, token) do
+    url = Routes.current_user_settings_url(conn, :fresh_password_form, token.text)
     token_link = link(url, to: url) |> safe_to_string()
     email_link = link(user.email, to: "mailto://#{user.email}") |> safe_to_string()
     "Send #{email_link} email with this URL: #{token_link}"

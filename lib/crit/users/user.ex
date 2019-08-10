@@ -2,7 +2,6 @@ defmodule Crit.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Users.PermissionList
-  alias Crit.Users.PasswordToken
   alias Crit.Ecto.TrimmedString
 
   schema "users" do
@@ -11,7 +10,6 @@ defmodule Crit.Users.User do
     field :email, TrimmedString
     field :active, :boolean, default: true
     has_one :permission_list, PermissionList
-    has_one :password_token, PasswordToken
 
     timestamps()
   end

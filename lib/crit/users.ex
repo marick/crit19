@@ -1,10 +1,8 @@
 defmodule Crit.Users do
   import Ecto.Query, warn: false
-  import Ecto.Changeset
   import Crit.OkError
 
   alias Crit.Users.User
-  alias Crit.Users.PasswordToken
   alias Crit.Users.PasswordToken2
   alias Crit.Users.Password
   alias Crit.Users.PermissionList
@@ -71,20 +69,6 @@ defmodule Crit.Users do
 
   # Primarily about tokens
 
-  def create_unactivated_user(params, institution) do
-    result =
-      User.create_changeset(params)
-      |> put_change(:password_token, PasswordToken.unused())
-      |> Sql.insert(institution)
-
-    case result do
-      {:ok, user} ->
-        Repo.insert!(PasswordToken2.new(user.id, institution))
-        result
-      _ ->
-        result
-    end
-  end
 
   # Todo: use Repo.Multi
   def create_unactivated_user2(params, institution) do
@@ -101,20 +85,6 @@ defmodule Crit.Users do
     end
   end
 
-  def user_from_token(token_text, institution) do
-    PasswordToken.Query.expired_tokens |> Sql.delete_all(institution)
-
-    user =
-      token_text 
-      |> PasswordToken.Query.matching_user
-      |> preload(:password_token)
-      |> Sql.one(institution)
-
-    if user,
-      do: PasswordToken.force_update(user.password_token, NaiveDateTime.utc_now, institution)
-    
-    lift_nullable(user, "missing token '#{token_text}'")
-  end
 
   def user_from_token2(token_text) do
     PasswordToken2.Query.expired_tokens |> Repo.delete_all()
@@ -129,18 +99,6 @@ defmodule Crit.Users do
     end
   end
   
-
-  def user_has_password_token?(user_id, institution),
-    do: user_id |> PasswordToken.Query.by_user_id |> Sql.exists?(institution)
-
-  def has_password_token2?(token_text),
-    do: PasswordToken2.Query.by(text: token_text) |> Repo.exists?()
-
-  def delete_password_token(user_id, institution) do
-    user_id |> PasswordToken.Query.by_user_id |> Sql.delete_all(institution)
-    # There is no need for deletion information to leak out
-    :ok
-  end
 
   def delete_password_token2(token_text) do
     PasswordToken2.Query.by(text: token_text) |> Repo.delete_all
