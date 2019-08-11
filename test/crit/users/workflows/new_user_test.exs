@@ -17,7 +17,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   def present_password_token(token_text) do
-    assert {:ok, _} = Users.user_from_token(token_text)
+    assert {:ok, _} = Users.one_token(token_text)
   end
 
   def supply_new_password(user_id, new_password) do

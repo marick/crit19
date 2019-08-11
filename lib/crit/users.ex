@@ -85,20 +85,17 @@ defmodule Crit.Users do
     end
   end
 
-
-  def user_from_token(token_text) do
+  def one_token(token_text) do
     PasswordToken.Query.expired_tokens |> Repo.delete_all()
-
     case Repo.get_by(PasswordToken, text: token_text) do
-      %PasswordToken{} = token ->
-        user = Sql.get(User, token.user_id, token.institution_short_name)
-        PasswordToken.force_update(token, NaiveDateTime.utc_now)
-        {:ok, user}
       nil ->
         lift_nullable(nil, "missing token '#{token_text}'")
+      token ->
+        PasswordToken.force_update(token, NaiveDateTime.utc_now)
+        {:ok, token}
+        
     end
   end
-  
 
   def delete_password_token(token_text) do
     PasswordToken.Query.by(text: token_text) |> Repo.delete_all

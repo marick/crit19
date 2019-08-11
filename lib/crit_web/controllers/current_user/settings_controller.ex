@@ -4,14 +4,15 @@ defmodule CritWeb.CurrentUser.SettingsController do
   alias Crit.Users
   alias Ecto.Changeset
   import CritWeb.SingletonIsh
+  alias Crit.Sql
 
   # No plugs are needed yet.
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
-    case Users.user_from_token(token_text) do
-      {:ok, _} ->
+    case Users.one_token(token_text) do
+      {:ok, token} ->
         conn
-        |> put_session(:token_text, token_text)
+        |> put_session(:token, token)
         |> render_password_creation_form(Users.fresh_password_changeset())
       {:error, _} -> 
         conn
@@ -21,30 +22,21 @@ defmodule CritWeb.CurrentUser.SettingsController do
   end
 
   def set_fresh_password(conn, %{"password" => params}) do
-    with(
-      {:ok, user} <- Users.user_from_token(token_text(conn)),
-      :ok <- Users.set_password(user.auth_id, params, institution(conn))
-    ) do
-      Users.delete_password_token(token_text(conn))
-      conn
-      |> put_session(:user_id, user.id)
-      |> delete_session(:token_text)
-      |> put_flash(:info, "You have been logged in.")
-      |> redirect(to: Routes.public_path(conn, :index))
-    else
+    # TEMP KLUDGE
+    user = Sql.get(Users.User, token(conn).user_id, token(conn).institution_short_name)
+    case Users.set_password(user.auth_id, params, token(conn).institution_short_name) do
+      :ok ->
+        Users.delete_password_token(token(conn).text)
+        conn
+        |> put_session(:user_id, user.id)
+        |> put_session(:institution, token(conn).institution_short_name)
+        |> delete_session(:token)
+        |> put_flash(:info, "You have been logged in.")
+        |> redirect(to: Routes.public_path(conn, :index))
       {:error, %Changeset{} = changeset} ->
         conn
         |> Common.form_error_flash
         |> render_password_creation_form(changeset)
-        
-      # Missing token should be impossible.
-      # Once there's logging, this can just produce a 500 message?
-      {:error, message} ->
-        conn
-        |> put_flash(:error, """
-        Something has gone wrong. Please report this problem: #{message}
-        """)
-        |> redirect(to: Routes.public_path(conn, :index))
     end
   end
 

@@ -32,27 +32,25 @@ defmodule Crit.Users.PasswordTokenTest do
     end
   end
 
-  describe "user_from_token" do
+  describe "fetching a password token" do
     setup :user_and_token
-      
-    test "token matches", %{user: inserted, token: token} do
-      assert {:ok, retrieved} = Users.user_from_token(token.text)
-      assert inserted.auth_id == retrieved.auth_id
-      # Note that the permissions are not loaded.
-      refute Ecto.assoc_loaded?(retrieved.permission_list)
+
+    test "token matches", %{token: token} do
+      assert {:ok, retrieved} = Users.one_token(token.text)
+      assert token == retrieved
     end
 
     test "is not a destructive read", %{token: token} do
-      assert {:ok, _} = Users.user_from_token(token.text)
-      assert {:ok, _} = Users.user_from_token(token.text)
+      assert {:ok, _} = Users.one_token(token.text)
+      assert {:ok, _} = Users.one_token(token.text)
     end
 
     test "no match" do
-      assert {:error, message} = Users.user_from_token("DIFFERENT TOKEN")
+      assert {:error, message} = Users.one_token("DIFFERENT TOKEN")
       assert message =~ "DIFFERENT TOKEN"
     end
-  end
-
+  end    
+    
 
   describe "deleting a token" do
     test "success" do
@@ -61,8 +59,8 @@ defmodule Crit.Users.PasswordTokenTest do
       refute retain.text == remove.text
 
       assert :ok == Users.delete_password_token(remove.text)
-      assert {:error, _} = Users.user_from_token(remove.text)
-      assert {:ok, _} = Users.user_from_token(retain.text)
+      assert {:error, _} = Users.one_token(remove.text)
+      assert {:ok, _} = Users.one_token(retain.text)
     end
 
     test "missing token does not throw an error" do
@@ -86,7 +84,7 @@ defmodule Crit.Users.PasswordTokenTest do
     
     test "tokens can expire before being 'redeemed'", %{token: token} do
       move_expiration_backward_by_seconds(token, 30) # `now` is now too late.
-      assert {:error, _} = Users.user_from_token(token.text)
+      assert {:error, _} = Users.one_token(token.text)
     end
 
     test "reading a token updates its 'time to live'", %{token: token} do
@@ -99,7 +97,7 @@ defmodule Crit.Users.PasswordTokenTest do
       end
 
       original_time = token_time.(token.text)
-      assert {:ok, user} = Users.user_from_token(token.text)
+      assert {:ok, user} = Users.one_token(token.text)
       updated_time = token_time.(token.text)
 
       difference =  NaiveDateTime.diff(updated_time, original_time, :second)

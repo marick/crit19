@@ -31,5 +31,5 @@ defmodule CritWeb.SingletonIsh do
 
   # Etc.
   
-  def token_text(conn), do: Plug.Conn.get_session(conn, :token_text)
+  def token(conn), do: Plug.Conn.get_session(conn, :token)
 end

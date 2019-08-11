@@ -26,7 +26,8 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
-      assert get_session(conn, :token_text) == token_text
+      assert {:ok, original_token} = Users.one_token(token_text)
+      assert get_session(conn, :token) == original_token
 
       # The token is not deleted.
       assert Repo.get_by(PasswordToken, text: token_text)
@@ -37,7 +38,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
     setup %{conn: conn} do
       {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_institution)
 
-      conn = Plug.Test.init_test_session(conn, token_text: token.text)
+      conn = Plug.Test.init_test_session(conn, token: token)
 
       run = fn conn, new_password, confirmation ->
         post_to_action(conn, :set_fresh_password,
@@ -48,34 +49,20 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
        user: user, run: run]
     end
 
-    test "the token is found and the password is acceptable",
+    test "the password is acceptable",
       %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
       conn = run.(conn, valid_password, valid_password)
       assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password, @default_institution)
       assert get_session(conn, :user_id) == user.id
-      refute get_session(conn, :token_text)
+      assert get_session(conn, :institution) == @default_institution
+      refute get_session(conn, :token)
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       assert flash_info(conn) =~ "You have been logged in"
 
       # Token has been deleted
-      # Note that in real life, there could be duplicate user_ids in the table,
-      # but that's not possible in a test.
       refute Repo.get_by(PasswordToken, user_id: user.id)
-    end
-
-    test "the token is not found (should be impossible)",
-      %{conn: conn, valid_password: valid_password, run: run} do
-      conn =
-        conn
-        |> put_session(:token_text, "WRONG")
-        |> run.(valid_password, valid_password)
-
-      assert redirected_to(conn) == Routes.public_path(conn, :index)
-      assert flash_error(conn) =~ "Something has gone wrong"
-      assert flash_error(conn) =~ "Please report this problem:"
-      assert flash_error(conn) =~ "missing token 'WRONG'"
     end
 
     test "something is wrong with the password", 
@@ -85,6 +72,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       refute :ok == Users.check_password(user.auth_id, valid_password, @default_institution)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
+      refute get_session(conn, :user_id)
+      refute get_session(conn, :institution) == @default_institution
+      assert get_session(conn, :token)
 
       assert_user_sees(conn, 
         [ Common.form_error_message(),
@@ -92,9 +82,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
         ])
         
       # The token is not deleted.
-      # Note that in real life, there could be duplicate user_ids in the table,
-      # but that's not possible in a test.
-      assert Repo.get_by(PasswordToken, user_id: user.id)
+      assert Users.one_token(get_session(conn, :token).text)
     end
   end
 
