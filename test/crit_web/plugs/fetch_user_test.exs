@@ -14,7 +14,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   end
     
   test "works fine if there's nothing in the session", %{conn: conn} do
-    refute user_id(conn)
+    refute unique_id(conn)
     conn = FetchUser.call(conn, [])
     refute conn.halted
     refute current_user(conn)

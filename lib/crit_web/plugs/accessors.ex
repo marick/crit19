@@ -11,24 +11,21 @@ defmodule CritWeb.Plugs.Accessors do
   alias CritWeb.Plugs.UniqueId
 
   def put_unique_id(conn, user_id, institution) do
-    conn
-    |> put_session(:unique_id, %UniqueId{user_id: user_id, institution: institution})
-    |> put_user_id(user_id)
-    |> put_institution(institution)
+    unique_id = %UniqueId{user_id: user_id, institution: institution}
+    put_session(conn, :unique_id, unique_id)
   end
 
-  def user_id(conn), do: get_session(conn, :user_id)
-  def put_user_id(conn, user_id), do: put_session(conn, :user_id, user_id)
+
+  def unique_id(conn), do: get_session(conn, :unique_id)
+
+  def user_id(conn), do: unique_id(conn) && unique_id(conn).user_id
+  def institution(conn), do: unique_id(conn) && unique_id(conn).institution
   
   def current_user(conn), do: conn.assigns.current_user
   def has_user?(conn), do: Map.get(conn.assigns, :current_user)
   def put_current_user(conn, user), do: assign(conn, :current_user, user)
   def delete_current_user(conn), do: assign(conn, :current_user, nil)
   
-  def institution(conn), do: get_session(conn, :institution)
-  def put_institution(conn, institution),
-    do: put_session(conn, :institution, institution)
-
   # Audit information
 
   def audit_server(conn), do: conn.assigns.audit_server

@@ -29,13 +29,13 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       assert_purpose conn, show_login_form()
       assert_user_sees(conn, [Common.form_error_message, auth_id])
       refute_user_sees(conn, password)
-      refute user_id(conn)
+      refute unique_id(conn)
     end
 
     test "successful login", %{conn: conn} do
       password = "password"
       user = PasswordFocused.user(password)
-      refute user_id(conn)
+      refute unique_id(conn)
 
       conn = post_to_action(conn, :try_login,
         under(:login, auth_id: user.auth_id, password: password, institution: @default_institution))
@@ -58,8 +58,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       conn = delete_via_action(conn, :logout)
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
-      refute user_id(conn)
-      refute institution(conn)
+      refute unique_id(conn)
     end
   end
 
