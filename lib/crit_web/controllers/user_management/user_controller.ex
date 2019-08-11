@@ -6,6 +6,7 @@ defmodule CritWeb.UserManagement.UserController do
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
   alias Crit.Users
   alias CritWeb.Audit
+  alias Crit.Structs.UserHavingToken, as: UT
 
   # It's possible this would be better in router.ex
   plug :must_be_able_to, :manage_and_create_users
@@ -27,10 +28,10 @@ defmodule CritWeb.UserManagement.UserController do
 
   def create(conn, %{"user" => user_params}) do
     case Users.create_unactivated_user(user_params, institution(conn)) do
-      {:ok, %{token: token, user: user}} ->
-        flash = instructions_in_lieue_of_email(conn, user, token)
+      {:ok, %UT{} = tokenized} ->
+        flash = instructions_in_lieue_of_email(conn, tokenized)
         conn
-        |> Audit.created_user(user.id, user.auth_id)
+        |> Audit.created_user(UT.user(tokenized))
         |> put_flash(:info, raw(flash))
         |> redirect(to: path(:new))
 
@@ -68,10 +69,14 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
 
-  defp instructions_in_lieue_of_email(conn, user, token) do
-    url = Routes.current_user_settings_url(conn, :fresh_password_form, token.text)
+  defp instructions_in_lieue_of_email(conn, %UT{} = tokenized) do
+    token_text = UT.token_text(tokenized)
+    url = Routes.current_user_settings_url(conn, :fresh_password_form, token_text)
+
+    email = UT.email(tokenized)
     token_link = link(url, to: url) |> safe_to_string()
-    email_link = link(user.email, to: "mailto://#{user.email}") |> safe_to_string()
+    email_link = link(email, to: "mailto://#{email}") |> safe_to_string()
+
     "Send #{email_link} email with this URL: #{token_link}"
   end
 end

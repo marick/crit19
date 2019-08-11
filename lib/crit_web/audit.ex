@@ -1,9 +1,10 @@
 defmodule CritWeb.Audit do
   import CritWeb.Plugs.Accessors
   alias Crit.Audit.CreationStruct
+  alias Crit.Users.User
 
-  def created_user(conn, user_id, auth_id) do
-    log(conn, "created user", %{user_id: user_id, auth_id: auth_id})
+  def created_user(conn, %User{} = user) do
+    log(conn, "created user", %{user_id: user.id, auth_id: user.auth_id})
   end
 
   ## UTIL

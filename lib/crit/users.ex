@@ -8,6 +8,7 @@ defmodule Crit.Users do
   alias Crit.Users.PermissionList
   alias Crit.Sql
   alias Crit.Repo
+  alias Crit.Structs.UserHavingToken
 
   # Primarily about users
 
@@ -79,7 +80,7 @@ defmodule Crit.Users do
     case result do
       {:ok, user} ->
         token = Repo.insert!(PasswordToken.new(user.id, institution))
-        {:ok, %{user: user, token: token}}
+        {:ok, UserHavingToken.new(user, token)}
       _ ->
         result
     end
