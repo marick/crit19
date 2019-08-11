@@ -27,7 +27,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       assert {:ok, original_token} = Users.one_token(token_text)
-      assert get_session(conn, :token) == original_token
+      assert token(conn) == original_token
 
       # The token is not deleted.
       assert Repo.get_by(PasswordToken, text: token_text)
@@ -54,9 +54,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
       conn = run.(conn, valid_password, valid_password)
       assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password, @default_institution)
-      assert get_session(conn, :user_id) == user.id
-      assert get_session(conn, :institution) == @default_institution
-      refute get_session(conn, :token)
+      assert user_id(conn) == user.id
+      assert institution(conn) == @default_institution
+      refute token(conn)
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       assert flash_info(conn) =~ "You have been logged in"
@@ -72,9 +72,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       refute :ok == Users.check_password(user.auth_id, valid_password, @default_institution)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
-      refute get_session(conn, :user_id)
+      refute user_id(conn)
       refute get_session(conn, :institution) == @default_institution
-      assert get_session(conn, :token)
+      assert token(conn)
 
       assert_user_sees(conn, 
         [ Common.form_error_message(),
@@ -82,7 +82,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
         ])
         
       # The token is not deleted.
-      assert Users.one_token(get_session(conn, :token).text)
+      assert Users.one_token(token(conn).text)
     end
   end
 

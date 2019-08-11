@@ -3,7 +3,6 @@ defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb.Controller.Path, :current_user_settings_path
   alias Crit.Users
   alias Ecto.Changeset
-  import CritWeb.SingletonIsh
   alias Crit.Sql
 
   # No plugs are needed yet.
@@ -12,7 +11,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
     case Users.one_token(token_text) do
       {:ok, token} ->
         conn
-        |> put_session(:token, token)
+        |> put_token(token)
         |> render_password_creation_form(Users.fresh_password_changeset())
       {:error, _} -> 
         conn
@@ -28,8 +27,8 @@ defmodule CritWeb.CurrentUser.SettingsController do
       :ok ->
         Users.delete_password_token(token(conn).text)
         conn
-        |> put_session(:user_id, user.id)
-        |> put_session(:institution, token(conn).institution_short_name)
+        |> put_user_id(user.id)
+        |> put_institution(token(conn).institution_short_name)
         |> delete_session(:token)
         |> put_flash(:info, "You have been logged in.")
         |> redirect(to: Routes.public_path(conn, :index))

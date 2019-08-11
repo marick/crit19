@@ -15,7 +15,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   end
     
   test "works fine if there's nothing in the session", %{conn: conn} do
-    refute get_session(conn, :user_id)
+    refute user_id(conn)
     conn = FetchUser.call(conn, [])
     refute conn.halted
     refute conn.assigns.current_user
@@ -34,7 +34,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   test "user id doesn't exist in database (should be impossible)", %{conn: conn} do
     conn =
       conn
-      |> put_session(:user_id, 7573333)
+      |> put_user_id(7573333)
       |> FetchUser.call([])
     refute conn.halted   # It doesn't count as an error.
     refute current_user(conn)
@@ -44,7 +44,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
     user = Factory.build(:user) |> Sql.insert!(institution(conn))
     conn =
       conn
-      |> put_session(:user_id, user.id)
+      |> put_user_id(user.id)
       |> FetchUser.call([])
     refute conn.halted
     assert current_user(conn).id == user.id

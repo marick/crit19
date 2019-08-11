@@ -1,7 +1,6 @@
 defmodule CritWeb.PublicController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :public_path
-  import CritWeb.SingletonIsh, only: [has_user?: 1]
 
   def index(conn, params) do
     if has_user?(conn) do 

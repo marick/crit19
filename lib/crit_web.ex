@@ -26,6 +26,7 @@ defmodule CritWeb do
       alias CritWeb.Router.Helpers, as: Routes
       alias CritWeb.Controller.Common
       alias CritWeb.Endpoint
+      import CritWeb.SingletonIsh
     end
   end
 

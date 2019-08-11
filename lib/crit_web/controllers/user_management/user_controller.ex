@@ -4,7 +4,6 @@ defmodule CritWeb.UserManagement.UserController do
   import CritWeb.Plugs.Authorize
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
-  import CritWeb.SingletonIsh, only: [institution: 1]
   alias Crit.Users
   alias CritWeb.Audit
 

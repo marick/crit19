@@ -1,23 +1,22 @@
 defmodule CritWeb.Plugs.FetchUser do
-  import Plug.Conn
   import CritWeb.SingletonIsh
 
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    user_id = get_session(conn, :user_id)
-
+    id = user_id(conn)
+    
     cond do
       # This clause supports testing
       has_user?(conn) ->
         conn
 
-      user = user_id &&
-          Crit.Users.permissioned_user_from_id(user_id, institution(conn)) -> 
-        assign(conn, :current_user, user)
+      user = id &&
+          Crit.Users.permissioned_user_from_id(id, institution(conn)) -> 
+        put_current_user(conn, user)
 
       true ->
-        assign(conn, :current_user, nil)
+        delete_current_user(conn)
     end
   end
 end

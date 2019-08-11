@@ -59,7 +59,7 @@ defmodule CritWeb.ConnExtras do
   def logged_in(conn, user \\ Factory.build(:user)) do
     conn
     |> assign(:current_user, user)
-    |> put_session(:user_id, user.id)
+    |> put_user_id(user.id)
   end
     
 
