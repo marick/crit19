@@ -1,5 +1,5 @@
 defmodule CritWeb.Plugs.FetchUser do
-  import CritWeb.SingletonIsh
+  import CritWeb.Plugs.Accessors
 
   def init(opts), do: opts
 

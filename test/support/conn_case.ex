@@ -25,7 +25,7 @@ defmodule CritWeb.ConnCase do
       alias CritWeb.Controller.Common
       import CritWeb.ConnExtras
       alias Crit.Audit.ToMemory.Server, as: AuditServer
-      import CritWeb.SingletonIsh
+      import CritWeb.Plugs.Accessors
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint
@@ -45,7 +45,7 @@ defmodule CritWeb.ConnCase do
     conn =
       Phoenix.ConnTest.build_conn()
       |> Plug.Test.init_test_session([])
-      |> CritWeb.SingletonIsh.assign_audit(audit_module, audit_pid)
+      |> CritWeb.Plugs.Accessors.assign_audit(audit_module, audit_pid)
 
     {:ok, conn: conn}
   end

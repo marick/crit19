@@ -26,7 +26,7 @@ defmodule CritWeb do
       alias CritWeb.Router.Helpers, as: Routes
       alias CritWeb.Controller.Common
       alias CritWeb.Endpoint
-      import CritWeb.SingletonIsh
+      import CritWeb.Plugs.Accessors
     end
   end
 
@@ -47,6 +47,7 @@ defmodule CritWeb do
       alias CritWeb.Router.Helpers, as: Routes
       alias CritWeb.Templates.Purpose
       import CritWeb.Bulma.Elements
+      import CritWeb.Plugs.Accessors
     end
   end
 

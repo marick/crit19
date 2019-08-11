@@ -4,7 +4,6 @@ defmodule CritWeb.Plugs.FetchUserTest do
   import Crit.DataExtras
   import Crit.PlugExtras
   alias Crit.Sql
-  import CritWeb.SingletonIsh
 
   setup %{conn: conn}, do: plug_setup(conn)
 

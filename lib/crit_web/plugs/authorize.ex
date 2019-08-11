@@ -2,7 +2,7 @@ defmodule CritWeb.Plugs.Authorize do
   alias Phoenix.Controller
   alias CritWeb.Router.Helpers, as: Routes
   import Plug.Conn
-  import CritWeb.SingletonIsh
+  import CritWeb.Plugs.Accessors
 
   def must_be_logged_out(conn, _opts) do
     if has_user?(conn) do

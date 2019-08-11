@@ -1,5 +1,5 @@
 defmodule CritWeb.Audit do
-  import CritWeb.SingletonIsh
+  import CritWeb.Plugs.Accessors
   alias Crit.Audit.CreationStruct
 
   def created_user(conn, user_id, auth_id) do

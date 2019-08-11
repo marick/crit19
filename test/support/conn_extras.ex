@@ -4,7 +4,7 @@ defmodule CritWeb.ConnExtras do
   alias Crit.Factory
   alias CritWeb.PublicController
   alias Crit.Sql
-  import CritWeb.SingletonIsh
+  import CritWeb.Plugs.Accessors
 
   @default_institution "critter4us"
 

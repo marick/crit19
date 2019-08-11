@@ -3,7 +3,6 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   alias CritWeb.UserManagement.UserController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Users
-  import CritWeb.SingletonIsh
   alias Crit.Sql
 
   setup :logged_in_as_user_manager
