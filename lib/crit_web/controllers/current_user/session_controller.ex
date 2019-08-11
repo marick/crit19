@@ -31,8 +31,12 @@ defmodule CritWeb.CurrentUser.SessionController do
     end
   end
 
+  # Note: the `clear_session` isn't actually needed. It's enough to
+  # drop the session. However, A test can't (legitimately) tell if the session
+  # has been dropped.
   def logout(conn, _params) do
     conn
+    |> clear_session()
     |> configure_session(drop: true)
     |> redirect(to: Routes.public_path(conn, :index))
   end

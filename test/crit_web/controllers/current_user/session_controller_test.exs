@@ -59,7 +59,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
       refute user_id(conn)
-      refute get_session(conn, :institution) 
+      refute institution(conn)
     end
   end
 

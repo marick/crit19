@@ -18,7 +18,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
     refute user_id(conn)
     conn = FetchUser.call(conn, [])
     refute conn.halted
-    refute conn.assigns.current_user
+    refute current_user(conn)
   end
 
   test "obeys a pre-set :current_user (for testing)", %{conn: conn} do
@@ -35,16 +35,18 @@ defmodule CritWeb.Plugs.FetchUserTest do
     conn =
       conn
       |> put_user_id(7573333)
+      |> put_institution(@default_institution)
       |> FetchUser.call([])
     refute conn.halted   # It doesn't count as an error.
     refute current_user(conn)
   end
 
   test "fetch user from database", %{conn: conn} do
-    user = Factory.build(:user) |> Sql.insert!(institution(conn))
+    user = Factory.build(:user) |> Sql.insert!(@default_institution)
     conn =
       conn
       |> put_user_id(user.id)
+      |> put_institution(@default_institution)
       |> FetchUser.call([])
     refute conn.halted
     assert current_user(conn).id == user.id

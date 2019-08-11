@@ -6,6 +6,7 @@ defmodule CritWeb.ConnExtras do
   alias Crit.Sql
   import CritWeb.SingletonIsh
 
+  @default_institution "critter4us"
 
   # ASSERTIONS
 
@@ -52,7 +53,7 @@ defmodule CritWeb.ConnExtras do
   # USERS
 
   def logged_in_with_permissions(conn, permissions) do
-    manager = Factory.build(:user, permission_list: permissions) |> Sql.insert!(institution(conn))
+    manager = Factory.build(:user, permission_list: permissions) |> Sql.insert!(@default_institution)
     logged_in(conn, manager)
   end
 
@@ -60,6 +61,7 @@ defmodule CritWeb.ConnExtras do
     conn
     |> assign(:current_user, user)
     |> put_user_id(user.id)
+    |> put_institution(@default_institution)
   end
     
 

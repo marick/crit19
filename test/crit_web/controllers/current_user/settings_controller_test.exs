@@ -73,7 +73,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       refute user_id(conn)
-      refute get_session(conn, :institution) == @default_institution
+      refute institution(conn) == @default_institution
       assert token(conn)
 
       assert_user_sees(conn, 

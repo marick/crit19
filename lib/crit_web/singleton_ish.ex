@@ -19,7 +19,7 @@ defmodule CritWeb.SingletonIsh do
   def put_current_user(conn, user), do: assign(conn, :current_user, user)
   def delete_current_user(conn), do: assign(conn, :current_user, nil)
   
-  def institution(_conn), do: "critter4us"
+  def institution(conn), do: get_session(conn, :institution)
   def put_institution(conn, institution),
     do: put_session(conn, :institution, institution)
 
