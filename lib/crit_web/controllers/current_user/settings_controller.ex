@@ -27,9 +27,8 @@ defmodule CritWeb.CurrentUser.SettingsController do
       :ok ->
         Users.delete_password_token(token(conn).text)
         conn
-        |> put_user_id(user.id)
-        |> put_institution(token(conn).institution_short_name)
-        |> delete_session(:token)
+        |> put_unique_id(user.id, token(conn).institution_short_name)
+        |> delete_token
         |> put_flash(:info, "You have been logged in.")
         |> redirect(to: Routes.public_path(conn, :index))
       {:error, %Changeset{} = changeset} ->

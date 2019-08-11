@@ -21,8 +21,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     case Users.check_password(auth_id, password, institution) do
       {:ok, user_id} ->
         conn
-        |> put_user_id(user_id)
-        |> put_institution(institution)
+        |> put_unique_id(user_id, institution)
         |> redirect(to: Routes.public_path(conn, :index))
       :error ->
         conn

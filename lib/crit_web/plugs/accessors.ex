@@ -1,15 +1,21 @@
-defmodule CritWeb.SingletonIsh do
+defmodule CritWeb.Plugs.Accessors do
   @moduledoc """
   These functions are accessors (getters, setters, testers) for information
-  that is semi-global in the following sense:
+  that is stored in `Plug.Conn` and is semi-global in the following sense:
   1. there will be a single value during a production or dev run.
   2. there will be multiple values during the running of async tests,
      though the tests will be unaware of that.
-
-  The ugly name indicates this is a dubious idea, needs a better name, etc.
   """
 
   import Plug.Conn
+  alias CritWeb.Plugs.UniqueId
+
+  def put_unique_id(conn, user_id, institution) do
+    conn
+    |> put_session(:unique_id, %UniqueId{user_id: user_id, institution: institution})
+    |> put_user_id(user_id)
+    |> put_institution(institution)
+  end
 
   def user_id(conn), do: get_session(conn, :user_id)
   def put_user_id(conn, user_id), do: put_session(conn, :user_id, user_id)
@@ -40,4 +46,5 @@ defmodule CritWeb.SingletonIsh do
   
   def token(conn), do: get_session(conn, :token)
   def put_token(conn, token), do: put_session(conn, :token, token)
+  def delete_token(conn), do: delete_session(conn, :token)
 end

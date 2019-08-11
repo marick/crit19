@@ -60,8 +60,7 @@ defmodule CritWeb.ConnExtras do
   def logged_in(conn, user \\ Factory.build(:user)) do
     conn
     |> assign(:current_user, user)
-    |> put_user_id(user.id)
-    |> put_institution(@default_institution)
+    |> put_unique_id(user.id, @default_institution)
   end
     
 

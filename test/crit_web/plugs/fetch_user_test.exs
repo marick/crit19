@@ -33,8 +33,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
   test "user id doesn't exist in database (should be impossible)", %{conn: conn} do
     conn =
       conn
-      |> put_user_id(7573333)
-      |> put_institution(@default_institution)
+      |> put_unique_id(7573333, @default_institution)
       |> FetchUser.call([])
     refute conn.halted   # It doesn't count as an error.
     refute current_user(conn)
@@ -44,8 +43,7 @@ defmodule CritWeb.Plugs.FetchUserTest do
     user = Factory.build(:user) |> Sql.insert!(@default_institution)
     conn =
       conn
-      |> put_user_id(user.id)
-      |> put_institution(@default_institution)
+      |> put_unique_id(user.id, @default_institution)
       |> FetchUser.call([])
     refute conn.halted
     assert current_user(conn).id == user.id
