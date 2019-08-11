@@ -12,14 +12,6 @@ defmodule Crit.Repo.Migrations.CreateUsers do
     end
     create unique_index("users", [:auth_id], name: :unique_auth_id)
 
-    create table(:password_tokens) do
-      add :text, :string, null: false
-      add :user_id, references(:users, on_delete: :delete_all), null: false
-
-      timestamps(inserted_at: false)
-    end
-    create index(:password_tokens, [:text])
-
     create table(:passwords) do
       add :hash, :string, null: false
       add :auth_id,
