@@ -18,5 +18,10 @@ defmodule Crit.Institutions do
       prefix: "demo"
     }
   end
-  
+
+  defmacro __using__(_) do
+    quote do 
+      @default_shortname Crit.Institutions.default_institution.short_name
+    end
+  end
 end
