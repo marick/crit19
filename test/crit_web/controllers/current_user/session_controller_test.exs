@@ -2,7 +2,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.CurrentUser.SessionController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Examples.PasswordFocused
+  alias Crit.Exemplars.PasswordFocused
   alias CritWeb.PublicController
   alias Crit.Institutions
   alias Crit.Institutions.{Institution}

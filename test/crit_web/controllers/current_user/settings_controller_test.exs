@@ -2,7 +2,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Examples.PasswordFocused
+  alias Crit.Exemplars.PasswordFocused
   alias Crit.Users
   alias Crit.Repo
   alias Crit.Users.PasswordToken

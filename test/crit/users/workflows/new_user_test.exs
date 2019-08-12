@@ -2,7 +2,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   use Crit.DataCase
 
   alias Crit.Users
-  alias Crit.Examples.PasswordFocused
+  alias Crit.Exemplars.PasswordFocused
   alias Crit.Repo
   alias Crit.Users.PasswordToken
 

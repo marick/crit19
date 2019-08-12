@@ -1,9 +1,10 @@
-defmodule Crit.Examples.PasswordFocused do
+defmodule Crit.Exemplars.PasswordFocused do
   use ExUnit.CaseTemplate
   alias Crit.Factory
   alias Crit.Users.{Password}
   alias Crit.Users
   alias Crit.Sql
+  alias Crit.Exemplars.MinimalUser
 
   @default_institution "critter4us"
 
@@ -16,8 +17,8 @@ defmodule Crit.Examples.PasswordFocused do
     }
   end
 
-  def user(password) do
-    user = Factory.build(:user) |> Sql.insert!(@default_institution)
+  def user(password, opts) do
+    user = MinimalUser.user(opts)
     assert Password.count_for(user.auth_id, @default_institution) == 0
     assert :ok == Users.set_password(user.auth_id, params(password, password), @default_institution)
     assert Password.count_for(user.auth_id, @default_institution) == 1

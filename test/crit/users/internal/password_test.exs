@@ -3,7 +3,7 @@ defmodule Crit.Users.Internal.PasswordTest do
   alias Crit.Users.Password
   alias Pile.Changeset
   alias Faker.String
-  alias Crit.Examples.PasswordFocused
+  alias Crit.Exemplars.PasswordFocused
 
   # Most tests are in ../password_test.exs
 
@@ -47,8 +47,6 @@ defmodule Crit.Users.Internal.PasswordTest do
       assert %{new_password_confirmation: ["should be the same as the new password"]}
       == errors_on(result)
     end
-
-
   end
 
   def attempt_to_set(new_password, confirmation) do
