@@ -6,9 +6,9 @@ defmodule Crit.Users do
   alias Crit.Users.PasswordToken
   alias Crit.Users.Password
   alias Crit.Users.PermissionList
+  alias Crit.Users.UserHavingToken
   alias Crit.Sql
   alias Crit.Repo
-  alias Crit.Structs.UserHavingToken
 
   # Primarily about users
 

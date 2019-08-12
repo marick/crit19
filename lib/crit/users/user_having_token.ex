@@ -1,4 +1,4 @@
-defmodule Crit.Structs.UserHavingToken do
+defmodule Crit.Users.UserHavingToken do
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
   

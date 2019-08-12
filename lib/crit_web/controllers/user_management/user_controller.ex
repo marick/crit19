@@ -6,7 +6,7 @@ defmodule CritWeb.UserManagement.UserController do
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
   alias Crit.Users
   alias CritWeb.Audit
-  alias Crit.Structs.UserHavingToken, as: UT
+  alias Crit.Users.UserHavingToken, as: UT
 
   # It's possible this would be better in router.ex
   plug :must_be_able_to, :manage_and_create_users
