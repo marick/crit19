@@ -3,7 +3,7 @@ defmodule Crit.Users.PasswordTest do
   alias Crit.Users
   # alias Crit.Users.User
   alias Crit.Users.Password
-  alias Crit.Examples.PasswordFocused
+  alias Crit.Exemplars.PasswordFocused
   alias Crit.Sql
 
   @moduledoc """
