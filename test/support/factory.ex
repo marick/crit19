@@ -1,6 +1,11 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
+  alias Crit.Sql
+
+  def sql_insert!(tag, opts \\ [], institution) do
+    build(tag, opts) |> Sql.insert!(institution)
+  end
 
   def user_factory() do
     %User{

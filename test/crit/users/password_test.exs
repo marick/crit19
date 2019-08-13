@@ -3,8 +3,7 @@ defmodule Crit.Users.PasswordTest do
   alias Crit.Users
   # alias Crit.Users.User
   alias Crit.Users.Password
-  alias Crit.Exemplars.PasswordFocused
-  alias Crit.Sql
+  alias Crit.Exemplars.{PasswordFocused, Minimal}
 
   @moduledoc """
   Working with passwords through the Users interface. 
@@ -13,42 +12,40 @@ defmodule Crit.Users.PasswordTest do
 
   
   setup do
-    user = Factory.build(:user) |> Sql.insert!(@default_short_name)
-    assert Password.count_for(user.auth_id, @default_short_name) == 0
-    [user: user]
+    [user: Minimal.user()]
   end
 
   describe "setting a password..." do
     test "successfully, for the first time", %{user: user} do
       password = "password"
 
-      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password), @default_short_name)
-      assert Password.count_for(user.auth_id, @default_short_name) == 1
-      assert {:ok, user.id} == Users.check_password(user.auth_id, password, @default_short_name)
+      assert :ok == set(user.auth_id, password)
+      assert has_password?(user.auth_id)
+      assert {:ok, user.id} == check(user.auth_id, password)
     end
 
     test "successfully replacing the old one", %{user: user} do
       password__old = "password"
       password__NEW = "different"
 
-      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__old), @default_short_name)
-      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__NEW), @default_short_name)
+      assert :ok == set(user.auth_id, password__old)
+      assert :ok == set(user.auth_id, password__NEW)
       
-      assert Password.count_for(user.auth_id, @default_short_name) == 1
-      assert {:ok, user.id} == Users.check_password(user.auth_id, password__NEW, @default_short_name)
-      assert :error == Users.check_password(user.auth_id, password__old, @default_short_name)
+      assert has_password?(user.auth_id)
+      assert {:ok, user.id} == check(user.auth_id, password__NEW)
+      assert :error == check(user.auth_id, password__old)
     end
 
     test "UNsuccessfully replacing the old one", %{user: user} do
       password__old = "password"
-      password__NEW = "di"
+      password__SHORT = "di"
 
-      assert :ok == Users.set_password(user.auth_id, PasswordFocused.params(password__old), @default_short_name)
-      assert {:error, _} = Users.set_password(user.auth_id, PasswordFocused.params(password__NEW), @default_short_name)
+      assert :ok == set(user.auth_id, password__old)
+      assert {:error, _} = set(user.auth_id, password__SHORT)
       
-      assert Password.count_for(user.auth_id, @default_short_name) == 1
-      assert {:ok, user.id} == Users.check_password(user.auth_id, password__old, @default_short_name)
-      assert :error == Users.check_password(user.auth_id, password__NEW, @default_short_name)
+      assert has_password?(user.auth_id)
+      assert {:ok, user.id} == check(user.auth_id, password__old)
+      assert :error == check(user.auth_id, password__SHORT)
     end
   end
 
@@ -57,12 +54,31 @@ defmodule Crit.Users.PasswordTest do
     # Success case is tested above.
     
     test "no such user: does not leak that fact" do
-      assert :error == Users.check_password("bad auth id", "password", @default_short_name)
+      assert :error == check("bad auth id", "password")
     end
     
     test "incorrect password: does not leak that fact" do
       user = PasswordFocused.user("password")
-      assert :error == Users.check_password(user.auth_id, "WRONG_password", @default_short_name)
+      assert :error == check(user.auth_id, "WRONG_password")
     end
+  end
+
+  # Util
+
+  def set(auth_id, password) do 
+    Users.set_password(
+      auth_id, PasswordFocused.params(password), @default_short_name)
+  end
+
+  def has_password?(auth_id) do
+    case Password.count_for(auth_id, @default_short_name) do
+      0 -> false
+      1 -> true
+      n -> raise("There can't be #{n} passwords.")
+    end
+  end
+
+  def check(auth_id, password) do 
+    Users.check_password(auth_id, password, @default_short_name)
   end
 end

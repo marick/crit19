@@ -31,6 +31,4 @@ defmodule Crit.Sql.PrefixServerTest do
     fetched = Repo.get(Record, inserted.id, prefix: @prefix)
     assert_inserted_the_same(inserted, fetched)
   end
-
-
 end

@@ -22,7 +22,6 @@ defmodule Crit.Users.Internal.PasswordTest do
       refute attempt_to_set("PASSWORD", nil).valid?
       refute attempt_to_set(nil, "PASSWORD").valid?
     end
-
     
     test "lower bound" do
       too_short = String.base64(7)
@@ -54,5 +53,4 @@ defmodule Crit.Users.Internal.PasswordTest do
       Password.default_changeset(), PasswordFocused.params(new_password, confirmation)
     )
   end          
-
 end
