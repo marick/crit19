@@ -66,7 +66,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
   describe "turning a list of institutions into a simpler structure" do
     setup do
-      [default: Institutions.default_institution]
+      [default: Institutions.Default.institution]
     end
 
     test "`selected` argument is just returned", %{default: default} do
