@@ -9,7 +9,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "displaying a token to get a form" do
     setup do
-      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_institution)
+      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_short_name)
       [token_text: token.text, user: user]
     end
 
@@ -36,7 +36,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "setting the password for the first time" do
     setup %{conn: conn} do
-      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_institution)
+      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_short_name)
 
       conn = Plug.Test.init_test_session(conn, token: token)
 
@@ -53,9 +53,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
       conn = run.(conn, valid_password, valid_password)
-      assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password, @default_institution)
+      assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password, @default_short_name)
       assert user_id(conn) == user.id
-      assert institution(conn) == @default_institution
+      assert institution(conn) == @default_short_name
       refute token(conn)
 
       assert redirected_to(conn) == Routes.public_path(conn, :index)
@@ -69,11 +69,11 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, user: user, valid_password: valid_password, run: run} do
 
       conn = run.(conn, valid_password, "WRONG")
-      refute :ok == Users.check_password(user.auth_id, valid_password, @default_institution)
+      refute :ok == Users.check_password(user.auth_id, valid_password, @default_short_name)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       refute user_id(conn)
-      refute institution(conn) == @default_institution
+      refute institution(conn) == @default_short_name
       assert token(conn)
 
       assert_user_sees(conn, 

@@ -25,8 +25,6 @@ defmodule Crit.DataCase do
       alias Crit.Factory
       import Crit.DataExtras
       use Crit.Institutions.Default
-
-      @default_institution "critter4us"
     end
   end
 

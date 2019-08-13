@@ -5,8 +5,7 @@ defmodule CritWeb.ConnExtras do
   alias CritWeb.PublicController
   alias Crit.Sql
   import CritWeb.Plugs.Accessors
-
-  @default_institution "critter4us"
+  use Crit.Institutions.Default
 
   # ASSERTIONS
 
@@ -53,14 +52,14 @@ defmodule CritWeb.ConnExtras do
   # USERS
 
   def logged_in_with_permissions(conn, permissions) do
-    manager = Factory.build(:user, permission_list: permissions) |> Sql.insert!(@default_institution)
+    manager = Factory.build(:user, permission_list: permissions) |> Sql.insert!(@default_short_name)
     logged_in(conn, manager)
   end
 
   def logged_in(conn, user \\ Factory.build(:user)) do
     conn
     |> assign(:current_user, user)
-    |> put_unique_id(user.id, @default_institution)
+    |> put_unique_id(user.id, @default_short_name)
   end
     
 

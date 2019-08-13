@@ -66,7 +66,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       conn = act.(conn, odd_user)
       assert ready_for_new_user?(conn)
 
-      assert {:ok, user} = Users.user_from_auth_id("blank filled", @default_institution)
+      assert {:ok, user} = Users.user_from_auth_id("blank filled", @default_short_name)
       assert "lots of blanks" == user.display_name
       assert "test@exampler.com" == user.email
     end

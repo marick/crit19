@@ -7,7 +7,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
   alias Crit.Users.PasswordToken
 
   def creation_and_first_save(params) do
-    assert {:ok, %{user: user, token: token}} = Users.create_unactivated_user(params, @default_institution)
+    assert {:ok, %{user: user, token: token}} = Users.create_unactivated_user(params, @default_short_name)
     
     # Just a spot check; unit tests have more
     assert params["email"] == user.email
@@ -22,7 +22,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
 
   def supply_new_password(user_id, new_password) do
     params = PasswordFocused.params(new_password, new_password)
-    assert :ok = Users.set_password(user_id, params, @default_institution)
+    assert :ok = Users.set_password(user_id, params, @default_short_name)
   end
 
   test "successful creation through activation" do
@@ -31,8 +31,8 @@ defmodule Crit.Users.Workflow.NewUserTest do
     present_password_token(token.text)
 
     new_password = "something horse something something"
-    assert :error = Users.check_password(user.auth_id, new_password, @default_institution)
+    assert :error = Users.check_password(user.auth_id, new_password, @default_short_name)
     supply_new_password(user.auth_id, new_password)
-    assert {:ok, user.id} == Users.check_password(user.auth_id, new_password, @default_institution)
+    assert {:ok, user.id} == Users.check_password(user.auth_id, new_password, @default_short_name)
   end
 end
