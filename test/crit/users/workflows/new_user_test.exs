@@ -2,13 +2,13 @@ defmodule Crit.Users.Workflow.NewUserTest do
   use Crit.DataCase
 
   alias Crit.Users
-  alias Crit.Exemplars.{PasswordFocused, TokenFocused}
-  alias Crit.Repo
-  alias Crit.Users.{PasswordToken, UserHavingToken, Password}
+  alias Crit.Exemplars.{PasswordFocused}
+  alias Crit.Users.{UserHavingToken, Password}
   alias Crit.Sql
 
-  def creation_and_first_save() do
-    %UserHavingToken{user: user, token: token} = TokenFocused.user()
+  def creation_and_first_save(params) do
+    {:ok, %UserHavingToken{user: user, token: token}}
+       = Users.create_unactivated_user(params, @default_short_name)
     {user, token}
   end
 
@@ -31,7 +31,8 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   test "successful creation through activation" do
-    {user, token} = creation_and_first_save()
+    admin_uses_params = Factory.string_params_for(:user)
+    {user, token} = creation_and_first_save(admin_uses_params)
 
     present_password_token(token.text)
     user_has_no_password(user.auth_id)
