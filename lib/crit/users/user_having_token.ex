@@ -11,6 +11,7 @@ defmodule Crit.Users.UserHavingToken do
   def token(tokenized), do: tokenized.token
 
   def user_id(tokenized), do: user(tokenized).id
+  def display_name(tokenized), do: user(tokenized).display_name
   def auth_id(tokenized), do: user(tokenized).auth_id
   def email(tokenized), do: user(tokenized).email
 

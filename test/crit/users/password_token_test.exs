@@ -5,30 +5,29 @@ defmodule Crit.Users.PasswordTokenTest do
   alias Crit.Users.PasswordToken
   alias Crit.Sql
   alias Crit.Repo
+  alias Crit.Users.UserHavingToken, as: UT
 
-  defp fresh_user(attrs \\ []) do 
-    params = Factory.string_params_for(:user, attrs)
-    result = Users.create_unactivated_user(params, @default_short_name)
-    assert {:ok, %{user: user, token: token}} = result
-      
-    assert user.display_name == params["display_name"]
-    assert Repo.get_by(PasswordToken, user_id: user.id)
-    result
-  end
-  
 
   describe "creating a PasswordToken" do
     test "a successful creation" do
-      fresh_user()
-      assert [token] = Repo.all(PasswordToken)
+      %UT{token: token, user: user} = create_unactivated_user()
+
+      assert token.user_id == user.id
+
+      # User exists and is found through token.
       assert Sql.get(User, token.user_id, token.institution_short_name)
+
+      # Token exists. 
+      assert Repo.get_by(PasswordToken, user_id: user.id)
+      assert Repo.get_by(PasswordToken, text: token.text)
     end
 
     test "bad user data prevents a token from being created" do
-      params = Factory.string_params_for(:user, auth_id: "")
-      {:error, changeset} = Users.create_unactivated_user(params, @default_short_name)
+      too_short_auth_id = "" 
+      {:error, changeset} = try_creation(auth_id: too_short_auth_id)
       assert %{auth_id: ["can't be blank"]} = errors_on(changeset)
       assert [] = Repo.all(PasswordToken)
+      assert [] = Sql.all(User, @default_short_name)
     end
   end
 
@@ -54,25 +53,26 @@ defmodule Crit.Users.PasswordTokenTest do
 
   describe "deleting a token" do
     test "success" do
-      {:ok, %{token: retain}} = fresh_user()
-      {:ok, %{token: remove}} = fresh_user()
+      %UT{token: retain} = create_unactivated_user()
+      %UT{token: remove} = create_unactivated_user()
       refute retain.text == remove.text
 
       assert :ok == Users.delete_password_token(remove.text)
       assert {:error, _} = Users.one_token(remove.text)
+
       assert {:ok, _} = Users.one_token(retain.text)
     end
 
     test "missing token does not throw an error" do
-      {:ok, %{token: retain}} = fresh_user()
-      assert :ok == Users.delete_password_token(retain.text)
-      assert :ok == Users.delete_password_token(retain.text)
+      %{token: remove} = create_unactivated_user()
+      assert :ok == Users.delete_password_token(remove.text)
+      assert :ok == Users.delete_password_token(remove.text)
     end
   end
   
   describe "checking if a token exists" do
     test "yes, then no" do
-      {:ok, %{token: token}} = fresh_user()
+      %{token: token} = create_unactivated_user()
       assert Repo.get_by(PasswordToken, text: token.text)
       assert :ok == Users.delete_password_token(token.text)
       refute Repo.get_by(PasswordToken, text: token.text)
@@ -113,10 +113,18 @@ defmodule Crit.Users.PasswordTokenTest do
   defp move_expiration_backward_by_seconds(token, seconds),
     do: advance_expiration_by_seconds(token, -seconds)
 
+  defp try_creation(attrs) do
+    params = Factory.string_params_for(:user, attrs)
+    Users.create_unactivated_user(params, @default_short_name)
+  end
+
+  defp create_unactivated_user(attrs \\ []) do
+    {:ok, %UT{} = tokenized} = try_creation(attrs)
+    tokenized
+  end
+
   defp user_and_token(_) do 
-    {:ok, %{user: inserted, token: token}} = fresh_user()
+    %{user: inserted, token: token} = create_unactivated_user()
     [user: inserted, token: token]
   end
-  
-
 end  
