@@ -2,8 +2,8 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.UserManagement.UserController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Users
   alias Crit.Sql
+  alias Crit.Users.User
 
   setup :logged_in_as_user_manager
 
@@ -66,9 +66,9 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       conn = act.(conn, odd_user)
       assert ready_for_new_user?(conn)
 
-      assert {:ok, user} = Users.user_from_auth_id("blank filled", @default_short_name)
-      assert "lots of blanks" == user.display_name
-      assert "test@exampler.com" == user.email
+      assert Sql.get_by(User, [display_name: "lots of blanks"], @default_short_name)
+      assert Sql.get_by(User, [auth_id: "blank filled"], @default_short_name)
+      assert Sql.get_by(User, [email: "test@exampler.com"], @default_short_name)
     end
 
     test "an audit record is created", %{conn: conn, act: act} do
