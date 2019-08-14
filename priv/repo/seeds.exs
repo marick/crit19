@@ -10,7 +10,6 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Crit.Repo
 alias Crit.Users
 alias Crit.Users.{User,PermissionList}
 alias Crit.Sql

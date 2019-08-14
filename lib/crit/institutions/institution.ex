@@ -2,7 +2,7 @@ defmodule Crit.Institutions.Institution do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @schema_prefix "clients"
+  @schema_prefix "global"
   
   schema "institutions" do
     field :display_name, :string

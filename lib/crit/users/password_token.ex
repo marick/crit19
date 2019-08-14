@@ -4,7 +4,7 @@ defmodule Crit.Users.PasswordToken do
   import Ecto.Changeset
   alias Crit.Repo
 
-  @schema_prefix "clients"
+  @schema_prefix "global"
   schema "all_password_tokens" do
     field :text, :string
     field :user_id, :id

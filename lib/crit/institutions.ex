@@ -3,7 +3,7 @@ defmodule Crit.Institutions do
   alias Crit.Institutions.Institution
 
   def all() do
-    Repo.all(Institution, prefix: "clients")
+    Repo.all(Institution)
   end
 
 end

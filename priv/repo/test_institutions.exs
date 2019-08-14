@@ -1,5 +1,5 @@
-alias Crit.Clients
+alias Crit.Repo
 alias Crit.Institutions
 
-{:ok, _} = Clients.insert(Institutions.Default.institution)
+{:ok, _} = Repo.insert(Institutions.Default.institution)
 
