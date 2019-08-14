@@ -3,7 +3,10 @@ defmodule Crit.Repo.Migrations.CreateAudit do
 
   def change do
     create table(:audit_log) do
-      add :event_owner_id, :id, null: false
+      add :event_owner_id,
+        # User records are never supposed to be deleted.
+        references(:users, on_delete: :restrict),
+        null: false
       add :event, :string, null: false
       add :version, :integer, null: false, default: 1
       add :data, :map, default: %{}

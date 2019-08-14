@@ -9,21 +9,22 @@ defmodule Crit.Audit.ToEcto.AuditTest do
   alias Crit.Audit.ToEcto.Server
   alias Crit.Audit.ToEcto.Record
   alias Crit.Sql
+  alias Crit.Exemplars.Minimal
 
   test "audit logging" do
-    id = 3
+    user = Minimal.user()
     event = "event"
     data = %{s: "string", i: 44}
 
     Server.put(
       :ignored,
-      %Entry{event_owner_id: id, event: event, data: data},
+      %Entry{event_owner_id: user.id, event: event, data: data},
       @default_short_name
     )
     wait_for_cast_to_complete()
     assert [one] = Sql.all(Record, @default_short_name)
 
-    assert one.event_owner_id == id
+    assert one.event_owner_id == user.id
     assert one.event == event
     # Note stringification of keys
     assert one.data == %{"i" => 44, "s" => "string"}
