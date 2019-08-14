@@ -6,11 +6,11 @@ defmodule Crit.Users.PasswordTokenTest do
   alias Crit.Sql
   alias Crit.Repo
   alias Crit.Users.UserHavingToken, as: UT
-
+  alias Crit.Exemplars.TokenFocused
 
   describe "creating a PasswordToken" do
     test "a successful creation" do
-      %UT{token: token, user: user} = create_unactivated_user()
+      %UT{token: token, user: user} = TokenFocused.user()
 
       assert token.user_id == user.id
 
@@ -24,7 +24,7 @@ defmodule Crit.Users.PasswordTokenTest do
 
     test "bad user data prevents a token from being created" do
       too_short_auth_id = "" 
-      {:error, changeset} = try_creation(auth_id: too_short_auth_id)
+      {:error, changeset} = TokenFocused.possible_user(auth_id: too_short_auth_id)
       assert %{auth_id: ["can't be blank"]} = errors_on(changeset)
       assert [] = Repo.all(PasswordToken)
       assert [] = Sql.all(User, @default_short_name)
@@ -53,8 +53,8 @@ defmodule Crit.Users.PasswordTokenTest do
 
   describe "deleting a token" do
     test "success" do
-      %UT{token: retain} = create_unactivated_user()
-      %UT{token: remove} = create_unactivated_user()
+      %UT{token: retain} = TokenFocused.user()
+      %UT{token: remove} = TokenFocused.user()
       refute retain.text == remove.text
 
       assert :ok == Users.delete_password_token(remove.text)
@@ -64,7 +64,7 @@ defmodule Crit.Users.PasswordTokenTest do
     end
 
     test "missing token does not throw an error" do
-      %{token: remove} = create_unactivated_user()
+      %{token: remove} = TokenFocused.user()
       assert :ok == Users.delete_password_token(remove.text)
       assert :ok == Users.delete_password_token(remove.text)
     end
@@ -72,7 +72,7 @@ defmodule Crit.Users.PasswordTokenTest do
   
   describe "checking if a token exists" do
     test "yes, then no" do
-      %{token: token} = create_unactivated_user()
+      %{token: token} = TokenFocused.user()
       assert Repo.get_by(PasswordToken, text: token.text)
       assert :ok == Users.delete_password_token(token.text)
       refute Repo.get_by(PasswordToken, text: token.text)
@@ -113,18 +113,9 @@ defmodule Crit.Users.PasswordTokenTest do
   defp move_expiration_backward_by_seconds(token, seconds),
     do: advance_expiration_by_seconds(token, -seconds)
 
-  defp try_creation(attrs) do
-    params = Factory.string_params_for(:user, attrs)
-    Users.create_unactivated_user(params, @default_short_name)
-  end
-
-  defp create_unactivated_user(attrs \\ []) do
-    {:ok, %UT{} = tokenized} = try_creation(attrs)
-    tokenized
-  end
-
   defp user_and_token(_) do 
-    %{user: inserted, token: token} = create_unactivated_user()
+    %{user: inserted, token: token} = TokenFocused.user()
     [user: inserted, token: token]
   end
+  
 end  
