@@ -15,7 +15,8 @@ defmodule Crit.Repo.Migrations.CreateUsers do
     create table(:passwords) do
       add :hash, :string, null: false
       add :auth_id,
-        references(:users, column: :auth_id, type: :citext, on_delete: :delete_all),
+        # User records are never supposed to be deleted.
+        references(:users, column: :auth_id, type: :citext, on_delete: :restrict),
         null: false
 
       timestamps()
@@ -23,7 +24,8 @@ defmodule Crit.Repo.Migrations.CreateUsers do
     create unique_index(:passwords, [:auth_id])
 
     create table(:permission_lists) do
-      add :user_id, references(:users, on_delete: :delete_all), null: false
+        # User records are never supposed to be deleted.
+      add :user_id, references(:users, on_delete: :restrict), null: false
       add :manage_and_create_users, :boolean, null: false
       add :manage_animals, :boolean, null: false
       add :make_reservations, :boolean, null: false
