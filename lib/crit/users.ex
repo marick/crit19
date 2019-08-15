@@ -65,18 +65,15 @@ defmodule Crit.Users do
   # Primarily about tokens
 
 
-  # Todo: use Repo.Multi
+  # Note: this could be made transactional using Ecto.Multi, but
+  # that would break for the first institution that had its own
+  # database.
   def create_unactivated_user(params, institution) do
-    result =
-      User.create_changeset(params)
-      |> Sql.insert(institution)
-
-    case result do
-      {:ok, user} ->
-        token = Repo.insert!(PasswordToken.new(user.id, institution))
-        {:ok, UserHavingToken.new(user, token)}
-      _ ->
-        result
+    with(
+      {:ok, user} <- User.create_changeset(params) |> Sql.insert(institution),
+      token <- Repo.insert!(PasswordToken.new(user.id, institution))
+    ) do
+      {:ok, UserHavingToken.new(user, token)}
     end
   end
 
