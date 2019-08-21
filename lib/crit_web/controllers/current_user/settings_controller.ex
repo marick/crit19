@@ -12,7 +12,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
     case Users.one_token(token_text) do
       {:ok, token} ->
         conn
-        |> put_token(token)
+        |> remember_token(token)
         |> render_password_creation_form(Users.fresh_password_changeset())
       {:error, _} -> 
         conn
@@ -22,14 +22,18 @@ defmodule CritWeb.CurrentUser.SettingsController do
   end
 
   def set_fresh_password(conn, %{"password" => params}) do
-    # TEMP KLUDGE
-    user = Sql.get(Users.User, token(conn).user_id, token(conn).institution_short_name)
-    case Users.set_password(user.auth_id, params, token(conn).institution_short_name) do
+    user_id = token(conn).user_id
+    institution = token(conn).institution_short_name
+    # Note: a transaction isn't useful here because the assumption that
+    # users are never deleted (just inactivated) is pervasive in this code,
+    # so the `get` "cannot" fail. 
+    user = Sql.get(Users.User, user_id, institution)
+    case Users.set_password(user.auth_id, params, institution) do
       :ok ->
         Users.delete_password_token(token(conn).text)
         conn
-        |> delete_token
-        |> SessionController.successful_login(user.id, token(conn).institution_short_name)
+        |> forget_token
+        |> SessionController.successful_login(user_id, institution)
       {:error, %Changeset{} = changeset} ->
         conn
         |> Common.form_error_flash

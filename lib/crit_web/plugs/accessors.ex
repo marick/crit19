@@ -42,6 +42,6 @@ defmodule CritWeb.Plugs.Accessors do
   # Etc.
   
   def token(conn), do: get_session(conn, :token)
-  def put_token(conn, token), do: put_session(conn, :token, token)
-  def delete_token(conn), do: delete_session(conn, :token)
+  def remember_token(conn, token), do: put_session(conn, :token, token)
+  def forget_token(conn), do: delete_session(conn, :token)
 end
