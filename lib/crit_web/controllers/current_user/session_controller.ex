@@ -22,15 +22,20 @@ defmodule CritWeb.CurrentUser.SessionController do
     institution = params["institution"]
     case Users.check_password(auth_id, password, institution) do
       {:ok, user_id} ->
-        conn
-        |> put_unique_id(user_id, institution)
-        |> redirect(to: PublicController.path(:index))
+        successful_login(conn, user_id, institution)
       :error ->
         conn
         |> Common.form_error_flash
         |> render_login(params, institution_options(institution))
     end
   end
+
+  def successful_login(conn, user_id, institution) do
+    conn
+    |> put_flash(:info, "You have been logged in.")
+    |> put_unique_id(user_id, institution)
+    |> redirect(to: PublicController.path(:index))
+  end 
 
   # Note: the `clear_session` isn't actually needed. It's enough to
   # drop the session. However, A test can't (legitimately) tell if the session

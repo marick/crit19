@@ -4,7 +4,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   alias Crit.Users
   alias Ecto.Changeset
   alias Crit.Sql
-  alias CritWeb.PublicController
+  alias CritWeb.{PublicController, CurrentUser.SessionController}
 
   # No plugs are needed yet.
 
@@ -28,10 +28,8 @@ defmodule CritWeb.CurrentUser.SettingsController do
       :ok ->
         Users.delete_password_token(token(conn).text)
         conn
-        |> put_unique_id(user.id, token(conn).institution_short_name)
         |> delete_token
-        |> put_flash(:info, "You have been logged in.")
-        |> redirect(to: PublicController.path(:index))
+        |> SessionController.successful_login(user.id, token(conn).institution_short_name)
       {:error, %Changeset{} = changeset} ->
         conn
         |> Common.form_error_flash
