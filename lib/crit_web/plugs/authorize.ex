@@ -1,8 +1,8 @@
 defmodule CritWeb.Plugs.Authorize do
   alias Phoenix.Controller
-  alias CritWeb.Router.Helpers, as: Routes
   import Plug.Conn
   import CritWeb.Plugs.Accessors
+  alias CritWeb.PublicController
 
   def must_be_logged_out(conn, _opts) do
     if has_user?(conn) do
@@ -32,7 +32,7 @@ defmodule CritWeb.Plugs.Authorize do
   defp oops(conn, message) do
     conn
     |> Controller.put_flash(:error, message)
-    |> Controller.redirect(to: Routes.public_path(conn, :index))
+    |> Controller.redirect(to: PublicController.path(:index))
     |> halt()
   end
 end

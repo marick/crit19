@@ -6,6 +6,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias Crit.Users
   alias Crit.Repo
   alias Crit.Users.PasswordToken
+  alias CritWeb.PublicController
 
   describe "displaying a token to get a form" do
     setup do
@@ -15,7 +16,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
     test "getting the form: there is no matching token", %{conn: conn} do
       conn = get_via_action(conn, :fresh_password_form, "bogus token")
-      assert redirected_to(conn) == Routes.public_path(conn, :index)
+      assert redirected_to(conn) == PublicController.path(:index)
       assert flash_error(conn) =~ "does not exist"
       assert flash_error(conn) =~ "has probably expired"
     end
@@ -58,7 +59,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert institution(conn) == @default_short_name
       refute token(conn)
 
-      assert redirected_to(conn) == Routes.public_path(conn, :index)
+      assert redirected_to(conn) == PublicController.path(:index)
       assert flash_info(conn) =~ "You have been logged in"
 
       # Token has been deleted

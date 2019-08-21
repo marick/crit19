@@ -4,6 +4,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   alias Crit.Users
   alias Ecto.Changeset
   alias Crit.Sql
+  alias CritWeb.PublicController
 
   # No plugs are needed yet.
 
@@ -16,7 +17,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
       {:error, _} -> 
         conn
         |> put_flash(:error, "The account creation token does not exist. (It has probably expired.)")
-        |> redirect(to: Routes.public_path(conn, :index))
+        |> redirect(to: PublicController.path(:index))
     end
   end
 
@@ -30,7 +31,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
         |> put_unique_id(user.id, token(conn).institution_short_name)
         |> delete_token
         |> put_flash(:info, "You have been logged in.")
-        |> redirect(to: Routes.public_path(conn, :index))
+        |> redirect(to: PublicController.path(:index))
       {:error, %Changeset{} = changeset} ->
         conn
         |> Common.form_error_flash

@@ -4,6 +4,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   import CritWeb.Plugs.Authorize
   alias Crit.Users
   alias Crit.Institutions
+  alias CritWeb.PublicController
   use Crit.Institutions.Default
   
 
@@ -23,7 +24,7 @@ defmodule CritWeb.CurrentUser.SessionController do
       {:ok, user_id} ->
         conn
         |> put_unique_id(user_id, institution)
-        |> redirect(to: Routes.public_path(conn, :index))
+        |> redirect(to: PublicController.path(:index))
       :error ->
         conn
         |> Common.form_error_flash
@@ -38,7 +39,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     conn
     |> clear_session()
     |> configure_session(drop: true)
-    |> redirect(to: Routes.public_path(conn, :index))
+    |> redirect(to: PublicController.path(:index))
   end
 
   defp render_login(conn, params, {options, selected}) do
