@@ -48,6 +48,7 @@ defmodule Crit.MixProject do
       {:ex_machina, "~> 2.3"},
       {:pbkdf2_elixir, "~> 1.0"},
       {:puid, "~> 1.0"},
+      {:assertions, "~> 0.10", only: :test},
       {:mox, "~> 0.5", only: :test},
     ]
   end

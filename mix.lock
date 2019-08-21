@@ -1,4 +1,5 @@
 %{
+  "assertions": {:hex, :assertions, "0.14.1", "352391bbcecbfce7d4594df1267ee4ca7a8b79981859a4befdf62dd798769c42", [:mix], []},
   "calendar": {:hex, :calendar, "0.17.6", "ec291cb2e4ba499c2e8c0ef5f4ace974e2f9d02ae9e807e711a9b0c7850b9aee", [:mix], [{:tzdata, "~> 0.5.20 or ~> 0.1.201603 or ~> 1.0", [hex: :tzdata, optional: false]}]},
   "certifi": {:hex, :certifi, "2.5.1", "867ce347f7c7d78563450a18a6a28a8090331e77fa02380b4a21962a65d36ee5", [:rebar3], [{:parse_trans, "~>3.3", [hex: :parse_trans, optional: false]}]},
   "comeonin": {:hex, :comeonin, "5.1.2", "fbbbbbfcf0f0e9900c0336d16c8d462edf838ba1759577e29cc5fbd7c28a4540", [:mix], []},
