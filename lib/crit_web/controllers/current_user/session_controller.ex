@@ -3,6 +3,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   use CritWeb.Controller.Path, :current_user_session_path
   import CritWeb.Plugs.Authorize
   alias Crit.Users
+  alias Crit.Users.UniqueId
   alias Crit.Institutions
   alias CritWeb.PublicController
   use Crit.Institutions.Default
@@ -22,7 +23,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     institution = params["institution"]
     case Users.check_password(auth_id, password, institution) do
       {:ok, user_id} ->
-        successful_login(conn, user_id, institution)
+        successful_login(conn, UniqueId.new(user_id, institution))
       :error ->
         conn
         |> Common.form_error_flash
@@ -30,10 +31,10 @@ defmodule CritWeb.CurrentUser.SessionController do
     end
   end
 
-  def successful_login(conn, user_id, institution) do
+  def successful_login(conn, unique_id) do
     conn
     |> put_flash(:info, "You have been logged in.")
-    |> put_unique_id(user_id, institution)
+    |> put_unique_id(unique_id)
     |> redirect(to: PublicController.path(:index))
   end 
 

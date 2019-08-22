@@ -27,7 +27,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
       {:ok, %UniqueId{} = unique_id} ->
         conn
         |> forget_token
-        |> SessionController.successful_login(unique_id.user_id, unique_id.institution)
+        |> SessionController.successful_login(unique_id)
       {:error, %Changeset{} = changeset} ->
         conn
         |> Common.form_error_flash

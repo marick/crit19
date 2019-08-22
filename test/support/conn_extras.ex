@@ -56,7 +56,7 @@ defmodule CritWeb.ConnExtras do
     logged_in(conn, manager)
   end
 
-  def logged_in(conn, user \\ Factory.build(:user)) do
+  def logged_in(conn, user \\ Factory.insert(:user)) do
     conn
     |> assign(:current_user, user)
     |> put_unique_id(user.id, @default_short_name)

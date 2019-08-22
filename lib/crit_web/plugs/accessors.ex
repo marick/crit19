@@ -10,11 +10,13 @@ defmodule CritWeb.Plugs.Accessors do
   import Plug.Conn
   alias Crit.Users.UniqueId
 
-  def put_unique_id(conn, user_id, institution) do
-    unique_id = %UniqueId{user_id: user_id, institution: institution}
-    put_session(conn, :unique_id, unique_id)
+  def put_unique_id(%Plug.Conn{} = conn, user_id, institution) when
+           is_integer(user_id) and is_binary(institution) do
+    put_unique_id(conn, %UniqueId{user_id: user_id, institution: institution})
   end
 
+  def put_unique_id(%Plug.Conn{} = conn, %UniqueId{} = unique_id), 
+    do: put_session(conn, :unique_id, unique_id)
 
   def unique_id(conn), do: get_session(conn, :unique_id)
 
