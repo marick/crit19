@@ -6,4 +6,8 @@ defmodule CritWeb.Plugs.UniqueId do
   """
 
   defstruct user_id: nil, institution: nil
+
+
+  def new(user_id, institution),
+    do: %__MODULE__{user_id: user_id, institution: institution}
 end

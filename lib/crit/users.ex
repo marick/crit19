@@ -9,6 +9,7 @@ defmodule Crit.Users do
   alias Crit.Users.UserHavingToken
   alias Crit.Sql
   alias Crit.Repo
+  alias CritWeb.Plugs.UniqueId
 
   # Primarily about users
 
@@ -86,6 +87,25 @@ defmodule Crit.Users do
         PasswordToken.force_update(token, NaiveDateTime.utc_now)
         {:ok, token}
         
+    end
+  end
+
+  def redeem_password_token(
+    %PasswordToken{user_id: user_id,
+                   institution_short_name: institution,
+                   text: text},
+    password_params) do 
+    # Note: a transaction isn't useful here because the assumption that
+    # users are never deleted (just inactivated) is pervasive in this code,
+    # so the `get` "cannot" fail. 
+    user = Sql.get(User, user_id, institution)
+    retval = set_password(user.auth_id, password_params, institution)
+    case retval do
+      :ok ->
+        delete_password_token(text)
+        {:ok, UniqueId.new(user_id, institution)}
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 

@@ -5,6 +5,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   alias Ecto.Changeset
   alias Crit.Sql
   alias CritWeb.{PublicController, CurrentUser.SessionController}
+  alias CritWeb.Plugs.UniqueId
 
   # No plugs are needed yet.
 
@@ -22,18 +23,11 @@ defmodule CritWeb.CurrentUser.SettingsController do
   end
 
   def set_fresh_password(conn, %{"password" => params}) do
-    user_id = token(conn).user_id
-    institution = token(conn).institution_short_name
-    # Note: a transaction isn't useful here because the assumption that
-    # users are never deleted (just inactivated) is pervasive in this code,
-    # so the `get` "cannot" fail. 
-    user = Sql.get(Users.User, user_id, institution)
-    case Users.set_password(user.auth_id, params, institution) do
-      :ok ->
-        Users.delete_password_token(token(conn).text)
+    case Users.redeem_password_token(token(conn), params) do
+      {:ok, %UniqueId{} = unique_id} ->
         conn
         |> forget_token
-        |> SessionController.successful_login(user_id, institution)
+        |> SessionController.successful_login(unique_id.user_id, unique_id.institution)
       {:error, %Changeset{} = changeset} ->
         conn
         |> Common.form_error_flash
