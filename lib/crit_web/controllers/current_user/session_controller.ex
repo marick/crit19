@@ -22,8 +22,8 @@ defmodule CritWeb.CurrentUser.SessionController do
     password = params["password"]
     institution = params["institution"]
     case Users.check_password(auth_id, password, institution) do
-      {:ok, user_id} ->
-        successful_login(conn, UniqueId.new(user_id, institution))
+      {:ok, %UniqueId{} = unique_id} ->
+        successful_login(conn, unique_id)
       :error ->
         conn
         |> Common.form_error_flash
@@ -31,7 +31,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     end
   end
 
-  def successful_login(conn, unique_id) do
+  def successful_login(conn, %UniqueId{} = unique_id) do
     conn
     |> put_flash(:info, "You have been logged in.")
     |> put_unique_id(unique_id)

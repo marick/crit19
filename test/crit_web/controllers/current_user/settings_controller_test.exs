@@ -7,6 +7,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias Crit.Repo
   alias Crit.Users.PasswordToken
   alias CritWeb.PublicController
+  import Crit.DataExtras
 
   describe "displaying a token to get a form" do
     setup do
@@ -54,7 +55,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
       conn = run.(conn, valid_password, valid_password)
-      assert {:ok, user.id} == Users.check_password(user.auth_id, valid_password, @default_short_name)
+      assert_ok_unique_id(
+        user.id,
+        Users.check_password(user.auth_id, valid_password, @default_short_name))
       assert user_id(conn) == user.id
       assert institution(conn) == @default_short_name
       refute token(conn)
@@ -70,7 +73,8 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, user: user, valid_password: valid_password, run: run} do
 
       conn = run.(conn, valid_password, "WRONG")
-      refute :ok == Users.check_password(user.auth_id, valid_password, @default_short_name)
+      assert :error ==
+        Users.check_password(user.auth_id, valid_password, @default_short_name)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       refute user_id(conn)

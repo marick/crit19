@@ -53,7 +53,7 @@ defmodule Crit.Users do
       |> Sql.one(institution)
     
     if password && Pbkdf2.verify_pass(proposed_password, password.hash) do
-      {:ok, password.user.id}
+      {:ok, UniqueId.new(password.user.id, institution)}
     else
       Pbkdf2.no_user_verify()
       :error

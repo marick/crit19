@@ -8,6 +8,6 @@ defmodule Crit.Users.UniqueId do
   defstruct user_id: nil, institution: nil
 
 
-  def new(user_id, institution),
+  def new(user_id, institution) when is_integer(user_id) and is_binary(institution),
     do: %__MODULE__{user_id: user_id, institution: institution}
 end

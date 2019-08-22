@@ -21,7 +21,7 @@ defmodule Crit.Users.PasswordTest do
 
       assert :ok == set(user.auth_id, password)
       assert has_password?(user.auth_id)
-      assert {:ok, user.id} == check(user.auth_id, password)
+      assert_ok_unique_id(user.id, check(user.auth_id, password))
     end
 
     test "successfully replacing the old one", %{user: user} do
@@ -32,7 +32,7 @@ defmodule Crit.Users.PasswordTest do
       assert :ok == set(user.auth_id, password__NEW)
       
       assert has_password?(user.auth_id)
-      assert {:ok, user.id} == check(user.auth_id, password__NEW)
+      assert_ok_unique_id(user.id, check(user.auth_id, password__NEW))
       assert :error == check(user.auth_id, password__old)
     end
 
@@ -44,7 +44,7 @@ defmodule Crit.Users.PasswordTest do
       assert {:error, _} = set(user.auth_id, password__SHORT)
       
       assert has_password?(user.auth_id)
-      assert {:ok, user.id} == check(user.auth_id, password__old)
+      assert_ok_unique_id(user.id, check(user.auth_id, password__old))
       assert :error == check(user.auth_id, password__SHORT)
     end
   end
