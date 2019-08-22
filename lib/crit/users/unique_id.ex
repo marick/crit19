@@ -1,4 +1,4 @@
-defmodule CritWeb.Plugs.UniqueId do
+defmodule Crit.Users.UniqueId do
   @moduledoc """
   Any given `conn` represents a request for a particular user. The same
   `User.id` may appear in more than one institution, so uniqueness requires

@@ -8,7 +8,7 @@ defmodule CritWeb.Plugs.Accessors do
   """
 
   import Plug.Conn
-  alias CritWeb.Plugs.UniqueId
+  alias Crit.Users.UniqueId
 
   def put_unique_id(conn, user_id, institution) do
     unique_id = %UniqueId{user_id: user_id, institution: institution}

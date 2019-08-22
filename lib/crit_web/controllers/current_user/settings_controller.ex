@@ -2,10 +2,10 @@ defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :current_user_settings_path
   alias Crit.Users
+  alias Crit.Users.UniqueId
   alias Ecto.Changeset
   alias Crit.Sql
   alias CritWeb.{PublicController, CurrentUser.SessionController}
-  alias CritWeb.Plugs.UniqueId
 
   # No plugs are needed yet.
 
