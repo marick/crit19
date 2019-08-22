@@ -6,7 +6,7 @@ defmodule Crit.Users.PasswordTokenTest do
   alias Crit.Sql
   alias Crit.Repo
   alias Crit.Users.UserHavingToken, as: UT
-  alias Crit.Exemplars.TokenFocused
+  alias Crit.Exemplars.{TokenFocused, PasswordFocused}
 
   describe "creating a PasswordToken" do
     test "a successful creation" do
@@ -48,8 +48,34 @@ defmodule Crit.Users.PasswordTokenTest do
       assert {:error, message} = Users.one_token("DIFFERENT TOKEN")
       assert message =~ "DIFFERENT TOKEN"
     end
-  end    
-    
+  end
+
+
+  describe "attempting to redeem a password token" do
+    setup :user_and_token
+
+    setup do
+      [valid_password: "something horse something something"]
+    end
+
+    test "the password is acceptable",
+      %{valid_password: valid_password, user: user, token: token} do
+      params = PasswordFocused.params(valid_password, valid_password)
+      assert_ok_unique_id(user.id, Users.redeem_password_token(token, params))
+      # Token has been deleted
+      refute Repo.get_by(PasswordToken, user_id: user.id)
+    end
+
+    test "something is wrong with the password", 
+      %{valid_password: valid_password, token: token} do
+      params = PasswordFocused.params(valid_password, "WRONG")
+      assert {:error, changeset} = Users.redeem_password_token(token, params)
+      assert %{new_password_confirmation: ["should be the same as the new password"]}
+      == errors_on(changeset)
+      # The token is not deleted.
+      assert Users.one_token(token.text)
+    end
+  end
 
   describe "deleting a token" do
     test "success" do

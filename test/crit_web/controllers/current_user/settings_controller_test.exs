@@ -64,9 +64,6 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
       assert redirected_to(conn) == PublicController.path(:index)
       assert flash_info(conn) =~ "You have been logged in"
-
-      # Token has been deleted
-      refute Repo.get_by(PasswordToken, user_id: user.id)
     end
 
     test "something is wrong with the password", 
@@ -85,9 +82,6 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
         [ Common.form_error_message(),
           "should be the same as the new password",
         ])
-        
-      # The token is not deleted.
-      assert Users.one_token(token(conn).text)
     end
   end
 
