@@ -1,4 +1,5 @@
 defmodule CritWeb.ConnExtras do
+  use ExUnit.CaseTemplate
   use Phoenix.ConnTest
   import ExUnit.Assertions
   alias Crit.Factory
@@ -70,4 +71,6 @@ defmodule CritWeb.ConnExtras do
     [conn: logged_in_with_permissions(conn, permissions)]
   end
 
+
+  def under(payload_key, params), do: %{payload_key => params}
 end

@@ -17,9 +17,6 @@ defmodule CritWeb.ConnMacros do
         post(conn, unquote(controller).path(action), payload)
       end
 
-      defp under(payload_key, params),
-        do: %{payload_key => params}
-
       defp delete_via_action(conn, action) do
         delete(conn, unquote(controller).path(action))
       end
