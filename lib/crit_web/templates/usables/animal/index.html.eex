@@ -1,0 +1,30 @@
+<h1>Listing Animals</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Species</th>
+      <th>Lock version</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for animal <- @animals do %>
+    <tr>
+      <td><%= animal.name %></td>
+      <td><%= animal.species %></td>
+      <td><%= animal.lock_version %></td>
+
+      <td>
+        <%= link "Show", to: Routes.usables_animal_path(@conn, :show, animal) %>
+        <%= link "Edit", to: Routes.usables_animal_path(@conn, :edit, animal) %>
+        <%= link "Delete", to: Routes.usables_animal_path(@conn, :delete, animal), method: :delete, data: [confirm: "Are you sure?"] %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Animal", to: Routes.usables_animal_path(@conn, :new) %></span>

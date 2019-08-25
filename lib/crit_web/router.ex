@@ -37,6 +37,12 @@ defmodule CritWeb.Router do
     delete "/logout", SessionController, :logout
   end
 
+
+  scope "/usables", CritWeb.Usables, as: :usables do
+    pipe_through :browser
+    resources "/animals", AnimalController
+  end
+  
   # Other scopes may use custom stacks.
   # scope "/api", CritWeb do
   #   pipe_through :api

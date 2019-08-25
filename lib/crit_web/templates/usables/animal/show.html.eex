@@ -1,0 +1,23 @@
+<h1>Show Animal</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @animal.name %>
+  </li>
+
+  <li>
+    <strong>Species:</strong>
+    <%= @animal.species %>
+  </li>
+
+  <li>
+    <strong>Lock version:</strong>
+    <%= @animal.lock_version %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.usables_animal_path(@conn, :edit, @animal) %></span>
+<span><%= link "Back", to: Routes.usables_animal_path(@conn, :index) %></span>
