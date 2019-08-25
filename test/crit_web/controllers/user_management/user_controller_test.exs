@@ -18,9 +18,10 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     # (Because it gets turned into &#39).
     test "lists all users", %{conn: conn} do
       # Note that the user manager isn't stored in the database
-      user = Factory.build(:user) |> Sql.insert!(institution(conn))
+      user = Factory.build(:user, display_name: "A'postrophe") |> Sql.insert!(institution(conn))
       conn = get_via_action(conn, :index)
-      assert_user_sees(conn, [user.auth_id, user.display_name, user.email])
+      assert_user_sees(conn,
+        [user.auth_id, html_version(user.display_name), user.email])
     end
   end
 

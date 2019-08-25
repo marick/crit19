@@ -7,6 +7,7 @@ defmodule CritWeb.ConnExtras do
   alias Crit.Sql
   import CritWeb.Plugs.Accessors
   use Crit.Institutions.Default
+  alias Phoenix.HTML
 
   # ASSERTIONS
 
@@ -73,4 +74,15 @@ defmodule CritWeb.ConnExtras do
 
 
   def under(payload_key, params), do: %{payload_key => params}
+
+
+  # Etc
+
+  @doc """
+  Takes a plain string and converts it to a string with HTML entities inserted
+  as rendering would. Most importantly, it replaces an apostrophe with `&#39;`. 
+  """
+  def html_version(string),
+    do: string |> HTML.html_escape |> HTML.safe_to_string
+  
 end
