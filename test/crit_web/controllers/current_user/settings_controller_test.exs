@@ -4,8 +4,6 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
   alias Crit.Users
-  alias Crit.Repo
-  alias Crit.Users.PasswordToken
   alias CritWeb.PublicController
   import Crit.DataExtras
 
@@ -29,10 +27,12 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       assert {:ok, original_token} = Users.one_token(token_text)
-      assert token(conn) == original_token
 
-      # The token is not deleted.
-      assert Repo.get_by(PasswordToken, text: token_text)
+      # Note that the date of the token put into the conn has been changed,
+      # but at a one-second granularity.
+      assert token(conn).text == original_token.text
+      assert token(conn).user_id == original_token.user_id
+      assert NaiveDateTime.diff(token(conn).updated_at, original_token.updated_at) >= 0
     end
   end
 
