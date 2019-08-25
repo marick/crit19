@@ -4,7 +4,6 @@ defmodule CritWeb.CurrentUser.SettingsController do
   alias Crit.Users
   alias Crit.Users.UniqueId
   alias Ecto.Changeset
-  alias Crit.Sql
   alias CritWeb.{PublicController, CurrentUser.SessionController}
 
   # No plugs are needed yet.
