@@ -3,7 +3,7 @@ defmodule Crit.Usables.Animal do
   import Ecto.Changeset
 
   schema "animals" do
-    field :lock_version, :integer
+    field :lock_version, :integer, default: 1
     field :name, :string
     field :species, :string
 

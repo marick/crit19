@@ -11,4 +11,8 @@ defmodule Crit.Exemplars.Minimal do
     refute Sql.exists?(PasswordToken, @default_short_name)
     user
   end
+
+  def animal(opts \\ []) do
+    animal = Factory.sql_insert!(:animal, opts, @default_short_name)
+  end
 end

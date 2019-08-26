@@ -1,7 +1,9 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
+  alias Crit.Usables.{Animal}
   alias Crit.Sql
+  require Faker
 
   def sql_insert!(tag, opts \\ [], institution) do
     build(tag, opts) |> Sql.insert!(institution)
@@ -26,5 +28,18 @@ defmodule Crit.Factory do
     }
   end
 
+  def animal_factory() do
+    %Animal{
+      name: Faker.Cat.name(),
+      species: some_species(),
+    }
+  end
+      
+
+  Faker.samplerp(:some_species, [
+        "bovine",
+        "equine",
+      ])
+      
   defp some_boolean(), do: Enum.random([true, false])
 end
