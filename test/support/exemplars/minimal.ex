@@ -13,6 +13,6 @@ defmodule Crit.Exemplars.Minimal do
   end
 
   def animal(opts \\ []) do
-    animal = Factory.sql_insert!(:animal, opts, @default_short_name)
+    Factory.sql_insert!(:animal, opts, @default_short_name)
   end
 end

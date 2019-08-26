@@ -1,12 +1,14 @@
 defmodule Crit.Usables.Animal do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Crit.Usables.ScheduledUnavailability
 
   schema "animals" do
-    field :lock_version, :integer, default: 1
     field :name, :string
     field :species, :string
+    has_many :scheduled_unavailabilities, ScheduledUnavailability
 
+    field :lock_version, :integer, default: 1
     timestamps()
   end
 

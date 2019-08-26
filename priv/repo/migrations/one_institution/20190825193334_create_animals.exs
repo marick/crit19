@@ -10,5 +10,14 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
       timestamps()
     end
 
+    create table("scheduled_unavailabilities") do
+      add :animal_id, references("animals", on_delete: :delete_all), null: false
+      add :timespan, :tsrange
+      add :reason, :text, null: false
+      
+      timestamps()
+    end
+    create index("scheduled_unavailabilities", :animal_id)
+    create index("scheduled_unavailabilities", :timespan, using: :gist)
   end
 end
