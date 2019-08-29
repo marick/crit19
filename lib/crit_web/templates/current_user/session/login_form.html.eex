@@ -6,13 +6,19 @@
   <img src="/images/dawn-penlight.jpg" width="250">
 </div>
       
-<div data-controller="toggle">
+<div data-controller="password">
 <%= form_for :login, @path, [class: "box"], fn f -> %>
-  <%= labeled_select(f, :institution, "Institution", @options, selected: @selected) %>
-  <%= labeled_text_field f, :auth_id, "Login Id", required: true, value: @auth_id%>
-  <%= labeled_text_field f, :password, "Password", required: true, type: "password",
-      data_target: "toggle.field" %>
-  <%= unlabelled(compact_checkbox f, :show_password, data_action: "toggle#toggle_password_visibility") %>
+  <%= labeled_select(f, :institution, "Institution", @options,
+        selected: @selected) %>
+  <%= labeled_text_field f, :auth_id, "Login Id",
+        required: true,
+        value: @auth_id%>
+  <%= labeled_text_field f, :password, "Password",
+        required: true,
+        type: "password",
+        data_target: "password.field" %>
+  <%= unlabelled(compact_checkbox f, :show_password,
+        data_action: "password#toggle_visibility") %>
   <%= form_button "Login" %>
 </div>
 <% end %>
