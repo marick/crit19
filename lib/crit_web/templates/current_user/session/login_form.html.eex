@@ -11,8 +11,8 @@
   <%= labeled_select(f, :institution, "Institution", @options, selected: @selected) %>
   <%= labeled_text_field f, :auth_id, "Login Id", required: true, value: @auth_id%>
   <%= labeled_text_field f, :password, "Password", required: true, type: "password",
-      data_target: "toggle.password" %>
-  <%= unlabelled(compact_checkbox f, :show_password, data_action: "toggle#toggle") %>
+      data_target: "toggle.field" %>
+  <%= unlabelled(compact_checkbox f, :show_password, data_action: "toggle#toggle_password_visibility") %>
   <%= form_button "Login" %>
 </div>
 <% end %>
