@@ -2,9 +2,9 @@ defmodule CritWeb.Bulma.Elements do
   use Phoenix.HTML
   import CritWeb.ErrorHelpers
 
-  def compact_checkbox(form, field) do
+  def compact_checkbox(form, field, opts \\ []) do
     content_tag(:div, 
-      [ checkbox(form, field),
+      [ checkbox(form, field, opts),
         raw("&nbsp;"),
         humanize(field),
       ])
@@ -46,6 +46,16 @@ defmodule CritWeb.Bulma.Elements do
          <div class="select">
            <%= dropdown %>
          </div>
+      </div>
+    </div>
+    """
+  end
+
+  def unlabelled(control) do
+    ~E"""
+    <div class="field">
+      <div class="control">
+         <%= control %>
       </div>
     </div>
     """
