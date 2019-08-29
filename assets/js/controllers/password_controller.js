@@ -3,7 +3,7 @@ import { Controller } from "stimulus"
 export default class extends Controller {
     static targets = [ "field" ];
     
-    toggle_password_visibility() {
+    toggle_visibility() {
         this.fieldTargets.map(this.toggle);
     }
 
