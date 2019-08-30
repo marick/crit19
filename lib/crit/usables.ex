@@ -1,4 +1,7 @@
 defmodule Crit.Usables do
+  alias Crit.Usables.Animal
+
+  
   # @moduledoc """
   # The Usables context.
   # """
@@ -89,16 +92,7 @@ defmodule Crit.Usables do
   #   Repo.delete(animal)
   # end
 
-  # @doc """
-  # Returns an `%Ecto.Changeset{}` for tracking animal changes.
-
-  # ## Examples
-
-  #     iex> change_animal(animal)
-  #     %Ecto.Changeset{source: %Animal{}}
-
-  # """
-  # def change_animal(%Animal{} = animal) do
-  #   Animal.changeset(animal, %{})
-  # end
+  def change_animal(%Animal{} = animal) do
+    Animal.changeset(animal, %{})
+  end
 end

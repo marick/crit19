@@ -1,18 +1,18 @@
 defmodule CritWeb.Usables.AnimalController do
   use CritWeb, :controller
 
-  # alias Crit.Usables
-  # alias Crit.Usables.Animal
+  alias Crit.Usables
+  alias Crit.Usables.Animal
 
   # def index(conn, _params) do
   #   animals = Usables.list_animals()
   #   render(conn, "index.html", animals: animals)
   # end
 
-  # def new(conn, _params) do
-  #   changeset = Usables.change_animal(%Animal{})
-  #   render(conn, "new.html", changeset: changeset)
-  # end
+  def new(conn, _params) do
+    changeset = Usables.change_animal(%Animal{})
+    render(conn, "new.html", changeset: changeset)
+  end
 
   # def create(conn, %{"animal" => animal_params}) do
   #   case Usables.create_animal(animal_params) do

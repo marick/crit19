@@ -6,6 +6,8 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@fullcalendar/core": "^4.3.1",
+    "@fullcalendar/daygrid": "^4.3.0",
     "lodash": ">=4.17.13",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
