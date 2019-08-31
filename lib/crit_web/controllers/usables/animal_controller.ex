@@ -1,5 +1,6 @@
 defmodule CritWeb.Usables.AnimalController do
   use CritWeb, :controller
+  use CritWeb.Controller.Path, :usables_animal_path
 
   alias Crit.Usables
   alias Crit.Usables.Animal
@@ -11,20 +12,20 @@ defmodule CritWeb.Usables.AnimalController do
 
   def new(conn, _params) do
     changeset = Usables.change_animal(%Animal{})
-    render(conn, "new.html", changeset: changeset)
+    render(conn, "new.html", changeset: changeset, path: path(:create))
   end
 
-  # def create(conn, %{"animal" => animal_params}) do
-  #   case Usables.create_animal(animal_params) do
-  #     {:ok, animal} ->
-  #       conn
-  #       |> put_flash(:info, "Animal created successfully.")
-  #       |> redirect(to: Routes.usables_animal_path(conn, :show, animal))
+  def create(_conn, %{"animal" => _animal_params}) do
+    # case Usables.create_animal(animal_params) do
+    #   {:ok, animal} ->
+    #     conn
+    #     |> put_flash(:info, "Animal created successfully.")
+    #     |> redirect(to: Routes.usables_animal_path(conn, :show, animal))
 
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       render(conn, "new.html", changeset: changeset)
-  #   end
-  # end
+    #   {:error, %Ecto.Changeset{} = changeset} ->
+    #     render(conn, "new.html", changeset: changeset)
+    # end
+  end
 
   # def show(conn, %{"id" => id}) do
   #   animal = Usables.get_animal!(id)

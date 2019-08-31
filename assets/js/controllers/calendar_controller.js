@@ -5,23 +5,28 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 
 export default class extends Controller {
-    static targets = [  ];
+    static targets = [ "wrapper", "input" ];
 
-    connect() {
-        console.log("calendar connected");
+    startCalendar() {
         var calendarEl = document.getElementById('calendar');
 
         this.calendar = new Calendar(calendarEl, {
             plugins: [ dayGridPlugin, interactionPlugin ],
             defaultView: 'dayGridMonth'
         });
+        console.log(this.wrapperTarget)
+        this.wrapperTarget.classList.toggle("is-invisible", true)
 
         this.calendar.on('dateClick', (info) => {
-            console.log('clicked on ' + info.dateStr);
-            console.log(this.calendar);
-            this.calendar.select(info.date);
+            this.wrapperTarget.classList.toggle("is-invisible", false);
+            this.inputTarget.value = info.dateStr;
+            // this.calendar.select(info.date); -- replace if
+            // we decide not to close the calendar on first click.
+            this.calendar.destroy();
         })
 
         this.calendar.render();
     }
+
+    
 }
