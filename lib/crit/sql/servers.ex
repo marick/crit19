@@ -10,7 +10,9 @@ defmodule Crit.Sql.Servers do
   end
 
   def server_for(tag) do
-    Agent.get(__MODULE__, &Map.get(&1, tag))
+    result = Agent.get(__MODULE__, &Map.get(&1, tag))
+    if result == nil, do: raise "Bad tag " ++ to_string(tag)
+    result
   end
 
   def put(tag, server) do

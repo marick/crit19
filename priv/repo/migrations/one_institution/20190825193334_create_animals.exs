@@ -2,9 +2,16 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
   use Ecto.Migration
 
   def change do
+    create table(:species) do
+      add :name, :string, null: false
+    end
+    
     create table(:animals) do
       add :name, :string, null: false
-      add :species, :string, null: false
+      # Species cannot be deleted, for the sake of consistency.
+      # Instead, all animals of that species should become unavailable.
+      # This allows history to be preserved.
+      add :species_id, references("species", on_delete: :restrict), null: false
       add :lock_version, :integer, default: 1
 
       timestamps()

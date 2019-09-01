@@ -23,4 +23,6 @@ MIX_ENV=test mix ecto.migrate --migrations-path $ONE --prefix demo
 
 mix run priv/repo/institutions.exs
 mix run priv/repo/seeds.exs
+
 MIX_ENV=test mix run priv/repo/test_institutions.exs
+MIX_ENV=test mix run priv/repo/test_seeds.exs

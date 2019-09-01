@@ -47,15 +47,14 @@ defmodule Crit.Factory do
         
     %Animal{
       name: Faker.Cat.name(),
-      species: some_species(),
+      species_id: some_species_ids(),
       scheduled_unavailabilities: [entered_service, left_service]
     }
   end
 
-  Faker.samplerp(:some_species, [
-        "bovine",
-        "equine",
-      ])
+  # Warning: this depends on the fact that the test database has
+  # at least two species.
+  Faker.samplerp(:some_species_ids, [1, 2])
       
   defp some_boolean(), do: Enum.random([true, false])
 end
