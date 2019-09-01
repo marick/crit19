@@ -20,6 +20,8 @@ defmodule CritWeb.Bulma.Elements do
    """
   end
 
+  def labeled_text_field(f, tag, label, opts \\ [])
+
   def labeled_text_field(f, tag, label, opts) when is_map(opts) do
 
     wrapper_attrs =
@@ -46,7 +48,7 @@ defmodule CritWeb.Bulma.Elements do
   end
 
   # Shorthand for the common case where you only want to decorate the text field.
-  def labeled_text_field(f, tag, label, input_extras \\ []) when is_list(input_extras) do
+  def labeled_text_field(f, tag, label, input_extras) when is_list(input_extras) do
     labeled_text_field(f, tag, label, %{input_extras: input_extras})
   end
 
