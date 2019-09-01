@@ -1,6 +1,6 @@
 <h1>New Animal</h1>
 
-  <%= form_for @changeset, @path, [class: "box"], fn f -> %>
+<%= form_for @changeset, @path, [class: "box"], fn f -> %>
   <%= note_existence_of_any_form_errors @changeset %>
 
   <%= labeled_text_field f, :name, "name",
@@ -8,43 +8,24 @@
   
   <%= labeled_select(f, :species, "Species", @options,
         selected: @selected) %>
-  
-  <div data-controller="start-calendar" 
-       style="max-width: 700px; margin=40px auto;">
 
-    <%= labeled_text_field f, :start_date, "Date Put Into Service", %{
-        wrapper_extras:
-          [data_target: "start-calendar.wrapper"],
-        advice:
-          "The animal can be reserved on the morning of the selected date.",
-        input_extras: [
-          readonly: true,
-          value: "today",
-          data_target: "start-calendar.input",
-          data_action: "click->start-calendar#reveal",
-          required: true
-        ]} %>
-    <div id="start-calendar" display="none"> </div>
-  </div>
+  <%= calendar_widget f,
+        tag: :start_date,
+        label: "Date Put Into Service",
+        advice: "The animal can be reserved on the morning of the selected date.",
+        default: "today",
+        controller: "start-calendar"
+      %>
 
-  <div data-controller="end-calendar" 
-       style="max-width: 700px; margin=40px auto;">
+  <%= calendar_widget f,
+        tag: :end_date,
+        label: "Date Removed From Service",
+        advice: "The animal can no longer be reserved starting at the selected date.",
+        default: "never",
+        controller: "end-calendar"
+      %>
 
-    <%= labeled_text_field f, :end_date, "Date Removed From Service", %{
-        wrapper_extras:
-          [data_target: "end-calendar.wrapper"],
-        advice:
-          "The animal can no longer be reserved on the morning of the selected date.",
-        input_extras: [
-          readonly: true,
-          value: "never",
-          data_target: "end-calendar.input",
-          data_action: "click->end-calendar#reveal",
-          required: true
-          ]} %>
-    <div id="end-calendar" display="none"> </div>
-  <div>
-    <%= submit "Save" %>
-    <% end %>
+  <%= submit "Save" %>
+<% end %>
   
 
