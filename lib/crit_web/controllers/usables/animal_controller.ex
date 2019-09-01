@@ -12,7 +12,11 @@ defmodule CritWeb.Usables.AnimalController do
 
   def new(conn, _params) do
     changeset = Usables.change_animal(%Animal{})
-    render(conn, "new.html", changeset: changeset, path: path(:create))
+    render(conn, "new.html",
+      changeset: changeset,
+      path: path(:create),
+      options: [{"bovine", 1}, {"equine", 2}],
+      selected: 2)
   end
 
   def create(_conn, %{"animal" => _animal_params}) do

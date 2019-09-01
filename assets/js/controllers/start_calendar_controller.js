@@ -7,8 +7,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 export default class extends Controller {
     static targets = [ "wrapper", "input" ];
 
-    startCalendar() {
-        var calendarEl = document.getElementById('calendar');
+    reveal() {
+        var calendarEl = document.getElementById('start-calendar');
 
         this.calendar = new Calendar(calendarEl, {
             plugins: [ dayGridPlugin, interactionPlugin ],
@@ -27,6 +27,4 @@ export default class extends Controller {
 
         this.calendar.render();
     }
-
-    
 }

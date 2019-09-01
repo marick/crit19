@@ -22,7 +22,7 @@ defmodule CritWeb.Bulma.Elements do
 
   def labeled_text_field(f, tag, label, opts \\ [])
 
-  def labeled_text_field(f, tag, label, opts) when is_map(opts) do
+  def labeled_text_field(f, tag, label_text, opts) when is_map(opts) do
 
     wrapper_attrs =
       opts |> Map.get(:wrapper_extras, []) |> Keyword.put_new(:class, "field")
@@ -33,12 +33,15 @@ defmodule CritWeb.Bulma.Elements do
       opts |> Map.get(:input_extras, []) |> Keyword.put_new(:class, "input")
     input = text_input f, tag, input_attrs
 
-    info = label f, tag, label, class: "label"
+    label_elt = label f, tag, label_text, class: "label"
     error = error_tag f, tag
+
+    advice = Map.get(opts, :advice, "")
     
     ~E"""
     <%= wrapper_start %>
-      <%= info %>
+      <%= label_elt %>
+      <%= advice %>
       <div class="control">
          <%= input %>
          <%= error %>
@@ -48,8 +51,8 @@ defmodule CritWeb.Bulma.Elements do
   end
 
   # Shorthand for the common case where you only want to decorate the text field.
-  def labeled_text_field(f, tag, label, input_extras) when is_list(input_extras) do
-    labeled_text_field(f, tag, label, %{input_extras: input_extras})
+  def labeled_text_field(f, tag, label_text, input_extras) when is_list(input_extras) do
+    labeled_text_field(f, tag, label_text, %{input_extras: input_extras})
   end
 
   
