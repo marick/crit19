@@ -1,7 +1,5 @@
 defmodule CritWeb.Usables.AnimalViewTest do
   use CritWeb.ConnCase, async: true
-  import Phoenix.View
-  alias Ecto.Changeset
   import Phoenix.HTML.Form
   import Phoenix.HTML, only: [safe_to_string: 1]
   import CritWeb.Usables.AnimalView
@@ -24,6 +22,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
       controller: controller
     end)) |> safe_to_string
 
+    
     # It's a form
     assert calendar =~ ~r|action="#{path}"|
 
@@ -59,18 +58,5 @@ defmodule CritWeb.Usables.AnimalViewTest do
                                  # This is where the calendar goes.
                             </div>
                          |sx
-
-#                             
-                            #             .*?>
-
-    # assert calendar =~ ~r[]
-    # assert calendar =~ ~r[]
-    # assert calendar =~ ~r[]
-
-                                  # </label> [[:space]]*
- # {label_text}
-
-    IO.inspect ~S[kjasdlfkj"kjsdlfjk"]
   end
-
 end
