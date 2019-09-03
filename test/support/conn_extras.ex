@@ -66,12 +66,15 @@ defmodule CritWeb.ConnExtras do
     
 
   # For use with `setup`
-  def logged_in_as_user_manager(%{conn: conn}) do
-    permissions = Factory.build(:permission_list, manage_and_create_users: true)
-
+  def setup_logged_in(%{conn: conn}, opts) do
+    permissions = Factory.build(:permission_list, opts)
     [conn: logged_in_with_permissions(conn, permissions)]
   end
-
+  
+  def logged_in_as_user_manager(context),
+    do: setup_logged_in(context, manage_and_create_users: true)
+  def logged_in_as_usables_manager(context),
+    do: setup_logged_in(context, manage_animals: true)
 
   def under(payload_key, params), do: %{payload_key => params}
 

@@ -15,4 +15,8 @@ defmodule CritWeb.Templates.Purpose do
 
   def home_page_for_logged_in_user, 
     do: "home page for logged in user"
+
+  def form_for_creating_new_animal, 
+    do: "form for creating new animal"
+
 end

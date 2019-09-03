@@ -1,5 +1,7 @@
 <h1>New Animal</h1>
 
+<!-- Purpose: <%= Purpose.form_for_creating_new_animal %> -->
+
 <%= form_for @changeset, @path, [class: "box"], fn f -> %>
   <%= note_existence_of_any_form_errors @changeset %>
 

@@ -1,7 +1,10 @@
 defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnCase
+  alias CritWeb.Usables.AnimalController, as: UnderTest
+  use CritWeb.ConnMacros, controller: UnderTest
+  alias Crit.Usables
 
-  # alias Crit.Usables
+  setup :logged_in_as_usables_manager
 
   # @create_attrs %{lock_version: 42, name: "some name", species: "some species"}
   # @update_attrs %{lock_version: 43, name: "some updated name", species: "some updated species"}
@@ -19,12 +22,13 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   #   end
   # end
 
-  # describe "new animal" do
-  #   test "renders form", %{conn: conn} do
-  #     conn = get(conn, Routes.usables_animal_path(conn, :new))
-  #     assert html_response(conn, 200) =~ "New Animal"
-  #   end
-  # end
+  describe "new animal" do
+    test "renders form", %{conn: conn} do
+      conn
+      |> get_via_action(:new)
+      |> assert_purpose(form_for_creating_new_animal())
+    end
+  end
 
   # describe "create animal" do
   #   test "redirects to show when data is valid", %{conn: conn} do

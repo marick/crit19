@@ -14,8 +14,6 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       assert_links_to conn, UnderTest.path(:new)
     end
 
-    # TODO: This test will fail when the user name has an apostrophe
-    # (Because it gets turned into &#39).
     test "lists all users", %{conn: conn} do
       # Note that the user manager isn't stored in the database
       user = Factory.build(:user, display_name: "A'postrophe") |> Sql.insert!(institution(conn))
