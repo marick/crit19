@@ -30,22 +30,26 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
-  # describe "create animal" do
-  #   test "redirects to show when data is valid", %{conn: conn} do
-  #     conn = post(conn, Routes.usables_animal_path(conn, :create), animal: @create_attrs)
+  describe "create animal" do
+    setup do
+      [act: fn conn, params ->
+        post_to_action(conn, :create, under(:animal, params))
+      end]
+    end
+    
+    test "redirects to :new when data is valid", %{conn: conn, act: act} do
+      conn = act.(conn, Factory.string_params_for(:animal))
+      
+      assert redirected_to(conn) == Routes.usables_animal_path(conn, :new)
+    end
 
-  #     assert %{id: id} = redirected_params(conn)
-  #     assert redirected_to(conn) == Routes.usables_animal_path(conn, :show, id)
+      
 
-  #     conn = get(conn, Routes.usables_animal_path(conn, :show, id))
-  #     assert html_response(conn, 200) =~ "Show Animal"
-  #   end
-
-  #   test "renders errors when data is invalid", %{conn: conn} do
-  #     conn = post(conn, Routes.usables_animal_path(conn, :create), animal: @invalid_attrs)
-  #     assert html_response(conn, 200) =~ "New Animal"
-  #   end
-  # end
+    # test "renders errors when data is invalid", %{conn: conn} do
+    #   conn = post(conn, Routes.usables_animal_path(conn, :create), animal: @invalid_attrs)
+    #   assert html_response(conn, 200) =~ "New Animal"
+    # end
+  end
 
   # describe "edit animal" do
   #   setup [:create_animal]
@@ -89,4 +93,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   #   animal = fixture(:animal)
   #   {:ok, animal: animal}
   # end
+
+  def redirected_to_new_animal_form?(conn),
+    do: redirected_to(conn) == UnderTest.path(:new)
 end

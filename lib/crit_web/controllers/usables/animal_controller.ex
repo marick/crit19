@@ -19,7 +19,9 @@ defmodule CritWeb.Usables.AnimalController do
       selected: 2)
   end
 
-  def create(_conn, %{"animal" => _animal_params}) do
+  def create(conn, %{"animal" => _animal_params}) do
+    conn
+    |> redirect(to: path(:new))
     # case Usables.create_animal(animal_params) do
     #   {:ok, animal} ->
     #     conn

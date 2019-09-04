@@ -43,7 +43,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
     test "redirects to provide another new-user form when data is valid",
       %{conn: conn, act: act} do
       conn = act.(conn, Factory.string_params_for(:user))
-      assert ready_for_new_user?(conn)
+      assert redirected_to_new_user_form?(conn)
     end
 
     test "renders errors when data is invalid",
@@ -63,7 +63,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
         email: "     test@exampler.com      "
       )
       conn = act.(conn, odd_user)
-      assert ready_for_new_user?(conn)
+      assert redirected_to_new_user_form?(conn)
 
       assert Sql.get_by(User, [display_name: "lots of blanks"], @default_short_name)
       assert Sql.get_by(User, [auth_id: "blank filled"], @default_short_name)
@@ -83,7 +83,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   end
 
 
-  def ready_for_new_user?(conn),
+  def redirected_to_new_user_form?(conn),
     do: redirected_to(conn) == UnderTest.path(:new)
 
   def assert_retry_same_user(conn), 
