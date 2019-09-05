@@ -1,187 +1,141 @@
 defmodule Crit.Ecto.DateSpanTest do
   use Crit.DataCase
-  # alias Ecto.Timespan
-  # import Ecto.Timespan
-  # alias Crit.Usables.{ScheduledUnavailability}
-  # alias Crit.Exemplars.Minimal
-  # alias Crit.Sql
+  alias Ecto.Datespan
+  import Ecto.Datespan
+  alias Crit.Usables.{ScheduledUnavailability}
+  alias Crit.Exemplars.Minimal
+  alias Crit.Sql
 
 
-  # defp animal_with(timespan) do
-  #   unavailability = %ScheduledUnavailability{
-  #     timespan: timespan,
-  #     reason: "foo"
-  #   }
+  defp animal_with(datespan) do
+    unavailability = %ScheduledUnavailability{
+      datespan: datespan,
+      reason: "no reason given"
+    }
       
-  #   Minimal.animal(scheduled_unavailabilities: [unavailability])
-  # end
+    Minimal.animal(scheduled_unavailabilities: [unavailability])
+  end
 
-  # @moment      ~N[2000-01-01 01:02:03]
-  # @prev_moment ~N[2000-01-01 01:02:02]
-  # @next_moment ~N[2000-01-01 01:02:04]
-  # @long_ago    ~N[1990-01-01 01:02:04]
-  # @far_forward ~N[2990-01-01 01:02:04]
+  @day      ~D[2000-01-02]
+  @prev_day ~D[2000-01-01]
+  @next_day ~D[2000-01-03]
+  @long_ago    ~D[1990-01-01]
+  @far_forward ~D[2990-01-01]
 
-  # defp db_contains?(timespan) do
-  #   {:ok, range} = timespan |> Timespan.dump
-  #   query = from s in ScheduledUnavailability, where: contains(s.timespan, ^range)
-  #   Sql.exists?(query, @default_short_name)
-  # end
+  defp db_contains?(datespan) do
+    {:ok, range} = datespan |> Datespan.dump
+    query = from s in ScheduledUnavailability, where: contains(s.datespan, ^range)
+    Sql.exists?(query, @default_short_name)
+  end
   
-  # defp db_overlaps?(timespan) do
-  #   {:ok, range} = timespan |> Timespan.dump
-  #   query = from s in ScheduledUnavailability, where: overlaps(s.timespan, ^range)
-  #   Sql.exists?(query, @default_short_name)
-  # end
+  defp db_overlaps?(datespan) do
+    {:ok, range} = datespan |> Datespan.dump
+    query = from s in ScheduledUnavailability, where: overlaps(s.datespan, ^range)
+    Sql.exists?(query, @default_short_name)
+  end
   
-  # test "infinite down && containment" do
-  #   database_span = Timespan.infinite_down(@moment, :exclusive)
-  #   animal_with(database_span)
+  test "infinite down && containment" do
+    database_span = Datespan.infinite_down(@day, :exclusive)
+    animal_with(database_span)
     
-  #   assert db_contains?(Timespan.infinite_down(@moment, :exclusive))
-  #   assert db_contains?(Timespan.infinite_down(@prev_moment, :exclusive))
-  #   refute db_contains?(Timespan.infinite_down(@next_moment, :exclusive))
+    assert db_contains?(Datespan.infinite_down(@day, :exclusive))
+    assert db_contains?(Datespan.infinite_down(@prev_day, :exclusive))
+    refute db_contains?(Datespan.infinite_down(@next_day, :exclusive))
 
-  #   refute db_contains?(Timespan.infinite_down(@moment, :inclusive))
-  #   assert db_contains?(Timespan.infinite_down(@prev_moment, :inclusive))
-  #   refute db_contains?(Timespan.infinite_down(@next_moment, :inclusive))
+    refute db_contains?(Datespan.infinite_down(@day, :inclusive))
+    assert db_contains?(Datespan.infinite_down(@prev_day, :inclusive))
+    refute db_contains?(Datespan.infinite_down(@next_day, :inclusive))
 
-  #   assert db_contains?(Timespan.customary(@long_ago, @prev_moment))
-  #   assert db_contains?(Timespan.customary(@long_ago, @moment))
-  #   refute db_contains?(Timespan.customary(@long_ago, @next_moment))
+    assert db_contains?(Datespan.customary(@long_ago, @prev_day))
+    assert db_contains?(Datespan.customary(@long_ago, @day))
+    refute db_contains?(Datespan.customary(@long_ago, @next_day))
 
-  #   refute db_contains?(Timespan.infinite_up(@long_ago, :inclusive))
-  #   refute db_contains?(Timespan.infinite_up(@long_ago, :exclusive))
+    refute db_contains?(Datespan.infinite_up(@long_ago, :inclusive))
+    refute db_contains?(Datespan.infinite_up(@long_ago, :exclusive))
+  end
 
-  #   refute db_contains?(Timespan.for_instant(@moment))
-  #   assert db_contains?(Timespan.for_instant(@prev_moment))
-  # end
+  test "infinite down && overlap" do
+    database_span = Datespan.infinite_down(@day, :exclusive)
+    animal_with(database_span)
 
-  # test "infinite down && overlap" do
-  #   database_span = Timespan.infinite_down(@moment, :exclusive)
-  #   animal_with(database_span)
+    refute db_overlaps?(Datespan.customary(@day, @far_forward))
+    assert db_overlaps?(Datespan.customary(@prev_day, @far_forward))
 
-  #   refute db_overlaps?(Timespan.for_instant(@moment))
-  #   assert db_overlaps?(Timespan.for_instant(@prev_moment))
+    refute db_overlaps?(Datespan.infinite_up(@day, :inclusive))
+    assert db_overlaps?(Datespan.infinite_up(@prev_day, :inclusive))
 
-  #   refute db_overlaps?(Timespan.customary(@moment, @far_forward))
-  #   assert db_overlaps?(Timespan.customary(@prev_moment, @far_forward))
+    refute db_overlaps?(Datespan.infinite_up(@prev_day, :exclusive))
 
-  #   refute db_overlaps?(Timespan.infinite_up(@moment, :inclusive))
-  #   assert db_overlaps?(Timespan.infinite_up(@prev_moment, :inclusive))
-  #   # There is < 1 second of overlap
-  #   assert db_overlaps?(Timespan.infinite_up(@prev_moment, :exclusive))
-
-  #   assert db_overlaps?(Timespan.infinite_down(@moment, :inclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@prev_moment, :inclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@next_moment, :inclusive))
+    assert db_overlaps?(Datespan.infinite_down(@day, :inclusive))
+    assert db_overlaps?(Datespan.infinite_down(@prev_day, :inclusive))
+    assert db_overlaps?(Datespan.infinite_down(@next_day, :inclusive))
     
-  #   assert db_overlaps?(Timespan.infinite_down(@moment, :exclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@prev_moment, :exclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@next_moment, :exclusive))
-  # end
+    assert db_overlaps?(Datespan.infinite_down(@day, :exclusive))
+    assert db_overlaps?(Datespan.infinite_down(@prev_day, :exclusive))
+    assert db_overlaps?(Datespan.infinite_down(@next_day, :exclusive))
+  end
 
-  # test "infinite up and containment" do
-  #   database_span = Timespan.infinite_up(@moment, :exclusive)
-  #   animal_with(database_span)
+  test "infinite up and containment" do
+    database_span = Datespan.infinite_up(@day, :exclusive)
+    animal_with(database_span)
 
-  #   assert db_contains?(Timespan.infinite_up(@moment, :exclusive))
-  #   refute db_contains?(Timespan.infinite_up(@prev_moment, :exclusive))
-  #   assert db_contains?(Timespan.infinite_up(@next_moment, :exclusive))
+    assert db_contains?(Datespan.infinite_up(@day, :exclusive))
+    refute db_contains?(Datespan.infinite_up(@prev_day, :exclusive))
+    assert db_contains?(Datespan.infinite_up(@next_day, :exclusive))
     
-  #   refute db_contains?(Timespan.infinite_up(@moment, :inclusive))
-  #   refute db_contains?(Timespan.infinite_up(@prev_moment, :inclusive))
-  #   assert db_contains?(Timespan.infinite_up(@next_moment, :inclusive))
+    refute db_contains?(Datespan.infinite_up(@day, :inclusive))
+    refute db_contains?(Datespan.infinite_up(@prev_day, :inclusive))
+    assert db_contains?(Datespan.infinite_up(@next_day, :inclusive))
 
-  #   refute db_contains?(Timespan.infinite_down(@far_forward, :inclusive))
+    refute db_contains?(Datespan.infinite_down(@far_forward, :inclusive))
 
-  #   refute db_contains?(Timespan.for_instant(@moment))
-  #   refute db_contains?(Timespan.for_instant(@prev_moment))
-  #   assert db_contains?(Timespan.for_instant(@next_moment))
-
-  #   refute db_contains?(Timespan.customary(@moment, @next_moment))
-  #   assert db_contains?(Timespan.customary(@next_moment, @far_forward))
-  # end
+    refute db_contains?(Datespan.customary(@day, @next_day))
+    assert db_contains?(Datespan.customary(@next_day, @far_forward))
+  end
   
-  # test "infinite up and overlap" do
-  #   database_span = Timespan.infinite_up(@moment, :exclusive)
-  #   animal_with(database_span)
+  test "infinite up and overlap" do
+    database_span = Datespan.infinite_up(@day, :exclusive)
+    animal_with(database_span)
 
-  #   refute db_overlaps?(Timespan.infinite_down(@moment, :inclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@next_moment, :inclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@next_moment, :exclusive))
-
-  #   refute db_overlaps?(Timespan.for_instant(@moment))
-  #   assert db_overlaps?(Timespan.for_instant(@next_moment))
-
-  #   assert db_overlaps?(Timespan.customary(@moment, @next_moment))
-  #   refute db_overlaps?(Timespan.customary(@prev_moment, @moment))
-  # end
-
-  # test "inclusive infinite up" do
-  #   database_span = Timespan.infinite_up(@moment, :inclusive)
-  #   animal_with(database_span)
-
-  #   assert db_contains?(Timespan.infinite_up(@moment, :exclusive))
-  #   assert db_contains?(Timespan.for_instant(@moment))
-
-  #   assert db_contains?(Timespan.customary(@moment, @next_moment))
-
-
-  #   refute db_overlaps?(Timespan.customary(@long_ago, @moment))
-  #   assert db_overlaps?(Timespan.customary(@long_ago, @next_moment))
-
-  #   assert db_overlaps?(Timespan.for_instant(@moment))
-  # end
-
-  # test "customary" do
-  #   database_span = Timespan.customary(@moment, @next_moment)
-  #   animal_with(database_span)
-
-  #   assert db_contains?(Timespan.customary(@moment, @next_moment))
-  #   assert db_overlaps?(Timespan.customary(@moment, @next_moment))
+    refute db_overlaps?(Datespan.infinite_down(@day, :inclusive))
+    assert db_overlaps?(Datespan.infinite_down(@next_day, :inclusive))
+    refute db_overlaps?(Datespan.infinite_down(@next_day, :exclusive))
     
-  #   refute db_contains?(Timespan.customary(@moment, @far_forward))
-  #   assert db_overlaps?(Timespan.customary(@moment, @far_forward))
+    refute db_overlaps?(Datespan.customary(@day, @next_day))
+    refute db_overlaps?(Datespan.customary(@prev_day, @day))
+  end
+
+  test "inclusive infinite up" do
+    database_span = Datespan.infinite_up(@day, :inclusive)
+    animal_with(database_span)
+
+    assert db_contains?(Datespan.infinite_up(@day, :exclusive))
+
+    assert db_contains?(Datespan.customary(@day, @next_day))
+
+
+    refute db_overlaps?(Datespan.customary(@long_ago, @day))
+    assert db_overlaps?(Datespan.customary(@long_ago, @next_day))
+  end
+
+  test "customary" do
+    database_span = Datespan.customary(@day, @next_day)
+    animal_with(database_span)
+
+    assert db_contains?(Datespan.customary(@day, @next_day))
+    assert db_overlaps?(Datespan.customary(@day, @next_day))
     
-  #   refute db_contains?(Timespan.customary(@prev_moment, @moment))
-  #   refute db_overlaps?(Timespan.customary(@prev_moment, @moment))
+    refute db_contains?(Datespan.customary(@day, @far_forward))
+    assert db_overlaps?(Datespan.customary(@day, @far_forward))
+    
+    refute db_contains?(Datespan.customary(@prev_day, @day))
+    refute db_overlaps?(Datespan.customary(@prev_day, @day))
 
-  #   assert db_contains?(Timespan.for_instant(@moment))
-  #   assert db_overlaps?(Timespan.for_instant(@moment))
+    refute db_contains?(Datespan.infinite_down(@far_forward, :inclusive))
+    assert db_overlaps?(Datespan.infinite_down(@far_forward, :inclusive))
+    refute db_overlaps?(Datespan.infinite_down(@day, :exclusive))
+    assert db_overlaps?(Datespan.infinite_down(@day, :inclusive))
 
-  #   refute db_contains?(Timespan.for_instant(@next_moment))
-  #   refute db_overlaps?(Timespan.for_instant(@next_moment))
-
-  #   refute db_contains?(Timespan.infinite_down(@far_forward, :inclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@far_forward, :inclusive))
-  #   refute db_overlaps?(Timespan.infinite_down(@moment, :exclusive))
-  #   assert db_overlaps?(Timespan.infinite_down(@moment, :inclusive))
-
-  #   refute db_overlaps?(Timespan.infinite_up(@next_moment, :inclusive))
-  # end
-
-  # test "for_instant" do
-  #   database_span = Timespan.for_instant(@moment)
-  #   animal_with(database_span)
-
-  #   assert db_contains?(database_span)
-  #   refute db_contains?(Timespan.for_instant(@prev_moment))
-  #   refute db_contains?(Timespan.for_instant(@next_moment))
-
-  #   assert db_overlaps?(database_span)
-  #   refute db_overlaps?(Timespan.for_instant(@prev_moment))
-  #   refute db_overlaps?(Timespan.for_instant(@next_moment))
-
-  #   assert db_overlaps?(Timespan.customary(@moment, @next_moment))
-  #   refute db_overlaps?(Timespan.customary(@next_moment, @far_forward))
-  # end
-
-  # test "plus" do
-  #   plus_form = Timespan.plus(          ~N[2001-01-01 01:02:03], 10, :minute)
-  #   customary_form = Timespan.customary(~N[2001-01-01 01:02:03],
-  #                                       ~N[2001-01-01 01:12:03])
-  #   assert plus_form == customary_form
-  # end
-  
+    refute db_overlaps?(Datespan.infinite_up(@next_day, :inclusive))
+  end
 end

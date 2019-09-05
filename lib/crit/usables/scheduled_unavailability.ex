@@ -1,11 +1,11 @@
 defmodule Crit.Usables.ScheduledUnavailability do
   use Ecto.Schema
   alias Crit.Usables.Animal
-  alias Ecto.Timespan
+  alias Ecto.Datespan
 
   schema "scheduled_unavailabilities" do
     belongs_to :animal, Animal
-    field :timespan, Timespan
+    field :datespan, Datespan
     field :reason, :string
 
     timestamps()

@@ -2,7 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
   alias Crit.Usables.{Animal, ScheduledUnavailability}
-  alias Ecto.Timespan
+  alias Ecto.Datespan
   alias Crit.Sql
   require Faker
 
@@ -35,13 +35,13 @@ defmodule Crit.Factory do
   def animal_factory() do
     entered_service =
       %ScheduledUnavailability{
-        timespan: Timespan.infinite_down(@past_day, :exclusive),
+        datespan: Datespan.infinite_down(@past_day, :exclusive),
         reason: "before entered service"
       }
 
     left_service = 
       %ScheduledUnavailability{
-        timespan: Timespan.infinite_up(@future_day, :inclusive),
+        datespan: Datespan.infinite_up(@future_day, :inclusive),
         reason: "taken out of service"
       }
         

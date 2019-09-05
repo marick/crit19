@@ -19,12 +19,12 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
 
     create table("scheduled_unavailabilities") do
       add :animal_id, references("animals", on_delete: :delete_all), null: false
-      add :timespan, :tsrange
+      add :datespan, :daterange
       add :reason, :text, null: false
       
       timestamps()
     end
     create index("scheduled_unavailabilities", :animal_id)
-    create index("scheduled_unavailabilities", :timespan, using: :gist)
+    create index("scheduled_unavailabilities", :datespan, using: :gist)
   end
 end
