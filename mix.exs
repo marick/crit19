@@ -50,6 +50,7 @@ defmodule Crit.MixProject do
       {:puid, "~> 1.0"},
       {:assertions, "~> 0.10", only: :test},
       {:mox, "~> 0.5", only: :test},
+      {:tzdata, "~> 1.0.1"},
     ]
   end
 
