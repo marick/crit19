@@ -40,10 +40,30 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     test "redirects to :new when data is valid", %{conn: conn, act: act} do
       conn = act.(conn, Factory.string_params_for(:animal))
       
-      assert redirected_to(conn) == Routes.usables_animal_path(conn, :new)
+      assert redirected_to_new_animal_form?(conn)
     end
 
-      
+    @tag :skip
+    test "renders errors when data is invalid", %{conn: conn, act: act} do
+      conn = act.(conn, Factory.string_params_for(:animal, name: ""))
+
+      assert_purpose(conn, form_for_creating_new_animal())
+      assert_user_sees(conn, standard_blank_error())
+    end
+
+    @tag :skip
+    test "an audit record is created", %{conn: conn, act: act} do
+      params = Factory.string_params_for(:animal)
+      act.(conn, params)
+
+      assert {:ok, audit} = Crit.Audit.ToMemory.Server.latest(conn.assigns.audit_pid)
+
+      assert audit.event == "created animal"
+      assert audit.event_owner_id == user_id(conn)
+      assert audit.data.name == params["animal_id"]
+      assert audit.data.id == params["id"]
+      assert audit.data.scheduled_unavailabilities == [:start, :end]
+    end
 
     # test "renders errors when data is invalid", %{conn: conn} do
     #   conn = post(conn, Routes.usables_animal_path(conn, :create), animal: @invalid_attrs)
