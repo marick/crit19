@@ -37,7 +37,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       end
       [act: act]
     end
-    
+
+    @tag :skip
     test "redirects to :new when data is valid", %{conn: conn, act: act} do
       conn = act.(conn, Factory.string_params_for(:animal))
       

@@ -1,5 +1,6 @@
 defmodule Crit.Usables do
   alias Crit.Usables.Animal
+  alias Crit.Sql
 
   
   # @moduledoc """
@@ -24,26 +25,19 @@ defmodule Crit.Usables do
   #   Repo.all(Animal)
   # end
 
-  # @doc """
-  # Gets a single animal.
+  def complete_animal(id, institution) do
+    case id |> Animal.Query.complete |> Sql.one(institution) do
+      nil ->
+        raise KeyError, "No animal id #{id}"
+      animal ->
+        animal
+    end
+  end
 
-  # Raises `Ecto.NoResultsError` if the Animal does not exist.
-
-  # ## Examples
-
-  #     iex> get_animal!(123)
-  #     %Animal{}
-
-  #     iex> get_animal!(456)
-  #     ** (Ecto.NoResultsError)
-
-  # """
-  # def get_animal!(id), do: Repo.get!(Animal, id)
-
-  def create_animal(_attrs, _institution) do
-    {:ok, %Animal{}}
-    # |> Animal.changeset(attrs)
-    # |> Sql.insert(institution)
+  def create_animal(attrs, institution) do
+    %Animal{}
+    |> Animal.changeset(attrs)
+    |> Sql.insert(institution)
   end
 
   # @doc """

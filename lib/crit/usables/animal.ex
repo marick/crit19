@@ -20,4 +20,16 @@ defmodule Crit.Usables.Animal do
     |> cast(attrs, [:name, :species_id, :lock_version])
     |> validate_required([:name, :species_id, :lock_version])
   end
+
+
+  defmodule Query do
+    import Ecto.Query
+    alias Crit.Usables.Animal
+
+    def complete(id) do
+      from a in Animal,
+        where: a.id == ^id,
+        preload: [:scheduled_unavailabilities, :species]
+    end
+  end
 end
