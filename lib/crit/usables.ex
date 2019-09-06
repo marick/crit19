@@ -40,23 +40,11 @@ defmodule Crit.Usables do
   # """
   # def get_animal!(id), do: Repo.get!(Animal, id)
 
-  # @doc """
-  # Creates a animal.
-
-  # ## Examples
-
-  #     iex> create_animal(%{field: value})
-  #     {:ok, %Animal{}}
-
-  #     iex> create_animal(%{field: bad_value})
-  #     {:error, %Ecto.Changeset{}}
-
-  # """
-  # def create_animal(attrs \\ %{}) do
-  #   %Animal{}
-  #   |> Animal.changeset(attrs)
-  #   |> Repo.insert()
-  # end
+  def create_animal(_attrs, _institution) do
+    {:ok, %Animal{}}
+    # |> Animal.changeset(attrs)
+    # |> Sql.insert(institution)
+  end
 
   # @doc """
   # Updates a animal.
@@ -94,5 +82,8 @@ defmodule Crit.Usables do
 
   def change_animal(%Animal{} = animal) do
     Animal.changeset(animal, %{})
+  end
+
+  def repeated_animal_changeset(_params) do
   end
 end

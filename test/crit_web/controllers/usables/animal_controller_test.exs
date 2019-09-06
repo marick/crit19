@@ -32,9 +32,10 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
   describe "create animal" do
     setup do
-      [act: fn conn, params ->
+      act = fn conn, params ->
         post_to_action(conn, :create, under(:animal, params))
-      end]
+      end
+      [act: act]
     end
     
     test "redirects to :new when data is valid", %{conn: conn, act: act} do

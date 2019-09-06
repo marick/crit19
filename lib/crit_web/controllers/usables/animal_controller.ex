@@ -4,6 +4,7 @@ defmodule CritWeb.Usables.AnimalController do
 
   alias Crit.Usables
   alias Crit.Usables.Animal
+  alias CritWeb.Audit
 
   # def index(conn, _params) do
   #   animals = Usables.list_animals()
@@ -19,18 +20,18 @@ defmodule CritWeb.Usables.AnimalController do
       selected: 2)
   end
 
-  def create(conn, %{"animal" => _animal_params}) do
-    conn
-    |> redirect(to: path(:new))
-    # case Usables.create_animal(animal_params) do
-    #   {:ok, animal} ->
-    #     conn
-    #     |> put_flash(:info, "Animal created successfully.")
-    #     |> redirect(to: Routes.usables_animal_path(conn, :show, animal))
+  def create(conn, %{"animal" => animal_params}) do
+    case Usables.create_animal(animal_params, institution(conn)) do
+      {:ok, animal} ->
+        changeset = Usables.repeated_animal_changeset(animal_params)
+        conn
+        |> Audit.created_animal(animal)
+        |> put_flash(:info, "Success! You can create another one of the same species just by changing the name.")
+        |> redirect(to: path(:new), changeset: changeset)
 
-    #   {:error, %Ecto.Changeset{} = changeset} ->
-    #     render(conn, "new.html", changeset: changeset)
-    # end
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
+    end
   end
 
   # def show(conn, %{"id" => id}) do
