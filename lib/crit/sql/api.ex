@@ -26,6 +26,14 @@ defmodule Crit.Sql.Api do
 ) ::
   Ecto.Schema.t() | nil
   
+@callback get!(
+  queryable :: Ecto.Queryable.t(),
+  id :: term(),
+  opts :: Keyword.t(),
+  key :: String.t()
+) ::
+  Ecto.Schema.t()
+  
 @callback get_by(
   queryable :: Ecto.Queryable.t(),
   clauses :: Keyword.t() | map(),
