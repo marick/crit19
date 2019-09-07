@@ -25,7 +25,15 @@ defmodule Crit.Usables do
   #   Repo.all(Animal)
   # end
 
-  def complete_animal(id, institution) do
+
+  def attach_unavailability(%Animal{id: animal_id}, start_date, end_date, reason) do
+    attach_unavailability(animal_id, start_date, end_date, reason)
+  end
+
+  def attach_unavailability(_animal_id, _start_date, _end_date, _reason) do
+  end
+
+  def get_complete_animal(id, institution) do
     case id |> Animal.Query.complete |> Sql.one(institution) do
       nil ->
         raise KeyError, "No animal id #{id}"
@@ -34,7 +42,7 @@ defmodule Crit.Usables do
     end
   end
 
-  def create_animal(attrs, institution) do
+  def create_animal(attrs, _unavailabilites, institution) do
     %Animal{}
     |> Animal.changeset(attrs)
     |> Sql.insert(institution)

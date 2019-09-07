@@ -2,7 +2,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Usables
+#  alias Crit.Usables
 
   setup :logged_in_as_usables_manager
 

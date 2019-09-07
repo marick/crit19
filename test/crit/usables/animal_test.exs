@@ -1,24 +1,24 @@
 defmodule Crit.UsablesTest do
   use Crit.DataCase
   alias Crit.Usables
-  alias Crit.Usables.Animal
+#  alias Crit.Usables.Animal
   alias Crit.Sql
 
 
   describe "fetching an animal" do
     test "success produces a preloaded animal" do
       animal = Sql.insert!(Factory.build(:animal), @default_short_name)
-      fetched = Usables.complete_animal(animal.id, @default_short_name)
+      fetched = Usables.get_complete_animal(animal.id, @default_short_name)
 
       assert fetched.name == animal.name
       # Preloading happens
-      assert fetched.scheduled_unavailabilities == animal.scheduled_unavailabilities
+      assert fetched.scheduled_unavailabilities == []
       assert fetched.species_id == animal.species_id
     end
 
     test "no such id" do
       assert_raise KeyError, fn -> 
-        Usables.complete_animal(83483, @default_short_name)
+        Usables.get_complete_animal(83483, @default_short_name)
       end
     end
 

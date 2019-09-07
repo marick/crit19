@@ -32,23 +32,22 @@ defmodule Crit.Factory do
   @past_day ~D[2019-08-12]
   @future_day ~D[2020-01-10]
 
+  # Note: ScheduledUnavailabilities are added after animals because
+  # I can't figure out a clean way to go from dates in the action
+  # params to a single `Ecto.insert` with an association that's
+  # to be cast into (a list of) ScheduledUnavailabilities.
   def animal_factory() do
-    entered_service =
-      %ScheduledUnavailability{
-        datespan: Datespan.infinite_down(@past_day, :exclusive),
-        reason: "before entered service"
-      }
-
-    left_service = 
-      %ScheduledUnavailability{
-        datespan: Datespan.infinite_up(@future_day, :inclusive),
-        reason: "taken out of service"
-      }
-        
     %Animal{
       name: Faker.Cat.name(),
-      species_id: some_species_ids(),
-      scheduled_unavailabilities: [entered_service, left_service]
+      species_id: some_species_ids()
+     }
+  end
+
+  def scheduled_unavailability_factory() do
+    %ScheduledUnavailability{
+      
+      datespan: Datespan.customary(@past_day, @future_day),
+      reason: "anonymous reason"
     }
   end
 
