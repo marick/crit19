@@ -1,4 +1,4 @@
-<h1>New Animal</h1>
+<h1>Add One Or More Animals</h1>
 
 <!-- Purpose: <%= Purpose.form_for_creating_new_animal %> -->
 
@@ -13,7 +13,8 @@
   <%= calendar_widget f,
         tag: :start_date,
         label: "Date Put Into Service",
-        advice: "The animal can be reserved on the morning of the selected date.",
+        advice: "The animal can be reserved on the morning of the selected date.
+                 Click for a calendar.",
         default: "today",
         controller: "start-calendar"
       %>
@@ -26,22 +27,12 @@
         controller: "end-calendar"
       %>
 
-<p>
-  Add animal names to the input field below. If you press Enter or Return,
-  you'll get a new input field for another animal name. When you've added all
-  the names, press Save below.
-</p>
+  <%= labeled_text_field f, :names, "Animal names", %{
+    advice: "Add animal names to the input field below, separating each with a comma. 
+             When finished, click the Save button or press Return."
+    } %>
 
-<%= accumulating_input_widget f,
-    tag: :name,
-      label: "Next Animal Name",
-      accumulator: "animal[name][]",
-      controller: "animal-names"
-    %>
-
-    
-    
-  <!-- <%= submit "Save" %> -->
+  <%= submit "Save" %>
 <% end %>
   
 

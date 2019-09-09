@@ -2,7 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
   alias Crit.Usables.{Animal}
-  alias Ecto.Datespan
+  #  alias Ecto.Datespan
   alias Crit.Sql
   require Faker
 
@@ -28,9 +28,6 @@ defmodule Crit.Factory do
       view_reservations: some_boolean(), 
     }
   end
-
-  @past_day ~D[2019-08-12]
-  @future_day ~D[2020-01-10]
 
   def animal_factory() do
     %Animal{

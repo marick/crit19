@@ -1,6 +1,6 @@
 defmodule Crit.Usables.ServiceGap do
   use Ecto.Schema
-  alias Crit.Usables.Animal
+  # alias Crit.Usables.Animal
   alias Ecto.Datespan
 
   schema "service_gaps" do

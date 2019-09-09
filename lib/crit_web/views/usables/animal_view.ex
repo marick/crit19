@@ -28,26 +28,4 @@ defmodule CritWeb.Usables.AnimalView do
     </div>
     """
   end
-
-
-  def accumulating_input_widget(f, opts) do
-    arg = Enum.into(opts, %{})
-    field = labeled_text_field f, arg.tag, arg.label, name: arg.accumulator,
-      data_action: "keydown->#{arg.controller}#namecheck",
-      data_target: "#{arg.controller}.source"
-
-    
-
-    ~E"""
-    <div data-controller="<%=arg.controller%>">
-    <%= field %>
-    <ul data-target="<%=arg.controller%>.list">
-    <ul>
-    </div>
-
-    <li><span>Foo</span></li>
-    """
-  end
-    
-
 end
