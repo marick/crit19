@@ -2,18 +2,11 @@
 
 <!-- Purpose: <%= Purpose.form_for_creating_new_animal %> -->
 
+<%= start_centered_form() %>
+
 <%= form_for @changeset, @path, [class: "box"], fn f -> %>
   <%= note_existence_of_any_form_errors @changeset %>
 
-  <%= labeled_text_field f, :glorp, "glorp",
-        required: true %>
-  
-  <%= labeled_text_field f, :name, "name",
-        name: "animal[name][]", required: true %>
-  
-  <%= labeled_text_field f, :name, "name",
-        name: "animal[name][]", required: true %>
-  
   <%= labeled_select(f, :species, "Species", @options,
         selected: @selected) %>
 
@@ -33,7 +26,23 @@
         controller: "end-calendar"
       %>
 
-  <%= submit "Save" %>
+<p>
+  Add animal names to the input field below. If you press Enter or Return,
+  you'll get a new input field for another animal name. When you've added all
+  the names, press Save below.
+</p>
+
+<%= accumulating_input_widget f,
+    tag: :name,
+      label: "Next Animal Name",
+      accumulator: "animal[name][]",
+      controller: "animal-names"
+    %>
+
+    
+    
+  <!-- <%= submit "Save" %> -->
 <% end %>
   
 
+<%= end_centered_form() %>
