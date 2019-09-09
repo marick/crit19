@@ -5,8 +5,14 @@
 <%= form_for @changeset, @path, [class: "box"], fn f -> %>
   <%= note_existence_of_any_form_errors @changeset %>
 
-  <%= labeled_text_field f, :name, "name",
+  <%= labeled_text_field f, :glorp, "glorp",
         required: true %>
+  
+  <%= labeled_text_field f, :name, "name",
+        name: "animal[name][]", required: true %>
+  
+  <%= labeled_text_field f, :name, "name",
+        name: "animal[name][]", required: true %>
   
   <%= labeled_select(f, :species, "Species", @options,
         selected: @selected) %>

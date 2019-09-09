@@ -21,6 +21,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
 
   def create(conn, %{"animal" => animal_params}) do
+    IO.inspect animal_params
     case Usables.create_animal(animal_params, [], institution(conn)) do
       {:ok, animal} ->
         changeset = Usables.repeated_animal_changeset(animal_params)
