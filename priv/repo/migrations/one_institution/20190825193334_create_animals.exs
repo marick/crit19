@@ -17,14 +17,18 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
       timestamps()
     end
 
-    create table("scheduled_unavailabilities") do
-      add :animal_id, references("animals", on_delete: :delete_all), null: false
-      add :datespan, :daterange
+    create table("service_gaps") do
+      add :gap, :daterange, null: false
       add :reason, :text, null: false
-      
-      timestamps()
     end
-    create index("scheduled_unavailabilities", :animal_id)
-    create index("scheduled_unavailabilities", :datespan, using: :gist)
+    create index("service_gaps", :gap, using: :gist)
+
+    create table("animal__service_gap") do
+      add :animal_id,
+        references("animals", on_delete: :delete_all), null: false
+      add :service_gap_id,
+        references("service_gaps", on_delete: :delete_all), null: false
+    end
+    create index("animal__service_gap", :animal_id)
   end
 end

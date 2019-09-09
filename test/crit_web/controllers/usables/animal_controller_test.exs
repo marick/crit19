@@ -64,7 +64,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert audit.event_owner_id == user_id(conn)
       assert audit.data.name == params["animal_id"]
       assert audit.data.id == params["id"]
-      assert audit.data.scheduled_unavailabilities == [:start, :end]
+      assert audit.data.service_gaps == [:start, :end]
     end
 
     # test "renders errors when data is invalid", %{conn: conn} do

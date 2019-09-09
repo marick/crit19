@@ -1,16 +1,17 @@
 defmodule Crit.Usables.Animal do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Usables.{ScheduledUnavailability, Species}
+  alias Crit.Usables.{ServiceGap, Species, AnimalServiceGap}
   alias Crit.Ecto.TrimmedString
 
 
   schema "animals" do
     field :name, TrimmedString
     belongs_to :species, Species
-    has_many :scheduled_unavailabilities, ScheduledUnavailability
-
     field :lock_version, :integer, default: 1
+    many_to_many :service_gaps, ServiceGap,
+      join_through: AnimalServiceGap
+
     timestamps()
   end
 
@@ -29,7 +30,7 @@ defmodule Crit.Usables.Animal do
     def complete(id) do
       from a in Animal,
         where: a.id == ^id,
-        preload: [:scheduled_unavailabilities, :species]
+        preload: [:service_gaps, :species]
     end
   end
 end

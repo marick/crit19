@@ -26,11 +26,11 @@ defmodule Crit.Usables do
   # end
 
 
-  def attach_unavailability(%Animal{id: animal_id}, start_date, end_date, reason) do
-    attach_unavailability(animal_id, start_date, end_date, reason)
+  def add_service_gap(%Animal{id: animal_id}, start_date, end_date, reason) do
+    add_service_gap(animal_id, start_date, end_date, reason)
   end
 
-  def attach_unavailability(_animal_id, _start_date, _end_date, _reason) do
+  def add_service_gap(_animal_id, _start_date, _end_date, _reason) do
   end
 
   def get_complete_animal(id, institution) do
@@ -43,9 +43,10 @@ defmodule Crit.Usables do
   end
 
   def create_animal(attrs, _unavailabilites, institution) do
-    %Animal{}
-    |> Animal.changeset(attrs)
-    |> Sql.insert(institution)
+    case %Animal{} |> Animal.changeset(attrs) |> Sql.insert(institution) do
+      {:ok, animal} ->
+        {:ok, animal.id}
+    end
   end
 
   # @doc """

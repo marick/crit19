@@ -1,7 +1,7 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
-  alias Crit.Usables.{Animal, ScheduledUnavailability}
+  alias Crit.Usables.{Animal}
   alias Ecto.Datespan
   alias Crit.Sql
   require Faker
@@ -32,23 +32,11 @@ defmodule Crit.Factory do
   @past_day ~D[2019-08-12]
   @future_day ~D[2020-01-10]
 
-  # Note: ScheduledUnavailabilities are added after animals because
-  # I can't figure out a clean way to go from dates in the action
-  # params to a single `Ecto.insert` with an association that's
-  # to be cast into (a list of) ScheduledUnavailabilities.
   def animal_factory() do
     %Animal{
       name: Faker.Cat.name(),
       species_id: some_species_ids()
      }
-  end
-
-  def scheduled_unavailability_factory() do
-    %ScheduledUnavailability{
-      
-      datespan: Datespan.customary(@past_day, @future_day),
-      reason: "anonymous reason"
-    }
   end
 
   # Warning: this depends on the fact that the test database has

@@ -12,7 +12,7 @@ defmodule Crit.UsablesTest do
 
       assert fetched.name == animal.name
       # Preloading happens
-      assert fetched.scheduled_unavailabilities == []
+      assert fetched.service_gaps == []
       assert fetched.species_id == animal.species_id
     end
 
@@ -21,10 +21,22 @@ defmodule Crit.UsablesTest do
         Usables.get_complete_animal(83483, @default_short_name)
       end
     end
-
   end
 
-  # alias Crit.Usables
+  describe "animal creation" do
+    test "creation with no service gaps" do
+      params = Factory.string_params_for(:animal)
+
+      assert {:ok, animal_id} = Usables.create_animal(params, [], @default_short_name)
+
+      
+      fetched = Usables.get_complete_animal(animal_id, @default_short_name)
+      assert fetched.name == params["name"]
+      assert fetched.service_gaps == []
+      assert fetched.species_id == params["species_id"]
+    end
+  end
+
 
   # describe "animals" do
   #   alias Crit.Usables.Animal
