@@ -29,7 +29,8 @@
 
   <%= labeled_text_field f, :names, "Animal names", %{
     advice: "Add animal names to the input field below, separating each with a comma. 
-             When finished, click the Save button or press Return."
+             When finished, click the Save button or press Return.",
+      input_extras: [required: true]
     } %>
 
   <%= submit "Save" %>
