@@ -20,25 +20,34 @@ defmodule Crit.Usables.ServiceGap do
     %__MODULE__{}
     |> cast(attrs,[:start_date, :timezone])
     |> validate_required([:start_date])
-    |> convert_start_to_date_using(today_getter)
-    |> put_infinite_down(:exclusive)
+    |> convert_string_to_date_using(:start_date, today_getter)
+    |> put_gap(:infinite_down, :start_date, :exclusive)
     |> put_reason("before animal was put in service")
+  end
+
+  def post_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
+    %__MODULE__{}
+    |> cast(attrs,[:end_date, :timezone])
+    |> validate_required([:end_date])
+    |> convert_string_to_date_using(:end_date, today_getter)
+    |> put_gap(:infinite_up, :end_date, :inclusive)
+    |> put_reason("animal taken out of service")
   end
 
   def parse_message,
     do: "isn't a correct date. This should be impossible. Please report the problem."
   
-  def convert_start_to_date_using(changeset, today_getter) do
-    date_string = changeset.changes.start_date
+  def convert_string_to_date_using(changeset, field, today_getter) do
+    date_string = changeset.changes[field]
     case date_string == @today || Date.from_iso8601(date_string) do
       true ->
         timezone = changeset.changes.timezone
         today = today_getter.(timezone)
-        put_change(changeset, :start_date, today)
+        put_change(changeset, field, today)
       {:ok, date} -> 
-        put_change(changeset, :start_date, date)
+        put_change(changeset, field, date)
       {:error, _} ->
-        add_error(changeset, :start_date, parse_message())
+        add_error(changeset, field, parse_message())
     end
   end
 
@@ -46,10 +55,10 @@ defmodule Crit.Usables.ServiceGap do
   def put_reason(changeset, reason),
     do: put_change(changeset, :reason, reason)
 
-  def put_infinite_down(%{valid?: false} = changeset, _), do: changeset
-  def put_infinite_down(changeset, exclusivity) do
-    start_date = changeset.changes.start_date
-    put_change(changeset, :gap, Datespan.infinite_down(start_date, exclusivity))
+  def put_gap(%{valid?: false} = changeset, _, _, _), do: changeset
+  def put_gap(changeset, span_type, endpoint, exclusivity) do
+    date = changeset.changes[endpoint]
+    put_change(changeset, :gap, apply(Datespan, span_type, [date, exclusivity]))
   end
 end
 

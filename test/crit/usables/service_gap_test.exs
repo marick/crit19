@@ -40,4 +40,16 @@ defmodule Crit.ServiceGapTest do
       assert ServiceGap.parse_message in errors_on(changeset).start_date
     end
   end
+
+  describe "post_service_changeset" do
+    test "unavailable as of a given date" do
+      changeset = ServiceGap.post_service_changeset(
+        %{"end_date" => @iso_date})
+      assert changeset.valid?
+      assert changeset.changes.gap == Datespan.infinite_up(@date, :inclusive)
+      assert changeset.changes.reason == "animal taken out of service"
+    end
+  end
+
+
 end
