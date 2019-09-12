@@ -49,7 +49,18 @@ defmodule Crit.ServiceGapTest do
       assert changeset.changes.gap == Datespan.infinite_up(@date, :inclusive)
       assert changeset.changes.reason == "animal taken out of service"
     end
+
+    test "unavailable as of today (in institution's time zone)" do
+      institution_timezone = "America/Chicago"
+      
+      changeset = ServiceGap.post_service_changeset(
+        %{"end_date" => "today",
+          "timezone" => institution_timezone
+        },
+        TimeHelper.stub_today_date(institution_timezone, to_return: @date))
+
+      assert changeset.valid?
+      assert changeset.changes.gap == Datespan.infinite_up(@date, :inclusive)
+    end
   end
-
-
 end

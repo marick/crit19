@@ -5,7 +5,6 @@ defmodule Crit.Usables.ServiceGap do
   alias Pile.TimeHelper
 
   @today "today"
-  @never "never"
 
   schema "service_gaps" do
     field :gap, Datespan
@@ -16,20 +15,24 @@ defmodule Crit.Usables.ServiceGap do
     field :timezone, :string, virtual: true
   end
 
-  def pre_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
+
+  defp changeset_for_date_field(field, attrs, today_getter) do 
     %__MODULE__{}
-    |> cast(attrs,[:start_date, :timezone])
-    |> validate_required([:start_date])
-    |> convert_string_to_date_using(:start_date, today_getter)
+    |> cast(attrs,[field, :timezone])
+    |> validate_required([field])
+    |> convert_string_to_date_using(field, today_getter)
+  end
+
+  def pre_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
+    :start_date
+    |> changeset_for_date_field(attrs, today_getter)
     |> put_gap(:infinite_down, :start_date, :exclusive)
     |> put_reason("before animal was put in service")
   end
 
   def post_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
-    %__MODULE__{}
-    |> cast(attrs,[:end_date, :timezone])
-    |> validate_required([:end_date])
-    |> convert_string_to_date_using(:end_date, today_getter)
+    :end_date
+    |> changeset_for_date_field(attrs, today_getter)
     |> put_gap(:infinite_up, :end_date, :inclusive)
     |> put_reason("animal taken out of service")
   end
