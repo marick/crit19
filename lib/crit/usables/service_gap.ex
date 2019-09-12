@@ -4,8 +4,8 @@ defmodule Crit.Usables.ServiceGap do
   alias Ecto.Datespan
   alias Pile.TimeHelper
 
-  @start_today "today"
-  @end_never "never"
+  @today "today"
+  @never "never"
 
   schema "service_gaps" do
     field :gap, Datespan
@@ -13,24 +13,27 @@ defmodule Crit.Usables.ServiceGap do
 
     field :start_date, :string, virtual: true
     field :end_date, :string, virtual: true
+    field :timezone, :string, virtual: true
   end
 
-  def pre_service_changeset(%__MODULE__{} = datespan, attrs \\ %{}) do
-    datespan
-    |> cast(attrs,[:start_date])
+  def pre_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
+    %__MODULE__{}
+    |> cast(attrs,[:start_date, :timezone])
     |> validate_required([:start_date])
-    |> cast_start
-    |> put_reason("before animal was put in service")
+    |> convert_start_to_date_using(today_getter)
     |> put_infinite_down(:exclusive)
+    |> put_reason("before animal was put in service")
   end
 
-  def parse_message, do: "isn't a correct date. This should be impossible. Please report the problem."
+  def parse_message,
+    do: "isn't a correct date. This should be impossible. Please report the problem."
   
-  def cast_start(changeset) do
+  def convert_start_to_date_using(changeset, today_getter) do
     date_string = changeset.changes.start_date
-    case date_string == @start_today || Date.from_iso8601(date_string) do
+    case date_string == @today || Date.from_iso8601(date_string) do
       true ->
-        today = TimeHelper.location_day(date_string, "America/Chicago")
+        timezone = changeset.changes.timezone
+        today = today_getter.(timezone)
         put_change(changeset, :start_date, today)
       {:ok, date} -> 
         put_change(changeset, :start_date, date)
