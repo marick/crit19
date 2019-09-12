@@ -16,12 +16,17 @@ defmodule Crit.Usables.ServiceGap do
     field :timezone, :string, virtual: true
   end
 
-
-  defp changeset_for_date_field(field, attrs, today_getter) do 
-    %__MODULE__{}
-    |> cast(attrs,[field, :timezone])
-    |> validate_required([field])
-    |> convert_string_to_date_using(field, today_getter)
+  def initial_changesets(attrs, today_getter \\ &TimeHelper.today_date/1) do
+    pre_service = pre_service_changeset(attrs, today_getter) 
+    case attrs["end_date"] do
+      "never" ->
+        [pre_service]
+      _ ->
+        post_service = 
+          post_service_changeset(attrs, today_getter)
+          |> reject_overlap(pre_service)
+        [pre_service, post_service]
+    end
   end
 
   def pre_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
@@ -38,39 +43,15 @@ defmodule Crit.Usables.ServiceGap do
     |> put_reason("animal taken out of service")
   end
 
-  def initial_changesets(attrs, today_getter \\ &TimeHelper.today_date/1) do
-    pre_service = pre_service_changeset(attrs, today_getter) 
-    case attrs["end_date"] do
-      "never" ->
-        [pre_service]
-      _ ->
-        post_service = 
-          post_service_changeset(attrs, today_getter)
-          |> check_for_overlap(pre_service)
-        [pre_service, post_service]
-    end
+  # Util
+
+  defp changeset_for_date_field(field, attrs, today_getter) do 
+    %__MODULE__{}
+    |> cast(attrs,[field, :timezone])
+    |> validate_required([field])
+    |> convert_string_to_date_using(field, today_getter)
   end
 
-  def misorder_message, do: "should not be before the start date"
-
-  def check_for_overlap(
-    %Changeset{valid?: true, changes: %{end_date: to_be_later}} = changeset,
-    %Changeset{valid?: true, changes: %{start_date: to_be_earlier}}
-  ) do
-
-    case Date.compare(to_be_earlier, to_be_later) do
-      :lt ->
-        changeset
-      _ ->
-        Changeset.add_error(changeset, :end_date, misorder_message)
-    end
-  end
-  def check_for_overlap(changeset, _), do: changeset
-
-
-  def parse_message,
-    do: "isn't a correct date. This should be impossible. Please report the problem."
-  
   def convert_string_to_date_using(changeset, field, today_getter) do
     date_string = changeset.changes[field]
     case date_string == @today || Date.from_iso8601(date_string) do
@@ -84,6 +65,20 @@ defmodule Crit.Usables.ServiceGap do
         add_error(changeset, field, parse_message())
     end
   end
+  
+  defp reject_overlap(
+    %Changeset{valid?: true, changes: %{end_date: to_be_later}} = changeset,
+    %Changeset{valid?: true, changes: %{start_date: to_be_earlier}}
+  ) do
+
+    case Date.compare(to_be_earlier, to_be_later) do
+      :lt ->
+        changeset
+      _ ->
+        Changeset.add_error(changeset, :end_date, misorder_message())
+    end
+  end
+  defp reject_overlap(changeset, _), do: changeset
 
   def put_reason(%{valid?: false} = changeset, _), do: changeset
   def put_reason(changeset, reason),
@@ -94,5 +89,10 @@ defmodule Crit.Usables.ServiceGap do
     date = changeset.changes[endpoint]
     put_change(changeset, :gap, apply(Datespan, span_type, [date, exclusivity]))
   end
+
+  def parse_message,
+    do: "isn't a correct date. This should be impossible. Please report the problem."
+  
+  def misorder_message, do: "should not be before the start date"
 end
 
