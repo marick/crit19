@@ -1,6 +1,7 @@
 defmodule Crit.Usables.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Ecto.Changeset
   alias Ecto.Datespan
   alias Pile.TimeHelper
 
@@ -36,6 +37,36 @@ defmodule Crit.Usables.ServiceGap do
     |> put_gap(:infinite_up, :end_date, :inclusive)
     |> put_reason("animal taken out of service")
   end
+
+  def initial_changesets(attrs, today_getter \\ &TimeHelper.today_date/1) do
+    pre_service = pre_service_changeset(attrs, today_getter) 
+    case attrs["end_date"] do
+      "never" ->
+        [pre_service]
+      _ ->
+        post_service = 
+          post_service_changeset(attrs, today_getter)
+          |> check_for_overlap(pre_service)
+        [pre_service, post_service]
+    end
+  end
+
+  def misorder_message, do: "should not be before the start date"
+
+  def check_for_overlap(
+    %Changeset{valid?: true, changes: %{end_date: to_be_later}} = changeset,
+    %Changeset{valid?: true, changes: %{start_date: to_be_earlier}}
+  ) do
+
+    case Date.compare(to_be_earlier, to_be_later) do
+      :lt ->
+        changeset
+      _ ->
+        Changeset.add_error(changeset, :end_date, misorder_message)
+    end
+  end
+  def check_for_overlap(changeset, _), do: changeset
+
 
   def parse_message,
     do: "isn't a correct date. This should be impossible. Please report the problem."
