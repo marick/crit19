@@ -13,9 +13,16 @@ defmodule Crit.Sql.PrefixServer do
   end
 
   @impl GenServer
+  def handle_call({:multi_opts, given_opts}, _from, prefix) do
+    retval = [{:prefix, prefix} | given_opts]
+    {:reply, retval, prefix}
+  end
+
+  @impl GenServer
   def handle_call({sql_command, all_but_last_arg, given_opts}, _from, prefix) do
     adjusted_opts = given_opts ++ [{:prefix, prefix}]
     retval = apply(Repo, sql_command, all_but_last_arg ++ [adjusted_opts])
     {:reply, retval, prefix}
   end
+
 end

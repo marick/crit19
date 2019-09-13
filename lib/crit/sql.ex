@@ -1,6 +1,7 @@
 defmodule Crit.Sql do
   alias Crit.Sql.Servers
   alias Crit.Sql.Api
+  alias Crit.Repo
 
   @behaviour Api
 
@@ -62,5 +63,18 @@ defmodule Crit.Sql do
   def update(changeset, opts \\ [], key) do
     server = Servers.server_for(key)
     GenServer.call(server, {:update, [changeset], opts})
+  end
+
+
+  # This may be a decent way of handling institution-specific SQL when institutions
+  # have separate databases, not just separate prefixes.
+
+  def multi_opts(key, opts \\ []) do 
+    server = Servers.server_for(key)
+    GenServer.call(server, {:multi_opts, opts})
+  end
+
+  def transaction(multi, _institution) do
+    Repo.transaction(multi)
   end
 end

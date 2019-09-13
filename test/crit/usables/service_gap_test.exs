@@ -137,7 +137,7 @@ defmodule Crit.ServiceGapTest do
 
       [gap_id] =
         Multi.initial_service_gaps(params, @default_short_name)
-        |> Repo.transaction
+        |> Sql.transaction(@default_short_name)
         |> Multi.result_gap_ids
 
       inserted = Sql.get(ServiceGap, gap_id, @default_short_name)

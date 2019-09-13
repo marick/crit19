@@ -102,6 +102,7 @@ defmodule Crit.Usables.ServiceGap do
     alias Crit.Usables.ServiceGap
     use Ecto.Schema
     alias Ecto.Multi
+    alias Crit.Sql
 
 
     defp gap_key(index), do: {:gap, index}
@@ -126,9 +127,9 @@ defmodule Crit.Usables.ServiceGap do
       {:ok, result}
     end
 
-    def initial_service_gaps(params, _institution) do
+    def initial_service_gaps(params, institution) do
       add_insertion = fn {changeset, index}, acc ->
-        Multi.insert(acc, gap_key(index), changeset, prefix: "demo")
+        Multi.insert(acc, gap_key(index), changeset, Sql.multi_opts(institution))
       end
 
       params
