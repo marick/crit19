@@ -1,4 +1,4 @@
-defmodule Crit.UsablesTest do
+defmodule Crit.Usables.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
 #  alias Crit.Usables.Animal
@@ -25,16 +25,20 @@ defmodule Crit.UsablesTest do
 
   describe "animal creation" do
     test "creation with no service gaps" do
-      params = Factory.string_params_for(:animal)
+      _start_date = "2011-05-23"
+      _params =
+        Factory.string_params_for(:animal)
+        |> Map.put("start_date", "2020-05-12")
+        |> Map.put("end_date", "2020-12-31")
 
-      assert {:ok, animal_id} = Usables.create_animal(params, [], @default_short_name)
+      # assert {:ok, animal_id} = Usables.create_animal(params, [], @default_short_name)
 
       
-      fetched = Usables.get_complete_animal(animal_id, @default_short_name)
-      assert fetched.name == params["name"]
-      assert fetched.service_gaps == []
-      assert fetched.species_id == params["species_id"]
-    end
+      # fetched = Usables.get_complete_animal(animal_id, @default_short_name)
+      # assert fetched.name == params["name"]
+      # assert fetched.service_gaps == []
+      # assert fetched.species_id == params["species_id"]
+end
   end
 
 
