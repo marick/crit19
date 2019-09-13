@@ -1,8 +1,10 @@
 defmodule Crit.ServiceGapTest do
-  use Crit.DataCase, async: true
-  alias Crit.Usables.{ServiceGap}
+  use Crit.DataCase
+  alias Crit.Usables.ServiceGap
+  alias Crit.Usables.ServiceGap.Multi
   alias Ecto.Datespan
   alias Pile.TimeHelper
+  alias Crit.Sql
 
   @iso_date "2001-09-05"
   @date Date.from_iso8601!(@iso_date)
@@ -124,4 +126,25 @@ defmodule Crit.ServiceGapTest do
       refute out_of_service.valid?
     end
   end
+
+
+  describe "initial service gaps" do
+    test "without an out-of-service date" do
+      params = %{
+        "start_date" => @iso_date,
+        "end_date" => "never"
+      }
+
+      [gap_id] =
+        Multi.initial_service_gaps(params, @default_short_name)
+        |> Repo.transaction
+        |> Multi.result_gap_ids
+
+      inserted = Sql.get(ServiceGap, gap_id, @default_short_name)
+
+      assert inserted.gap == Datespan.infinite_down(@date, :exclusive)
+    end
+  end
+
+  
 end
