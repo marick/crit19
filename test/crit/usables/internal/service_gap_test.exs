@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Internal.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.ServiceGap
-  alias Crit.Usables.ServiceGap.Multi
+  alias Crit.Usables.ServiceGap.TxPart
   alias Ecto.Datespan
   alias Pile.TimeHelper
   alias Crit.Sql
@@ -137,7 +137,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       }
 
       [inserted] =
-        Multi.initial_service_gaps(params, @default_short_name)
+        TxPart.initial_service_gaps(params, @default_short_name)
         |> Sql.transaction(@default_short_name)
         |> result_gap_ids
         |> Enum.map(&inserted_gap/1)
@@ -153,7 +153,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       }
 
       [before_service, after_service] =
-        Multi.initial_service_gaps(params, @default_short_name)
+        TxPart.initial_service_gaps(params, @default_short_name)
         |> Sql.transaction(@default_short_name)
         |> result_gap_ids
         |> Enum.map(&inserted_gap/1)
