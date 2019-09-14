@@ -1,4 +1,4 @@
-defmodule Crit.ServiceGapTest do
+defmodule Crit.Usables.Internal.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.ServiceGap
   alias Crit.Usables.ServiceGap.Multi

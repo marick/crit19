@@ -1,4 +1,4 @@
-defmodule Crit.Users.UserTest do
+defmodule Crit.Users.Api.UserTest do
   use Crit.DataCase
   alias Crit.Users
   alias Pile.Changeset

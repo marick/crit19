@@ -1,4 +1,4 @@
-defmodule Crit.Users.PasswordTest do
+defmodule Crit.Users.Api.PasswordTest do
   use Crit.DataCase
   alias Crit.Users
   # alias Crit.Users.User
