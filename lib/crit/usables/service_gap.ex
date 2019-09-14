@@ -127,13 +127,12 @@ defmodule Crit.Usables.ServiceGap do
       {:ok, result}
     end
 
-    def initial_service_gaps(params, institution) do
+    def initial_service_gaps(changesets, institution) do
       add_insertion = fn {changeset, index}, acc ->
         Multi.insert(acc, gap_key(index), changeset, Sql.multi_opts(institution))
       end
 
-      params
-      |> ServiceGap.initial_changesets
+      changesets
       |> Enum.with_index
       |> Enum.reduce(Multi.new, add_insertion)
       |> Multi.run(:gap_ids, &gap_ids/2)

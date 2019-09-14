@@ -137,7 +137,9 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       }
 
       [inserted] =
-        TxPart.initial_service_gaps(params, @default_short_name)
+        params
+        |> ServiceGap.initial_changesets
+        |> TxPart.initial_service_gaps(@default_short_name)
         |> Sql.transaction(@default_short_name)
         |> result_gap_ids
         |> Enum.map(&inserted_gap/1)
@@ -153,7 +155,9 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       }
 
       [before_service, after_service] =
-        TxPart.initial_service_gaps(params, @default_short_name)
+        params
+        |> ServiceGap.initial_changesets
+        |> TxPart.initial_service_gaps(@default_short_name)
         |> Sql.transaction(@default_short_name)
         |> result_gap_ids
         |> Enum.map(&inserted_gap/1)
