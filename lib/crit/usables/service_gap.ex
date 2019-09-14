@@ -99,7 +99,6 @@ defmodule Crit.Usables.ServiceGap do
   ### Transaction support
 
   defmodule TxPart do
-    alias Crit.Usables.ServiceGap
     use Ecto.Schema
     alias Ecto.Multi
     alias Crit.Sql

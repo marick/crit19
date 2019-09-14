@@ -16,6 +16,6 @@ defmodule Crit.Ecto.NameList do
   def cast(_), do: :error
 
   # This is only intneded for virtual fields.
-  def load(string), do: :error
-  def dump(string), do: :error
+  def load(_string), do: :error
+  def dump(_string), do: :error
 end
