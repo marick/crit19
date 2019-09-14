@@ -138,7 +138,5 @@ defmodule Crit.Usables.ServiceGap do
       |> Enum.reduce(Multi.new, add_insertion)
       |> Multi.run(:gap_ids, &gap_ids/2)
     end
-
-    def result_gap_ids({:ok, %{gap_ids: gap_ids}}), do: gap_ids
   end
 end

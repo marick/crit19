@@ -127,6 +127,7 @@ defmodule Crit.ServiceGapTest do
     end
   end
 
+  ## Initial service gaps
 
   describe "initial service gaps" do
     test "without an out-of-service date" do
@@ -135,16 +136,51 @@ defmodule Crit.ServiceGapTest do
         "end_date" => "never"
       }
 
-      [gap_id] =
+      [inserted] =
         Multi.initial_service_gaps(params, @default_short_name)
         |> Sql.transaction(@default_short_name)
-        |> Multi.result_gap_ids
-
-      inserted = Sql.get(ServiceGap, gap_id, @default_short_name)
+        |> result_gap_ids
+        |> Enum.map(&inserted_gap/1)
 
       assert inserted.gap == Datespan.infinite_down(@date, :exclusive)
     end
+
+
+    test "with an out-of-service date" do
+      params = %{
+        "start_date" => @iso_date,
+        "end_date" => @later_iso_date
+      }
+
+      [before_service, after_service] =
+        Multi.initial_service_gaps(params, @default_short_name)
+        |> Sql.transaction(@default_short_name)
+        |> result_gap_ids
+        |> Enum.map(&inserted_gap/1)
+
+      assert before_service.gap == Datespan.infinite_down(@date, :exclusive)
+      assert after_service.gap == Datespan.infinite_up(@later_date, :inclusive)
+    end
+
+    test "date order error produces a changeset" do
+      params = %{
+        "start_date" => "fkj", #@later_iso_date,
+        "end_date" => "kkks" #@iso_date
+      }
+
+      result = 
+        Multi.initial_service_gaps(params, @default_short_name)
+        |> Sql.transaction(@default_short_name)
+        |> IO.inspect
+
+      # refute changeset.valid?
+      # assert ServiceGap.misorder_message in errors_on(changeset).end_date
+    end
+    
   end
 
-  
+  def result_gap_ids({:ok, %{gap_ids: gap_ids}}), do: gap_ids
+
+  def inserted_gap(gap_id),
+    do: Sql.get(ServiceGap, gap_id, @default_short_name)
 end
