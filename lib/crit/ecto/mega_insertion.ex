@@ -1,8 +1,7 @@
 defmodule Ecto.MegaInsertion do
   defmacro __using__(
-    module: module,
     individual_result_prefix: individual_result_prefix,
-    id_result_prefix: id_result_prefix) do
+    idlist_result_prefix: id_result_prefix) do
     
     quote do
       alias Ecto.Multi
@@ -30,8 +29,7 @@ defmodule Ecto.MegaInsertion do
         {:ok, result}
       end
 
-
-      def become_multi(changesets, institution) do
+      def multi_insert(changesets, institution) do
         add_insertion = fn {changeset, index}, acc ->
           Multi.insert(acc, tx_key(index), changeset, Sql.multi_opts(institution))
         end
@@ -39,13 +37,31 @@ defmodule Ecto.MegaInsertion do
         changesets
         |> Enum.with_index
         |> Enum.reduce(Multi.new, add_insertion)
+      end
+
+      def multi_collecting_ids(changesets, institution) do
+        multi_insert(changesets, institution)
         |> Multi.run(unquote(id_result_prefix), &reduce_to_idlist/2)
       end
 
       def resulting_ids({:ok, transaction_result}) do
         Map.fetch!(transaction_result, unquote(id_result_prefix))
-      end 
-    end
+      end
 
+      # These are really for testing. 
+      
+      def run(changesets_or_structs, institution) do
+        changesets_or_structs
+        |> multi_insert(institution)
+        |> Sql.transaction(institution)
+      end
+
+      def run_for_ids(changesets_or_structs, institution) do
+        changesets_or_structs
+        |> multi_collecting_ids(institution)
+        |> Sql.transaction(institution)
+        |> resulting_ids
+      end
+    end
   end
 end

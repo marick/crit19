@@ -99,18 +99,16 @@ defmodule Crit.Usables.ServiceGap do
   ### Transaction support
 
   defmodule TxPart do
-    alias Crit.Usables.ServiceGap
     use Ecto.MegaInsertion,
-      module: ServiceGap,
       individual_result_prefix: :service_gap,
-      id_result_prefix: :service_gap_ids
+      idlist_result_prefix: :service_gap_ids
+    alias Crit.Usables.ServiceGap
+
 
     def params_to_ids(params, institution) do 
       params
       |> ServiceGap.initial_changesets
-      |> become_multi(institution)
-      |> Sql.transaction(institution)
-      |> resulting_ids
+      |> run_for_ids(institution)
     end
   end
 end
