@@ -55,51 +55,20 @@ defmodule Crit.Usables.Animal do
 
   defmodule TxPart do
     alias Crit.Usables.Animal
-    alias Ecto.Multi
-    alias Crit.Sql
-    
-    defp animal_key(index), do: {:animal, index}
-    defp is_animal_key?({:animal, _count}), do: true
-    defp is_animal_key?(_), do: false
-
-    defp animal_ids(_repo, map_with_animals) do
-      reducer = fn {key, value}, acc ->
-        case is_animal_key?(key) do
-          true ->
-            [value.id | acc]
-          false ->
-            acc
-        end
-      end
-
-      result = 
-        map_with_animals
-        |> Enum.reduce([], reducer)
-        |> Enum.reverse
-      {:ok, result}
-    end
-
-    def creation(changesets, institution) do
-      add_insertion = fn {changeset, index}, acc ->
-        Multi.insert(acc, animal_key(index), changeset, Sql.multi_opts(institution))
-      end
-
-      changesets
-      |> Enum.with_index
-      |> Enum.reduce(Multi.new, add_insertion)
-      |> Multi.run(:animal_ids, &animal_ids/2)
-    end
+    use Ecto.MegaInsertion,
+      module: Animal,
+      individual_result_prefix: :animal,
+      id_result_prefix: :animal_ids
 
 
     def params_to_ids(params, institution) do
       {:ok, changesets} = Animal.creational_changesets(params)
       
       changesets
-      |> creation(institution)
+      |> become_multi(institution)
       |> Sql.transaction(institution)
-      |> result_animal_ids
+      |> resulting_ids
     end
     
-    def result_animal_ids({:ok, %{animal_ids: animal_ids}}), do: animal_ids
   end
 end

@@ -99,52 +99,18 @@ defmodule Crit.Usables.ServiceGap do
   ### Transaction support
 
   defmodule TxPart do
-    alias Ecto.Multi
-    alias Crit.Sql
     alias Crit.Usables.ServiceGap
-
-
-    defp gap_key(index), do: {:gap, index}
-    defp is_gap_key?({:gap, _count}), do: true
-    defp is_gap_key?(_), do: false
-
-    defp gap_ids(_repo, map_with_gaps) do
-      reducer = fn {key, value}, acc ->
-        case is_gap_key?(key) do
-          true ->
-            [value.id | acc]
-          false ->
-            acc
-        end
-      end
-
-      result = 
-        map_with_gaps
-        |> Enum.reduce([], reducer)
-        |> Enum.reverse
-
-      {:ok, result}
-    end
-
-    def initial_service_gaps(changesets, institution) do
-      add_insertion = fn {changeset, index}, acc ->
-        Multi.insert(acc, gap_key(index), changeset, Sql.multi_opts(institution))
-      end
-
-      changesets
-      |> Enum.with_index
-      |> Enum.reduce(Multi.new, add_insertion)
-      |> Multi.run(:gap_ids, &gap_ids/2)
-    end
+    use Ecto.MegaInsertion,
+      module: ServiceGap,
+      individual_result_prefix: :service_gap,
+      id_result_prefix: :service_gap_ids
 
     def params_to_ids(params, institution) do 
       params
       |> ServiceGap.initial_changesets
-      |> initial_service_gaps(institution)
+      |> become_multi(institution)
       |> Sql.transaction(institution)
-      |> result_gap_ids
+      |> resulting_ids
     end
-    
-    def result_gap_ids({:ok, %{gap_ids: gap_ids}}), do: gap_ids
   end
 end
