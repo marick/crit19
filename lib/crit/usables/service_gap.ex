@@ -99,9 +99,9 @@ defmodule Crit.Usables.ServiceGap do
   ### Transaction support
 
   defmodule TxPart do
-    use Ecto.Schema
     alias Ecto.Multi
     alias Crit.Sql
+    alias Crit.Usables.ServiceGap
 
 
     defp gap_key(index), do: {:gap, index}
@@ -136,5 +136,15 @@ defmodule Crit.Usables.ServiceGap do
       |> Enum.reduce(Multi.new, add_insertion)
       |> Multi.run(:gap_ids, &gap_ids/2)
     end
+
+    def params_to_ids(params, institution) do 
+      params
+      |> ServiceGap.initial_changesets
+      |> initial_service_gaps(institution)
+      |> Sql.transaction(institution)
+      |> result_gap_ids
+    end
+    
+    def result_gap_ids({:ok, %{gap_ids: gap_ids}}), do: gap_ids
   end
 end

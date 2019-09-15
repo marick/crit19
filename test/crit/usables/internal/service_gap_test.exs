@@ -138,10 +138,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
 
       [inserted] =
         params
-        |> ServiceGap.initial_changesets
-        |> TxPart.initial_service_gaps(@default_short_name)
-        |> Sql.transaction(@default_short_name)
-        |> result_gap_ids
+        |> TxPart.params_to_ids(@default_short_name)
         |> Enum.map(&inserted_gap/1)
 
       assert inserted.gap == Datespan.infinite_down(@date, :exclusive)
@@ -156,18 +153,13 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
 
       [before_service, after_service] =
         params
-        |> ServiceGap.initial_changesets
-        |> TxPart.initial_service_gaps(@default_short_name)
-        |> Sql.transaction(@default_short_name)
-        |> result_gap_ids
+        |> TxPart.params_to_ids(@default_short_name)
         |> Enum.map(&inserted_gap/1)
 
       assert before_service.gap == Datespan.infinite_down(@date, :exclusive)
       assert after_service.gap == Datespan.infinite_up(@later_date, :inclusive)
     end
   end
-
-  def result_gap_ids({:ok, %{gap_ids: gap_ids}}), do: gap_ids
 
   def inserted_gap(gap_id),
     do: Sql.get(ServiceGap, gap_id, @default_short_name)

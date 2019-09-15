@@ -40,13 +40,9 @@ defmodule Crit.Usables.Internal.AnimalTest do
         "names" => "Bossie, Jake"
       }
 
-      {:ok, changesets} = Animal.creational_changesets(params)
-
       [bossie, jake] =
-        changesets
-        |> TxPart.creation(@default_short_name)
-        |> Sql.transaction(@default_short_name)
-        |> result_animal_ids
+        params
+        |> TxPart.params_to_ids(@default_short_name)
         |> Enum.map(&inserted_animal/1)
 
       assert bossie.name == "Bossie"
@@ -56,8 +52,6 @@ defmodule Crit.Usables.Internal.AnimalTest do
       assert jake.species_id == species_id
     end
   end
-
-  def result_animal_ids({:ok, %{animal_ids: animal_ids}}), do: animal_ids
 
   def inserted_animal(animal_id),
     do: Sql.get(Animal, animal_id, @default_short_name)

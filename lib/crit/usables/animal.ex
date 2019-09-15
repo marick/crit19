@@ -54,7 +54,7 @@ defmodule Crit.Usables.Animal do
 
 
   defmodule TxPart do
-    use Ecto.Schema
+    alias Crit.Usables.Animal
     alias Ecto.Multi
     alias Crit.Sql
     
@@ -89,5 +89,17 @@ defmodule Crit.Usables.Animal do
       |> Enum.reduce(Multi.new, add_insertion)
       |> Multi.run(:animal_ids, &animal_ids/2)
     end
+
+
+    def params_to_ids(params, institution) do
+      {:ok, changesets} = Animal.creational_changesets(params)
+      
+      changesets
+      |> creation(institution)
+      |> Sql.transaction(institution)
+      |> result_animal_ids
+    end
+    
+    def result_animal_ids({:ok, %{animal_ids: animal_ids}}), do: animal_ids
   end
 end
