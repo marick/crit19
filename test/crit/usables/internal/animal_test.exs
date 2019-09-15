@@ -1,9 +1,9 @@
 defmodule Crit.Usables.Internal.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Animal
-  #alias Crit.Usables.Animal.TxPart
+  alias Crit.Usables.Animal.TxPart
   # import Ecto.Changeset
-  # alias Crit.Sql
+  alias Crit.Sql
 
   describe "creational changesets - support" do
     test "errors (none should be possible without client-side hackery)" do
@@ -32,20 +32,34 @@ defmodule Crit.Usables.Internal.AnimalTest do
 
 
   describe "contributions to a transaction" do
-    @tag :skip
-    test "this is wrong...." do 
-      # names = ["Bossie", "Fred"]
-      # species_id = 1
+    test "producing multiple animals" do 
+      species_id = 1
       
-      # params = %{
-      #   "species_id" => species_id
-      # }
+      params = %{
+        "species_id" => species_id,
+        "names" => "Bossie, Jake"
+      }
 
-      # inserted =
-      #   params
-      #   |> Animal.initial_changeset
-      #   |> TxPart.creation(@default_short_name)
-      #   |> Sql.transaction(@default_short_name)
+      {:ok, changesets} = Animal.creational_changesets(params)
+
+      [bossie, jake] =
+        changesets
+        |> TxPart.creation(@default_short_name)
+        |> Sql.transaction(@default_short_name)
+        |> result_animal_ids
+        |> Enum.map(&inserted_animal/1)
+
+      assert bossie.name == "Bossie"
+      assert bossie.species_id == species_id
+      
+      assert jake.name == "Jake"
+      assert jake.species_id == species_id
     end
   end
+
+  def result_animal_ids({:ok, %{animal_ids: animal_ids}}), do: animal_ids
+
+  def inserted_animal(animal_id),
+    do: Sql.get(Animal, animal_id, @default_short_name)
+  
 end
