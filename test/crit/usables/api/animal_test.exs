@@ -1,21 +1,52 @@
 defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
-#  alias Crit.Usables.Animal
-  alias Crit.Sql
+  alias Ecto.Datespan
 
+  @iso_date "2001-09-05"
+  @date Date.from_iso8601!(@iso_date)
+
+  # @later_iso_date "2011-09-05"
+  # @later_date Date.from_iso8601!(@later_iso_date)
+
+  @species_id 1
+
+  describe "basics of animal creation and retrieval" do
+
+    setup do
+      params = %{
+        "species_id" => @species_id,
+        "names" => "Bossie, Jake",
+        "start_date" => @iso_date,
+        "end_date" => "never"
+      }
+      [result: Usables.create_animal(params, @default_short_name)]
+    end  
+
+    test "linking animals to service gaps", %{result: result} do 
+
+      assert {:ok, %{animal_ids: [bossie_id, jake_id]}} = result
+
+      assert jake = Usables.get_complete_animal(jake_id, @default_short_name)
+      assert jake.species.id == @species_id
+      assert jake.name == "Jake"
+
+      assert [gap] = jake.service_gaps
+      assert gap.gap == Datespan.infinite_down(@date, :exclusive)
+      assert gap.reason == "before animal was put in service"
+
+      assert jake = Usables.get_complete_animal(jake_id, @default_short_name)
+      assert jake.species.id == @species_id
+      assert jake.name == "Jake"
+
+      assert [gap] = jake.service_gaps
+      assert gap.gap == Datespan.infinite_down(@date, :exclusive)
+      assert gap.reason == "before animal was put in service"
+    end
+  end
 
   describe "fetching an animal" do
-    test "success produces a preloaded animal" do
-      animal = Sql.insert!(Factory.build(:animal), @default_short_name)
-      fetched = Usables.get_complete_animal(animal.id, @default_short_name)
-
-      assert fetched.name == animal.name
-      # Preloading happens
-      assert fetched.service_gaps == []
-      assert fetched.species_id == animal.species_id
-    end
-
+    # success case tested elsewhere
     test "no such id" do
       assert_raise KeyError, fn -> 
         Usables.get_complete_animal(83483, @default_short_name)
@@ -23,23 +54,6 @@ defmodule Crit.Usables.Api.AnimalTest do
     end
   end
 
-  describe "animal creation" do
-    test "creation with no service gaps" do
-      _start_date = "2011-05-23"
-      _params =
-        Factory.string_params_for(:animal)
-        |> Map.put("start_date", "2020-05-12")
-        |> Map.put("end_date", "2020-12-31")
-
-      # assert {:ok, animal_id} = Usables.create_animal(params, [], @default_short_name)
-
-      
-      # fetched = Usables.get_complete_animal(animal_id, @default_short_name)
-      # assert fetched.name == params["name"]
-      # assert fetched.service_gaps == []
-      # assert fetched.species_id == params["species_id"]
-end
-  end
 
 
   # describe "animals" do

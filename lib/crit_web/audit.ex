@@ -8,7 +8,7 @@ defmodule CritWeb.Audit do
     log(conn, "created user", %{user_id: user.id, auth_id: user.auth_id})
   end
 
-  def created_animal(conn, %Animal{} = _animal) do
+  def created_animals(conn, _stuff) do
     conn
   end
 

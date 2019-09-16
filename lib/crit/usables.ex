@@ -1,5 +1,7 @@
 defmodule Crit.Usables do
-  alias Crit.Usables.Animal
+  alias Crit.Sql
+  alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap}
+  alias Ecto.Multi
   alias Crit.Sql
 
   
@@ -42,11 +44,26 @@ defmodule Crit.Usables do
     end
   end
 
-  def create_animal(attrs, _unavailabilites, institution) do
-    case %Animal{} |> Animal.changeset(attrs) |> Sql.insert(institution) do
-      {:ok, animal} ->
-        {:ok, animal.id}
-    end
+  def get_complete_animal_by_name(name, institution) do
+    Animal.Query.complete_by_name(name) |> Sql.one(institution)
+  end
+
+  def create_animal(attrs, institution) do
+    {:ok, animal_changesets} = Animal.creational_changesets(attrs)
+    service_gap_changesets = ServiceGap.initial_changesets(attrs)
+
+    animal_multi =
+      Animal.TxPart.multi_collecting_ids(animal_changesets, institution)
+    service_gap_multi =
+      ServiceGap.TxPart.multi_collecting_ids(service_gap_changesets, institution)
+    connector_function =
+      AnimalServiceGap.TxPart.make_connections(institution)
+
+    Multi.new
+    |> Multi.append(animal_multi)
+    |> Multi.append(service_gap_multi)
+    |> Multi.merge(connector_function)
+    |> Sql.transaction(institution)
   end
 
   # @doc """

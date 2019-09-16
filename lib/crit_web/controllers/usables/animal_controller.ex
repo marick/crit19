@@ -22,14 +22,12 @@ defmodule CritWeb.Usables.AnimalController do
 
   def create(conn, %{"animal" => animal_params}) do
     IO.inspect animal_params
-    case Usables.create_animal(animal_params, [], institution(conn)) do
-      {:ok, animal} ->
-        changeset = Usables.repeated_animal_changeset(animal_params)
+    case Usables.create_animal(animal_params, institution(conn)) do
+      {:ok, animals} ->
         conn
-        |> Audit.created_animal(animal)
-        |> put_flash(:info, "Success! You can create another one of the same species just by changing the name.")
-        |> redirect(to: path(:new), changeset: changeset)
-
+        |> Audit.created_animals(animals)
+        |> put_flash(:info, "Success!")
+        |> redirect(to: path(:new)) # until there's an `all`
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

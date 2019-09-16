@@ -50,6 +50,12 @@ defmodule Crit.Usables.Animal do
         where: a.id == ^id,
         preload: [:service_gaps, :species]
     end
+
+    def complete_by_name(name) do
+      from a in Animal,
+        where: a.name == ^name,
+        preload: [:service_gaps, :species]
+    end      
   end
 
 
