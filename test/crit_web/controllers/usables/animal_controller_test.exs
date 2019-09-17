@@ -2,7 +2,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-#  alias Crit.Usables
+  alias Crit.Usables.Animal
+  alias Crit.Sql
 
   setup :logged_in_as_usables_manager
 
@@ -30,18 +31,21 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
-  defp animal_creation_params() do
+  defp animal_creation_data() do
     {start_date, end_date} = Factory.date_pair()
     names =
       Faker.Cat.name()
       |> List.duplicate(Faker.random_between(1, 200))
       |> Enum.with_index
-      |> Enum.map_join(", ", fn {name, index} -> "#{name}_#{index}" end)
-    %{"names" => names,
-      "species_id" => Factory.some_species_id(),
-      "start_date" => start_date,
-      "end_date" => end_date
-    }
+      |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
+
+    params = %{"names" => Enum.join(names, ", "), 
+               "species_id" => Factory.some_species_id(),
+               "start_date" => start_date,
+               "end_date" => end_date
+              }
+
+    {names, params}
   end
 
   describe "create animal" do
@@ -52,10 +56,19 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       [act: act]
     end
 
+    setup do
+      assert Sql.all(Animal, @default_short_name) == []
+      []
+    end
+
     test "success case", %{conn: conn, act: act} do
-      conn = act.(conn, animal_creation_params())
+      {names, params} = animal_creation_data()
+      conn = act.(conn, params)
       
       assert_purpose conn, displaying_animal_summaries()
+
+      assert length(Sql.all(Animal, @default_short_name)) == length(names)
+      
     end
 
     @tag :skip
