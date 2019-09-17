@@ -19,4 +19,7 @@ defmodule CritWeb.Templates.Purpose do
   def form_for_creating_new_animal, 
     do: "form for creating new animal"
 
+  def displaying_animal_summaries, 
+    do: "displaying animal summaries"
+
 end

@@ -28,13 +28,6 @@ defmodule Crit.Usables do
   # end
 
 
-  def add_service_gap(%Animal{id: animal_id}, start_date, end_date, reason) do
-    add_service_gap(animal_id, start_date, end_date, reason)
-  end
-
-  def add_service_gap(_animal_id, _start_date, _end_date, _reason) do
-  end
-
   def get_complete_animal(id, institution) do
     case id |> Animal.Query.complete |> Sql.one(institution) do
       nil ->
@@ -44,13 +37,13 @@ defmodule Crit.Usables do
     end
   end
 
-  def get_complete_animal_by_name(name, institution) do
-    Animal.Query.complete_by_name(name) |> Sql.one(institution)
-  end
+  def with_institution_timezone(attrs, _institution),
+    do: Map.put(attrs, "timezone", "America/Chicago")
 
   def create_animal(attrs, institution) do
-    {:ok, animal_changesets} = Animal.creational_changesets(attrs)
-    service_gap_changesets = ServiceGap.initial_changesets(attrs)
+    adjusted_attrs = attrs |> with_institution_timezone(institution)
+    {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
+    service_gap_changesets = ServiceGap.initial_changesets(adjusted_attrs)
 
     animal_multi =
       Animal.TxPart.multi_collecting_ids(animal_changesets, institution)
@@ -102,8 +95,5 @@ defmodule Crit.Usables do
 
   def change_animal(%Animal{} = animal) do
     Animal.changeset(animal, %{})
-  end
-
-  def repeated_animal_changeset(_params) do
   end
 end

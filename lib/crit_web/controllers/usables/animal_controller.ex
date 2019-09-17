@@ -21,17 +21,20 @@ defmodule CritWeb.Usables.AnimalController do
   end
 
   def create(conn, %{"animal" => animal_params}) do
-    IO.inspect animal_params
     case Usables.create_animal(animal_params, institution(conn)) do
       {:ok, animals} ->
         conn
         |> Audit.created_animals(animals)
         |> put_flash(:info, "Success!")
-        |> redirect(to: path(:new)) # until there's an `all`
+        |> render("index.html",
+                  animals: [])
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
   end
+
+
+  
 
   # def show(conn, %{"id" => id}) do
   #   animal = Usables.get_animal!(id)

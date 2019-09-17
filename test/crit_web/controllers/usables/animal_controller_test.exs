@@ -30,6 +30,20 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
+  defp animal_creation_params() do
+    {start_date, end_date} = Factory.date_pair()
+    names =
+      Faker.Cat.name()
+      |> List.duplicate(Faker.random_between(1, 200))
+      |> Enum.with_index
+      |> Enum.map_join(", ", fn {name, index} -> "#{name}_#{index}" end)
+    %{"names" => names,
+      "species_id" => Factory.some_species_id(),
+      "start_date" => start_date,
+      "end_date" => end_date
+    }
+  end
+
   describe "create animal" do
     setup do
       act = fn conn, params ->
@@ -38,11 +52,10 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       [act: act]
     end
 
-    @tag :skip
-    test "redirects to :new when data is valid", %{conn: conn, act: act} do
-      conn = act.(conn, Factory.string_params_for(:animal))
+    test "success case", %{conn: conn, act: act} do
+      conn = act.(conn, animal_creation_params())
       
-      assert redirected_to_new_animal_form?(conn)
+      assert_purpose conn, displaying_animal_summaries()
     end
 
     @tag :skip
