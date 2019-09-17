@@ -45,17 +45,13 @@ defmodule Crit.Usables.Animal do
     import Ecto.Query
     alias Crit.Usables.Animal
 
-    def complete(id) do
-      from a in Animal,
-        where: a.id == ^id,
-        preload: [:service_gaps, :species]
+    def from(where) do
+      from Animal, where: ^where
     end
 
-    def complete_by_name(name) do
-      from a in Animal,
-        where: a.name == ^name,
-        preload: [:service_gaps, :species]
-    end      
+    def preload_common(query) do
+      query |> preload([:service_gaps, :species])
+    end
   end
 
 

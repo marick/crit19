@@ -27,7 +27,7 @@ defmodule Crit.Usables.Api.AnimalTest do
 
       assert {:ok, %{animal_ids: [bossie_id, jake_id]}} = result
 
-      assert jake = Usables.get_complete_animal(jake_id, @default_short_name)
+      assert jake = Usables.get_complete_animal!(jake_id, @default_short_name)
       assert jake.species.id == @species_id
       assert jake.name == "Jake"
 
@@ -35,7 +35,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert gap.gap == Datespan.infinite_down(@date, :exclusive)
       assert gap.reason == "before animal was put in service"
 
-      assert jake = Usables.get_complete_animal(jake_id, @default_short_name)
+      assert jake = Usables.get_complete_animal!(jake_id, @default_short_name)
       assert jake.species.id == @species_id
       assert jake.name == "Jake"
 
@@ -46,10 +46,38 @@ defmodule Crit.Usables.Api.AnimalTest do
   end
 
   describe "fetching an animal" do
-    # success case tested elsewhere
+    setup do
+      params = %{
+        "species_id" => @species_id,
+        "names" => "Bossie, Jake",
+        "start_date" => @iso_date,
+        "end_date" => "never"
+      }
+      [result: Usables.create_animal(params, @default_short_name)]
+    end  
+    
+    
+    test "fetching by name" do
+      assert animal = Usables.get_complete_animal_by_name("Bossie", @default_short_name)
+      assert animal.name == "Bossie"
+      assert Ecto.assoc_loaded?(animal.service_gaps)
+    end
+
+    test "errors return nil" do
+      assert nil == Usables.get_complete_animal_by_name("lossie", @default_short_name)
+    end
+
+    test "fetch by id" do
+      id = Usables.get_complete_animal_by_name("Bossie", @default_short_name).id
+      animal = Usables.get_complete_animal!(id, @default_short_name)
+                        
+      assert animal.name == "Bossie"
+      assert Ecto.assoc_loaded?(animal.service_gaps)
+    end
+    
     test "no such id" do
       assert_raise KeyError, fn -> 
-        Usables.get_complete_animal(83483, @default_short_name)
+        Usables.get_complete_animal!(83483, @default_short_name)
       end
     end
   end

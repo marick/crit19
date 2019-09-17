@@ -3,6 +3,7 @@ defmodule Crit.Usables do
   alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap}
   alias Ecto.Multi
   alias Crit.Sql
+  alias Pile.TimeHelper
 
   
   # @moduledoc """
@@ -28,8 +29,11 @@ defmodule Crit.Usables do
   # end
 
 
-  def get_complete_animal(id, institution) do
-    case id |> Animal.Query.complete |> Sql.one(institution) do
+  def get_complete_animal!(id, institution) do
+    query = 
+      Animal.Query.from(id: id) |> Animal.Query.preload_common()
+    
+    case Sql.one(query, institution) do
       nil ->
         raise KeyError, "No animal id #{id}"
       animal ->
@@ -37,11 +41,16 @@ defmodule Crit.Usables do
     end
   end
 
-  def with_institution_timezone(attrs, _institution),
-    do: Map.put(attrs, "timezone", "America/Chicago")
+  def get_complete_animal_by_name(name, institution) do
+    Animal.Query.from(name: name)
+    |> Animal.Query.preload_common()
+    |> Sql.one(institution)
+  end
 
   def create_animal(attrs, institution) do
-    adjusted_attrs = attrs |> with_institution_timezone(institution)
+    adjusted_attrs =
+      attrs |>
+      Map.put("timezone", TimeHelper.institution_timezone(institution))
     {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
     service_gap_changesets = ServiceGap.initial_changesets(adjusted_attrs)
 

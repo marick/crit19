@@ -1,4 +1,5 @@
-
+# This is all wrong. Probably better to have it be an isolated
+# module that knows how to get the institution timezone.
 defmodule Pile.TimeHelper do
 
   @doc ~S"""
@@ -14,5 +15,10 @@ defmodule Pile.TimeHelper do
 
   def stub_today_date(location, [to_return: retval]),
     do: fn ^location -> retval end
+
+  def institution_timezone(_institution) do
+    "America/Chicago"
+  end
+
   
 end
