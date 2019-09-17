@@ -4,6 +4,7 @@ defmodule Crit.Usables.ServiceGap do
   alias Ecto.Changeset
   alias Ecto.Datespan
   alias Pile.TimeHelper
+  require Logger
 
   @today "today"
 
@@ -75,6 +76,8 @@ defmodule Crit.Usables.ServiceGap do
       :lt ->
         changeset
       _ ->
+        # Annoyingly, I don't know how to filter this out in tests.
+        # Logger.error("#{misorder_message()}, #{to_be_later} before #{to_be_earlier}")
         Changeset.add_error(changeset, :end_date, misorder_message())
     end
   end

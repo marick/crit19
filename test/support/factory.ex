@@ -61,8 +61,8 @@ defmodule Crit.Factory do
       {"future", "never"} ->
         { s.(forward(100)) , "never" }
       {"future", _} ->
-        { s.(forward(100) |> add(100)),
-          s.(forward(100))
+        { s.(forward(100)),
+          s.(forward(100) |> add(100))
         }
     end
   end
