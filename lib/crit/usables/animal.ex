@@ -57,10 +57,8 @@ defmodule Crit.Usables.Animal do
 
   defmodule TxPart do
     alias Crit.Usables.Animal
-    use Ecto.MegaInsertion,
-      individual_result_prefix: :animal,
-      idlist_result_prefix: :animal_ids
 
+    use Ecto.MegaInsertion, :animal
 
     def params_to_ids(params, institution) do
       {:ok, changesets} = Animal.creational_changesets(params)

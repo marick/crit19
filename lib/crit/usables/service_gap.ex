@@ -102,9 +102,7 @@ defmodule Crit.Usables.ServiceGap do
   ### Transaction support
 
   defmodule TxPart do
-    use Ecto.MegaInsertion,
-      individual_result_prefix: :service_gap,
-      idlist_result_prefix: :service_gap_ids
+    use Ecto.MegaInsertion, :service_gap
     alias Crit.Usables.ServiceGap
 
 

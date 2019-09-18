@@ -16,9 +16,7 @@ defmodule Crit.Usables.AnimalServiceGap do
   end
 
   defmodule TxPart do
-    use Ecto.MegaInsertion,
-      individual_result_prefix: :asg,
-      idlist_result_prefix: :unused___allow_this_to_be_optional
+    use Ecto.MegaInsertion, :asg
     alias Crit.Usables.AnimalServiceGap
 
     def make_connections(institution) do
