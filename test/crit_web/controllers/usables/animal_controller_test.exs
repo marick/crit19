@@ -68,7 +68,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert_purpose conn, displaying_animal_summaries()
 
       assert length(Sql.all(Animal, @default_short_name)) == length(names)
-      
+      # assert_user_sees(conn, Enum.at(names, 0))
+      # assert_user_sees(conn, Enum.at(names, -1))
     end
 
     @tag :skip
