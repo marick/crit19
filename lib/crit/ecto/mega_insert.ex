@@ -30,7 +30,15 @@ defmodule Crit.Ecto.MegaInsert do
       result = tx_result[struct_key] |> Enum.map(fn s -> s.id end)
       {:ok, result}
     end
+
+    def connection_records(tx_result, schema, first_source, second_source) do
+      for id1 <- tx_result[first_source], id2 <- tx_result[second_source] do
+        apply(schema, :new, [id1, id2])
+      end
+    end
   end
+
+  # Main
 
   def make_insertions(changesets_or_structs, institution, opts) do
     alias Crit.Ecto.MegaInsert.Testable

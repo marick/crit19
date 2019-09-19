@@ -1,7 +1,7 @@
 defmodule Crit.Ecto.MegaInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.MegaInsert
-  alias Crit.Usables.{ServiceGap}  # Convenient for testing
+  alias Crit.Usables.{ServiceGap, AnimalServiceGap}  # Convenient for testing
   alias Crit.Ecto.MegaInsert.Testable
   alias Crit.Sql
 
@@ -72,6 +72,8 @@ defmodule Crit.Ecto.MegaInsertTest do
   end
 
 
+  # Tests for support functions
+
   describe "collecting insertion results" do
     test "no filtering needed" do
       transaction_result_so_far =
@@ -94,5 +96,19 @@ defmodule Crit.Ecto.MegaInsertTest do
       assert {:ok, [:some_gap_struct, :another_gap_struct]} =
         Testable.collect_structs(transaction_result_so_far, schema: ServiceGap)
     end
+  end
+
+
+  test "cross product of structural creation" do
+    tx_results =
+      %{animal_ids: [1, 2], service_gap_ids: [11, 22]}
+    cross_product =
+      Testable.connection_records(
+        tx_results,
+        AnimalServiceGap,
+        :animal_ids, :service_gap_ids)
+
+    assert Enum.at(cross_product, 0).animal_id == 1
+    assert Enum.at(cross_product, 0).service_gap_id == 11
   end
 end
