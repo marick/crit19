@@ -2,7 +2,6 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.ServiceGap
   alias Crit.Usables.ServiceGap.TxPart
-  alias Ecto.Datespan
   alias Pile.TimeHelper
   alias Crit.Sql
 

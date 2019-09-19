@@ -4,7 +4,6 @@ defmodule Crit.Ecto.MegaInsertTest do
   alias Crit.Usables.{ServiceGap}  # Convenient for testing
   alias Crit.Ecto.MegaInsert.Testable
   alias Crit.Sql
-  alias Ecto.Datespan
 
   @iso_date "2001-09-05"
   @date Date.from_iso8601!(@iso_date)
