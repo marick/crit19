@@ -4,6 +4,7 @@ defmodule Crit.Usables do
   alias Ecto.Multi
   alias Crit.Sql
   alias Pile.TimeHelper
+  alias Crit.Ecto.MegaInsert
 
   
   # @moduledoc """
@@ -54,10 +55,17 @@ defmodule Crit.Usables do
     {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
     service_gap_changesets = ServiceGap.initial_changesets(adjusted_attrs)
 
+    animal_opts = [schema: Animal, structs: :animals, ids: :animal_ids]
+    service_gap_opts = [schema: ServiceGap, structs: :service_gaps, ids: :service_gap_ids]
+
+
     animal_multi =
-      Animal.TxPart.multi_collecting_ids(animal_changesets, institution)
+      MegaInsert.make_insertions(animal_changesets, institution, animal_opts)
+      |> MegaInsert.append_collecting(animal_opts)
     service_gap_multi =
-      ServiceGap.TxPart.multi_collecting_ids(service_gap_changesets, institution)
+      MegaInsert.make_insertions(service_gap_changesets, institution, service_gap_opts)
+      |> MegaInsert.append_collecting(service_gap_opts)
+
     connector_function =
       AnimalServiceGap.TxPart.make_connections(institution)
 
