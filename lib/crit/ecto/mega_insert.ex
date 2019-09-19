@@ -32,7 +32,7 @@ defmodule Crit.Ecto.MegaInsert do
     end
   end
 
-  def prepare(changesets_or_structs, institution, opts) do
+  def make_insertions(changesets_or_structs, institution, opts) do
     alias Crit.Ecto.MegaInsert.Testable
     
     config = Enum.into(opts, %{})
@@ -48,7 +48,7 @@ defmodule Crit.Ecto.MegaInsert do
     |> Enum.reduce(Multi.new, add_insertion)
   end
 
-  def prepare_and_collect(changesets_or_structs, institution, opts) do
+  def append_collecting(multi, opts) do
     alias Crit.Ecto.MegaInsert.Testable
     config = Enum.into(opts, %{})
 
@@ -60,8 +60,7 @@ defmodule Crit.Ecto.MegaInsert do
       Testable.collect_ids(tx_results, structs: config.structs)
     end
 
-    changesets_or_structs
-    |> prepare(institution, opts)
+    multi
     |> Multi.run(config.structs, add_struct_collector)
     |> Multi.run(config.ids, add_id_collector)
   end

@@ -22,11 +22,11 @@ defmodule Crit.Ecto.MegaInsertTest do
   end
 
 
-  describe "prepare" do
+  describe "make_insertions" do
     test "insertion where nothing is done with the result" do
       assert {:ok, _result} =
         @changesets
-        |> MegaInsert.prepare(@default_short_name, schema: ServiceGap)
+        |> MegaInsert.make_insertions(@default_short_name, schema: ServiceGap)
         |> Sql.transaction(@default_short_name)
 
       assert [before_service, after_service] =
@@ -35,13 +35,16 @@ defmodule Crit.Ecto.MegaInsertTest do
     end
   end
 
-  describe "prepare and collect" do
-    setup do  {:ok, tx_results} =
-        @changesets
-        |> MegaInsert.prepare_and_collect(@default_short_name,
-               schema: ServiceGap, structs: :gaps, ids: :gap_ids)
-        |> Sql.transaction(@default_short_name)
+  describe "append_collecting" do
+    setup do  
+      opts = [schema: ServiceGap, structs: :gaps, ids: :gap_ids]
 
+      {:ok, tx_results} =
+        @changesets
+        |> MegaInsert.make_insertions(@default_short_name, opts)
+        |> MegaInsert.append_collecting(opts)
+        |> Sql.transaction(@default_short_name)
+      
       [tx_results: tx_results]
     end
     
