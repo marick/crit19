@@ -30,6 +30,18 @@ defmodule Crit.Ecto.DateSpanTest do
     query = from s in ServiceGap, where: overlaps(s.gap, ^range)
     Sql.exists?(query, @default_short_name)
   end
+
+  test "shorthand: strictly_before" do
+    span = Datespan.strictly_before(@day)
+    assert_same_date(span, Datespan.infinite_down(@day, :exclusive))
+    assert_strictly_before(span, @day)
+  end
+  
+  test "shorthand: date_and_after" do
+    span = Datespan.date_and_after(@day)
+    assert_same_date(span, Datespan.infinite_up(@day, :inclusive))
+    assert_date_and_after(span, @day)
+  end
   
   test "infinite down && containment" do
     insert_service_gap(Datespan.infinite_down(@day, :exclusive))

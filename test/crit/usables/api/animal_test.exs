@@ -32,7 +32,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert jake.name == "Jake"
 
       assert [gap] = jake.service_gaps
-      assert gap.gap == Datespan.infinite_down(@date, :exclusive)
+      assert assert_strictly_before(gap.gap, @date)
       assert gap.reason == "before animal was put in service"
 
       assert jake = Usables.get_complete_animal!(jake_id, @default_short_name)
@@ -40,7 +40,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert jake.name == "Jake"
 
       assert [gap] = jake.service_gaps
-      assert gap.gap == Datespan.infinite_down(@date, :exclusive)
+      assert assert_strictly_before(gap.gap, @date)
       assert gap.reason == "before animal was put in service"
     end
   end

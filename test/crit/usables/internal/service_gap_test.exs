@@ -12,16 +12,12 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
   @later_iso_date "2011-09-05"
   @later_date Date.from_iso8601!(@later_iso_date)
 
-  # Note: technically, comparing Dates (and thus Datespans) using `==` is
-  # a no-no. However, read the following as a mock-style expectation. Or
-  # just that I'm too lazy to implement comparisons just for tests.
-
   describe "pre_service_changeset" do
     test "starts on a given date" do
       changeset = ServiceGap.pre_service_changeset(
         %{"start_date" => @iso_date})
       assert changeset.valid?
-      assert changeset.changes.gap == Datespan.infinite_down(@date, :exclusive)
+      assert_strictly_before(changeset.changes.gap, @date)
       assert changeset.changes.reason == "before animal was put in service"
     end
 
@@ -35,7 +31,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
         TimeHelper.stub_today_date(institution_timezone, to_return: @date))
 
       assert changeset.valid?
-      assert changeset.changes.gap == Datespan.infinite_down(@date, :exclusive)
+      assert_strictly_before(changeset.changes.gap, @date)
     end
 
     test "bad format (should be impossible, but..." do
@@ -51,7 +47,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       changeset = ServiceGap.post_service_changeset(
         %{"end_date" => @iso_date})
       assert changeset.valid?
-      assert changeset.changes.gap == Datespan.infinite_up(@date, :inclusive)
+      assert_date_and_after(changeset.changes.gap, @date)
       assert changeset.changes.reason == "animal taken out of service"
     end
 
@@ -65,7 +61,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
         TimeHelper.stub_today_date(institution_timezone, to_return: @date))
 
       assert changeset.valid?
-      assert changeset.changes.gap == Datespan.infinite_up(@date, :inclusive)
+      assert_date_and_after(changeset.changes.gap, @date)
     end
   end
 
@@ -77,7 +73,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
         })
 
       assert in_service.valid?
-      assert in_service.changes.gap == Datespan.infinite_down(@date, :exclusive)
+      assert_strictly_before(in_service.changes.gap, @date)
     end
     
     test "an end of service date" do 
@@ -87,10 +83,10 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
         })
 
       assert in_service.valid?
-      assert in_service.changes.gap == Datespan.infinite_down(@date, :exclusive)
+      assert_strictly_before(in_service.changes.gap, @date)
 
       assert out_of_service.valid?
-      assert out_of_service.changes.gap == Datespan.infinite_up(@later_date, :inclusive)
+      assert_date_and_after(out_of_service.changes.gap, @later_date)
     end
 
     test "misordered dates" do
@@ -141,7 +137,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
         |> TxPart.params_to_ids(@default_short_name)
         |> Enum.map(&inserted_gap/1)
 
-      assert inserted.gap == Datespan.infinite_down(@date, :exclusive)
+      assert_strictly_before(inserted.gap, @date)
     end
 
 
@@ -156,8 +152,8 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
         |> TxPart.params_to_ids(@default_short_name)
         |> Enum.map(&inserted_gap/1)
 
-      assert before_service.gap == Datespan.infinite_down(@date, :exclusive)
-      assert after_service.gap == Datespan.infinite_up(@later_date, :inclusive)
+      assert_strictly_before(before_service.gap, @date)
+      assert_date_and_after(after_service.gap, @later_date)
     end
   end
 
