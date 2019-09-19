@@ -24,8 +24,12 @@ defmodule Crit.Ecto.MegaInsert do
         |> Enum.reduce([], reducer)
         |> Enum.reverse
       {:ok, result}
-    end
+      end
 
+    def collect_ids(tx_result, [structs: struct_key]) do
+      result = tx_result[struct_key] |> Enum.map(fn s -> s.id end)
+      {:ok, result}
+    end
   end
 
   def prepare(changesets_or_structs, institution, opts) do
@@ -52,10 +56,13 @@ defmodule Crit.Ecto.MegaInsert do
       Testable.collect_structs(tx_results, schema: config.schema)
     end
 
+    add_id_collector = fn _repo, tx_results -> 
+      Testable.collect_ids(tx_results, structs: config.structs)
+    end
+
     changesets_or_structs
     |> prepare(institution, opts)
     |> Multi.run(config.structs, add_struct_collector)
+    |> Multi.run(config.ids, add_id_collector)
   end
-
-  
 end

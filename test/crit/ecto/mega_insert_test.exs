@@ -6,10 +6,22 @@ defmodule Crit.Ecto.MegaInsertTest do
   alias Crit.Sql
   alias Ecto.Datespan
 
+  @iso_date "2001-09-05"
+  @date Date.from_iso8601!(@iso_date)
+
+  @later_iso_date "2011-09-05"
+  @later_date Date.from_iso8601!(@later_iso_date)
+
   @changesets ServiceGap.initial_changesets(
-    %{ start_date: "2012-12-12",
-       end_date: "2111-11-11"
+    %{ start_date: @iso_date,
+       end_date: @later_iso_date
     })
+
+  def assert_right_dates [before_service, after_service] do 
+    assert_strictly_before(before_service.gap, @date)
+    assert_date_and_after(after_service.gap,   @later_date)
+  end
+
 
   describe "prepare" do
     test "insertion where nothing is done with the result" do
@@ -20,29 +32,41 @@ defmodule Crit.Ecto.MegaInsertTest do
 
       assert [before_service, after_service] =
         Crit.Sql.all(ServiceGap, @default_short_name)
-      assert_strictly_before(before_service.gap, ~D[2012-12-12])
-      assert_date_and_after(after_service.gap,   ~D[2111-11-11])
+      assert_right_dates [before_service, after_service]      
     end
   end
 
   describe "prepare and collect" do
-    setup do
-      assert {:ok, tx_results} =
+    setup do  {:ok, tx_results} =
         @changesets
         |> MegaInsert.prepare_and_collect(@default_short_name,
-               schema: ServiceGap, structs: :gaps, ids: :struct_ids)
+               schema: ServiceGap, structs: :gaps, ids: :gap_ids)
         |> Sql.transaction(@default_short_name)
 
       [tx_results: tx_results]
     end
-      
     
     test "it returns collected structures", %{tx_results: tx_results} do
       [before_service, after_service] = tx_results.gaps
-      IO.inspect tx_results
-      assert_strictly_before(before_service.gap, ~D[2012-12-12])
-      assert_date_and_after(after_service.gap,   ~D[2111-11-11])
+      assert_right_dates [before_service, after_service]      
     end
+
+    test "it returns collected ids", %{tx_results: tx_results} do
+      [before_service, after_service] = tx_results.gaps
+      [before_id, after_id] = tx_results.gap_ids
+
+      assert before_service.id == before_id
+      assert after_service.id == after_id
+    end
+    
+    test "... and things are in fact put in the database", %{tx_results: tx_results} do
+      [before_id, after_id] = tx_results.gap_ids
+
+      before_service = Sql.get(ServiceGap, before_id, @default_short_name)
+      after_service = Sql.get(ServiceGap, after_id, @default_short_name)
+      assert_right_dates [before_service, after_service]      
+    end
+    
   end
 
 
@@ -68,7 +92,5 @@ defmodule Crit.Ecto.MegaInsertTest do
       assert {:ok, [:some_gap_struct, :another_gap_struct]} =
         Testable.collect_structs(transaction_result_so_far, schema: ServiceGap)
     end
-    
   end
-
 end
