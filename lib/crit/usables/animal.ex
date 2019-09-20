@@ -49,6 +49,10 @@ defmodule Crit.Usables.Animal do
       from Animal, where: ^where
     end
 
+    def from_ids(ids) do
+      from a in Animal, where: a.id in ^ids
+    end
+
     def preload_common(query) do
       query |> preload([:service_gaps, :species])
     end

@@ -2,7 +2,6 @@ defmodule Crit.Usables do
   alias Crit.Sql
   alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap}
   alias Ecto.Multi
-  alias Crit.Sql
   alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
 
@@ -77,7 +76,21 @@ defmodule Crit.Usables do
       |> Multi.merge(connector_function)
       |> Sql.transaction(institution)
 
-    {:ok, tx_result.animals}
+    # When I try to include the final query into the Multi, I get a
+    # weird error that I think is some sort of interaction with the
+    # `Sql` prefix-handling. That is,
+    #        Sql.all(query, "critter4us")
+    # fails, but the equivalent
+    #        Crit.Repo.all(query, prefix: "demo")
+    # works fine.
+
+    query =
+      tx_result.animal_ids
+      |> Animal.Query.from_ids
+      |> Animal.Query.preload_common
+    animals = Sql.all(query, institution)
+
+    {:ok, animals}
   end
 
   # @doc """

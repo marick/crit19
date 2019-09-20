@@ -10,8 +10,7 @@ defmodule Crit.Usables.Api.AnimalTest do
 
   @species_id 1
 
-  describe "basics of animal creation and retrieval" do
-
+  describe "animal creation" do
     setup do
       params = %{
         "species_id" => @species_id,
@@ -19,29 +18,20 @@ defmodule Crit.Usables.Api.AnimalTest do
         "start_date" => @iso_date,
         "end_date" => "never"
       }
-      [result: Usables.create_animal(params, @institution)]
+      assert {:ok, result} = Usables.create_animal(params, @institution)
+
+      [result: result]
     end  
 
-    test "non-association fields are returned", %{result: result} do 
-      assert {:ok, [bossie, jake]} = result
-
+    test "a 'complete' animal is returned", %{result: [bossie, jake]} do 
       assert bossie.name == "Bossie"
-      refute Ecto.assoc_loaded?(bossie.service_gaps)
-
       assert jake.name == "Jake"
-      refute Ecto.assoc_loaded?(jake.service_gaps)
-    end
 
-    @tag :skip
-    test "virtual fields are stripped" do
-      # like returning N records, each with an N-entry `names` field
-    end
+      assert bossie.species.id == @species_id
+      assert jake.species.id == @species_id
 
-    @tag :skip
-    test "Handle the species associated field" do
-      # In the above, the following will not work
-      # assert bossie.species.id == @species_id
-      # assert jake.species.id == @species_id
+      assert Ecto.assoc_loaded?(bossie.service_gaps)
+      assert Ecto.assoc_loaded?(jake.service_gaps)
     end
   end
 
