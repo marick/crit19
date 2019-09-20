@@ -26,11 +26,11 @@ defmodule Crit.Ecto.MegaInsertTest do
     test "insertion where nothing is done with the result" do
       assert {:ok, _result} =
         @changesets
-        |> MegaInsert.make_insertions(@default_short_name, schema: ServiceGap)
-        |> Sql.transaction(@default_short_name)
+        |> MegaInsert.make_insertions(@institution, schema: ServiceGap)
+        |> Sql.transaction(@institution)
 
       assert [before_service, after_service] =
-        Crit.Sql.all(ServiceGap, @default_short_name)
+        Crit.Sql.all(ServiceGap, @institution)
       assert_right_dates [before_service, after_service]      
     end
   end
@@ -41,9 +41,9 @@ defmodule Crit.Ecto.MegaInsertTest do
 
       {:ok, tx_results} =
         @changesets
-        |> MegaInsert.make_insertions(@default_short_name, opts)
+        |> MegaInsert.make_insertions(@institution, opts)
         |> MegaInsert.append_collecting(opts)
-        |> Sql.transaction(@default_short_name)
+        |> Sql.transaction(@institution)
       
       [tx_results: tx_results]
     end
@@ -64,8 +64,8 @@ defmodule Crit.Ecto.MegaInsertTest do
     test "... and things are in fact put in the database", %{tx_results: tx_results} do
       [before_id, after_id] = tx_results.gap_ids
 
-      before_service = Sql.get(ServiceGap, before_id, @default_short_name)
-      after_service = Sql.get(ServiceGap, after_id, @default_short_name)
+      before_service = Sql.get(ServiceGap, before_id, @institution)
+      after_service = Sql.get(ServiceGap, after_id, @institution)
       assert_right_dates [before_service, after_service]      
     end
     

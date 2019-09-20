@@ -65,9 +65,9 @@ defmodule CritWeb.UserManagement.UserControllerTest do
       conn = act.(conn, odd_user)
       assert redirected_to_new_user_form?(conn)
 
-      assert Sql.get_by(User, [display_name: "lots of blanks"], @default_short_name)
-      assert Sql.get_by(User, [auth_id: "blank filled"], @default_short_name)
-      assert Sql.get_by(User, [email: "test@exampler.com"], @default_short_name)
+      assert Sql.get_by(User, [display_name: "lots of blanks"], @institution)
+      assert Sql.get_by(User, [auth_id: "blank filled"], @institution)
+      assert Sql.get_by(User, [email: "test@exampler.com"], @institution)
     end
 
     test "an audit record is created", %{conn: conn, act: act} do

@@ -9,7 +9,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "displaying a token to get a form" do
     setup do
-      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_short_name)
+      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@institution)
       [token_text: token.text, user: user]
     end
 
@@ -38,7 +38,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
   describe "setting the password for the first time" do
     setup %{conn: conn} do
-      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@default_short_name)
+      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@institution)
 
       conn = Plug.Test.init_test_session(conn, token: token)
 
@@ -57,9 +57,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       conn = run.(conn, valid_password, valid_password)
       assert_ok_unique_id(
         user.id,
-        Users.check_password(user.auth_id, valid_password, @default_short_name))
+        Users.check_password(user.auth_id, valid_password, @institution))
       assert user_id(conn) == user.id
-      assert institution(conn) == @default_short_name
+      assert institution(conn) == @institution
       refute token(conn)
 
       assert redirected_to(conn) == PublicController.path(:index)
@@ -71,11 +71,11 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
       conn = run.(conn, valid_password, "WRONG")
       assert :error ==
-        Users.check_password(user.auth_id, valid_password, @default_short_name)
+        Users.check_password(user.auth_id, valid_password, @institution)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       refute user_id(conn)
-      refute institution(conn) == @default_short_name
+      refute institution(conn) == @institution
       assert token(conn)
 
       assert_user_sees(conn, 

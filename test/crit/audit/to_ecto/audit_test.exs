@@ -19,10 +19,10 @@ defmodule Crit.Audit.ToEcto.AuditTest do
     Server.put(
       :ignored,
       %Entry{event_owner_id: user.id, event: event, data: data},
-      @default_short_name
+      @institution
     )
     wait_for_cast_to_complete()
-    assert [one] = Sql.all(Record, @default_short_name)
+    assert [one] = Sql.all(Record, @institution)
 
     assert one.event_owner_id == user.id
     assert one.event == event

@@ -10,7 +10,7 @@ defmodule Crit.Ecto.DateSpanTest do
     Sql.insert!(%ServiceGap{
       gap: datespan,
       reason: "no reason given"
-    }, @default_short_name)
+    }, @institution)
   end
 
   @day      ~D[2000-01-02]
@@ -22,13 +22,13 @@ defmodule Crit.Ecto.DateSpanTest do
   defp db_contains?(datespan) do
     {:ok, range} = datespan |> Datespan.dump
     query = from s in ServiceGap, where: contains(s.gap, ^range)
-    Sql.exists?(query, @default_short_name)
+    Sql.exists?(query, @institution)
   end
   
   defp db_overlaps?(datespan) do
     {:ok, range} = datespan |> Datespan.dump
     query = from s in ServiceGap, where: overlaps(s.gap, ^range)
-    Sql.exists?(query, @default_short_name)
+    Sql.exists?(query, @institution)
   end
 
   test "shorthand: strictly_before" do

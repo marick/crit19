@@ -67,11 +67,11 @@ defmodule Crit.Users.Api.PasswordTest do
 
   def set(auth_id, password) do 
     Users.set_password(
-      auth_id, PasswordFocused.params(password), @default_short_name)
+      auth_id, PasswordFocused.params(password), @institution)
   end
 
   def has_password?(auth_id) do
-    case Password.count_for(auth_id, @default_short_name) do
+    case Password.count_for(auth_id, @institution) do
       0 -> false
       1 -> true
       n -> raise("There can't be #{n} passwords.")
@@ -79,6 +79,6 @@ defmodule Crit.Users.Api.PasswordTest do
   end
 
   def check(auth_id, password) do 
-    Users.check_password(auth_id, password, @default_short_name)
+    Users.check_password(auth_id, password, @institution)
   end
 end

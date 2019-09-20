@@ -11,7 +11,7 @@ defmodule Crit.DataExtras do
 
   def assert_ok_unique_id(required_user_id,
                           {:ok, %UniqueId{} = actual}) do
-    required_id = UniqueId.new(required_user_id, @default_short_name)
+    required_id = UniqueId.new(required_user_id, @institution)
     assert required_id == actual
   end
 

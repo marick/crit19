@@ -29,13 +29,13 @@ defmodule Crit.Ecto.TimespanTest do
   # defp db_contains?(timespan) do
   #   {:ok, range} = timespan |> Timespan.dump
   #   query = from s in ScheduledUnavailability, where: contains(s.timespan, ^range)
-  #   Sql.exists?(query, @default_short_name)
+  #   Sql.exists?(query, @institution)
   # end
   
   # defp db_overlaps?(timespan) do
   #   {:ok, range} = timespan |> Timespan.dump
   #   query = from s in ScheduledUnavailability, where: overlaps(s.timespan, ^range)
-  #   Sql.exists?(query, @default_short_name)
+  #   Sql.exists?(query, @institution)
   # end
   
   # test "infinite down && containment" do

@@ -8,10 +8,10 @@ defmodule Crit.Users.Api.UserTest do
   # Factor out verbosity. Is also a handy list of what's tested here
   # 
   def ut_permissioned_user(id),
-    do: Users.permissioned_user_from_id(id, @default_short_name)
+    do: Users.permissioned_user_from_id(id, @institution)
 
   def ut_active_users(),
-    do: Users.active_users(@default_short_name)
+    do: Users.active_users(@institution)
 
   def ut_fresh_user_changeset(),
     do: Users.fresh_user_changeset()

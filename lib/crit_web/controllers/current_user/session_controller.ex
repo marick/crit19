@@ -13,7 +13,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   plug :must_be_logged_out when action not in [:logout]
 
   def get_login_form(conn, _params) do
-    starting_institution = @default_short_name
+    starting_institution = @institution
     render_login(conn, %{}, institution_options(starting_institution))
   end
 
@@ -64,7 +64,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     end
 
     is_default? = fn { _, short_name} ->
-      short_name == @default_short_name
+      short_name == @institution
     end
 
     { default, remainder } =

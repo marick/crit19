@@ -3,7 +3,6 @@ defmodule Crit.Usables do
   alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap}
   alias Ecto.Multi
   alias Crit.Sql
-  alias Pile.TimeHelper
   alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
 

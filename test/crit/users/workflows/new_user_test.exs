@@ -8,7 +8,7 @@ defmodule Crit.Users.Workflow.NewUserTest do
 
   def creation_and_first_save(params) do
     {:ok, %UserHavingToken{user: user, token: token}}
-       = Users.create_unactivated_user(params, @default_short_name)
+       = Users.create_unactivated_user(params, @institution)
     {user, token}
   end
 
@@ -17,17 +17,17 @@ defmodule Crit.Users.Workflow.NewUserTest do
   end
 
   def user_has_no_password(auth_id) do
-    refute Sql.exists?(Password, [auth_id: auth_id], @default_short_name)
+    refute Sql.exists?(Password, [auth_id: auth_id], @institution)
   end
 
   def supply_new_password(user_id, new_password) do
     params = PasswordFocused.params(new_password, new_password)
-    assert :ok = Users.set_password(user_id, params, @default_short_name)
+    assert :ok = Users.set_password(user_id, params, @institution)
   end
 
   def user_has_valid_password(auth_id, password) do
     assert {:ok, _} =
-      Users.check_password(auth_id, password, @default_short_name)
+      Users.check_password(auth_id, password, @institution)
   end
 
   test "successful creation through activation" do

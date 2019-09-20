@@ -19,7 +19,7 @@ defmodule Crit.Usables.Api.AnimalTest do
         "start_date" => @iso_date,
         "end_date" => "never"
       }
-      [result: Usables.create_animal(params, @default_short_name)]
+      [result: Usables.create_animal(params, @institution)]
     end  
 
     test "non-association fields are returned", %{result: result} do 
@@ -53,23 +53,23 @@ defmodule Crit.Usables.Api.AnimalTest do
         "start_date" => @iso_date,
         "end_date" => "never"
       }
-      [result: Usables.create_animal(params, @default_short_name)]
+      [result: Usables.create_animal(params, @institution)]
     end  
     
     
     test "fetching by name" do
-      assert animal = Usables.get_complete_animal_by_name("Bossie", @default_short_name)
+      assert animal = Usables.get_complete_animal_by_name("Bossie", @institution)
       assert animal.name == "Bossie"
       assert Ecto.assoc_loaded?(animal.service_gaps)
     end
 
     test "errors return nil" do
-      assert nil == Usables.get_complete_animal_by_name("lossie", @default_short_name)
+      assert nil == Usables.get_complete_animal_by_name("lossie", @institution)
     end
 
     test "fetch by id" do
-      id = Usables.get_complete_animal_by_name("Bossie", @default_short_name).id
-      animal = Usables.get_complete_animal!(id, @default_short_name)
+      id = Usables.get_complete_animal_by_name("Bossie", @institution).id
+      animal = Usables.get_complete_animal!(id, @institution)
                         
       assert animal.name == "Bossie"
       assert Ecto.assoc_loaded?(animal.service_gaps)
@@ -77,7 +77,7 @@ defmodule Crit.Usables.Api.AnimalTest do
     
     test "no such id" do
       assert_raise KeyError, fn -> 
-        Usables.get_complete_animal!(83483, @default_short_name)
+        Usables.get_complete_animal!(83483, @institution)
       end
     end
   end

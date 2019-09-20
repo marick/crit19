@@ -8,7 +8,7 @@ defmodule Crit.Exemplars.TokenFocused do
 
   def possible_user(attrs \\ []) do
     params = Factory.string_params_for(:user, attrs)
-    Users.create_unactivated_user(params, @default_short_name)
+    Users.create_unactivated_user(params, @institution)
   end
 
   def user(attrs \\ []) do

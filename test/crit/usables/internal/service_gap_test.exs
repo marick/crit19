@@ -20,7 +20,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     end
 
     test "starts today (in institution's time zone)" do
-      institution_timezone = Institutions.timezone(@default_short_name)
+      institution_timezone = Institutions.timezone(@institution)
       
       changeset = ServiceGap.pre_service_changeset(
         %{"start_date" => "today",
@@ -50,7 +50,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     end
 
     test "unavailable as of today (in institution's time zone)" do
-      institution_timezone = Institutions.timezone(@default_short_name)
+      institution_timezone = Institutions.timezone(@institution)
       
       changeset = ServiceGap.post_service_changeset(
         %{"end_date" => "today",

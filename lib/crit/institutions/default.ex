@@ -18,7 +18,7 @@ defmodule Crit.Institutions.Default do
 
   defmacro __using__(_) do
     quote do 
-      @default_short_name Crit.Institutions.Default.institution.short_name
+      @institution Crit.Institutions.Default.institution.short_name
     end
   end
 end

@@ -16,8 +16,8 @@ defmodule Crit.Exemplars.PasswordFocused do
 
   def user(password) do
     user = Minimal.user()
-    assert :ok == Users.set_password(user.auth_id, params(password, password), @default_short_name)
-    assert Password.count_for(user.auth_id, @default_short_name) == 1
+    assert :ok == Users.set_password(user.auth_id, params(password, password), @institution)
+    assert Password.count_for(user.auth_id, @institution) == 1
     user
   end
 end

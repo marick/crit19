@@ -27,7 +27,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
       {:error, changeset} = TokenFocused.possible_user(auth_id: too_short_auth_id)
       assert %{auth_id: ["can't be blank"]} = errors_on(changeset)
       assert [] = Repo.all(PasswordToken)
-      assert [] = Sql.all(User, @default_short_name)
+      assert [] = Sql.all(User, @institution)
     end
   end
 
