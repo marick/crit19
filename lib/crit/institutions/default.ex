@@ -11,7 +11,8 @@ defmodule Crit.Institutions.Default do
     %Institution{
       display_name: "Critter4Us Demo",
       short_name: "critter4us",
-      prefix: "demo"
+      prefix: "demo",
+      timezone: "America/Los_Angeles"
     }
   end
 

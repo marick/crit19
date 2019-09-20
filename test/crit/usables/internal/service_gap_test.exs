@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Internal.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.ServiceGap
+  alias Crit.Institutions
   alias Pile.TimeHelper
 
   @iso_date "2001-09-05"
@@ -19,7 +20,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     end
 
     test "starts today (in institution's time zone)" do
-      institution_timezone = "America/Chicago"
+      institution_timezone = Institutions.timezone(@default_short_name)
       
       changeset = ServiceGap.pre_service_changeset(
         %{"start_date" => "today",
@@ -49,7 +50,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     end
 
     test "unavailable as of today (in institution's time zone)" do
-      institution_timezone = "America/Chicago"
+      institution_timezone = Institutions.timezone(@default_short_name)
       
       changeset = ServiceGap.post_service_changeset(
         %{"end_date" => "today",

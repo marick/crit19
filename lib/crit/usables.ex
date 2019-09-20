@@ -5,6 +5,7 @@ defmodule Crit.Usables do
   alias Crit.Sql
   alias Pile.TimeHelper
   alias Crit.Ecto.MegaInsert
+  alias Crit.Institutions
 
   
   # @moduledoc """
@@ -49,9 +50,8 @@ defmodule Crit.Usables do
   end
 
   def create_animal(attrs, institution) do
-    adjusted_attrs =
-      attrs |>
-      Map.put("timezone", TimeHelper.institution_timezone(institution))
+    adjusted_attrs = Map.put(attrs, "timezone", Institutions.timezone(institution))
+    
     {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
     service_gap_changesets = ServiceGap.initial_changesets(adjusted_attrs)
 

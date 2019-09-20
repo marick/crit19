@@ -7,6 +7,7 @@ defmodule Crit.Repo.Migrations.CreateInstitutions do
       add :short_name, :string, null: false
       add :prefix, :string
       add :repo, :string
+      add :timezone, :string, null: false
 
       timestamps()
     end

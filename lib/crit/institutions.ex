@@ -6,4 +6,8 @@ defmodule Crit.Institutions do
     Repo.all(Institution)
   end
 
+  def timezone(institution) do
+    institution = Repo.get_by!(Institution, short_name: institution)
+    institution.timezone
+  end
 end

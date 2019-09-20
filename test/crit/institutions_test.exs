@@ -12,4 +12,10 @@ defmodule Crit.InstitutionsTest do
     assert retrieved.prefix == Institutions.Default.institution.prefix
     assert retrieved.display_name == Institutions.Default.institution.display_name
   end
+
+
+  test "timezone retrieval" do
+    actual = Institutions.timezone(@default_short_name) 
+    assert actual == Institutions.Default.institution.timezone
+  end
 end

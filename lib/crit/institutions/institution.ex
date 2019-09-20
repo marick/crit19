@@ -9,6 +9,7 @@ defmodule Crit.Institutions.Institution do
     field :short_name, :string
     field :prefix, :string
     field :repo, :string
+    field :timezone, :string
 
     timestamps()
   end

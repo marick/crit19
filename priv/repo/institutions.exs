@@ -7,6 +7,7 @@ alias Crit.Repo
 {:ok, _} = Repo.insert %Institution{
   display_name: "University of Illinois",
   short_name: "illinois",
-  prefix: "illinois"
+  prefix: "illinois",
+  timezone: "America/Chicago"
 }
 
