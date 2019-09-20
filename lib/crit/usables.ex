@@ -66,14 +66,19 @@ defmodule Crit.Usables do
       MegaInsert.make_insertions(service_gap_changesets, institution, service_gap_opts)
       |> MegaInsert.append_collecting(service_gap_opts)
 
-    connector_function =
-      AnimalServiceGap.TxPart.make_connections(institution)
+    connector_function = fn tx_result ->
+      MegaInsert.connection_records(tx_result, AnimalServiceGap, :animal_ids, :service_gap_ids)
+      |> MegaInsert.make_insertions(institution, schema: AnimalServiceGap)
+    end
 
-    Multi.new
-    |> Multi.append(animal_multi)
-    |> Multi.append(service_gap_multi)
-    |> Multi.merge(connector_function)
-    |> Sql.transaction(institution)
+    {:ok, tx_result} =
+      Multi.new
+      |> Multi.append(animal_multi)
+      |> Multi.append(service_gap_multi)
+      |> Multi.merge(connector_function)
+      |> Sql.transaction(institution)
+
+    {:ok, tx_result.animals}
   end
 
   # @doc """

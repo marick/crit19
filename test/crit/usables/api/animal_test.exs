@@ -3,7 +3,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   alias Crit.Usables
 
   @iso_date "2001-09-05"
-  @date Date.from_iso8601!(@iso_date)
+  #  @date Date.from_iso8601!(@iso_date)
 
   # @later_iso_date "2011-09-05"
   # @later_date Date.from_iso8601!(@later_iso_date)
@@ -22,25 +22,26 @@ defmodule Crit.Usables.Api.AnimalTest do
       [result: Usables.create_animal(params, @default_short_name)]
     end  
 
-    test "linking animals to service gaps", %{result: result} do 
+    test "non-association fields are returned", %{result: result} do 
+      assert {:ok, [bossie, jake]} = result
 
-      assert {:ok, %{animal_ids: [bossie_id, jake_id]}} = result
+      assert bossie.name == "Bossie"
+      refute Ecto.assoc_loaded?(bossie.service_gaps)
 
-      assert jake = Usables.get_complete_animal!(jake_id, @default_short_name)
-      assert jake.species.id == @species_id
       assert jake.name == "Jake"
+      refute Ecto.assoc_loaded?(jake.service_gaps)
+    end
 
-      assert [gap] = jake.service_gaps
-      assert assert_strictly_before(gap.gap, @date)
-      assert gap.reason == "before animal was put in service"
+    @tag :skip
+    test "virtual fields are stripped" do
+      # like returning N records, each with an N-entry `names` field
+    end
 
-      assert jake = Usables.get_complete_animal!(jake_id, @default_short_name)
-      assert jake.species.id == @species_id
-      assert jake.name == "Jake"
-
-      assert [gap] = jake.service_gaps
-      assert assert_strictly_before(gap.gap, @date)
-      assert gap.reason == "before animal was put in service"
+    @tag :skip
+    test "Handle the species associated field" do
+      # In the above, the following will not work
+      # assert bossie.species.id == @species_id
+      # assert jake.species.id == @species_id
     end
   end
 

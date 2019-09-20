@@ -71,6 +71,20 @@ defmodule Crit.Ecto.MegaInsertTest do
     
   end
 
+  test "cross product and structural creation" do
+    tx_results =
+      %{animal_ids: [1, 2], service_gap_ids: [11, 22]}
+    cross_product =
+      MegaInsert.connection_records(
+        tx_results,
+        AnimalServiceGap,
+        :animal_ids, :service_gap_ids)
+
+    assert Enum.at(cross_product, 0).animal_id == 1
+    assert Enum.at(cross_product, 0).service_gap_id == 11
+  end
+
+
 
   # Tests for support functions
 
@@ -96,19 +110,5 @@ defmodule Crit.Ecto.MegaInsertTest do
       assert {:ok, [:some_gap_struct, :another_gap_struct]} =
         Testable.collect_structs(transaction_result_so_far, schema: ServiceGap)
     end
-  end
-
-
-  test "cross product of structural creation" do
-    tx_results =
-      %{animal_ids: [1, 2], service_gap_ids: [11, 22]}
-    cross_product =
-      Testable.connection_records(
-        tx_results,
-        AnimalServiceGap,
-        :animal_ids, :service_gap_ids)
-
-    assert Enum.at(cross_product, 0).animal_id == 1
-    assert Enum.at(cross_product, 0).service_gap_id == 11
   end
 end

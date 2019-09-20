@@ -31,11 +31,6 @@ defmodule Crit.Ecto.MegaInsert do
       {:ok, result}
     end
 
-    def connection_records(tx_result, schema, first_source, second_source) do
-      for id1 <- tx_result[first_source], id2 <- tx_result[second_source] do
-        apply(schema, :new, [id1, id2])
-      end
-    end
   end
 
   # Main
@@ -72,4 +67,11 @@ defmodule Crit.Ecto.MegaInsert do
     |> Multi.run(config.structs, add_struct_collector)
     |> Multi.run(config.ids, add_id_collector)
   end
+
+  def connection_records(tx_result, schema, first_source, second_source) do
+    for id1 <- tx_result[first_source], id2 <- tx_result[second_source] do
+      apply(schema, :new, [id1, id2])
+    end
+  end
+  
 end
