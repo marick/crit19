@@ -1,9 +1,7 @@
 defmodule Crit.Usables.Internal.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.ServiceGap
-  alias Crit.Usables.ServiceGap.TxPart
   alias Pile.TimeHelper
-  alias Crit.Sql
 
   @iso_date "2001-09-05"
   @date Date.from_iso8601!(@iso_date)
@@ -121,41 +119,4 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       refute out_of_service.valid?
     end
   end
-
-  ## Initial service gaps
-
-  describe "initial service gaps" do
-    test "without an out-of-service date" do
-      params = %{
-        "start_date" => @iso_date,
-        "end_date" => "never"
-      }
-
-      [inserted] =
-        params
-        |> TxPart.params_to_ids(@default_short_name)
-        |> Enum.map(&inserted_gap/1)
-
-      assert_strictly_before(inserted.gap, @date)
-    end
-
-
-    test "with an out-of-service date" do
-      params = %{
-        "start_date" => @iso_date,
-        "end_date" => @later_iso_date
-      }
-
-      [before_service, after_service] =
-        params
-        |> TxPart.params_to_ids(@default_short_name)
-        |> Enum.map(&inserted_gap/1)
-
-      assert_strictly_before(before_service.gap, @date)
-      assert_date_and_after(after_service.gap, @later_date)
-    end
-  end
-
-  def inserted_gap(gap_id),
-    do: Sql.get(ServiceGap, gap_id, @default_short_name)
 end

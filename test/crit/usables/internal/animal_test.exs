@@ -1,9 +1,6 @@
 defmodule Crit.Usables.Internal.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Animal
-  alias Crit.Usables.Animal.TxPart
-  # import Ecto.Changeset
-  alias Crit.Sql
 
   describe "creational changesets - support" do
     test "errors (none should be possible without client-side hackery)" do
@@ -29,31 +26,4 @@ defmodule Crit.Usables.Internal.AnimalTest do
       assert c.changes.name == "c"
     end
   end
-
-
-  describe "contributions to a transaction" do
-    test "producing multiple animals" do 
-      species_id = 1
-      
-      params = %{
-        "species_id" => species_id,
-        "names" => "Bossie, Jake"
-      }
-
-      [bossie, jake] =
-        params
-        |> TxPart.params_to_ids(@default_short_name)
-        |> Enum.map(&inserted_animal/1)
-
-      assert bossie.name == "Bossie"
-      assert bossie.species_id == species_id
-      
-      assert jake.name == "Jake"
-      assert jake.species_id == species_id
-    end
-  end
-
-  def inserted_animal(animal_id),
-    do: Sql.get(Animal, animal_id, @default_short_name)
-  
 end

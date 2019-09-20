@@ -53,17 +53,4 @@ defmodule Crit.Usables.Animal do
       query |> preload([:service_gaps, :species])
     end
   end
-
-
-  defmodule TxPart do
-    alias Crit.Usables.Animal
-
-    use Ecto.MegaInsertion, :animal
-
-    def params_to_ids(params, institution) do
-      {:ok, changesets} = Animal.creational_changesets(params)
-      run_for_ids(changesets, institution)
-    end
-    
-  end
 end

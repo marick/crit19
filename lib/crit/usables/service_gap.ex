@@ -97,19 +97,4 @@ defmodule Crit.Usables.ServiceGap do
     do: "isn't a correct date. This should be impossible. Please report the problem."
   
   def misorder_message, do: "should not be before the start date"
-
-
-  ### Transaction support
-
-  defmodule TxPart do
-    use Ecto.MegaInsertion, :service_gap
-    alias Crit.Usables.ServiceGap
-
-
-    def params_to_ids(params, institution) do 
-      params
-      |> ServiceGap.initial_changesets
-      |> run_for_ids(institution)
-    end
-  end
 end
