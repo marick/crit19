@@ -20,6 +20,13 @@ defmodule Crit.Ecto.NameListTest do
   end
 
 
+  test "casting removes duplicates strings" do
+    # It's unlikely that producing a message about a typo and stopping
+    # creation of animals would be useful.
+    assert NameList.cast("a , b,a, c, a") == {:ok, ["a", "b", "c"]}
+  end
+
+
   test "loading and dumping do not work - this is for virtual fields" do
     untrimmed = "stuff"
     assert NameList.load(untrimmed) == :error

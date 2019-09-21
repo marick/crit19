@@ -11,11 +11,12 @@ defmodule Crit.Ecto.NameList do
       |> Enum.map(&TrimmedString.cast/1)
       |> Enum.map(fn {:ok, val} -> val end)
       |> Enum.reject(fn s -> s == "" end)
+      |> Enum.uniq
     {:ok, array}
   end
   def cast(_), do: :error
 
-  # This is only intneded for virtual fields.
+  # This is only intended for virtual fields.
   def load(_string), do: :error
   def dump(_string), do: :error
 end
