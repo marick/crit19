@@ -2,26 +2,11 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
+  alias Crit.Usables
   alias Crit.Usables.Animal
   alias Crit.Sql
 
   setup :logged_in_as_usables_manager
-
-  # @create_attrs %{lock_version: 42, name: "some name", species: "some species"}
-  # @update_attrs %{lock_version: 43, name: "some updated name", species: "some updated species"}
-  # @invalid_attrs %{lock_version: nil, name: nil, species: nil}
-
-  # def fixture(:animal) do
-  #   {:ok, animal} = Usables.create_animal(@create_attrs)
-  #   animal
-  # end
-
-  # describe "index" do
-  #   test "lists all animals", %{conn: conn} do
-  #     conn = get(conn, Routes.usables_animal_path(conn, :index))
-  #     assert html_response(conn, 200) =~ "Listing Animals"
-  #   end
-  # end
 
   describe "new animal" do
     test "renders form", %{conn: conn} do
@@ -33,6 +18,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
   defp animal_creation_data() do
     {start_date, end_date} = Factory.date_pair()
+    {species_name, species_id} = Enum.random(Usables.available_species(@institution))
+    
     names =
       Faker.Cat.name()
       |> List.duplicate(Faker.random_between(1, 200))
@@ -40,7 +27,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
 
     params = %{"names" => Enum.join(names, ", "), 
-               "species_id" => Factory.some_species_id(),
+               "species_id" => species_id,
+               "species_name_for_tests" => species_name,
                "start_date" => start_date,
                "end_date" => end_date
               }
@@ -70,6 +58,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert length(Sql.all(Animal, @institution)) == length(names)
       assert_user_sees(conn, Enum.at(names, 0))
       assert_user_sees(conn, Enum.at(names, -1))
+      assert_user_sees(conn, params["species_name_for_tests"])
     end
 
     @tag :skip
@@ -93,55 +82,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert audit.data.id == params["id"]
       assert audit.data.service_gaps == [:start, :end]
     end
-
-    # test "renders errors when data is invalid", %{conn: conn} do
-    #   conn = post(conn, Routes.usables_animal_path(conn, :create), animal: @invalid_attrs)
-    #   assert html_response(conn, 200) =~ "New Animal"
-    # end
   end
-
-  # describe "edit animal" do
-  #   setup [:create_animal]
-
-  #   test "renders form for editing chosen animal", %{conn: conn, animal: animal} do
-  #     conn = get(conn, Routes.usables_animal_path(conn, :edit, animal))
-  #     assert html_response(conn, 200) =~ "Edit Animal"
-  #   end
-  # end
-
-  # describe "update animal" do
-  #   setup [:create_animal]
-
-  #   test "redirects when data is valid", %{conn: conn, animal: animal} do
-  #     conn = put(conn, Routes.usables_animal_path(conn, :update, animal), animal: @update_attrs)
-  #     assert redirected_to(conn) == Routes.usables_animal_path(conn, :show, animal)
-
-  #     conn = get(conn, Routes.usables_animal_path(conn, :show, animal))
-  #     assert html_response(conn, 200) =~ "some updated name"
-  #   end
-
-  #   test "renders errors when data is invalid", %{conn: conn, animal: animal} do
-  #     conn = put(conn, Routes.usables_animal_path(conn, :update, animal), animal: @invalid_attrs)
-  #     assert html_response(conn, 200) =~ "Edit Animal"
-  #   end
-  # end
-
-  # describe "delete animal" do
-  #   setup [:create_animal]
-
-  #   test "deletes chosen animal", %{conn: conn, animal: animal} do
-  #     conn = delete(conn, Routes.usables_animal_path(conn, :delete, animal))
-  #     assert redirected_to(conn) == Routes.usables_animal_path(conn, :index)
-  #     assert_error_sent 404, fn ->
-  #       get(conn, Routes.usables_animal_path(conn, :show, animal))
-  #     end
-  #   end
-  # end
-
-  # defp create_animal(_) do
-  #   animal = fixture(:animal)
-  #   {:ok, animal: animal}
-  # end
 
   def redirected_to_new_animal_form?(conn),
     do: redirected_to(conn) == UnderTest.path(:new)

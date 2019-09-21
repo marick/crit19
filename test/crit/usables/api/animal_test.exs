@@ -72,7 +72,10 @@ defmodule Crit.Usables.Api.AnimalTest do
     end
   end
 
-
+  test "available_species" do
+    result = Usables.available_species(@institution)
+    assert result == [{"bovine", 1}, {"equine", 2}]
+  end
 
   # describe "animals" do
   #   alias Crit.Usables.Animal

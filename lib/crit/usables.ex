@@ -1,6 +1,6 @@
 defmodule Crit.Usables do
   alias Crit.Sql
-  alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap}
+  alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap, Species}
   alias Ecto.Multi
   alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
@@ -67,6 +67,16 @@ defmodule Crit.Usables do
     animals = Sql.all(query, institution)
 
     {:ok, animals}
+  end
+
+  def animal_creation_changeset(%Animal{} = animal) do
+    Animal.changeset(animal, %{})
+  end
+
+  def available_species(institution) do
+    Species.Query.ordered()
+    |> Sql.all(institution)
+    |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
   end
 
 end
