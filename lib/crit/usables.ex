@@ -60,11 +60,7 @@ defmodule Crit.Usables do
     #        Crit.Repo.all(query, prefix: "demo")
     # works fine.
 
-    query =
-      tx_result.animal_ids
-      |> Animal.Query.from_ids
-      |> Animal.Query.preload_common
-    animals = Sql.all(query, institution)
+    animals = ids_to_animals(tx_result.animal_ids, institution)
 
     {:ok, animals}
   end
@@ -79,4 +75,12 @@ defmodule Crit.Usables do
     |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
   end
 
+  def ids_to_animals(ids, institution) do
+    query =
+      ids
+      |> Animal.Query.from_ids
+      |> Animal.Query.preload_common
+      |> Animal.Query.ordered
+    animals = Sql.all(query, institution)
+  end
 end

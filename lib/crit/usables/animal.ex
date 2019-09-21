@@ -57,5 +57,9 @@ defmodule Crit.Usables.Animal do
     def preload_common(query) do
       query |> preload([:service_gaps, :species])
     end
+
+    def ordered(query) do
+      query |> order_by([a], a.name)
+    end
   end
 end

@@ -72,9 +72,42 @@ defmodule Crit.Usables.Api.AnimalTest do
     end
   end
 
-  test "available_species" do
-    result = Usables.available_species(@institution)
-    assert result == [{"bovine", 1}, {"equine", 2}]
+  describe "fetching a number of animals" do 
+
+    setup do
+      params = %{
+        "species_id" => @species_id,
+        "names" => "Bossie, Jake, Alpha",
+        "start_date" => @iso_date,
+        "end_date" => "never"
+      }
+
+      {:ok, animals} = Usables.create_animal(params,@institution)
+      [ids: Enum.map(animals, &(&1.id))]
+    end
+
+
+    test "available_species returns animals in alphabetical order", %{ids: ids} do
+      assert [alpha, bossie, jake] = Usables.ids_to_animals(ids, @institution)
+
+      assert alpha.name == "Alpha"
+      assert alpha.species.id == @species_id
+      assert Ecto.assoc_loaded?(alpha.service_gaps)
+
+      assert bossie.name == "Bossie"
+      assert jake.name == "Jake"
+    end
+
+    test "bad ids are silently ignored", %{ids: ids} do
+      new_ids = [387373 | ids]
+      
+      assert [alpha, bossie, jake] = Usables.ids_to_animals(new_ids, @institution)
+      assert alpha.name == "Alpha"
+      assert bossie.name == "Bossie"
+      assert jake.name == "Jake"
+    end
+
+
   end
 
   # describe "animals" do
