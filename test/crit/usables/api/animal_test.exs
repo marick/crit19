@@ -3,27 +3,25 @@ defmodule Crit.Usables.Api.AnimalTest do
   alias Crit.Usables
 
   @iso_date "2001-09-05"
-  #  @date Date.from_iso8601!(@iso_date)
+  # @date Date.from_iso8601!(@iso_date)
 
-  # @later_iso_date "2011-09-05"
+  @later_iso_date "2011-09-05"
   # @later_date Date.from_iso8601!(@later_iso_date)
 
   @species_id 1
 
+  @basic_params %{
+    "species_id" => @species_id,
+    "names" => "Bossie, Jake",
+    "start_date" => @iso_date,
+    "end_date" => "never"
+  }
+
   describe "animal creation" do
-    setup do
-      params = %{
-        "species_id" => @species_id,
-        "names" => "Bossie, Jake",
-        "start_date" => @iso_date,
-        "end_date" => "never"
-      }
-      assert {:ok, result} = Usables.create_animal(params, @institution)
+    test "a 'complete' animal is returned" do
+      assert {:ok, [bossie, jake]} =
+        Usables.create_animal(@basic_params, @institution)
 
-      [result: result]
-    end  
-
-    test "a 'complete' animal is returned", %{result: [bossie, jake]} do 
       assert bossie.name == "Bossie"
       assert jake.name == "Jake"
 
@@ -33,19 +31,27 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert Ecto.assoc_loaded?(bossie.service_gaps)
       assert Ecto.assoc_loaded?(jake.service_gaps)
     end
+
+    
+    test "an error produces a changeset" do
+      params =
+        @basic_params
+        |> Map.put("start_date", @later_iso_date)
+        |> Map.put("end_date", @iso_date)
+        |> Map.put("names", ",")
+        
+      assert {:error, changeset} = Usables.create_animal(params, @institution)
+
+      IO.inspect changeset
+    end
+    
   end
 
   describe "fetching an animal" do
-    setup do
-      params = %{
-        "species_id" => @species_id,
-        "names" => "Bossie, Jake",
-        "start_date" => @iso_date,
-        "end_date" => "never"
-      }
-      [result: Usables.create_animal(params, @institution)]
+    setup do 
+      Usables.create_animal(@basic_params, @institution)
+      []
     end  
-    
     
     test "fetching by name" do
       assert animal = Usables.get_complete_animal_by_name("Bossie", @institution)
@@ -73,14 +79,8 @@ defmodule Crit.Usables.Api.AnimalTest do
   end
 
   describe "fetching a number of animals" do 
-
     setup do
-      params = %{
-        "species_id" => @species_id,
-        "names" => "Bossie, Jake, Alpha",
-        "start_date" => @iso_date,
-        "end_date" => "never"
-      }
+      params = Map.put(@basic_params, "names", "Bossie, Jake, Alpha")
 
       {:ok, animals} = Usables.create_animal(params,@institution)
       [ids: Enum.map(animals, &(&1.id))]
@@ -106,70 +106,5 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert bossie.name == "Bossie"
       assert jake.name == "Jake"
     end
-
-
   end
-
-  # describe "animals" do
-  #   alias Crit.Usables.Animal
-
-  #   @valid_attrs %{lock_version: 42, name: "some name", species: "some species"}
-  #   @update_attrs %{lock_version: 43, name: "some updated name", species: "some updated species"}
-  #   @invalid_attrs %{lock_version: nil, name: nil, species: nil}
-
-  #   def animal_fixture(attrs \\ %{}) do
-  #     {:ok, animal} =
-  #       attrs
-  #       |> Enum.into(@valid_attrs)
-  #       |> Usables.create_animal()
-
-  #     animal
-  #   end
-
-  #   test "list_animals/0 returns all animals" do
-  #     animal = animal_fixture()
-  #     assert Usables.list_animals() == [animal]
-  #   end
-
-  #   test "get_animal!/1 returns the animal with given id" do
-  #     animal = animal_fixture()
-  #     assert Usables.get_animal!(animal.id) == animal
-  #   end
-
-  #   test "create_animal/1 with valid data creates a animal" do
-  #     assert {:ok, %Animal{} = animal} = Usables.create_animal(@valid_attrs)
-  #     assert animal.lock_version == 42
-  #     assert animal.name == "some name"
-  #     assert animal.species == "some species"
-  #   end
-
-  #   test "create_animal/1 with invalid data returns error changeset" do
-  #     assert {:error, %Ecto.Changeset{}} = Usables.create_animal(@invalid_attrs)
-  #   end
-
-  #   test "update_animal/2 with valid data updates the animal" do
-  #     animal = animal_fixture()
-  #     assert {:ok, %Animal{} = animal} = Usables.update_animal(animal, @update_attrs)
-  #     assert animal.lock_version == 43
-  #     assert animal.name == "some updated name"
-  #     assert animal.species == "some updated species"
-  #   end
-
-  #   test "update_animal/2 with invalid data returns error changeset" do
-  #     animal = animal_fixture()
-  #     assert {:error, %Ecto.Changeset{}} = Usables.update_animal(animal, @invalid_attrs)
-  #     assert animal == Usables.get_animal!(animal.id)
-  #   end
-
-  #   test "delete_animal/1 deletes the animal" do
-  #     animal = animal_fixture()
-  #     assert {:ok, %Animal{}} = Usables.delete_animal(animal)
-  #     assert_raise Ecto.NoResultsError, fn -> Usables.get_animal!(animal.id) end
-  #   end
-
-  #   test "change_animal/1 returns a animal changeset" do
-  #     animal = animal_fixture()
-  #     assert %Ecto.Changeset{} = Usables.change_animal(animal)
-  #   end
-  # end
 end

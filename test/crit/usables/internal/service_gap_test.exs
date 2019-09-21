@@ -65,7 +65,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
 
   describe "initial_changesets" do
     test "no end of service date" do 
-      [in_service] = ServiceGap.initial_changesets(
+      {:ok, [in_service]} = ServiceGap.initial_changesets(
         %{"start_date" => @iso_date,
           "end_date" => "never"
         })
@@ -75,7 +75,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     end
     
     test "an end of service date" do 
-      [in_service, out_of_service] = ServiceGap.initial_changesets(
+      {:ok, [in_service, out_of_service]} = ServiceGap.initial_changesets(
         %{"start_date" => @iso_date,
           "end_date" => @later_iso_date
         })
@@ -88,36 +88,45 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     end
 
     test "misordered dates" do
-      [in_service, out_of_service] = ServiceGap.initial_changesets(
+      {:error, changeset} = ServiceGap.initial_changesets(
         %{"start_date" => @later_iso_date,
           "end_date" => @iso_date,
         })
 
-      assert in_service.valid?
-
-      refute out_of_service.valid?
-      assert ServiceGap.misorder_message in errors_on(out_of_service).end_date
+      refute changeset.valid?
+      assert ServiceGap.misorder_message in errors_on(changeset).end_date
     end
 
-
     test "no checking for misordered dates if start is invalid" do
-      [in_service, out_of_service] = ServiceGap.initial_changesets(
+      {:error, changeset} = ServiceGap.initial_changesets(
         %{"start_date" => "broken",
           "end_date" => @iso_date,
         })
 
-      refute in_service.valid?
-      assert out_of_service.valid?
+      refute changeset.valid?
+      assert ServiceGap.parse_message in errors_on(changeset).start_date
     end
-    
+
     test "no checking for misordered dates if end is invalid" do
-      [in_service, out_of_service] = ServiceGap.initial_changesets(
+      {:error, changeset} = ServiceGap.initial_changesets(
         %{"start_date" => @iso_date,
           "end_date" => "NEVER",
         })
 
-      assert in_service.valid?
-      refute out_of_service.valid?
+      refute changeset.valid?
+      assert ServiceGap.parse_message in errors_on(changeset).end_date
     end
+
+    test "errors are merged" do
+      {:error, changeset} = ServiceGap.initial_changesets(
+        %{"start_date" => "busted",
+          "end_date" => "NEVER",
+        })
+
+      refute changeset.valid?
+      assert ServiceGap.parse_message in errors_on(changeset).start_date
+      assert ServiceGap.parse_message in errors_on(changeset).end_date
+    end
+    
   end
 end

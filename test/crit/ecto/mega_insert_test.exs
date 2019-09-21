@@ -15,6 +15,7 @@ defmodule Crit.Ecto.MegaInsertTest do
     %{ start_date: @iso_date,
        end_date: @later_iso_date
     })
+    |> elem(1)
 
   def assert_right_dates [before_service, after_service] do 
     assert_strictly_before(before_service.gap, @date)

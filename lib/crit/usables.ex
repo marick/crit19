@@ -23,13 +23,15 @@ defmodule Crit.Usables do
     |> Sql.one(institution)
   end
 
+
+
   # Note: there's no particular reason for this to be transactional but
   # I wanted to learn more about using Ecto.Multi.
   def create_animal(attrs, institution) do
     adjusted_attrs = Map.put(attrs, "timezone", Institutions.timezone(institution))
     
     {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
-    service_gap_changesets = ServiceGap.initial_changesets(adjusted_attrs)
+    {:ok, service_gap_changesets} = ServiceGap.initial_changesets(adjusted_attrs)
 
     animal_opts = [schema: Animal, structs: :animals, ids: :animal_ids]
     service_gap_opts = [schema: ServiceGap, structs: :service_gaps, ids: :service_gap_ids]
@@ -82,6 +84,6 @@ defmodule Crit.Usables do
       |> Animal.Query.from_ids
       |> Animal.Query.preload_common
       |> Animal.Query.ordered
-    animals = Sql.all(query, institution)
+    Sql.all(query, institution)
   end
 end

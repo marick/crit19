@@ -18,16 +18,27 @@ defmodule Crit.Usables.ServiceGap do
   end
 
   def initial_changesets(attrs, today_getter \\ &TimeHelper.today_date/1) do
-    pre_service = pre_service_changeset(attrs, today_getter) 
-    case attrs["end_date"] do
-      "never" ->
-        [pre_service]
-      _ ->
-        post_service = 
-          post_service_changeset(attrs, today_getter)
-          |> reject_overlap(pre_service)
-        [pre_service, post_service]
+    pre_service = pre_service_changeset(attrs, today_getter)
+    changesets = 
+      case attrs["end_date"] do
+        "never" ->
+          [pre_service]
+        _ ->
+          post_service = 
+            post_service_changeset(attrs, today_getter)
+            |> reject_overlap(pre_service)
+          [pre_service, post_service]
+      end
+
+    if Enum.all?(changesets, &(&1.valid?)) do
+      {:ok, changesets}
+    else
+      summary =
+        changesets
+        |> Enum.reduce(fn c, acc -> Changeset.merge(acc, c) end)
+      {:error, summary}
     end
+    
   end
 
   def pre_service_changeset(attrs, today_getter \\ &TimeHelper.today_date/1) do
