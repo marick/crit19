@@ -7,7 +7,7 @@
 <%= form_for @changeset, @path, [class: "box"], fn f -> %>
   <%= note_existence_of_any_form_errors @changeset %>
 
-  <%= labeled_select(f, :species, "Species", @options,
+  <%= labeled_select(f, :species_id, "Species", @options,
         selected: @selected) %>
 
   <%= calendar_widget f,

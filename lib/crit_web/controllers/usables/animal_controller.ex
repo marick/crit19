@@ -27,7 +27,7 @@ defmodule CritWeb.Usables.AnimalController do
         |> Audit.created_animals(animals)
         |> put_flash(:info, "Success!")
         |> render("index.html",
-                  animals: [])
+                  animals: animals)
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

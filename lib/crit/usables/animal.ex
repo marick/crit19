@@ -7,12 +7,13 @@ defmodule Crit.Usables.Animal do
 
   schema "animals" do
     field :name, TrimmedString
-    belongs_to :species, Species
     field :lock_version, :integer, default: 1
-    many_to_many :service_gaps, ServiceGap,
-      join_through: AnimalServiceGap
+    
+    belongs_to :species, Species
+    many_to_many :service_gaps, ServiceGap, join_through: AnimalServiceGap
 
     field :names, NameList, virtual: true
+    
     timestamps()
   end
 
