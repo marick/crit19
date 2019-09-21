@@ -25,14 +25,29 @@ defmodule Crit.Usables do
 
 
 
-  # Note: there's no particular reason for this to be transactional but
-  # I wanted to learn more about using Ecto.Multi.
   def create_animal(attrs, institution) do
+    attrs
+    |> creation_changesets(institution)
+    |> creation_continuation(institution)
+  end
+
+  defp creation_changesets(attrs, institution) do
     adjusted_attrs = Map.put(attrs, "timezone", Institutions.timezone(institution))
     
     {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
     {:ok, service_gap_changesets} = ServiceGap.initial_changesets(adjusted_attrs)
 
+    {:ok, [animal_changesets, service_gap_changesets]}
+  end
+
+
+  defp creation_continuation({:error, changeset}, _institution),
+    do: {:error, changeset}
+
+    # Note: there's no particular reason for this to be transactional but
+  # I wanted to learn more about using Ecto.Multi.
+  defp creation_continuation({:ok, [animal_changesets, service_gap_changesets]}, institution) do
+    
     animal_opts = [schema: Animal, structs: :animals, ids: :animal_ids]
     service_gap_opts = [schema: ServiceGap, structs: :service_gaps, ids: :service_gap_ids]
 
@@ -66,7 +81,12 @@ defmodule Crit.Usables do
     animals = ids_to_animals(tx_result.animal_ids, institution)
 
     {:ok, animals}
+    
   end
+
+    
+  
+  
 
   def animal_creation_changeset(%Animal{} = animal) do
     Animal.changeset(animal, %{})
