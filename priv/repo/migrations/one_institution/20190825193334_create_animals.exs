@@ -12,10 +12,13 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
       # Instead, all animals of that species should become unavailable.
       # This allows history to be preserved.
       add :species_id, references("species", on_delete: :restrict), null: false
+      add :available, :boolean, default: true
       add :lock_version, :integer, default: 1
 
       timestamps()
     end
+    create unique_index("animals", [:name, :available],
+      name: :unique_available_names)
 
     create table("service_gaps") do
       add :gap, :daterange, null: false

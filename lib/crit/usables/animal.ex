@@ -7,7 +7,9 @@ defmodule Crit.Usables.Animal do
 
   schema "animals" do
     field :name, TrimmedString
+    field :available, :boolean, default: true
     field :lock_version, :integer, default: 1
+    
     
     belongs_to :species, Species
     many_to_many :service_gaps, ServiceGap, join_through: AnimalServiceGap
@@ -22,6 +24,7 @@ defmodule Crit.Usables.Animal do
     animal
     |> cast(attrs, [:name, :species_id, :lock_version])
     |> validate_required([:name, :species_id, :lock_version])
+    |> unique_constraint(:name, name: "unique_available_names")
   end
 
   def creational_changesets(attrs) do
