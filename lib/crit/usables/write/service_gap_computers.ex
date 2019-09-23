@@ -2,7 +2,7 @@ defmodule Crit.Usables.Write.ServiceGapComputers do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Usables.ServiceGap
-  import Crit.Usables.Write.ChangesetFlow
+  import Pile.ChangesetFlow
   alias Ecto.Datespan
 
   def expand_start_and_end(changeset) do

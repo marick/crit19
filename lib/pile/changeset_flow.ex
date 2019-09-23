@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.ChangesetFlow do
+defmodule Pile.ChangesetFlow do
   def given_all_form_values_are_present(changeset, continuation) do
     if changeset.valid? do
       continuation.(changeset)

@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Write.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
-  import Crit.Usables.Write.ChangesetFlow
+  import Pile.ChangesetFlow
   alias Ecto.Datespan
   alias Crit.Usables.Write.{DateComputers, ServiceGapComputers, NameListComputers}
 
