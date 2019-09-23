@@ -1,7 +1,6 @@
 defmodule Crit.Usables.Write.BulkAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Write.BulkAnimal
-  alias Pile.TimeHelper
 
   @iso_date "2001-09-05"
   @date Date.from_iso8601!(@iso_date)
@@ -62,71 +61,6 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
         |> errors_on
 
       assert errors.names == [BulkAnimal.no_names_error_message]
-    end
-  end
-
-  describe "changeset: handling the dates" do
-    test "explicit dates" do
-      changeset = 
-        @correct
-        |> Map.put(:start_date, @iso_date)
-        |> Map.put(:end_date, @later_iso_date)
-        |> BulkAnimal.compute_insertables
-
-      assert changeset.valid?
-      assert changeset.changes.computed_start_date == @date
-      assert changeset.changes.computed_end_date == @later_date
-    end
-
-    test "starting date is today" do
-      changeset = 
-        @correct
-        |> Map.put(:start_date, "today")
-        |> Map.put(:end_date, @later_iso_date)
-        |> BulkAnimal.compute_insertables
-
-      today = TimeHelper.today_date(changeset.changes.timezone)
-      
-      # Yes, this test will fail if it runs across a date boundary. So sue me.
-      assert changeset.valid?
-      assert changeset.changes.computed_start_date == today
-      assert changeset.changes.computed_end_date == @later_date
-    end
-
-    test "ending day is 'never', which does not set computed value" do
-      changeset = 
-        @correct
-        |> Map.put(:start_date, @iso_date)
-        |> Map.put(:end_date, "never")
-        |> BulkAnimal.compute_insertables
-
-      assert changeset.valid?
-      assert changeset.changes.computed_start_date == @date
-      assert changeset.changes.computed_end_date == :missing
-    end
-
-    test "are in the wrong order" do
-      errors = 
-        @correct
-        |> Map.put(:start_date, @later_iso_date)
-        |> Map.put(:end_date, @iso_date)
-        |> BulkAnimal.compute_insertables
-        |> errors_on
-
-      assert errors.end_date == [BulkAnimal.misorder_error_message]
-    end
-    
-
-    test "for completeness, a supposedly impossible ill-formed date" do
-      errors = 
-        @correct
-        |> Map.put(:start_date, "todya")
-        |> Map.put(:end_date, "ne")
-        |> BulkAnimal.compute_insertables
-        |> errors_on
-
-      assert errors.start_date == [BulkAnimal.parse_error_message]
-      assert errors.end_date == [BulkAnimal.parse_error_message]
     end
   end
 
