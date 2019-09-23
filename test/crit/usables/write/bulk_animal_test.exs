@@ -63,38 +63,5 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
       assert errors.names == [BulkAnimal.no_names_error_message]
     end
   end
-
-  describe "changeset: handling the service gaps" do
-    test "two gaps" do
-      changeset = 
-        @correct
-        |> Map.put(:start_date, @iso_date)
-        |> Map.put(:end_date, @later_iso_date)
-        |> BulkAnimal.compute_insertables
-
-      assert changeset.valid?
-      assert [in_service, out_of_service] = changeset.changes.computed_service_gaps
-
-      assert_strictly_before(in_service.gap, @date)
-      assert in_service.reason == "before animal was put in service"
-
-      assert_date_and_after(out_of_service.gap, @later_date)
-      assert out_of_service.reason == "animal taken out of service"
-    end
-
-    test "one gap" do
-      changeset = 
-        @correct
-        |> Map.put(:start_date, @iso_date)
-        |> Map.put(:end_date, "never")
-        |> BulkAnimal.compute_insertables
-
-      assert changeset.valid?
-      assert [in_service] = changeset.changes.computed_service_gaps
-
-      assert_strictly_before(in_service.gap, @date)
-      assert in_service.reason == "before animal was put in service"
-    end
-  end
 end
   

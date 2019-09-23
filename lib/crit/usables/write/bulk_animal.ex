@@ -3,8 +3,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
   import Ecto.Changeset
   alias Crit.Ecto.{NameList}
   alias Ecto.Datespan
-  alias Crit.Usables.ServiceGap
-  alias Crit.Usables.Write.{DateComputers}
+  alias Crit.Usables.Write.{DateComputers, ServiceGapComputers}
 
 
   embedded_schema do
@@ -36,7 +35,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
       required 
       |> compute_names
       |> DateComputers.start_and_end
-      |> compute_service_gaps
+      |> ServiceGapComputers.expand_start_and_end
     else
       required
     end
@@ -54,27 +53,6 @@ defmodule Crit.Usables.Write.BulkAnimal do
     end
   end
   
-  def compute_service_gaps(%{valid?: false} = changeset), do: changeset
-  def compute_service_gaps(%{changes: changes} = changeset) do
-    computed_start_date = changes[:computed_start_date]
-    computed_end_date = changes[:computed_end_date]
-
-    pre_service = %ServiceGap{gap: Datespan.strictly_before(computed_start_date),
-                              reason: "before animal was put in service"
-                             }
-    spans = 
-      if computed_end_date == :missing do
-        [pre_service]
-      else
-        [ pre_service, %{
-            gap: Datespan.date_and_after(computed_end_date),
-            reason: "animal taken out of service"
-          }
-        ]        
-      end
-
-    put_change(changeset, :computed_service_gaps, spans)
-  end
 
   def impossible_error_message, do: "has something unexpected wrong with it. Sorry."
   def no_names_error_message, do: "must have at least one valid name"
