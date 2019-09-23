@@ -32,7 +32,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert Ecto.assoc_loaded?(jake.service_gaps)
     end
 
-    
+    @tag :skip
     test "an error produces a changeset" do
       params =
         @basic_params
