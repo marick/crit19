@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Write.DateComputers do
   use Ecto.Schema
   import Ecto.Changeset
+  import Crit.Usables.Write.ChangesetFlow
   alias Pile.TimeHelper
 
   @today "today"
@@ -19,17 +20,16 @@ defmodule Crit.Usables.Write.DateComputers do
     end
   end
 
-  defp check_date_order(%{changes: changes} = changeset) do
-    case {changes[:computed_start_date], changes[:computed_end_date]} do
-      {nil, _} -> changeset
-      {_, nil} -> changeset
-      {to_be_earlier, to_be_later} ->
-        if Date.compare(to_be_earlier, to_be_later) == :lt do
+  defp check_date_order(changeset) do
+    given_prerequisite_values_exist(changeset,
+      [:computed_start_date, :computed_end_date],
+      fn [should_be_earlier, should_be_later] ->
+        if Date.compare(should_be_earlier, should_be_later) == :lt do
           changeset
         else
           add_error(changeset, :end_date, misorder_error_message())
         end      
-    end
+      end)
   end
 
   defp compute_date(changeset, from, to) do

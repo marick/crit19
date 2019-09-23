@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Write.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
+  import Crit.Usables.Write.ChangesetFlow
   alias Ecto.Datespan
   alias Crit.Usables.Write.{DateComputers, ServiceGapComputers, NameListComputers}
 
@@ -26,20 +27,13 @@ defmodule Crit.Usables.Write.BulkAnimal do
     |> validate_required(@required)
   end
 
-  def when_valid(changeset, continuation) do
-    if changeset.valid? do
-      continuation.(changeset)
-    else
-      changeset
-    end
-  end
-
   def compute_insertables(attrs) do
-    when_valid(changeset(%__MODULE__{}, attrs), fn changeset ->
-      changeset
-      |> NameListComputers.split_names
-      |> DateComputers.start_and_end
-      |> ServiceGapComputers.expand_start_and_end
-    end)
+    given_all_form_values_are_present(changeset(%__MODULE__{}, attrs),
+      fn changeset ->
+        changeset
+        |> NameListComputers.split_names
+        |> DateComputers.start_and_end
+        |> ServiceGapComputers.expand_start_and_end
+      end)
   end
 end
