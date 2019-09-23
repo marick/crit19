@@ -43,25 +43,5 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
     end
   end
 
-  describe "changeset: handling the name field" do
-    test "computes names and handles whitespace" do
-      changeset = 
-        @correct
-        |> Map.put(:names, "  a, bb  , c   d ")
-        |> BulkAnimal.compute_insertables
-      
-      assert changeset.changes.computed_names == ["a", "bb", "c   d"]
-    end
-
-    test "will reject sneaky way of getting an empty list" do
-      errors = 
-        @correct
-        |> Map.put(:names, " ,")
-        |> BulkAnimal.compute_insertables
-        |> errors_on
-
-      assert errors.names == [BulkAnimal.no_names_error_message]
-    end
-  end
 end
   
