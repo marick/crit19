@@ -1,9 +1,8 @@
 defmodule Crit.Usables.Write.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Ecto.{NameList}
   alias Ecto.Datespan
-  alias Crit.Usables.Write.{DateComputers, ServiceGapComputers}
+  alias Crit.Usables.Write.{DateComputers, ServiceGapComputers, NameListComputers}
 
 
   embedded_schema do
@@ -27,33 +26,20 @@ defmodule Crit.Usables.Write.BulkAnimal do
     |> validate_required(@required)
   end
 
+  def when_valid(changeset, continuation) do
+    if changeset.valid? do
+      continuation.(changeset)
+    else
+      changeset
+    end
+  end
 
   def compute_insertables(attrs) do
-    required = changeset(%__MODULE__{}, attrs)
-
-    if required.valid? do 
-      required 
-      |> compute_names
+    when_valid(changeset(%__MODULE__{}, attrs), fn changeset ->
+      changeset
+      |> NameListComputers.split_names
       |> DateComputers.start_and_end
       |> ServiceGapComputers.expand_start_and_end
-    else
-      required
-    end
+    end)
   end
-
-  def compute_names(changeset) do
-    names = changeset.changes.names
-    case NameList.cast(names) do
-      {:ok, []} ->
-        add_error(changeset, :names, no_names_error_message())
-      {:ok, namelist} -> 
-        put_change(changeset, :computed_names, namelist)
-      _ -> 
-        add_error(changeset, :names, impossible_error_message())
-    end
-  end
-  
-
-  def impossible_error_message, do: "has something unexpected wrong with it. Sorry."
-  def no_names_error_message, do: "must have at least one valid name"
 end
