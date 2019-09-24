@@ -18,6 +18,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   }
 
   describe "bulk animal creation" do
+    @tag :skip
     test "an error produces a changeset" do
       params =
         @basic_params
@@ -30,7 +31,6 @@ defmodule Crit.Usables.Api.AnimalTest do
       errors = errors_on(changeset)
       assert [_message] = errors.end_date
       assert [_message] = errors.names
-      IO.inspect changeset
     end
   end    
 

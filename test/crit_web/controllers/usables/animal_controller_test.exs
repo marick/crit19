@@ -18,7 +18,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
   defp animal_creation_data() do
     {start_date, end_date} = Factory.date_pair()
-    {species_name, species_id} = Enum.random(Usables.available_species(@institution))
+    {_species_name, species_id} = Enum.random(Usables.available_species(@institution))
     
     names =
       Faker.Cat.name()
@@ -28,7 +28,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
     params = %{"names" => Enum.join(names, ", "), 
                "species_id" => species_id,
-               "species_name_for_tests" => species_name,
                "start_date" => start_date,
                "end_date" => end_date
               }
@@ -49,6 +48,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       []
     end
 
+    @tag :skip
     test "success case", %{conn: conn, act: act} do
       {names, params} = animal_creation_data()
       conn = act.(conn, params)
@@ -63,10 +63,21 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
     @tag :skip
     test "renders errors when data is invalid", %{conn: conn, act: act} do
-      conn = act.(conn, Factory.string_params_for(:animal, name: ""))
+      {_names, params} = animal_creation_data()
+
+      bad_params =
+        params 
+        |> Map.put("names", " ,     ,")
+        |> Map.put("start_date", "yesterday...")
+        |> Map.put("end_date", "2525-05-06")
+      conn = act.(conn, bad_params)
 
       assert_purpose(conn, form_for_creating_new_animal())
-      assert_user_sees(conn, standard_blank_error())
+
+      # Fields retain their old values.
+      assert_user_sees(conn, bad_params["names"])
+      assert_user_sees(conn, bad_params["start_date"])
+      assert_user_sees(conn, bad_params["end_date"])
     end
 
     @tag :skip
