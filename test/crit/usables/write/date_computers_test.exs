@@ -12,7 +12,6 @@ defmodule Crit.Usables.Write.DateComputersTest do
 
     field :computed_start_date, :date, virtual: true
     field :computed_end_date, :date, virtual: true
-    field :computed_names, {:array, :string}, virtual: true
   end
   
 
