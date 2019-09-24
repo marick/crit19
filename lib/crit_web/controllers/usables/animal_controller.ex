@@ -5,14 +5,16 @@ defmodule CritWeb.Usables.AnimalController do
   alias Crit.Usables
   alias CritWeb.Audit
 
-  def new(conn, _params, changeset \\ Usables.bulk_animal_creation_changeset()) do 
-    render(conn, "new.html",
+  def bulk_create_form(conn, _params,
+    changeset \\ Usables.bulk_animal_creation_changeset()
+  ) do 
+    render(conn, "bulk_creation.html",
       changeset: changeset,
-      path: path(:create),
+      path: path(:bulk_create),
       options: Usables.available_species(institution(conn)))
   end
 
-  def create(conn, %{"bulk_animal" => animal_params}) do
+  def bulk_create(conn, %{"bulk_animal" => animal_params}) do
     case Usables.create_animals(animal_params, institution(conn)) do
       {:ok, animals} ->
         conn
@@ -21,7 +23,7 @@ defmodule CritWeb.Usables.AnimalController do
         |> render("index.html",
                   animals: animals)
       {:error, %Ecto.Changeset{} = changeset} ->
-        new(conn, [], changeset)
+        bulk_create_form(conn, [], changeset)
     end
   end
 end

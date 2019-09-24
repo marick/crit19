@@ -40,7 +40,11 @@ defmodule CritWeb.Router do
 
   scope "/usables", CritWeb.Usables, as: :usables do
     pipe_through :browser
-    resources "/animals", AnimalController
+
+    scope "/animals" do 
+      get "/bulk_create", AnimalController, :bulk_create_form
+      post "/bulk_create", AnimalController, :bulk_create
+    end
   end
   
   # Other scopes may use custom stacks.

@@ -9,10 +9,10 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
   setup :logged_in_as_usables_manager
 
-  describe "new animal" do
+  describe "bulk creation form" do
     test "renders form", %{conn: conn} do
       conn
-      |> get_via_action(:new)
+      |> get_via_action(:bulk_create_form)
       |> assert_purpose(form_for_creating_new_animal())
       |> assert_user_sees("today")
       |> assert_user_sees("never")
@@ -43,7 +43,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   describe "bulk create animals" do
     setup do
       act = fn conn, params ->
-        post_to_action(conn, :create, under(:bulk_animal, params))
+        post_to_action(conn, :bulk_create, under(:bulk_animal, params))
       end
       [act: act]
     end
