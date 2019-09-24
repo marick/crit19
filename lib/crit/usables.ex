@@ -1,6 +1,7 @@
 defmodule Crit.Usables do
   alias Crit.Sql
   alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap, Species}
+  alias Crit.Usables.Write.BulkAnimal
   alias Ecto.Multi
   alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
@@ -23,6 +24,13 @@ defmodule Crit.Usables do
     |> Sql.one(institution)
   end
 
+  def create_animals(attrs, institution) do
+    changeset =
+      attrs
+      |> Map.put("timezone", Institutions.timezone(institution))
+      |> BulkAnimal.compute_insertables
+    {:error, changeset}
+  end
 
 
   def create_animal(attrs, institution) do

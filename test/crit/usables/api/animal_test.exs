@@ -17,6 +17,24 @@ defmodule Crit.Usables.Api.AnimalTest do
     "end_date" => "never"
   }
 
+  describe "bulk animal creation" do
+    test "an error produces a changeset" do
+      params =
+        @basic_params
+        |> Map.put("start_date", @later_iso_date)
+        |> Map.put("end_date", @iso_date)
+        |> Map.put("names", ",")
+        
+      assert {:error, changeset} = Usables.create_animals(params, @institution)
+
+      errors = errors_on(changeset)
+      assert [_message] = errors.end_date
+      assert [_message] = errors.names
+      IO.inspect changeset
+    end
+  end    
+
+
   describe "animal creation" do
     test "a 'complete' animal is returned" do
       assert {:ok, [bossie, jake]} =
@@ -32,19 +50,6 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert Ecto.assoc_loaded?(jake.service_gaps)
     end
 
-    @tag :skip
-    test "an error produces a changeset" do
-      params =
-        @basic_params
-        |> Map.put("start_date", @later_iso_date)
-        |> Map.put("end_date", @iso_date)
-        |> Map.put("names", ",")
-        
-      assert {:error, changeset} = Usables.create_animal(params, @institution)
-
-      IO.inspect changeset
-    end
-    
   end
 
   describe "fetching an animal" do
