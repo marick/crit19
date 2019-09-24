@@ -5,6 +5,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables
   alias Crit.Usables.Animal
   alias Crit.Sql
+  alias Crit.Usables.Write.{DateComputers, NameListComputers}
 
   setup :logged_in_as_usables_manager
 
@@ -13,6 +14,10 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       conn
       |> get_via_action(:new)
       |> assert_purpose(form_for_creating_new_animal())
+      |> assert_user_sees("today")
+      |> assert_user_sees("never")
+      |> assert_user_sees("bovine")
+
     end
   end
 
@@ -35,10 +40,10 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     {names, params}
   end
 
-  describe "create animal" do
+  describe "bulk create animals" do
     setup do
       act = fn conn, params ->
-        post_to_action(conn, :create, under(:animal, params))
+        post_to_action(conn, :create, under(:bulk_animal, params))
       end
       [act: act]
     end
@@ -61,7 +66,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert_user_sees(conn, params["species_name_for_tests"])
     end
 
-    @tag :skip
     test "renders errors when data is invalid", %{conn: conn, act: act} do
       {_names, params} = animal_creation_data()
 
@@ -70,14 +74,17 @@ defmodule CritWeb.Usables.AnimalControllerTest do
         |> Map.put("names", " ,     ,")
         |> Map.put("start_date", "yesterday...")
         |> Map.put("end_date", "2525-05-06")
-      conn = act.(conn, bad_params)
 
-      assert_purpose(conn, form_for_creating_new_animal())
+      act.(conn, bad_params)
+      |> assert_purpose(form_for_creating_new_animal())
 
+      # error messages
+      |> assert_user_sees(DateComputers.parse_error_message())
+      |> assert_user_sees(NameListComputers.no_names_error_message())
       # Fields retain their old values.
-      assert_user_sees(conn, bad_params["names"])
-      assert_user_sees(conn, bad_params["start_date"])
-      assert_user_sees(conn, bad_params["end_date"])
+      |> assert_user_sees(bad_params["names"])
+      |> assert_user_sees(bad_params["start_date"])
+      |> assert_user_sees(bad_params["end_date"])
     end
 
     @tag :skip

@@ -10,7 +10,6 @@ defmodule CritWeb.Usables.AnimalViewTest do
     tag = :"--some--tag--"
     label_text = "--some--label--"
     advice = "--some--advice--"
-    default = "--some-default-text"
     controller = "--some-controller--"
     
     calendar = form_for(Animal.changeset(%Animal{}, %{}), path, (fn f ->
@@ -18,7 +17,6 @@ defmodule CritWeb.Usables.AnimalViewTest do
       tag: tag,
       label: label_text,
       advice: advice,
-      default: default,
       controller: controller
     end)) |> safe_to_string
 
@@ -37,8 +35,6 @@ defmodule CritWeb.Usables.AnimalViewTest do
     assert calendar =~ ~r|<input [[:space:]]
                               class="input"  .*?
                               id="animal_#{tag} .*?
-                              value="#{default}"
-                              .*?
                           >
                          |sx
 

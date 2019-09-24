@@ -47,6 +47,6 @@ defmodule Crit.Usables.Write.DateComputers do
   end
 
   def parse_error_message,
-    do: "isn't a correct date. This should be impossible. Please report the problem."
+    do: "is not a correct date. This should be impossible. Please report the problem."
   def misorder_error_message, do: "should not be before the start date"
 end  

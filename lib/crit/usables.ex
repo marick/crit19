@@ -5,6 +5,7 @@ defmodule Crit.Usables do
   alias Ecto.Multi
   alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
+  alias Ecto.Changeset
 
   def get_complete_animal!(id, institution) do
     query = 
@@ -25,11 +26,11 @@ defmodule Crit.Usables do
   end
 
   def create_animals(attrs, institution) do
-    changeset =
+    _changeset =
       attrs
       |> Map.put("timezone", Institutions.timezone(institution))
       |> BulkAnimal.compute_insertables
-    {:error, changeset}
+      |> Changeset.apply_action(:insert)
   end
 
 
@@ -93,7 +94,16 @@ defmodule Crit.Usables do
   end
 
     
-  
+  def bulk_animal_creation_changeset() do
+    %BulkAnimal{
+      names: "",
+      species_id: 0,
+      start_date: "today",
+      end_date: "never",
+      timezone: "--to be replaced--"}
+    |> BulkAnimal.changeset(%{})
+  end
+
   
 
   def animal_creation_changeset(%Animal{} = animal) do

@@ -7,15 +7,13 @@
 <%= form_for @changeset, @path, [class: "box"], fn f -> %>
   <%= note_existence_of_any_form_errors @changeset %>
 
-  <%= labeled_select(f, :species_id, "Species", @options,
-        selected: @selected) %>
+  <%= labeled_select(f, :species_id, "Species", @options) %>
 
   <%= calendar_widget f,
         tag: :start_date,
         label: "Date Put Into Service",
         advice: "The animal can be reserved on the morning of the selected date.
                  Click for a calendar.",
-        default: "today",
         controller: "start-calendar"
       %>
 
@@ -23,7 +21,6 @@
         tag: :end_date,
         label: "Date Removed From Service",
         advice: "The animal can no longer be reserved starting at the selected date.",
-        default: "never",
         controller: "end-calendar"
       %>
 
@@ -35,6 +32,5 @@
 
   <%= submit "Save" %>
 <% end %>
-  
 
 <%= end_centered_form() %>

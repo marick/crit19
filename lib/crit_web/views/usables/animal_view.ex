@@ -12,7 +12,6 @@ defmodule CritWeb.Usables.AnimalView do
         advice: arg.advice,
         input_extras: [
           readonly: true,
-          value: arg.default,
           data_target: "#{arg.controller}.input",
           data_action: "click->#{arg.controller}#reveal",
           required: true
