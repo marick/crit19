@@ -1,7 +1,8 @@
 defmodule Crit.Usables.Animal do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Usables.{ServiceGap, Species, AnimalServiceGap}
+  alias Crit.Usables.{ServiceGap, Species}
+  alias Crit.Usables.Write.AnimalServiceGap
   alias Crit.Ecto.{NameList, TrimmedString}
 
 

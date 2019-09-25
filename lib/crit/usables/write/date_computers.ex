@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Write.DateComputers do
   use Ecto.Schema
   import Ecto.Changeset
-  import Pile.ChangesetFlow
+  alias Pile.ChangesetFlow, as: Flow
   alias Pile.TimeHelper
 
   @today "today"
@@ -21,7 +21,7 @@ defmodule Crit.Usables.Write.DateComputers do
   end
 
   defp check_date_order(changeset) do
-    given_prerequisite_values_exist(changeset,
+    Flow.given_prerequisite_values_exist(changeset,
       [:computed_start_date, :computed_end_date],
       fn [should_be_earlier, should_be_later] ->
         if Date.compare(should_be_earlier, should_be_later) == :lt do
