@@ -17,4 +17,9 @@ defmodule Crit.Usables.Write.AnimalServiceGap do
 
   def new(animal_id, service_gap_id),
     do: %__MODULE__{animal_id: animal_id, service_gap_id: service_gap_id}
+
+
+  def foreign_key_map(animal_id, service_gap_id),
+    do: %{animal_id: animal_id, service_gap_id: service_gap_id}
+
 end

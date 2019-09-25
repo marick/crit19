@@ -26,19 +26,17 @@ defmodule Crit.Ecto.BulkInsert do
       {:ok, result}
     end
 
-    def many_to_many_structs(tx_result, schema, first_source, second_source) do
+    def many_to_many_structs(tx_result, schema, {first_source, second_source}) do
       for id1 <- tx_result[first_source], id2 <- tx_result[second_source] do
-        apply(schema, :new, [id1, id2])
+        apply(schema, :foreign_key_map, [id1, id2])
       end
     end
   end
 
-  # Main
+  # These produce multis from data
 
-  def make_insertions(structs, institution, opts) do
-    alias Crit.Ecto.BulkInsert.Testable
-    
-    config = Enum.into(opts, %{})
+  def insertion_script(structs, institution, kwlist) do
+    config = Enum.into(kwlist, %{})
     
     add_insertion = fn {to_insert, count}, acc ->
       insert_opts = Sql.multi_opts(institution)
@@ -51,9 +49,38 @@ defmodule Crit.Ecto.BulkInsert do
     |> Enum.reduce(Multi.new, add_insertion)
   end
 
-  def append_ids(multi, opts) do
-    alias Crit.Ecto.BulkInsert.Testable
-    config = Enum.into(opts, %{})
+  def idlist_script(structs, institution, kwlist) do
+    structs
+    |> insertion_script(institution, kwlist)
+    |> append_id_collector(kwlist)
+  end
+
+  def cross_product_script(institution, kwlist) do
+    config = Enum.into(kwlist, %{})
+    
+    fn tx_result ->
+      Testable.many_to_many_structs(tx_result, config.schema, config.cross)
+      |> insert_all_script(institution, config)
+    end
+  end
+
+  def insert_all_script(structs, institution, kwlist) do
+    config = Enum.into(kwlist, %{})
+    insert_opts = Sql.multi_opts(institution)
+    
+    Multi.new
+    |> Multi.insert_all(config.schema, config.schema, structs, insert_opts)
+  end
+  
+
+  # These add multis onto existing multis
+
+  def append_idlist_script(multi, structs, institution, kwlist) do
+    Multi.append(multi, idlist_script(structs, institution, kwlist))
+  end
+
+  def append_id_collector(multi, kwlist) do
+    config = Enum.into(kwlist, %{})
 
     add_id_collector = fn _repo, tx_results -> 
       Testable.collect_ids(tx_results, schema: config.schema)
@@ -63,4 +90,7 @@ defmodule Crit.Ecto.BulkInsert do
     |> Multi.run(config.ids, add_id_collector)
   end
 
+  def append_cross_product_script(multi, institution, kwlist) do
+    Multi.merge(multi, cross_product_script(institution, kwlist))
+  end
 end

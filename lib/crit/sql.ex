@@ -54,6 +54,12 @@ defmodule Crit.Sql do
   end
 
   @impl true
+  def insert_all(schema_or_source, entries, opts \\ [], key) do
+    server = Servers.server_for(key)
+    GenServer.call(server, {:insert_all, [schema_or_source, entries], opts})
+  end
+
+  @impl true
   def one(queryable, opts \\ [], key) do
     server = Servers.server_for(key)
     GenServer.call(server, {:one, [queryable], opts})
