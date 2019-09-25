@@ -1,9 +1,9 @@
 defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.BulkInsert
-  alias Crit.Usables.{ServiceGap}  # Convenient for testing
-  alias Crit.Usables.Write.{AnimalServiceGap}  # Convenient for testing
+  alias Crit.Usables.Write.{Animal, ServiceGap, AnimalServiceGap}  # Convenient for testing
   alias Crit.Ecto.BulkInsert.Testable
+  alias Ecto.Datespan
   alias Crit.Sql
 
   @iso_date "2001-09-05"
@@ -12,11 +12,13 @@ defmodule Crit.Ecto.BulkInsertTest do
   @later_iso_date "2011-09-05"
   @later_date Date.from_iso8601!(@later_iso_date)
 
-  @changesets ServiceGap.initial_changesets(
-    %{ start_date: @iso_date,
-       end_date: @later_iso_date
-    })
-    |> elem(1)
+  @service_gaps [
+    %ServiceGap{ gap: Datespan.strictly_before(@date),
+                 reason: "strictly before" },
+    %ServiceGap{ gap: Datespan.date_and_after(@later_date),
+                 reason: "date and after" },
+  ]
+  
 
   def assert_right_dates [before_service, after_service] do 
     assert_strictly_before(before_service.gap, @date)
@@ -27,7 +29,7 @@ defmodule Crit.Ecto.BulkInsertTest do
   describe "make_insertions" do
     test "insertion where nothing is done with the result" do
       assert {:ok, _result} =
-        @changesets
+        @service_gaps
         |> BulkInsert.make_insertions(@institution, schema: ServiceGap)
         |> Sql.transaction(@institution)
 
@@ -42,7 +44,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       opts = [schema: ServiceGap, ids: :gap_ids]
 
       {:ok, tx_results} =
-        @changesets
+        @service_gaps
         |> BulkInsert.make_insertions(@institution, opts)
         |> BulkInsert.append_ids(opts)
         |> Sql.transaction(@institution)
