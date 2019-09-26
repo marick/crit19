@@ -21,4 +21,8 @@ defmodule Crit.Usables.Write.Animal do
     |> validate_required([:name, :species_id, :lock_version])
     |> unique_constraint(:name, name: "unique_available_names")
   end
+
+  def changeset(fields) when is_list(fields) do
+    changeset(%__MODULE__{}, Enum.into(fields, %{}))
+  end
 end

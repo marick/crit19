@@ -40,8 +40,8 @@ defmodule Crit.Ecto.BulkInsert do
      insert: second_data, yielding: second_ids,
      many_to_many: cross_product_schema]) do 
 
-    first_schema = List.first(first_data).__struct__
-    second_schema = List.first(second_data).__struct__
+    first_schema = List.first(first_data).data.__struct__
+    second_schema = List.first(second_data).data.__struct__
     
 
     first_opts = [schema: first_schema, ids: first_ids]

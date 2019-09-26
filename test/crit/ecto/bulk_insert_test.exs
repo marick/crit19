@@ -14,14 +14,19 @@ defmodule Crit.Ecto.BulkInsertTest do
   @later_iso_date "2011-09-05"
   @later_date Date.from_iso8601!(@later_iso_date)
 
-  @before_service %Write.ServiceGap{ gap: Datespan.strictly_before(@date),
-                                     reason: "strictly before" }
-  @after_service %Write.ServiceGap{ gap: Datespan.date_and_after(@later_date),
-                                    reason: "date and after" }
+  @before_service_cs Write.ServiceGap.changeset(
+    gap: Datespan.strictly_before(@date),
+    reason: "strictly before"
+  )
 
-  @service_gaps [@before_service, @after_service]
+  @after_service_cs Write.ServiceGap.changeset(
+    gap: Datespan.date_and_after(@later_date),
+    reason: "date and after"
+  )
 
-  @animal Factory.build(:animal)
+  @service_gap_cs_list [@before_service_cs, @after_service_cs]
+
+  @animal_cs Write.Animal.changeset(name: "name", species_id: 1)
   
 
   def assert_right_dates [before_service, after_service] do 
@@ -33,7 +38,7 @@ defmodule Crit.Ecto.BulkInsertTest do
   describe "insertion_script" do
     test "insertion where nothing is done with the result" do
       assert {:ok, _result} =
-        @service_gaps
+        @service_gap_cs_list
         |> BulkInsert.insertion_script(@institution, schema: Write.ServiceGap)
         |> Sql.transaction(@institution)
 
@@ -48,7 +53,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       opts = [schema: Write.ServiceGap, ids: :gap_ids]
 
       {:ok, tx_results} =
-        @service_gaps
+        @service_gap_cs_list
         |> BulkInsert.idlist_script(@institution, opts)
         |> Sql.transaction(@institution)
 
@@ -67,14 +72,17 @@ defmodule Crit.Ecto.BulkInsertTest do
   describe "cross_product structs can be inserted" do
     setup do
       assertions = fn tx_result ->
-        assert animal = Usables.get_complete_animal_by_name(@animal.name, @institution)
-        assert animal.name == @animal.name
+        intended_name = @animal_cs.changes.name
+        assert animal =
+          Usables.get_complete_animal_by_name(intended_name, @institution)
+        
+        assert animal.name == intended_name
         assert [animal.id] == tx_result.animal_ids
         
         # I will probably someday regret assuming these are returned in insertion order.
         assert [%{reason: before_service}, %{reason: after_service}] = animal.service_gaps
-        assert before_service == @before_service.reason
-        assert after_service == @after_service.reason
+        assert before_service == @before_service_cs.changes.reason
+        assert after_service == @after_service_cs.changes.reason
       end
       [assertions: assertions]
     end
@@ -90,8 +98,8 @@ defmodule Crit.Ecto.BulkInsertTest do
       
       {:ok, tx_result} = 
         Multi.new
-        |> BulkInsert.append_idlist_script([@animal], @institution, animal_opts)
-        |> BulkInsert.append_idlist_script(@service_gaps, @institution, service_gap_opts)
+        |> BulkInsert.append_idlist_script([@animal_cs], @institution, animal_opts)
+        |> BulkInsert.append_idlist_script(@service_gap_cs_list, @institution, service_gap_opts)
         |> BulkInsert.append_cross_product_script(@institution, cross_opts)
         |> Sql.transaction(@institution)
       assertions.(tx_result)
@@ -100,8 +108,8 @@ defmodule Crit.Ecto.BulkInsertTest do
     test "this is the 'simplified' approach", %{assertions: assertions} do 
       {:ok, tx_result} = 
         BulkInsert.three_schema_insertion(@institution,
-          insert: [@animal],     yielding: :animal_ids, 
-          insert: @service_gaps, yielding: :service_gap_ids,
+          insert: [@animal_cs],         yielding: :animal_ids, 
+          insert: @service_gap_cs_list, yielding: :service_gap_ids,
           many_to_many: Write.AnimalServiceGap)
         |> Sql.transaction(@institution)
       assertions.(tx_result)

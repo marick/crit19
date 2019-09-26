@@ -15,4 +15,8 @@ defmodule Crit.Usables.Write.ServiceGap do
     |> cast(attrs, @required)
     |> validate_required(@required)
   end
+
+  def changeset(fields) when is_list(fields) do
+    changeset(%__MODULE__{}, Enum.into(fields, %{}))
+  end
 end
