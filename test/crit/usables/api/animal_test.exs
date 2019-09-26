@@ -18,7 +18,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   }
 
   describe "bulk animal creation" do
-    @tag :skip
+
     test "an error produces a changeset" do
       params =
         @basic_params
@@ -31,6 +31,19 @@ defmodule Crit.Usables.Api.AnimalTest do
       errors = errors_on(changeset)
       assert [_message] = errors.end_date
       assert [_message] = errors.names
+    end
+
+    @tag :skip
+    test "without an error, we insert a network" do
+      {:ok, inserted} = Usables.create_animals(@basic_params, @institution)
+
+      Enum.map(inserted, fn animal ->
+        fetched = Usables.get_complete_animal!(animal.id)
+        assert fetched.id == inserted.id
+        assert fetched.name == inserted.name
+        assert length(fetched.service_gaps) == 2
+        assert fetched.species.name == "bovinex"
+      end)
     end
   end    
 
