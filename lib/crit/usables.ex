@@ -27,15 +27,15 @@ defmodule Crit.Usables do
   end
 
   def create_animals(attrs, institution) do
-    result =
+    changeset =
       attrs
       |> Map.put("timezone", Institutions.timezone(institution))
       |> BulkAnimal.compute_insertables
-      |> Changeset.apply_action(:insert)
 
-    case result do
-      {:error, _t} ->
-        result
+    case changeset.valid? do
+      false ->
+        # This makes `form_for` display the changeset errors. Bleh.
+        Changeset.apply_action(changeset, :insert)
     end
   end
 
