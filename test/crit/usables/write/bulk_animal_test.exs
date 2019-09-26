@@ -10,7 +10,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
 
   @correct %{
     names: "a, b, c",
-    species_id: 1,
+    species_id: "1",
     start_date: @iso_date,
     end_date: @later_iso_date,
     timezone: "America/Chicago",
