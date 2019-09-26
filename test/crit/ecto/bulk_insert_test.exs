@@ -65,7 +65,21 @@ defmodule Crit.Ecto.BulkInsertTest do
   end
 
   describe "cross_product structs can be inserted" do
-    test "this is the step-by-step approach" do 
+    setup do
+      assertions = fn tx_result ->
+        assert animal = Usables.get_complete_animal_by_name(@animal.name, @institution)
+        assert animal.name == @animal.name
+        assert [animal.id] == tx_result.animal_ids
+        
+        # I will probably someday regret assuming these are returned in insertion order.
+        assert [%{reason: before_service}, %{reason: after_service}] = animal.service_gaps
+        assert before_service == @before_service.reason
+        assert after_service == @after_service.reason
+      end
+      [assertions: assertions]
+    end
+    
+    test "this is the step-by-step approach", %{assertions: assertions} do 
       animal_opts =
         [schema: Write.Animal,             ids: :animal_ids]
       service_gap_opts =
@@ -80,16 +94,19 @@ defmodule Crit.Ecto.BulkInsertTest do
         |> BulkInsert.append_idlist_script(@service_gaps, @institution, service_gap_opts)
         |> BulkInsert.append_cross_product_script(@institution, cross_opts)
         |> Sql.transaction(@institution)
-
-      assert animal = Usables.get_complete_animal_by_name(@animal.name, @institution)
-      assert animal.name == @animal.name
-      assert [animal.id] == tx_result.animal_ids
-
-      # I will probably someday regret assuming these are returned in insertion order.
-      assert [%{reason: before_service}, %{reason: after_service}] = animal.service_gaps
-      assert before_service == @before_service.reason
-      assert after_service == @after_service.reason
+      assertions.(tx_result)
     end
+
+    test "this is the 'simplified' approach", %{assertions: assertions} do 
+      {:ok, tx_result} = 
+        BulkInsert.three_schema_insertion(@institution,
+          insert: [@animal],     yielding: :animal_ids, 
+          insert: @service_gaps, yielding: :service_gap_ids,
+          many_to_many: Write.AnimalServiceGap)
+        |> Sql.transaction(@institution)
+      assertions.(tx_result)
+    end
+    
   end
 
   # Tests for support functions

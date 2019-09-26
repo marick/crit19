@@ -33,6 +33,29 @@ defmodule Crit.Ecto.BulkInsert do
     end
   end
 
+  # One-stop shop here
+
+  def three_schema_insertion(institution,
+    [insert: first_data, yielding: first_ids,
+     insert: second_data, yielding: second_ids,
+     many_to_many: cross_product_schema]) do 
+
+    first_schema = List.first(first_data).__struct__
+    second_schema = List.first(second_data).__struct__
+    
+
+    first_opts = [schema: first_schema, ids: first_ids]
+    second_opts = [schema: second_schema, ids: second_ids]
+    cross_opts = [schema: cross_product_schema, cross: {first_ids, second_ids}]
+    
+    Multi.new
+    |> append_idlist_script(first_data, institution, first_opts)
+    |> append_idlist_script(second_data, institution, second_opts)
+    |> append_cross_product_script(institution, cross_opts)
+  end            
+          
+
+
   # These produce multis from data
 
   def insertion_script(structs, institution, kwlist) do
