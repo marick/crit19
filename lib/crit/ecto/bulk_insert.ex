@@ -36,12 +36,12 @@ defmodule Crit.Ecto.BulkInsert do
   # One-stop shop here
 
   def three_schema_insertion(institution,
-    [insert: first_data, yielding: first_ids,
-     insert: second_data, yielding: second_ids,
+    [insert: first_changeset_list, yielding: first_ids,
+     insert: second_changeset_list, yielding: second_ids,
      many_to_many: cross_product_schema]) do 
 
-    first_schema = List.first(first_data).data.__struct__
-    second_schema = List.first(second_data).data.__struct__
+    first_schema = List.first(first_changeset_list).data.__struct__
+    second_schema = List.first(second_changeset_list).data.__struct__
     
 
     first_opts = [schema: first_schema, ids: first_ids]
@@ -49,8 +49,8 @@ defmodule Crit.Ecto.BulkInsert do
     cross_opts = [schema: cross_product_schema, cross: {first_ids, second_ids}]
     
     Multi.new
-    |> append_idlist_script(first_data, institution, first_opts)
-    |> append_idlist_script(second_data, institution, second_opts)
+    |> append_idlist_script(first_changeset_list, institution, first_opts)
+    |> append_idlist_script(second_changeset_list, institution, second_opts)
     |> append_cross_product_script(institution, cross_opts)
   end            
           
@@ -58,7 +58,7 @@ defmodule Crit.Ecto.BulkInsert do
 
   # These produce multis from data
 
-  def insertion_script(structs, institution, kwlist) do
+  def insertion_script(structs_or_changesets, institution, kwlist) do
     config = Enum.into(kwlist, %{})
     
     add_insertion = fn {to_insert, count}, acc ->
@@ -67,13 +67,13 @@ defmodule Crit.Ecto.BulkInsert do
       Multi.insert(acc, result_key, to_insert, insert_opts)
     end
       
-    structs
+    structs_or_changesets
     |> Enum.with_index
     |> Enum.reduce(Multi.new, add_insertion)
   end
 
-  def idlist_script(structs, institution, kwlist) do
-    structs
+  def idlist_script(structs_or_changesets, institution, kwlist) do
+    structs_or_changesets
     |> insertion_script(institution, kwlist)
     |> append_id_collector(kwlist)
   end
@@ -98,8 +98,8 @@ defmodule Crit.Ecto.BulkInsert do
 
   # These add multis onto existing multis
 
-  def append_idlist_script(multi, structs, institution, kwlist) do
-    Multi.append(multi, idlist_script(structs, institution, kwlist))
+  def append_idlist_script(multi, structs_or_changesets, institution, kwlist) do
+    Multi.append(multi, idlist_script(structs_or_changesets, institution, kwlist))
   end
 
   def append_id_collector(multi, kwlist) do
