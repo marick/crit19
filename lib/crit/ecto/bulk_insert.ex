@@ -52,8 +52,28 @@ defmodule Crit.Ecto.BulkInsert do
     |> append_idlist_script(first_changeset_list, institution, first_opts)
     |> append_idlist_script(second_changeset_list, institution, second_opts)
     |> append_cross_product_script(institution, cross_opts)
-  end            
-          
+  end
+
+  # def simplify_transaction_results({:error, _step_key, failed_changeset, _so_far}
+  #                                  _) do
+  #   {:error, failed_changeset}
+  # end
+
+  def simplify_transaction_results(result, desired) when not is_list(desired) do
+    simplify_transaction_results(result, [desired])
+  end
+
+  def simplify_transaction_results({:error, _failing_step, changeset, _so_far}, _) do
+    {:error, changeset}
+  end
+
+  def simplify_transaction_results({:ok, tx_results}, desired_keys) do
+    extracted = Enum.reduce(desired_keys, %{}, fn desired, acc ->
+      Map.put(acc, desired, tx_results[desired])
+    end)
+
+    {:ok, extracted}
+  end
 
 
   # These produce multis from data
