@@ -38,4 +38,23 @@ defmodule Crit.Usables.Write.BulkAnimal do
         |> ServiceGapComputers.expand_start_and_end
       end)
   end
+
+  def changeset_to_changesets(%{valid?: true} = changeset) do
+    changes = changeset.changes
+    %{animal_changesets: animal_changesets(changes),
+      service_gap_changesets: service_gap_changesets(changes.computed_service_gaps)
+    }
+  end
+
+  defp animal_changesets(changes) do
+    Enum.map(changes.computed_names, fn name ->
+      Animal.changeset(name: name, species_id: changes.species_id)
+    end)
+  end
+
+  defp service_gap_changesets(computed_service_gaps) do 
+    Enum.map(computed_service_gaps, fn %{gap: gap, reason: reason} ->
+      ServiceGap.changeset(gap: gap, reason: reason)
+    end)
+  end
 end
