@@ -7,6 +7,7 @@ defmodule Crit.Usables do
   alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
   alias Ecto.Changeset
+  import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
   def get_complete_animal!(id, institution) do
     query = 
@@ -26,7 +27,77 @@ defmodule Crit.Usables do
     |> Sql.one(institution)
   end
 
-  def create_animals(attrs, institution) do
+  def create_animals(supplied_attrs, institution) do
+    attrs = Map.put(supplied_attrs, "timezone", Institutions.timezone(institution))
+    steps = [
+      &bulk_animal__validate/1,
+      &bulk_animal__split_changeset/1,
+      &bulk_animal__insert/1,
+      &bulk_animal__return_value/1,
+    ]
+
+    state = %{attrs: attrs, institution: institution}
+    case bulk_creation_steps(state, steps) do 
+      {:ok, %{animals: animals}} ->
+        {:ok, animals}
+      {:error, _} = error ->
+        error
+    end
+  end
+
+  def bulk_creation_steps(state, []),
+    do: {:ok, state}
+  
+  def bulk_creation_steps(state, [next | rest]) do
+    case next.(state) do
+      {:error, changeset} ->
+        {:error, ensure_forms_display_errors(changeset)}
+      {:ok, state} ->
+        bulk_creation_steps(state, rest)
+    end
+  end
+        
+  def bulk_animal__validate(%{attrs: attrs} = state) do
+    changeset = Write.BulkAnimal.compute_insertables(attrs)
+    if changeset.valid? do
+      {:ok, Map.put(state, :bulk_changeset, changeset)}
+    else
+      {:error, changeset}
+    end
+  end
+
+  def bulk_animal__split_changeset(%{bulk_changeset: changeset} = state) do
+    changesets = Write.BulkAnimal.changeset_to_changesets(changeset)
+
+    {:ok, Map.put(state, :changesets, changesets)}
+  end
+
+
+  def bulk_animal__insert(%{
+        bulk_changeset: changeset,
+        changesets: changesets,
+        institution: institution} = state) do
+
+    case bulk_insert(changesets, institution) do
+      {:ok, %{animal_ids: ids}} ->
+        {:ok, Map.put(state, :animal_ids, ids)}
+      {:error, single_failure} ->
+        duplicate = single_failure.changes.name
+        message = ~s|An animal named "#{duplicate}" is already in service|
+        changeset
+        |> Changeset.add_error(:names, message)
+        |> Changeset.apply_action(:insert)
+        # Note that `apply_action` will return {:error, changeset} in this case.
+    end
+  end
+
+  def bulk_animal__return_value(%{animal_ids: ids, institution: institution} = state) do
+    new_state = Map.put(state, :animals, ids_to_animals(ids, institution))
+    {:ok, new_state}
+  end
+  
+    
+  def create_animals_old(attrs, institution) do
     changeset =
       attrs
       |> Map.put("timezone", Institutions.timezone(institution))
