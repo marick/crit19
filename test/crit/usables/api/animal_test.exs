@@ -33,17 +33,19 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert [_message] = errors.names
     end
 
-    @tag :skip
     test "without an error, we insert a network" do
-      {:ok, inserted} = Usables.create_animals(@basic_params, @institution)
+      {:ok, [bossie, jake]} = Usables.create_animals(@basic_params, @institution)
 
-      Enum.map(inserted, fn animal ->
-        fetched = Usables.get_complete_animal!(animal.id)
-        assert fetched.id == inserted.id
-        assert fetched.name == inserted.name
-        assert length(fetched.service_gaps) == 2
-        assert fetched.species.name == "bovinex"
-      end)
+      check = fn returned ->
+        fetched = Usables.get_complete_animal!(returned.id, @institution)
+        assert fetched.id == returned.id
+        assert fetched.name == returned.name
+        assert length(returned.service_gaps) == 1
+        assert returned.species.name == "bovine"
+      end
+
+      check.(bossie)
+      check.(jake)
     end
   end    
 

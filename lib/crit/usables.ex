@@ -1,7 +1,7 @@
 defmodule Crit.Usables do
   alias Crit.Sql
-  alias Crit.Usables.{Animal, ServiceGap, AnimalServiceGap, Species}
-  alias Crit.Usables.Write.BulkAnimal
+  alias Crit.Usables.{Animal, ServiceGap, Species}
+  alias Crit.Usables.Write
   alias Crit.Ecto.BulkInsert
   alias Ecto.Multi
   alias Crit.Ecto.MegaInsert
@@ -30,14 +30,41 @@ defmodule Crit.Usables do
     changeset =
       attrs
       |> Map.put("timezone", Institutions.timezone(institution))
-      |> BulkAnimal.compute_insertables
+      |> Write.BulkAnimal.compute_insertables
 
     case changeset.valid? do
       false ->
         # This makes `form_for` display the changeset errors. Bleh.
         Changeset.apply_action(changeset, :insert)
+      true ->
+        changeset
+        |> Write.BulkAnimal.changeset_to_changesets
+        |> bulk_insert(institution)
     end
   end
+
+  defp bulk_insert(
+    %{animal_changesets: animal_changesets,
+      service_gap_changesets: service_gap_changesets},
+    institution) do 
+
+    result =
+      institution
+      |> BulkInsert.three_schema_insertion(
+           insert: animal_changesets, yielding: :animal_ids,
+           insert: service_gap_changesets, yielding: :service_gap_ids,
+           many_to_many: Write.AnimalServiceGap)
+      |> Sql.transaction(institution)
+      |> BulkInsert.simplify_transaction_results(:animal_ids)
+
+    case result do
+      {:ok, %{animal_ids: ids}} ->
+        {:ok, ids_to_animals(ids, institution)}
+      {:error, _} ->
+        result
+    end
+  end
+
 
 
   def create_animal(attrs, institution) do
@@ -74,8 +101,8 @@ defmodule Crit.Usables do
       |> MegaInsert.append_collecting(service_gap_opts)
 
     connector_function = fn tx_result ->
-      MegaInsert.connection_records(tx_result, AnimalServiceGap, :animal_ids, :service_gap_ids)
-      |> MegaInsert.make_insertions(institution, schema: AnimalServiceGap)
+      MegaInsert.connection_records(tx_result, Write.AnimalServiceGap, :animal_ids, :service_gap_ids)
+      |> MegaInsert.make_insertions(institution, schema: Write.AnimalServiceGap)
     end
 
     {:ok, tx_result} =
@@ -101,13 +128,13 @@ defmodule Crit.Usables do
 
     
   def bulk_animal_creation_changeset() do
-    %BulkAnimal{
-      names: "",
-      species_id: 0,
-      start_date: "today",
-      end_date: "never",
-      timezone: "--to be replaced--"}
-    |> BulkAnimal.changeset(%{})
+   %Write.BulkAnimal{
+     names: "",
+     species_id: 0,
+     start_date: "today",
+     end_date: "never",
+     timezone: "--to be replaced--"}
+     |> Write.BulkAnimal.changeset(%{})
   end
 
   
