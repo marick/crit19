@@ -53,7 +53,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       []
     end
 
-    @tag :skip
     test "success case", %{conn: conn, act: act} do
       {names, params} = animal_creation_data()
       conn = act.(conn, params)
@@ -63,7 +62,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert length(Sql.all(Animal, @institution)) == length(names)
       assert_user_sees(conn, Enum.at(names, 0))
       assert_user_sees(conn, Enum.at(names, -1))
-      assert_user_sees(conn, params["species_name_for_tests"])
     end
 
     test "renders errors when data is invalid", %{conn: conn, act: act} do
@@ -101,7 +99,4 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert audit.data.service_gaps == [:start, :end]
     end
   end
-
-  def redirected_to_new_animal_form?(conn),
-    do: redirected_to(conn) == UnderTest.path(:new)
 end
