@@ -1,6 +1,17 @@
 defmodule Pile.Changeset do
+  alias Ecto.Changeset
 
+  # Phoenix `form_for` only displays errors when the `action` field 
+  # is non-nil.
   def represents_form_errors?(changeset), do: changeset.action
+
+  # If you manually add an error to a changeset, that error won't be
+  # displayed unless you also remember to set the action to non-nil
+  def ensure_forms_display_errors(changeset) do
+    {:error, new_changeset} = 
+      Changeset.apply_action(changeset, :insert)
+    new_changeset
+  end
 
   def has_changes_for?(changeset, field), do: Map.has_key?(changeset.changes, field)
   def has_data_for?(changeset, field), do: Map.has_key?(changeset.data, field)
