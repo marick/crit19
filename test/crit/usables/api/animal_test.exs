@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
+  import Pile.Changeset
 
   @iso_date "2001-09-05"
   # @date Date.from_iso8601!(@iso_date)
@@ -27,6 +28,7 @@ defmodule Crit.Usables.Api.AnimalTest do
         |> Map.put("names", ",")
         
       assert {:error, changeset} = Usables.create_animals(params, @institution)
+      assert represents_form_errors?(changeset)
 
       errors = errors_on(changeset)
       assert [_message] = errors.end_date

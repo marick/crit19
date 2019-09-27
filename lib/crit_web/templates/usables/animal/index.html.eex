@@ -20,4 +20,4 @@
   </tbody>
 </table>
 
-<span><%= link "New Animal", to: Routes.usables_animal_path(@conn, :new) %></span>
+<span><%= link "New Animal", to: Routes.usables_animal_path(@conn, :bulk_create_form) %></span>

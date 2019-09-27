@@ -48,7 +48,9 @@ defmodule Crit.Usables do
           {:error, single_failure} ->
             duplicate = single_failure.changes.name
             message = ~s|An animal named "#{duplicate}" is already in service|
-            {:error, Changeset.add_error(changeset, :names, message)}
+            changeset
+            |> Changeset.add_error(:names, message)
+            |> Changeset.apply_action(:insert)
         end
     end
   end
