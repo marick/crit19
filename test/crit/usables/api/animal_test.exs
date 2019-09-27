@@ -47,6 +47,13 @@ defmodule Crit.Usables.Api.AnimalTest do
       check.(bossie)
       check.(jake)
     end
+
+    test "constraint problems are detected last" do
+      {:ok, [_bossie, _jake]} = Usables.create_animals(@basic_params, @institution)
+      {:error, changeset} =   Usables.create_animals(@basic_params, @institution)
+
+      assert ~s|An animal named "Bossie" is already in service| in errors_on(changeset).names
+    end
   end    
 
 

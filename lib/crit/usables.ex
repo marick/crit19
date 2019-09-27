@@ -37,9 +37,19 @@ defmodule Crit.Usables do
         # This makes `form_for` display the changeset errors. Bleh.
         Changeset.apply_action(changeset, :insert)
       true ->
-        changeset
-        |> Write.BulkAnimal.changeset_to_changesets
-        |> bulk_insert(institution)
+        result =
+          changeset
+          |> Write.BulkAnimal.changeset_to_changesets
+          |> bulk_insert(institution)
+
+        case result do
+          {:ok, %{animal_ids: ids}} ->
+            {:ok, ids_to_animals(ids, institution)}
+          {:error, single_failure} ->
+            duplicate = single_failure.changes.name
+            message = ~s|An animal named "#{duplicate}" is already in service|
+            {:error, Changeset.add_error(changeset, :names, message)}
+        end
     end
   end
 
@@ -48,23 +58,14 @@ defmodule Crit.Usables do
       service_gap_changesets: service_gap_changesets},
     institution) do 
 
-    result =
-      institution
-      |> BulkInsert.three_schema_insertion(
+    institution
+    |> BulkInsert.three_schema_insertion(
            insert: animal_changesets, yielding: :animal_ids,
            insert: service_gap_changesets, yielding: :service_gap_ids,
            many_to_many: Write.AnimalServiceGap)
-      |> Sql.transaction(institution)
-      |> BulkInsert.simplify_transaction_results(:animal_ids)
-
-    case result do
-      {:ok, %{animal_ids: ids}} ->
-        {:ok, ids_to_animals(ids, institution)}
-      {:error, _} ->
-        result
-    end
+    |> Sql.transaction(institution)
+    |> BulkInsert.simplify_transaction_results(:animal_ids)
   end
-
 
 
   def create_animal(attrs, institution) do
