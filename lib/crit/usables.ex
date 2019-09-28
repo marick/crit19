@@ -1,9 +1,8 @@
 defmodule Crit.Usables do
   alias Crit.Sql
-  alias Crit.Usables.{Animal, ServiceGap, Species}
+  alias Crit.Usables.{Animal, Species}
   alias Crit.Usables.Write
   alias Crit.Ecto.BulkInsert
-  alias Ecto.Multi
   alias Crit.Global
   alias Ecto.Changeset
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
