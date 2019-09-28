@@ -6,7 +6,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   alias Ecto.Changeset
   alias CritWeb.{PublicController, CurrentUser.SessionController}
 
-  # No plugs are needed yet.
+  # No authentication is needed yet
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
     case Users.one_token(token_text) do

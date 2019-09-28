@@ -15,6 +15,9 @@ defmodule CritWeb.Router do
     plug :accepts, ["json"]
   end
 
+  @compile_note IO.puts("When adding new routes, don't forget to add authorization tests")
+    
+
   scope "/", CritWeb do
     pipe_through :browser
 

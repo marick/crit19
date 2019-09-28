@@ -7,10 +7,6 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   alias Crit.Global
   alias Crit.Global.{Institution}
 
-  setup %{conn: conn} do
-    [conn: Plug.Test.init_test_session(conn, [])]
-  end
-  
   describe "handling login fields" do
     test "first time has empty fields", %{conn: conn} do
       conn = get_via_action(conn, :get_login_form)
@@ -102,7 +98,5 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
       assert two == {aaa.display_name, aaa.short_name}
       assert three == {zzz.display_name, zzz.short_name}
     end      
-
   end
-  
 end
