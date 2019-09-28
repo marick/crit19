@@ -58,27 +58,9 @@ defmodule Crit.Usables.Api.AnimalTest do
     end
   end    
 
-
-  describe "animal creation" do
-    test "a 'complete' animal is returned" do
-      assert {:ok, [bossie, jake]} =
-        Usables.create_animal(@basic_params, @institution)
-
-      assert bossie.name == "Bossie"
-      assert jake.name == "Jake"
-
-      assert bossie.species.id == @species_id
-      assert jake.species.id == @species_id
-
-      assert Ecto.assoc_loaded?(bossie.service_gaps)
-      assert Ecto.assoc_loaded?(jake.service_gaps)
-    end
-
-  end
-
   describe "fetching an animal" do
-    setup do 
-      Usables.create_animal(@basic_params, @institution)
+    setup do
+      Usables.create_animals(@basic_params, @institution)
       []
     end  
     
@@ -109,9 +91,10 @@ defmodule Crit.Usables.Api.AnimalTest do
 
   describe "fetching a number of animals" do 
     setup do
-      params = Map.put(@basic_params, "names", "Bossie, Jake, Alpha")
-
-      {:ok, animals} = Usables.create_animal(params,@institution)
+      {:ok, animals} = 
+        @basic_params
+        |> Map.put("names", "Bossie, Jake, Alpha")
+        |> Usables.create_animals(@institution)
       [ids: Enum.map(animals, &(&1.id))]
     end
 

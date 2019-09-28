@@ -4,7 +4,6 @@ defmodule Crit.Usables do
   alias Crit.Usables.Write
   alias Crit.Ecto.BulkInsert
   alias Ecto.Multi
-  alias Crit.Ecto.MegaInsert
   alias Crit.Institutions
   alias Ecto.Changeset
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
@@ -36,26 +35,27 @@ defmodule Crit.Usables do
       &bulk_animal__return_value/1,
     ]
 
-    state = %{attrs: attrs, institution: institution}
-    case bulk_creation_steps(state, steps) do 
-      {:ok, %{animals: animals}} ->
-        {:ok, animals}
-      {:error, _} = error ->
-        error
-    end
+    %{attrs: attrs, institution: institution}
+    |> run_steps(steps)
+    |> extract_result(:animals)
   end
 
-  def bulk_creation_steps(state, []),
+  def run_steps(state, []),
     do: {:ok, state}
   
-  def bulk_creation_steps(state, [next | rest]) do
+  def run_steps(state, [next | rest]) do
     case next.(state) do
       {:error, changeset} ->
         {:error, ensure_forms_display_errors(changeset)}
       {:ok, state} ->
-        bulk_creation_steps(state, rest)
+        run_steps(state, rest)
     end
   end
+
+  def extract_result({:error, _} = error, _key), do: error
+  def extract_result({:ok, state}, key), do: {:ok, state[key]}
+
+  
         
   def bulk_animal__validate(%{attrs: attrs} = state) do
     changeset = Write.BulkAnimal.compute_insertables(attrs)
@@ -139,67 +139,6 @@ defmodule Crit.Usables do
     |> Sql.transaction(institution)
     |> BulkInsert.simplify_transaction_results(:animal_ids)
   end
-
-
-  def create_animal(attrs, institution) do
-    attrs
-    |> creation_changesets(institution)
-    |> creation_continuation(institution)
-  end
-
-  defp creation_changesets(attrs, institution) do
-    adjusted_attrs = Map.put(attrs, "timezone", Institutions.timezone(institution))
-    
-    {:ok, animal_changesets} = Animal.creational_changesets(adjusted_attrs)
-    {:ok, service_gap_changesets} = ServiceGap.initial_changesets(adjusted_attrs)
-
-    {:ok, [animal_changesets, service_gap_changesets]}
-  end
-
-
-  defp creation_continuation({:error, changeset}, _institution),
-    do: {:error, changeset}
-
-    # Note: there's no particular reason for this to be transactional but
-  # I wanted to learn more about using Ecto.Multi.
-  defp creation_continuation({:ok, [animal_changesets, service_gap_changesets]}, institution) do
-    
-    animal_opts = [schema: Animal, structs: :animals, ids: :animal_ids]
-    service_gap_opts = [schema: ServiceGap, structs: :service_gaps, ids: :service_gap_ids]
-
-    animal_multi =
-      MegaInsert.make_insertions(animal_changesets, institution, animal_opts)
-      |> MegaInsert.append_collecting(animal_opts)
-    service_gap_multi =
-      MegaInsert.make_insertions(service_gap_changesets, institution, service_gap_opts)
-      |> MegaInsert.append_collecting(service_gap_opts)
-
-    connector_function = fn tx_result ->
-      MegaInsert.connection_records(tx_result, Write.AnimalServiceGap, :animal_ids, :service_gap_ids)
-      |> MegaInsert.make_insertions(institution, schema: Write.AnimalServiceGap)
-    end
-
-    {:ok, tx_result} =
-      Multi.new
-      |> Multi.append(animal_multi)
-      |> Multi.append(service_gap_multi)
-      |> Multi.merge(connector_function)
-      |> Sql.transaction(institution)
-
-    # When I try to include the final query into the Multi, I get a
-    # weird error that I think is some sort of interaction with the
-    # `Sql` prefix-handling. That is,
-    #        Sql.all(query, "critter4us")
-    # fails, but the equivalent
-    #        Crit.Repo.all(query, prefix: "demo")
-    # works fine.
-
-    animals = ids_to_animals(tx_result.animal_ids, institution)
-
-    {:ok, animals}
-    
-  end
-
     
   def bulk_animal_creation_changeset() do
    %Write.BulkAnimal{
@@ -209,12 +148,6 @@ defmodule Crit.Usables do
      end_date: "never",
      timezone: "--to be replaced--"}
      |> Write.BulkAnimal.changeset(%{})
-  end
-
-  
-
-  def animal_creation_changeset(%Animal{} = animal) do
-    Animal.changeset(animal, %{})
   end
 
   def available_species(institution) do
