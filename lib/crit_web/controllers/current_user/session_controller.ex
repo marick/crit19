@@ -17,6 +17,11 @@ defmodule CritWeb.CurrentUser.SessionController do
     render_login(conn, %{}, institution_options(starting_institution))
   end
 
+  # This is a little unusual in that it doesn't use the changeset to
+  # populate the fields and show errors. That's because we don't want
+  # to specify which field is wrong. Also, we want the password field to
+  # be cleared, but not the auth field.
+
   def try_login(conn, %{"login" => params}) do
     auth_id = params["auth_id"]
     password = params["password"]
