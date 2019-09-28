@@ -1,21 +1,11 @@
 defmodule CritWeb.UserManagement.BlockingAuthorizationTest do
   use CritWeb.ConnCase
   alias CritWeb.UserManagement.UserController
+  alias Crit.Users.PermissionList
+  
+  test "how an unlogged-in user is blocked", %{conn: conn} do
 
-  def assert_auth_failure(conn, action) do
-    action.(conn)
-    |> assert_failed_authorization
-  end
-
-  def assert_auth_failures(conn, actions) do
-    Enum.map(actions, fn action -> assert_auth_failure(conn, action) end)
-  end
-
-  describe "how unlogged-in user is blocked" do
-    test "An attempt to reach the UserController without a login redirects",
-    %{conn: conn} do
-
-    assert_auth_failures(conn,
+    assert_authorization_failures(conn,
       [&(get &1, UserController.path(:new)), 
        &(get &1, UserController.path(:index)),
        &(get &1, UserController.path(:show, 1)),
@@ -24,18 +14,20 @@ defmodule CritWeb.UserManagement.BlockingAuthorizationTest do
        &(post &1, UserController.path(:create, params: %{})),
        &(post &1, UserController.path(:create, id: 1, params: %{})),
       ])
-    end
   end
 
 
-  describe "how logged-in user without permissions is blocked" do
+  describe "how logged-in user without needed permissions is blocked" do
 
-    setup :setup_logged_in
+    setup %{conn: conn} do
+      no_access = %PermissionList{manage_and_create_users: false}
+      [conn: logged_in_with_permissions(conn, no_access)]
+    end
 
-    test "blocked",
-    %{conn: conn} do
 
-    assert_auth_failures(conn,
+    test "blocked", %{conn: conn} do
+
+    assert_authorization_failures(conn,
       [&(get &1, UserController.path(:new)), 
        &(get &1, UserController.path(:index)),
        &(get &1, UserController.path(:show, 1)),

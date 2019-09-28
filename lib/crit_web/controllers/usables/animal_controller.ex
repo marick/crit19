@@ -1,9 +1,12 @@
 defmodule CritWeb.Usables.AnimalController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :usables_animal_path
+  import CritWeb.Plugs.Authorize
 
   alias Crit.Usables
   alias CritWeb.Audit
+
+  plug :must_be_able_to, :manage_animals
 
   def bulk_create_form(conn, _params,
     changeset \\ Usables.bulk_animal_creation_changeset()

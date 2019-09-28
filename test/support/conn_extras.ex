@@ -53,6 +53,14 @@ defmodule CritWeb.ConnExtras do
     assert_user_sees(conn, href)
   end
 
+  def assert_authorization_failures(conn, actions) do
+    Enum.map(actions, fn action ->
+      assert_failed_authorization(action.(conn))
+    end)
+  end
+
+  
+
 
   # CONN GETTERS
 
