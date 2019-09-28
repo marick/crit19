@@ -8,7 +8,7 @@ defmodule CritWeb.UserManagement.UserController do
   alias CritWeb.Audit
   alias Crit.Users.UserHavingToken, as: UT
 
-  # It's possible this would be better in router.ex
+  
   plug :must_be_able_to, :manage_and_create_users
 
   defp not_done(conn) do

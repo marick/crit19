@@ -79,7 +79,7 @@ defmodule CritWeb.ConnExtras do
     
 
   # For use with `setup`
-  def setup_logged_in(%{conn: conn}, opts) do
+  def setup_logged_in(%{conn: conn}, opts \\ []) do
     permissions = Factory.build(:permission_list, opts)
     [conn: logged_in_with_permissions(conn, permissions)]
   end
