@@ -4,8 +4,8 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
   alias CritWeb.PublicController
-  alias Crit.Institutions
-  alias Crit.Institutions.{Institution}
+  alias Crit.Global
+  alias Crit.Global.{Institution}
 
   setup %{conn: conn} do
     [conn: Plug.Test.init_test_session(conn, [])]
@@ -66,7 +66,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
   describe "turning a list of institutions into a simpler structure" do
     setup do
-      [default: Institutions.Default.institution]
+      [default: Global.Default.institution]
     end
 
     test "`selected` argument is just returned", %{default: default} do

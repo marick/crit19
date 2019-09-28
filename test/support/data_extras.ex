@@ -1,7 +1,7 @@
 defmodule Crit.DataExtras do
   import ExUnit.Assertions
   alias Crit.Users.{PermissionList, UniqueId}
-  use Crit.Institutions.Default
+  use Crit.Global.Default
   alias Ecto.Datespan
 
 

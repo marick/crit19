@@ -1,10 +1,10 @@
 defmodule Crit.Sql.Servers do
   use Agent
   alias Crit.Sql.PrefixServer
-  alias Crit.Institutions
+  alias Crit.Global
 
   def start_link(_) do
-    institutions = Institutions.all()
+    institutions = Global.all_institutions()
     servers = Map.new(institutions, &start_one/1)
     Agent.start_link(fn -> servers end, name: __MODULE__)
   end

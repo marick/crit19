@@ -6,7 +6,7 @@ defmodule CritWeb.ConnExtras do
   alias CritWeb.PublicController
   alias Crit.Sql
   import CritWeb.Plugs.Accessors
-  use Crit.Institutions.Default
+  use Crit.Global.Default
   alias Phoenix.HTML
 
   # ASSERTIONS

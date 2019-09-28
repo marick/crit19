@@ -1,8 +1,8 @@
-defmodule Crit.Institutions do
+defmodule Crit.Global do
   alias Crit.Repo
-  alias Crit.Institutions.Institution
+  alias Crit.Global.Institution
 
-  def all() do
+  def all_institutions() do
     Repo.all(Institution)
   end
 

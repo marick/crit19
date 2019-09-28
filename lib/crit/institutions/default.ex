@@ -1,8 +1,8 @@
-defmodule Crit.Institutions.Default do
-  alias Crit.Institutions.Institution
+defmodule Crit.Global.Default do
+  alias Crit.Global.Institution
 
 
-@doc """
+  @doc """
   This institution must be in the database(s) for all environments: dev, prod, test. 
   It is also "default" in the sense that a dropdown list of institutions should
   show/select this one by default.
@@ -18,7 +18,7 @@ defmodule Crit.Institutions.Default do
 
   defmacro __using__(_) do
     quote do 
-      @institution Crit.Institutions.Default.institution.short_name
+      @institution Crit.Global.Default.institution.short_name
     end
   end
 end

@@ -1,5 +1,5 @@
 alias Crit.Repo
-alias Crit.Institutions
+alias Crit.Global
 
-{:ok, _} = Repo.insert(Institutions.Default.institution)
+{:ok, _} = Repo.insert(Global.Default.institution)
 

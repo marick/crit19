@@ -1,8 +1,8 @@
-alias Crit.Institutions.{Institution}
-alias Crit.Institutions
+alias Crit.Global.{Institution}
+alias Crit.Global
 alias Crit.Repo
 
-{:ok, _} = Repo.insert(Institutions.Default.institution)
+{:ok, _} = Repo.insert(Global.Default.institution)
 
 {:ok, _} = Repo.insert %Institution{
   display_name: "University of Illinois",

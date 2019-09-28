@@ -4,9 +4,9 @@ defmodule CritWeb.CurrentUser.SessionController do
   import CritWeb.Plugs.Authorize
   alias Crit.Users
   alias Crit.Users.UniqueId
-  alias Crit.Institutions
+  alias Crit.Global
   alias CritWeb.PublicController
-  use Crit.Institutions.Default
+  use Crit.Global.Default
   
 
   plug :must_be_logged_in when action in [:logout]
@@ -63,7 +63,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     )
   end
 
-  def institution_options(selected, institutions \\ Institutions.all()) do
+  def institution_options(selected, institutions \\ Global.all_institutions()) do
     winnow = fn institution ->
       {institution.display_name, institution.short_name}
     end

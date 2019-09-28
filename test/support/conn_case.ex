@@ -26,7 +26,7 @@ defmodule CritWeb.ConnCase do
       import CritWeb.ConnExtras
       alias Crit.Audit.ToMemory.Server, as: AuditServer
       import CritWeb.Plugs.Accessors
-      use Crit.Institutions.Default
+      use Crit.Global.Default
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint

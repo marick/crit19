@@ -24,7 +24,7 @@ defmodule Crit.DataCase do
       import Crit.DataCase
       alias Crit.Factory
       import Crit.DataExtras
-      use Crit.Institutions.Default
+      use Crit.Global.Default
     end
   end
 

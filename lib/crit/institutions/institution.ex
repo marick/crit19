@@ -1,4 +1,4 @@
-defmodule Crit.Institutions.Institution do
+defmodule Crit.Global.Institution do
   use Ecto.Schema
   import Ecto.Changeset
 

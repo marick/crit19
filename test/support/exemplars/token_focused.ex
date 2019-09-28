@@ -2,7 +2,7 @@ defmodule Crit.Exemplars.TokenFocused do
   use ExUnit.CaseTemplate
   alias Crit.Users
   alias Crit.Factory
-  use Crit.Institutions.Default
+  use Crit.Global.Default
   alias Crit.Users.UserHavingToken, as: UT
 
 

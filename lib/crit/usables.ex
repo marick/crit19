@@ -4,7 +4,7 @@ defmodule Crit.Usables do
   alias Crit.Usables.Write
   alias Crit.Ecto.BulkInsert
   alias Ecto.Multi
-  alias Crit.Institutions
+  alias Crit.Global
   alias Ecto.Changeset
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
@@ -27,7 +27,7 @@ defmodule Crit.Usables do
   end
 
   def create_animals(supplied_attrs, institution) do
-    attrs = Map.put(supplied_attrs, "timezone", Institutions.timezone(institution))
+    attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
     steps = [
       &bulk_animal__validate/1,
       &bulk_animal__split_changeset/1,
@@ -100,7 +100,7 @@ defmodule Crit.Usables do
   def create_animals_old(attrs, institution) do
     changeset =
       attrs
-      |> Map.put("timezone", Institutions.timezone(institution))
+      |> Map.put("timezone", Global.timezone(institution))
       |> Write.BulkAnimal.compute_insertables
 
     case changeset.valid? do
