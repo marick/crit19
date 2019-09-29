@@ -14,7 +14,7 @@
 <%= for animal <- @animals do %>
     <tr>
       <td><%= animal.name %></td>
-      <td><%= animal.species.name %></td>
+      <td><%= animal.species_name %></td>
     </tr>
 <% end %>
   </tbody>

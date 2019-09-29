@@ -1,28 +1,36 @@
 defmodule Crit.Usables do
   alias Crit.Sql
-  alias Crit.Usables.{Animal, Species}
+  alias Crit.Usables.{Species}
+  alias Crit.Usables.Read
   alias Crit.Usables.Write
+  alias Crit.Usables.Api
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
   alias Ecto.Changeset
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
   def get_complete_animal!(id, institution) do
-    query = 
-      Animal.Query.from(id: id) |> Animal.Query.preload_common()
-    
-    case Sql.one(query, institution) do
+    case Read.Animal.one(id, institution) do
       nil ->
         raise KeyError, "No animal id #{id}"
       animal ->
-        animal
+        Api.Animal.convert(animal)
     end
   end
 
+  def ids_to_animals(ids, institution) do
+    ids
+    |> Read.Animal.ids_to_animals(institution)
+    |> Enum.map(&Api.Animal.convert/1)
+  end  
+
   def get_complete_animal_by_name(name, institution) do
-    Animal.Query.from(name: name)
-    |> Animal.Query.preload_common()
-    |> Sql.one(institution)
+    case Read.Animal.one_by_name(name, institution) do
+      nil ->
+        nil
+      animal ->
+        Api.Animal.convert(animal)
+    end
   end
 
   def create_animals(supplied_attrs, institution) do
@@ -155,12 +163,5 @@ defmodule Crit.Usables do
     |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
   end
 
-  def ids_to_animals(ids, institution) do
-    query =
-      ids
-      |> Animal.Query.from_ids
-      |> Animal.Query.preload_common
-      |> Animal.Query.ordered
-    Sql.all(query, institution)
-  end
+
 end

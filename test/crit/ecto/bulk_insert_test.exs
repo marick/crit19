@@ -86,7 +86,8 @@ defmodule Crit.Ecto.BulkInsertTest do
       end
       [assertions: assertions]
     end
-    
+
+    @tag :skip
     test "this is the step-by-step approach", %{assertions: assertions} do 
       animal_opts =
         [schema: Write.Animal,             ids: :animal_ids]
@@ -105,6 +106,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       assertions.(tx_result)
     end
 
+    @tag :skip
     test "this is the 'simplified' approach", %{assertions: assertions} do 
       {:ok, tx_result} = 
         BulkInsert.three_schema_insertion(@institution,
@@ -115,6 +117,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       assertions.(tx_result)
     end
 
+    @tag :skip
     test "along with the simplified approach, there's a simpler set of results" do
       {:ok, %{animal_ids: [returned_animal_id], service_gap_ids: service_gap_ids}} = 
         BulkInsert.three_schema_insertion(@institution,
