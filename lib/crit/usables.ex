@@ -10,9 +10,18 @@ defmodule Crit.Usables do
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
   def get_complete_animal!(id, institution) do
-    case Read.Animal.one(id, institution) do
+    case Read.Animal.one([id: id], institution) do
       nil ->
         raise KeyError, "No animal id #{id}"
+      animal ->
+        Api.Animal.convert(animal)
+    end
+  end
+
+  def get_complete_animal_by_name(name, institution) do
+    case Read.Animal.one([name: name], institution) do
+      nil ->
+        nil
       animal ->
         Api.Animal.convert(animal)
     end
@@ -24,14 +33,6 @@ defmodule Crit.Usables do
     |> Enum.map(&Api.Animal.convert/1)
   end  
 
-  def get_complete_animal_by_name(name, institution) do
-    case Read.Animal.one_by_name(name, institution) do
-      nil ->
-        nil
-      animal ->
-        Api.Animal.convert(animal)
-    end
-  end
 
   def create_animals(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))

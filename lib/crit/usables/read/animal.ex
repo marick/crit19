@@ -37,14 +37,8 @@ defmodule Crit.Usables.Read.Animal do
     end
   end
 
-  def one(id, institution) do
-    Query.from(id: id)
-    |> Query.preload_common()
-    |> Sql.one(institution)
-  end
-
-  def one_by_name(name, institution) do
-    Query.from(name: name)
+  def one(where, institution) do
+    Query.from(where)
     |> Query.preload_common()
     |> Sql.one(institution)
   end

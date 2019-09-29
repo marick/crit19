@@ -2,11 +2,11 @@ defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.BulkInsert
   alias Crit.Usables.Write
+  alias Crit.Usables.Read
   alias Crit.Ecto.BulkInsert.Testable
   alias Ecto.Datespan
   alias Crit.Sql
   alias Ecto.Multi
-  alias Crit.Usables
 
   @iso_date "2001-09-05"
   @date Date.from_iso8601!(@iso_date)
@@ -73,9 +73,9 @@ defmodule Crit.Ecto.BulkInsertTest do
     setup do
       assertions = fn tx_result ->
         intended_name = @animal_cs.changes.name
-        assert animal =
-          Usables.get_complete_animal_by_name(intended_name, @institution)
-        
+
+        animal = Read.Animal.one([name: intended_name], @institution)
+
         assert animal.name == intended_name
         assert [animal.id] == tx_result.animal_ids
         
@@ -87,7 +87,6 @@ defmodule Crit.Ecto.BulkInsertTest do
       [assertions: assertions]
     end
 
-    @tag :skip
     test "this is the step-by-step approach", %{assertions: assertions} do 
       animal_opts =
         [schema: Write.Animal,             ids: :animal_ids]
@@ -106,7 +105,6 @@ defmodule Crit.Ecto.BulkInsertTest do
       assertions.(tx_result)
     end
 
-    @tag :skip
     test "this is the 'simplified' approach", %{assertions: assertions} do 
       {:ok, tx_result} = 
         BulkInsert.three_schema_insertion(@institution,
@@ -117,7 +115,6 @@ defmodule Crit.Ecto.BulkInsertTest do
       assertions.(tx_result)
     end
 
-    @tag :skip
     test "along with the simplified approach, there's a simpler set of results" do
       {:ok, %{animal_ids: [returned_animal_id], service_gap_ids: service_gap_ids}} = 
         BulkInsert.three_schema_insertion(@institution,
@@ -127,7 +124,7 @@ defmodule Crit.Ecto.BulkInsertTest do
         |> Sql.transaction(@institution)
         |> BulkInsert.simplify_transaction_results([:animal_ids, :service_gap_ids])
 
-      assert animal = Usables.get_complete_animal!(returned_animal_id, @institution)
+      assert animal = Read.Animal.one([id: returned_animal_id], @institution)
       assert [gap_one, gap_two] = animal.service_gaps
 
       assert gap_one.id in service_gap_ids

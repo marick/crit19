@@ -4,12 +4,10 @@ defmodule Crit.Usables.Api.AnimalTest do
   import Pile.Changeset
 
   @iso_date "2001-09-05"
-  # @date Date.from_iso8601!(@iso_date)
-
   @later_iso_date "2011-09-05"
-  # @later_date Date.from_iso8601!(@later_iso_date)
 
   @species_id 1
+  @species_name "bovine"
 
   @basic_params %{
     "species_id" => @species_id,
@@ -100,12 +98,13 @@ defmodule Crit.Usables.Api.AnimalTest do
       [ids: Enum.map(animals, &(&1.id))]
     end
 
-    @tag :skip
-    test "available_species returns animals in alphabetical order", %{ids: ids} do
+    test "create_animals returns animals in alphabetical order", %{ids: ids} do
       assert [alpha, bossie, jake] = Usables.ids_to_animals(ids, @institution)
 
       assert alpha.name == "Alpha"
-      assert Ecto.assoc_loaded?(alpha.service_gaps)
+      assert alpha.species_name == @species_name
+      assert alpha.in_service_date == @iso_date
+      assert alpha.out_of_service_date == "never"
 
       assert bossie.name == "Bossie"
       assert jake.name == "Jake"
