@@ -42,7 +42,30 @@ defmodule Crit.Ecto.DateSpanTest do
     assert_same_date(span, Datespan.infinite_up(@day, :inclusive))
     assert_date_and_after(span, @day)
   end
-  
+
+  test "type tests" do 
+    infinite_down = Datespan.infinite_down(@day, :inclusive)
+    assert Datespan.infinite_down?(infinite_down)
+    refute Datespan.infinite_up?(infinite_down)
+
+    infinite_down_e = Datespan.infinite_down(@day, :exclusive)
+    assert Datespan.infinite_down?(infinite_down_e)
+    refute Datespan.infinite_up?(infinite_down_e)
+
+    infinite_up = Datespan.infinite_up(@day, :inclusive)
+    refute Datespan.infinite_down?(infinite_up)
+    assert Datespan.infinite_up?(infinite_up)
+
+    infinite_up_e = Datespan.infinite_up(@day, :exclusive)
+    refute Datespan.infinite_down?(infinite_up_e)
+    assert Datespan.infinite_up?(infinite_up_e)
+
+    customary = customary(@day, @next_day)
+    refute Datespan.infinite_down?(customary)
+    refute Datespan.infinite_up?(customary)
+  end
+
+    
   test "infinite down && containment" do
     insert_service_gap(Datespan.infinite_down(@day, :exclusive))
     

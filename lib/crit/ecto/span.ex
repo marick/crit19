@@ -23,17 +23,20 @@ defmodule Ecto.Span do
       end
 
       # extends to negative infinity
-      def infinite_down(last, :inclusive) do
-        new(:unbound, last, false, true)
-      end
-      def infinite_down(last, :exclusive) do
-        new(:unbound, last, false, false)
-      end
+      def infinite_down(last, :inclusive), do: new(:unbound, last, false, true)
+      def infinite_down(last, :exclusive), do: new(:unbound, last, false, false)
+
+      def infinite_down?(%{first: :unbound, last: last}) when is_map(last), do: true
+      def infinite_down?(_), do: false
 
       
+      # extends to positive infinity
       def infinite_up(first, :inclusive), do: new(first, :unbound, true, false)
       def infinite_up(first, :exclusive), do: new(first, :unbound, false, false)
 
+      def infinite_up?(%{first: first, last: :unbound}) when is_map(first), do: true
+      def infinite_up?(_), do: false
+      
       def customary(first, last), do: new(first, last, true, false)
 
       @impl Ecto.Type
