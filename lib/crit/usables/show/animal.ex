@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Api.Animal do
+defmodule Crit.Usables.Show.Animal do
   alias Crit.Usables.Read
   alias Ecto.Datespan
 

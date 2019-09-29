@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Show.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Read
-  alias Crit.Usables.Api
+  alias Crit.Usables.Show
   alias Ecto.Datespan
 
   # Most tests are indirect
@@ -33,7 +33,7 @@ defmodule Crit.Usables.Show.AnimalTest do
       result =
         base
         |> Map.put(:service_gaps, [in_service])
-        |> Api.Animal.convert
+        |> Show.Animal.convert
 
       assert result.id == @id
       assert result.name == "Bossie"
@@ -47,7 +47,7 @@ defmodule Crit.Usables.Show.AnimalTest do
       result =
         base
         |> Map.put(:service_gaps,[out_of_service, in_service])
-        |> Api.Animal.convert
+        |> Show.Animal.convert
         
       assert result.id == @id
       assert result.name == "Bossie"

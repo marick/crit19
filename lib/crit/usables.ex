@@ -3,7 +3,7 @@ defmodule Crit.Usables do
   alias Crit.Usables.{Species}
   alias Crit.Usables.Read
   alias Crit.Usables.Write
-  alias Crit.Usables.Api
+  alias Crit.Usables.Show
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
   alias Ecto.Changeset
@@ -14,7 +14,7 @@ defmodule Crit.Usables do
       nil ->
         raise KeyError, "No animal id #{id}"
       animal ->
-        Api.Animal.convert(animal)
+        Show.Animal.convert(animal)
     end
   end
 
@@ -23,14 +23,14 @@ defmodule Crit.Usables do
       nil ->
         nil
       animal ->
-        Api.Animal.convert(animal)
+        Show.Animal.convert(animal)
     end
   end
 
   def ids_to_animals(ids, institution) do
     ids
     |> Read.Animal.ids_to_animals(institution)
-    |> Enum.map(&Api.Animal.convert/1)
+    |> Enum.map(&Show.Animal.convert/1)
   end  
 
 
@@ -103,36 +103,6 @@ defmodule Crit.Usables do
     new_state = Map.put(state, :animals, ids_to_animals(ids, institution))
     {:ok, new_state}
   end
-  
-    
-  def create_animals_old(attrs, institution) do
-    changeset =
-      attrs
-      |> Map.put("timezone", Global.timezone(institution))
-      |> Write.BulkAnimal.compute_insertables
-
-    case changeset.valid? do
-      false ->
-        # This makes `form_for` display the changeset errors. Bleh.
-        Changeset.apply_action(changeset, :insert)
-      true ->
-        result =
-          changeset
-          |> Write.BulkAnimal.changeset_to_changesets
-          |> bulk_insert(institution)
-
-        case result do
-          {:ok, %{animal_ids: ids}} ->
-            {:ok, ids_to_animals(ids, institution)}
-          {:error, single_failure} ->
-            duplicate = single_failure.changes.name
-            message = ~s|An animal named "#{duplicate}" is already in service|
-            changeset
-            |> Changeset.add_error(:names, message)
-            |> Changeset.apply_action(:insert)
-        end
-    end
-  end
 
   defp bulk_insert(
     %{animal_changesets: animal_changesets,
@@ -163,6 +133,4 @@ defmodule Crit.Usables do
     |> Sql.all(institution)
     |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
   end
-
-
 end
