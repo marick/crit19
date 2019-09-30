@@ -40,12 +40,17 @@ defmodule Crit.Usables do
       &Write.BulkAnimalWorkflow.validation_step/1,
       &Write.BulkAnimalWorkflow.split_changeset_step/1,
       &Write.BulkAnimalWorkflow.bulk_insert_step/1,
-      &bulk_animal__return_value/1,
     ]
 
-    %{attrs: attrs, institution: institution}
-    |> run_steps(steps)
-    |> extract_result(:animals)
+    result =
+      %{attrs: attrs, institution: institution}
+      |> run_steps(steps)
+
+    case result do
+      {:ok, state} ->
+        {:ok, ids_to_animals(state.animal_ids, institution)}
+      error -> error
+    end
   end
 
   def run_steps(state, []),
@@ -58,17 +63,6 @@ defmodule Crit.Usables do
       {:ok, state} ->
         run_steps(state, rest)
     end
-  end
-
-  def extract_result({:error, _} = error, _key), do: error
-  def extract_result({:ok, state}, key), do: {:ok, state[key]}
-
-  
-        
-
-  def bulk_animal__return_value(%{animal_ids: ids, institution: institution} = state) do
-    new_state = Map.put(state, :animals, ids_to_animals(ids, institution))
-    {:ok, new_state}
   end
 
   def bulk_animal_creation_changeset() do
