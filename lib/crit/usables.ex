@@ -37,9 +37,9 @@ defmodule Crit.Usables do
   def create_animals(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
     steps = [
-      &bulk_animal__validate/1,
-      &bulk_animal__split_changeset/1,
-      &bulk_animal__insert/1,
+      &Write.BulkAnimalWorkflow.validation_step/1,
+      &Write.BulkAnimalWorkflow.split_changeset_step/1,
+      &Write.BulkAnimalWorkflow.bulk_insert_step/1,
       &bulk_animal__return_value/1,
     ]
 
@@ -65,59 +65,12 @@ defmodule Crit.Usables do
 
   
         
-  def bulk_animal__validate(%{attrs: attrs} = state) do
-    changeset = Write.BulkAnimal.compute_insertables(attrs)
-    if changeset.valid? do
-      {:ok, Map.put(state, :bulk_changeset, changeset)}
-    else
-      {:error, changeset}
-    end
-  end
-
-  def bulk_animal__split_changeset(%{bulk_changeset: changeset} = state) do
-    changesets = Write.BulkAnimal.changeset_to_changesets(changeset)
-
-    {:ok, Map.put(state, :changesets, changesets)}
-  end
-
-
-  def bulk_animal__insert(%{
-        bulk_changeset: changeset,
-        changesets: changesets,
-        institution: institution} = state) do
-
-    case bulk_insert(changesets, institution) do
-      {:ok, %{animal_ids: ids}} ->
-        {:ok, Map.put(state, :animal_ids, ids)}
-      {:error, single_failure} ->
-        duplicate = single_failure.changes.name
-        message = ~s|An animal named "#{duplicate}" is already in service|
-        changeset
-        |> Changeset.add_error(:names, message)
-        |> Changeset.apply_action(:insert)
-        # Note that `apply_action` will return {:error, changeset} in this case.
-    end
-  end
 
   def bulk_animal__return_value(%{animal_ids: ids, institution: institution} = state) do
     new_state = Map.put(state, :animals, ids_to_animals(ids, institution))
     {:ok, new_state}
   end
 
-  defp bulk_insert(
-    %{animal_changesets: animal_changesets,
-      service_gap_changesets: service_gap_changesets},
-    institution) do 
-
-    institution
-    |> BulkInsert.three_schema_insertion(
-           insert: animal_changesets, yielding: :animal_ids,
-           insert: service_gap_changesets, yielding: :service_gap_ids,
-           many_to_many: Write.AnimalServiceGap)
-    |> Sql.transaction(institution)
-    |> BulkInsert.simplify_transaction_results(:animal_ids)
-  end
-    
   def bulk_animal_creation_changeset() do
    %Write.BulkAnimal{
      names: "",

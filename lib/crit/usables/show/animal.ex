@@ -3,10 +3,16 @@ defmodule Crit.Usables.Show.Animal do
   alias Crit.Usables.Read
   alias Ecto.Datespan
 
-  defstruct id: nil, name: nil, species_name: nil, species_id: nil,
+  defstruct id: nil,
+    name: nil,
+    species_name: nil,
+    species_id: nil,
     in_service_date: nil,
     out_of_service_date: nil
 
+  # This hides a mistake, in that we deduce the in-service and out-of-service
+  # dates. We shouldn't need to do that. Because they're special, they should
+  # have special fields in the Write.Animal and Read.Animal schemas.
   def convert(
     %Read.Animal{
       id: animal_id,
@@ -37,5 +43,4 @@ defmodule Crit.Usables.Show.Animal do
       out_of_service_date: out_of_service_iso
     }
   end
-
 end
