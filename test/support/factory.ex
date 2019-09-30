@@ -1,7 +1,7 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
-  alias Crit.Usables.{Animal}
+  alias Crit.Usables.Write
   #  alias Ecto.Datespan
   alias Crit.Sql
   require Faker
@@ -30,7 +30,7 @@ defmodule Crit.Factory do
   end
 
   def animal_factory() do
-    %Animal{
+    %Write.Animal{
       name: Faker.Cat.name(),
       species_id: some_species_id()
      }
