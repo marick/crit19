@@ -5,7 +5,7 @@ defmodule Crit.Usables.Write.DateComputers do
   alias Pile.ChangesetFlow, as: Flow
   alias Pile.TimeHelper
 
-  def start_and_end(changeset) do
+  def put_start_and_end(changeset) do
     with_start = compute_date(changeset, :start_date, :computed_start_date)
 
     if changeset.changes.end_date == @never do

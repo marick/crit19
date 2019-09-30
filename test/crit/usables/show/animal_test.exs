@@ -50,9 +50,5 @@ defmodule Crit.Usables.Show.AnimalTest do
       assert result.in_service_date == @iso_date
       assert result.out_of_service_date == @later_iso_date
     end
-    
-
   end
-  
-
 end

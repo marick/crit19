@@ -33,7 +33,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
       fn changeset ->
         changeset
         |> NameListComputers.split_names
-        |> DateComputers.start_and_end
+        |> DateComputers.put_start_and_end
         |> ServiceGapComputers.expand_start_and_end
       end)
   end

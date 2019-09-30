@@ -11,7 +11,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
   }
 
   describe "changeset" do
-    test "required fields" do
+    test "required fields are checked" do
       errors = %{} |> BulkAnimal.compute_insertables |> errors_on
       
       assert errors.names
@@ -20,7 +20,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
       assert errors.end_date
     end
 
-    test "computations" do
+    test "the construction derived/virtual values" do
       changeset = BulkAnimal.compute_insertables(@correct)
       assert changeset.valid?
 
@@ -37,7 +37,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
     end
   end
 
-  test "breaking valid changeset into changesets for insertion" do
+  test "breaking a valid changeset into changesets for insertion" do
     %{animal_changesets: [one_cs, two_cs],
       service_gap_changesets: [gap_cs]
     } =
