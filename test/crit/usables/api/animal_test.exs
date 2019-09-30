@@ -69,6 +69,13 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert animal.species_name == "bovine"
     end
 
+    test "fetching by name is case independent" do
+      assert animal = Usables.get_complete_animal_by_name("bossie", @institution)
+      assert is_integer(animal.id)
+      assert animal.name == "Bossie"
+      assert animal.species_name == "bovine"
+    end
+
     test "errors return nil" do
       assert nil == Usables.get_complete_animal_by_name("lossie", @institution)
     end

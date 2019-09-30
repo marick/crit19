@@ -3,11 +3,11 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
 
   def change do
     create table(:species) do
-      add :name, :string, null: false
+      add :name, :citext, null: false
     end
     
     create table(:animals) do
-      add :name, :string, null: false
+      add :name, :citext, null: false
       # Species cannot be deleted, for the sake of consistency.
       # Instead, all animals of that species should become unavailable.
       # This allows history to be preserved.
