@@ -7,9 +7,10 @@ defmodule Crit.Usables.Read.Species do
 
   defmodule Query do
     import Ecto.Query
+    alias Crit.Usables.Read.Species    
 
     def ordered() do
-      from s in "species", order_by: s.name
+      from s in Species, order_by: s.name
     end
   end
 end

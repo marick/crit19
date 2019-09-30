@@ -1,7 +1,6 @@
 defmodule Crit.Usables do
   use Crit.Global.Constants
   alias Crit.Sql
-  alias Crit.Usables.{Species}
   alias Crit.Usables.Read
   alias Crit.Usables.Write
   alias Crit.Usables.Show
@@ -130,8 +129,8 @@ defmodule Crit.Usables do
   end
 
   def available_species(institution) do
-    Species.Query.ordered()
+    Read.Species.Query.ordered()
     |> Sql.all(institution)
-    |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
+    |> Enum.map(fn %Read.Species{name: name, id: id} -> {name, id} end)
   end
 end
