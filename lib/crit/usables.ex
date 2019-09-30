@@ -4,9 +4,6 @@ defmodule Crit.Usables do
   alias Crit.Usables.Read
   alias Crit.Usables.Write
   alias Crit.Usables.Show
-  alias Crit.Ecto.BulkInsert
-  alias Crit.Global
-  alias Ecto.Changeset
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
   def get_complete_animal!(id, institution) do
@@ -37,7 +34,8 @@ defmodule Crit.Usables do
     case Write.BulkAnimalWorkflow.run(attrs, institution) do
       {:ok, animal_ids} ->
         {:ok, ids_to_animals(animal_ids, institution)}
-      error -> error
+      {:error, changeset} ->
+        {:error, ensure_forms_display_errors(changeset)}
     end
   end
 

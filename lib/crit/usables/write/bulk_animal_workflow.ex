@@ -1,13 +1,9 @@
 defmodule Crit.Usables.Write.BulkAnimalWorkflow do
-  use Crit.Global.Constants
   alias Crit.Sql
-  alias Crit.Usables.Read
   alias Crit.Usables.Write
-  alias Crit.Usables.Show
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
   alias Ecto.Changeset
-  import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
@@ -83,10 +79,10 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   
   defp run_steps(state, [next | rest]) do
     case next.(state) do
-      {:error, changeset} ->
-        {:error, ensure_forms_display_errors(changeset)}
       {:ok, state} ->
         run_steps(state, rest)
+      error ->
+        error
     end
   end
 end
