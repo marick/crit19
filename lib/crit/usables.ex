@@ -1,4 +1,5 @@
 defmodule Crit.Usables do
+  use Crit.Global.Constants
   alias Crit.Sql
   alias Crit.Usables.{Species}
   alias Crit.Usables.Read
@@ -122,8 +123,8 @@ defmodule Crit.Usables do
    %Write.BulkAnimal{
      names: "",
      species_id: 0,
-     start_date: "today",
-     end_date: "never",
+     start_date: @today,
+     end_date: @never,
      timezone: "--to be replaced--"}
      |> Write.BulkAnimal.changeset(%{})
   end

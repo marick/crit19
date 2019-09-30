@@ -3,17 +3,11 @@ defmodule Crit.Usables.Api.AnimalTest do
   alias Crit.Usables
   import Pile.Changeset
 
-  @iso_date "2001-09-05"
-  @later_iso_date "2011-09-05"
-
-  @species_id 1
-  @species_name "bovine"
-
   @basic_params %{
-    "species_id" => @species_id,
+    "species_id" => @bovine_id,
     "names" => "Bossie, Jake",
     "start_date" => @iso_date,
-    "end_date" => "never"
+    "end_date" => @never
   }
 
   describe "bulk animal creation" do
@@ -41,7 +35,7 @@ defmodule Crit.Usables.Api.AnimalTest do
         assert fetched.id == returned.id
         assert fetched.name == returned.name
         # assert length(returned.service_gaps) == 1
-        assert returned.species_name == "bovine"
+        assert returned.species_name == @bovine
       end
 
       check.(bossie)
@@ -66,14 +60,14 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert animal = Usables.get_complete_animal_by_name("Bossie", @institution)
       assert is_integer(animal.id)
       assert animal.name == "Bossie"
-      assert animal.species_name == "bovine"
+      assert animal.species_name == @bovine
     end
 
     test "fetching by name is case independent" do
       assert animal = Usables.get_complete_animal_by_name("bossie", @institution)
       assert is_integer(animal.id)
       assert animal.name == "Bossie"
-      assert animal.species_name == "bovine"
+      assert animal.species_name == @bovine
     end
 
     test "errors return nil" do
@@ -86,7 +80,7 @@ defmodule Crit.Usables.Api.AnimalTest do
 
       assert animal.id == id
       assert animal.name == "Bossie"
-      assert animal.species_name == "bovine"
+      assert animal.species_name == @bovine
     end
     
     test "no such id" do
@@ -109,9 +103,9 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert [alpha, bossie, jake] = Usables.ids_to_animals(ids, @institution)
 
       assert alpha.name == "Alpha"
-      assert alpha.species_name == @species_name
+      assert alpha.species_name == @bovine
       assert alpha.in_service_date == @iso_date
-      assert alpha.out_of_service_date == "never"
+      assert alpha.out_of_service_date == @never
 
       assert bossie.name == "Bossie"
       assert jake.name == "Jake"

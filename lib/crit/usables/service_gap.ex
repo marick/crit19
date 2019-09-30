@@ -1,12 +1,11 @@
 defmodule Crit.Usables.ServiceGap do
   use Ecto.Schema
+  use Crit.Global.Constants
   import Ecto.Changeset
   alias Ecto.Changeset
   alias Ecto.Datespan
   alias Pile.TimeHelper
   require Logger
-
-  @today "today"
 
   schema "service_gaps" do
     field :gap, Datespan
@@ -21,7 +20,7 @@ defmodule Crit.Usables.ServiceGap do
     pre_service = pre_service_changeset(attrs, today_getter)
     changesets = 
       case attrs["end_date"] do
-        "never" ->
+        @never ->
           [pre_service]
         _ ->
           post_service = 

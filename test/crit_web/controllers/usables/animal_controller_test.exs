@@ -12,9 +12,9 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       conn
       |> get_via_action(:bulk_create_form)
       |> assert_purpose(form_for_creating_new_animal())
-      |> assert_user_sees("today")
-      |> assert_user_sees("never")
-      |> assert_user_sees("bovine")
+      |> assert_user_sees(@today)
+      |> assert_user_sees(@never)
+      |> assert_user_sees(@bovine)
 
     end
   end

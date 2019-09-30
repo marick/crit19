@@ -1,4 +1,5 @@
 defmodule Crit.Usables.Show.Animal do
+  use Crit.Global.Constants
   alias Crit.Usables.Read
   alias Ecto.Datespan
 
@@ -24,7 +25,7 @@ defmodule Crit.Usables.Show.Animal do
 
     out_of_service_iso = 
       case Enum.find(timespans, &Datespan.infinite_up?/1) do
-        nil -> "never"
+        nil -> @never
         date -> Date.to_iso8601(date.first)
       end
 

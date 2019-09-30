@@ -7,18 +7,13 @@ defmodule Crit.Usables.Show.AnimalTest do
   # Most tests are indirect
 
   @id 5
-  @iso_date "2001-09-05"
-  @date Date.from_iso8601!(@iso_date)
-
-  @later_iso_date "2011-09-05"
-  @later_date Date.from_iso8601!(@later_iso_date)
 
   describe "conversion" do
     setup do
       base = %Read.Animal{
         id: @id,
         name: "Bossie",
-        species: %Read.Species{name: "bovine"}
+        species: %Read.Species{name: @bovine_id}
       }
 
       in_service = %Read.ServiceGap{gap: Datespan.strictly_before(@date)}
@@ -37,9 +32,9 @@ defmodule Crit.Usables.Show.AnimalTest do
 
       assert result.id == @id
       assert result.name == "Bossie"
-      assert result.species_name == "bovine"
+      assert result.species_name == @bovine_id
       assert result.in_service_date == @iso_date
-      assert result.out_of_service_date == "never"
+      assert result.out_of_service_date == @never
     end
     
     test "with two service gaps",
@@ -51,7 +46,7 @@ defmodule Crit.Usables.Show.AnimalTest do
         
       assert result.id == @id
       assert result.name == "Bossie"
-      assert result.species_name == "bovine"
+      assert result.species_name == @bovine_id
       assert result.in_service_date == @iso_date
       assert result.out_of_service_date == @later_iso_date
     end

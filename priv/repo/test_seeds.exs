@@ -1,7 +1,19 @@
 alias Crit.Sql
 alias Crit.Usables.Species
+alias Crit.Global.Constants
+alias Crit.Global.Default
 
 Application.ensure_all_started(:crit)
 
-Sql.insert!(%Species{name: "bovine"}, "critter4us")
-Sql.insert!(%Species{name: "equine"}, "critter4us")
+institution = Default.institution.short_name
+
+# This is needless wankery to make sure that ids used in tests
+# actually correspond to what's in the database.
+
+bovine_id = Constants.bovine_id
+equine_id = Constants.equine_id
+
+%{id: ^bovine_id} = 
+  Sql.insert!(%Species{name: Constants.bovine}, institution)
+%{id: ^equine_id} =
+  Sql.insert!(%Species{name: Constants.equine}, institution)

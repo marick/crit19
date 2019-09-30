@@ -4,12 +4,6 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
   alias Crit.Global
   alias Pile.TimeHelper
 
-  @iso_date "2001-09-05"
-  @date Date.from_iso8601!(@iso_date)
-
-  @later_iso_date "2011-09-05"
-  @later_date Date.from_iso8601!(@later_iso_date)
-
   describe "pre_service_changeset" do
     test "starts on a given date" do
       changeset = ServiceGap.pre_service_changeset(
@@ -23,7 +17,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       institution_timezone = Global.timezone(@institution)
       
       changeset = ServiceGap.pre_service_changeset(
-        %{"start_date" => "today",
+        %{"start_date" => @today,
           "timezone" => institution_timezone
         },
         TimeHelper.stub_today_date(institution_timezone, to_return: @date))
@@ -53,7 +47,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
       institution_timezone = Global.timezone(@institution)
       
       changeset = ServiceGap.post_service_changeset(
-        %{"end_date" => "today",
+        %{"end_date" => @today,
           "timezone" => institution_timezone
         },
         TimeHelper.stub_today_date(institution_timezone, to_return: @date))
@@ -67,7 +61,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     test "no end of service date" do 
       {:ok, [in_service]} = ServiceGap.initial_changesets(
         %{"start_date" => @iso_date,
-          "end_date" => "never"
+          "end_date" => @never
         })
 
       assert in_service.valid?
@@ -110,7 +104,7 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     test "no checking for misordered dates if end is invalid" do
       {:error, changeset} = ServiceGap.initial_changesets(
         %{"start_date" => @iso_date,
-          "end_date" => "NEVER",
+          "end_date" => "not ever",
         })
 
       refute changeset.valid?
@@ -120,13 +114,12 @@ defmodule Crit.Usables.Internal.ServiceGapTest do
     test "errors are merged" do
       {:error, changeset} = ServiceGap.initial_changesets(
         %{"start_date" => "busted",
-          "end_date" => "NEVER",
+          "end_date" => "NEER",
         })
 
       refute changeset.valid?
       assert ServiceGap.parse_message in errors_on(changeset).start_date
       assert ServiceGap.parse_message in errors_on(changeset).end_date
     end
-    
   end
 end

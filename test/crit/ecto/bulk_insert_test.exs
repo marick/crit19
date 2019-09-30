@@ -8,12 +8,6 @@ defmodule Crit.Ecto.BulkInsertTest do
   alias Crit.Sql
   alias Ecto.Multi
 
-  @iso_date "2001-09-05"
-  @date Date.from_iso8601!(@iso_date)
-
-  @later_iso_date "2011-09-05"
-  @later_date Date.from_iso8601!(@later_iso_date)
-
   @before_service_cs Write.ServiceGap.changeset(
     gap: Datespan.strictly_before(@date),
     reason: "strictly before"

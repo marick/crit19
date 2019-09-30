@@ -2,12 +2,6 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Write.BulkAnimal
 
-  @iso_date "2001-09-05"
-  @date Date.from_iso8601!(@iso_date)
-
-  @later_iso_date "2200-09-05"
-  @later_date Date.from_iso8601!(@later_iso_date)
-
   @correct %{
     names: "a, b, c",
     species_id: "1",
@@ -51,7 +45,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
       |> Map.put(:names,  "one, two")
       |> Map.put(:species, "1")
       |> Map.put(:start_date,  @iso_date)
-      |> Map.put(:end_date, "never")
+      |> Map.put(:end_date, @never)
       |> BulkAnimal.compute_insertables
       |> BulkAnimal.changeset_to_changesets
 

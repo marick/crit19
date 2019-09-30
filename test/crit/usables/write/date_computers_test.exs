@@ -14,13 +14,6 @@ defmodule Crit.Usables.Write.DateComputersTest do
     field :computed_end_date, :date, virtual: true
   end
   
-
-  @iso_date "2001-09-05"
-  @date Date.from_iso8601!(@iso_date)
-
-  @later_iso_date "2200-09-05"
-  @later_date Date.from_iso8601!(@later_iso_date)
-
   def so_far(opts \\ []) do
     default = %{timezone: "America/Chicago"}
     Changeset.change(%__MODULE__{}, Enum.into(opts, default))
@@ -38,7 +31,7 @@ defmodule Crit.Usables.Write.DateComputersTest do
 
   test "starting date is today" do
     changeset = 
-      so_far(start_date: "today", end_date: @later_iso_date)
+      so_far(start_date: @today, end_date: @later_iso_date)
       |> DateComputers.start_and_end
 
 
@@ -52,7 +45,7 @@ defmodule Crit.Usables.Write.DateComputersTest do
 
   test "ending day is 'never', which marks the end date specially" do
     changeset = 
-      so_far(start_date: @iso_date, end_date: "never")
+      so_far(start_date: @iso_date, end_date: @never)
       |> DateComputers.start_and_end
 
     assert changeset.valid?
