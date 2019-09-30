@@ -1,5 +1,5 @@
 alias Crit.Sql
-alias Crit.Usables.Species
+alias Crit.Usables.Write.Species
 alias Crit.Global.Constants
 alias Crit.Global.Default
 
