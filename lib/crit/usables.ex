@@ -33,35 +33,11 @@ defmodule Crit.Usables do
     |> Enum.map(&Show.Animal.convert/1)
   end  
 
-
-  def create_animals(supplied_attrs, institution) do
-    attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
-    steps = [
-      &Write.BulkAnimalWorkflow.validation_step/1,
-      &Write.BulkAnimalWorkflow.split_changeset_step/1,
-      &Write.BulkAnimalWorkflow.bulk_insert_step/1,
-    ]
-
-    result =
-      %{attrs: attrs, institution: institution}
-      |> run_steps(steps)
-
-    case result do
-      {:ok, state} ->
-        {:ok, ids_to_animals(state.animal_ids, institution)}
+  def create_animals(attrs, institution) do
+    case Write.BulkAnimalWorkflow.run(attrs, institution) do
+      {:ok, animal_ids} ->
+        {:ok, ids_to_animals(animal_ids, institution)}
       error -> error
-    end
-  end
-
-  def run_steps(state, []),
-    do: {:ok, state}
-  
-  def run_steps(state, [next | rest]) do
-    case next.(state) do
-      {:error, changeset} ->
-        {:error, ensure_forms_display_errors(changeset)}
-      {:ok, state} ->
-        run_steps(state, rest)
     end
   end
 

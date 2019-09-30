@@ -9,7 +9,25 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   alias Ecto.Changeset
   import Pile.Changeset, only: [ensure_forms_display_errors: 1]
 
-  def validation_step(%{attrs: attrs} = state) do
+  def run(supplied_attrs, institution) do
+    attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
+    steps = [
+      &validation_step/1,
+      &split_changeset_step/1,
+      &bulk_insert_step/1,
+    ]
+
+    case run_steps(%{attrs: attrs, institution: institution}, steps) do 
+      {:ok, tx_results} ->
+        {:ok, tx_results.animal_ids}
+      error ->
+        error
+    end
+  end
+
+  # The essential steps in the workflow
+
+  defp validation_step(%{attrs: attrs} = state) do
     changeset = Write.BulkAnimal.compute_insertables(attrs)
     if changeset.valid? do
       {:ok, Map.put(state, :bulk_changeset, changeset)}
@@ -18,13 +36,13 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
     end
   end
 
-  def split_changeset_step(%{bulk_changeset: changeset} = state) do
+  defp split_changeset_step(%{bulk_changeset: changeset} = state) do
     changesets = Write.BulkAnimal.changeset_to_changesets(changeset)
 
     {:ok, Map.put(state, :changesets, changesets)}
   end
 
-  def bulk_insert_step(%{
+  defp bulk_insert_step(%{
         bulk_changeset: changeset,
         changesets: changesets,
         institution: institution} = state) do
@@ -59,7 +77,16 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
     |> Sql.transaction(institution)
     |> BulkInsert.simplify_transaction_results(:animal_ids)
   end
-    
+
+  defp run_steps(state, []),
+    do: {:ok, state}
   
-  
+  defp run_steps(state, [next | rest]) do
+    case next.(state) do
+      {:error, changeset} ->
+        {:error, ensure_forms_display_errors(changeset)}
+      {:ok, state} ->
+        run_steps(state, rest)
+    end
+  end
 end
