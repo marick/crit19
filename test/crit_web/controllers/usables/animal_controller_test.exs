@@ -5,6 +5,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables
   alias Crit.Usables.Write.{DateComputers, NameListComputers}
   alias Crit.Usables.Read
+  alias CritWeb.Audit
 
   setup :logged_in_as_usables_manager
 
@@ -93,7 +94,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       ids = SqlX.all_ids(Read.Animal)
       typical_animal = one_of_these_as_showable_animal(ids)
 
-      assert audit.event == "created animals"
+      assert audit.event == Audit.events.created_animals
       assert audit.event_owner_id == user_id(conn)
       assert audit.data.ids == ids
       assert audit.data.in_service_date == typical_animal.in_service_date

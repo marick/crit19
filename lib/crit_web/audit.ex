@@ -3,12 +3,19 @@ defmodule CritWeb.Audit do
   alias Crit.Audit.CreationStruct
   alias Crit.Users.User
 
+  def events do
+    %{created_user: "created user",
+      created_animals: "created animals",
+    }
+  end
+      
+
   def created_user(conn, %User{} = user) do
-    log(conn, "created user", %{user_id: user.id, auth_id: user.auth_id})
+    log(conn, events().created_user, %{user_id: user.id, auth_id: user.auth_id})
   end
 
   def created_animals(conn, data) do
-    log(conn, "created animals", data)
+    log(conn, events().created_animals, data)
   end
 
   ## UTIL

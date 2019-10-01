@@ -4,6 +4,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Sql
   alias Crit.Users.User
+  alias CritWeb.Audit
 
   setup :logged_in_as_user_manager
 
@@ -76,7 +77,7 @@ defmodule CritWeb.UserManagement.UserControllerTest do
 
       assert {:ok, audit} = latest_audit_record(conn)
 
-      assert audit.event == "created user"
+      assert audit.event == Audit.events.created_user
       assert audit.event_owner_id == user_id(conn)
       assert audit.data.auth_id == params["auth_id"]
     end
