@@ -5,8 +5,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables
   alias Crit.Usables.Write.{DateComputers, NameListComputers}
   alias Crit.Usables.Read
-  alias Crit.Sql
-
+`
   setup :logged_in_as_usables_manager
 
   describe "bulk creation form" do
@@ -49,7 +48,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
 
     setup do
-      # assert Sql.all(Animal, @institution) == []
+      assert SqlX.all_ids(Read.Animal) == []
       []
     end
 
@@ -59,7 +58,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       
       assert_purpose conn, displaying_animal_summaries()
 
-      # assert length(Sql.all(Animal, @institution)) == length(names)
+      assert length(SqlX.all_ids(Read.Animal)) == length(names)
       assert_user_sees(conn, Enum.at(names, 0))
       assert_user_sees(conn, Enum.at(names, -1))
     end
@@ -91,7 +90,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
       {:ok, audit} = latest_audit_record(conn)
 
-      ids = all_ids(Read.Animal)
+      ids = SqlX.all_ids(Read.Animal)
       typical_animal = one_of_these_as_showable_animal(ids)
 
       assert audit.event == "created animals"
@@ -100,12 +99,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert audit.data.in_service_date == typical_animal.in_service_date
       assert audit.data.out_of_service_date == typical_animal.out_of_service_date
     end
-  end
-
-  defp all_ids(schema) do
-    schema
-    |> Sql.all(@institution)
-    |> Pile.Enum.ids
   end
 
   defp one_of_these_as_showable_animal([id | _]) do 

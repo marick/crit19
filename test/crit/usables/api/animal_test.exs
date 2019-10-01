@@ -34,7 +34,8 @@ defmodule Crit.Usables.Api.AnimalTest do
         fetched = Usables.get_complete_animal!(returned.id, @institution)
         assert fetched.id == returned.id
         assert fetched.name == returned.name
-        # assert length(returned.service_gaps) == 1
+        assert fetched.in_service_date == @iso_date
+        assert fetched.out_of_service_date == @never
         assert returned.species_name == @bovine
       end
 
