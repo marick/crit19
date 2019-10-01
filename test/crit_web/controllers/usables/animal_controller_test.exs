@@ -4,6 +4,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables
   alias Crit.Usables.Write.{DateComputers, NameListComputers}
+  alias Crit.Usables.Read
+  alias Crit.Sql
 
   setup :logged_in_as_usables_manager
 
@@ -83,18 +85,30 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       |> assert_user_sees(bad_params["end_date"])
     end
 
-    @tag :skip
     test "an audit record is created", %{conn: conn, act: act} do
-      params = Factory.string_params_for(:animal)
-      act.(conn, params)
+      {_names, params} = animal_creation_data()
+      conn = act.(conn, params)
 
-      assert {:ok, audit} = Crit.Audit.ToMemory.Server.latest(conn.assigns.audit_pid)
+      {:ok, audit} = latest_audit_record(conn)
 
-      assert audit.event == "created animal"
+      ids = all_ids(Read.Animal)
+      typical_animal = one_of_these_as_showable_animal(ids)
+
+      assert audit.event == "created animals"
       assert audit.event_owner_id == user_id(conn)
-      assert audit.data.name == params["animal_id"]
-      assert audit.data.id == params["id"]
-      assert audit.data.service_gaps == [:start, :end]
+      assert audit.data.ids == ids
+      assert audit.data.in_service_date == typical_animal.in_service_date
+      assert audit.data.out_of_service_date == typical_animal.out_of_service_date
     end
+  end
+
+  defp all_ids(schema) do
+    schema
+    |> Sql.all(@institution)
+    |> Pile.Enum.ids
+  end
+
+  defp one_of_these_as_showable_animal([id | _]) do 
+    Usables.get_complete_animal!(id, @institution)
   end
 end

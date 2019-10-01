@@ -21,12 +21,20 @@ defmodule CritWeb.Usables.AnimalController do
     case Usables.create_animals(animal_params, institution(conn)) do
       {:ok, animals} ->
         conn
-        |> Audit.created_animals(animals)
+        |> bulk_create_audit(animals)
         |> put_flash(:info, "Success!")
         |> render("index.html",
                   animals: animals)
       {:error, %Ecto.Changeset{} = changeset} ->
         bulk_create_form(conn, [], changeset)
     end
+  end
+
+  def bulk_create_audit(conn, [one_animal | _rest] = animals) do
+    audit_data = %{ids: Pile.Enum.ids(animals),
+                   in_service_date: one_animal.in_service_date,
+                   out_of_service_date: one_animal.out_of_service_date
+                  }
+    Audit.created_animals(conn, audit_data)
   end
 end
