@@ -13,4 +13,14 @@ defmodule Pile.Enum do
     others = Map.get(grouped, false, [])
     {elt, others}
   end
+
+  def sort_by_id(structs) do
+    Enum.sort_by(structs, &(&1.id))
+  end
+
+  def ids(structs) do
+    structs
+    |> Enum.map(&(&1.id))
+    |> Enum.sort
+  end
 end

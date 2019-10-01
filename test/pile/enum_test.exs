@@ -22,5 +22,17 @@ defmodule Pile.EnumTest do
       catch_error Enum.extract([1, 2, 3, 2], equals(2))
     end
   end
+
+  test "sort_by_id" do
+    input = [%{id: 3}, %{id: 1}, %{id: 2}]
+    expected = [%{id: 1}, %{id: 2}, %{id: 3}]
+    assert Enum.sort_by_id(input) == expected
+  end
+
+  test "extract ids (and sort them)" do
+    input = [%{id: 3}, %{id: 1}, %{id: 2}]
+    expected = [1, 2, 3]
+    assert Enum.ids(input) == expected
+  end
 end
   
