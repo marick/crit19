@@ -24,6 +24,11 @@ defmodule Crit.Usables do
     end
   end
 
+  def all_animals(institution) do
+    Read.Animal.all(institution)
+    |> Enum.map(&Show.Animal.convert/1)
+  end
+
   def ids_to_animals(ids, institution) do
     ids
     |> Read.Animal.ids_to_animals(institution)

@@ -94,12 +94,16 @@ defmodule Crit.Usables.Api.AnimalTest do
     setup do
       {:ok, animals} = 
         @basic_params
-        |> Map.put("names", "Bossie, Jake, Alpha")
+        |> Map.put("names", "bossie, Jake, Alpha")
         |> Usables.create_animals(@institution)
-      [ids: Enum.map(animals, &(&1.id))]
+      [ids: Pile.Enum.ids(animals)]
     end
 
-    test "create_animals returns animals in alphabetical order", %{ids: ids} do
+    test "all returns animals in (case-independent) alphabetical order" do 
+      assert [alpha, bossie, jake] = Usables.all_animals(@institution)
+    end
+
+    test "ids_to_animals returns animals in alphabetical order", %{ids: ids} do
       assert [alpha, bossie, jake] = Usables.ids_to_animals(ids, @institution)
 
       assert alpha.name == "Alpha"
@@ -107,7 +111,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert alpha.in_service_date == @iso_date
       assert alpha.out_of_service_date == @never
 
-      assert bossie.name == "Bossie"
+      assert bossie.name == "bossie"
       assert jake.name == "Jake"
     end
 
@@ -116,7 +120,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       
       assert [alpha, bossie, jake] = Usables.ids_to_animals(new_ids, @institution)
       assert alpha.name == "Alpha"
-      assert bossie.name == "Bossie"
+      assert bossie.name == "bossie"
       assert jake.name == "Jake"
     end
   end
