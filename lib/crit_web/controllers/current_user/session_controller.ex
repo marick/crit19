@@ -75,7 +75,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     { default, remainder } =
       institutions
       |> Enum.map(winnow)
-      |> Pile.Enum.extract(is_default?)
+      |> EnumX.extract(is_default?)
 
     sorted_remainder = List.keysort(remainder, 0)
 

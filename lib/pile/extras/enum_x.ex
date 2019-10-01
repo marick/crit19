@@ -1,5 +1,4 @@
-
-defmodule Pile.Enum do
+defmodule EnumX do
 
   @doc """
       iex> Pile.Enum.extract([1, 2, 3], fn x -> x == 2 end)

@@ -9,7 +9,7 @@ defmodule Crit.SqlX do
   def all_ids(schema) do
     schema
     |> Sql.all(@institution)
-    |> Pile.Enum.ids
+    |> EnumX.ids
   end
 
   

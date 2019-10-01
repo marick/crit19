@@ -1,7 +1,7 @@
 defmodule Crit.Users.Internal.UserTest do
   use Crit.DataCase, async: true
   alias Crit.Users.User
-  alias Pile.Changeset
+  alias Ecto.ChangesetX
 
   # Other tests are in ../user_test.exs
 
@@ -9,15 +9,15 @@ defmodule Crit.Users.Internal.UserTest do
   describe "the default/blank changeset" do 
     test "creation without data" do
       assert changeset = User.default_changeset(%User{})
-      refute Changeset.represents_form_errors?(changeset)
-      assert Changeset.empty_text_field?(changeset, :auth_id)
-      assert Changeset.empty_text_field?(changeset, :display_name)
-      assert Changeset.empty_text_field?(changeset, :email)
+      refute ChangesetX.represents_form_errors?(changeset)
+      assert ChangesetX.empty_text_field?(changeset, :auth_id)
+      assert ChangesetX.empty_text_field?(changeset, :display_name)
+      assert ChangesetX.empty_text_field?(changeset, :email)
     end
 
     test "creation with data" do
       assert changeset = User.default_changeset(%User{email: "marick@exampler.com"})
-      assert Changeset.has_data_for?(changeset, :email)
+      assert ChangesetX.has_data_for?(changeset, :email)
     end
   end
 

@@ -4,7 +4,7 @@ defmodule Crit.Users.Password do
   import Ecto.Changeset
   import Ecto.Query
   alias Crit.Sql
-  import Pile.Changeset
+  import Ecto.ChangesetX
 
   schema "passwords" do
     field :hash, :string

@@ -31,7 +31,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
 
   def bulk_create_audit(conn, [one_animal | _rest] = animals) do
-    audit_data = %{ids: Pile.Enum.ids(animals),
+    audit_data = %{ids: EnumX.ids(animals),
                    in_service_date: one_animal.in_service_date,
                    out_of_service_date: one_animal.out_of_service_date
                   }

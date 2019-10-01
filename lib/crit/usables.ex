@@ -4,7 +4,7 @@ defmodule Crit.Usables do
   alias Crit.Usables.Read
   alias Crit.Usables.Write
   alias Crit.Usables.Show
-  import Pile.Changeset, only: [ensure_forms_display_errors: 1]
+  import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
   def get_complete_animal!(id, institution) do
     case Read.Animal.one([id: id], institution) do

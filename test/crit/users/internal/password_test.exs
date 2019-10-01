@@ -1,7 +1,7 @@
 defmodule Crit.Users.Internal.PasswordTest do
   use Crit.DataCase, async: true
   alias Crit.Users.Password
-  alias Pile.Changeset
+  alias Ecto.ChangesetX
   alias Faker.String
   alias Crit.Exemplars.PasswordFocused
 
@@ -9,12 +9,12 @@ defmodule Crit.Users.Internal.PasswordTest do
 
   test "a blank changeset" do
     assert changeset = Password.default_changeset()
-    refute Changeset.represents_form_errors?(changeset)
-    assert Changeset.empty_text_field?(changeset, :new_password)
-    assert Changeset.empty_text_field?(changeset, :new_password_confirmation)
+    refute ChangesetX.represents_form_errors?(changeset)
+    assert ChangesetX.empty_text_field?(changeset, :new_password)
+    assert ChangesetX.empty_text_field?(changeset, :new_password_confirmation)
     # Be very sure confidential data doesn't leak
-    assert Changeset.hidden?(changeset, :hash)
-    assert Changeset.hidden?(changeset, :auth_id)
+    assert ChangesetX.hidden?(changeset, :hash)
+    assert ChangesetX.hidden?(changeset, :auth_id)
   end
 
   describe "kinds of errors" do

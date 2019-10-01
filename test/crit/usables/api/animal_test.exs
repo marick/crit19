@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
-  import Pile.Changeset
+  import Ecto.ChangesetX
 
   @basic_params %{
     "species_id" => @bovine_id,
@@ -97,7 +97,7 @@ defmodule Crit.Usables.Api.AnimalTest do
         @basic_params
         |> Map.put("names", "bossie, Jake, Alpha")
         |> Usables.create_animals(@institution)
-      [ids: Pile.Enum.ids(animals)]
+      [ids: EnumX.ids(animals)]
     end
 
     test "all returns animals in (case-independent) alphabetical order" do 
