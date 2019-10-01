@@ -14,8 +14,8 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
     ]
 
     case run_steps(%{attrs: attrs, institution: institution}, steps) do 
-      {:ok, tx_results} ->
-        {:ok, tx_results.animal_ids}
+      {:ok, tx_result} ->
+        {:ok, tx_result.animal_ids}
       error ->
         error
     end

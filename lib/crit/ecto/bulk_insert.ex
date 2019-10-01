@@ -67,9 +67,9 @@ defmodule Crit.Ecto.BulkInsert do
     {:error, changeset}
   end
 
-  def simplify_transaction_results({:ok, tx_results}, desired_keys) do
+  def simplify_transaction_results({:ok, tx_result}, desired_keys) do
     extracted = Enum.reduce(desired_keys, %{}, fn desired, acc ->
-      Map.put(acc, desired, tx_results[desired])
+      Map.put(acc, desired, tx_result[desired])
     end)
 
     {:ok, extracted}
@@ -125,8 +125,8 @@ defmodule Crit.Ecto.BulkInsert do
   def append_id_collector(multi, kwlist) do
     config = Enum.into(kwlist, %{})
 
-    add_id_collector = fn _repo, tx_results -> 
-      Testable.collect_ids(tx_results, schema: config.schema)
+    add_id_collector = fn _repo, tx_result -> 
+      Testable.collect_ids(tx_result, schema: config.schema)
     end
 
     multi

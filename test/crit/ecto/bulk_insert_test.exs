@@ -46,16 +46,16 @@ defmodule Crit.Ecto.BulkInsertTest do
     setup do  
       opts = [schema: Write.ServiceGap, ids: :gap_ids]
 
-      {:ok, tx_results} =
+      {:ok, tx_result} =
         @service_gap_cs_list
         |> BulkInsert.idlist_script(@institution, opts)
         |> Sql.transaction(@institution)
 
-      [tx_results: tx_results]
+      [tx_result: tx_result]
     end
 
-    test "it returns collected ids", %{tx_results: tx_results} do
-      [before_id, after_id] = tx_results.gap_ids
+    test "it returns collected ids", %{tx_result: tx_result} do
+      [before_id, after_id] = tx_result.gap_ids
 
       before_service = Sql.get(Write.ServiceGap, before_id, @institution)
       after_service = Sql.get(Write.ServiceGap, after_id, @institution)
@@ -188,11 +188,11 @@ defmodule Crit.Ecto.BulkInsertTest do
 
 
     test "cross product and creation of many-to-many structs" do
-      tx_results =
+      tx_result =
         %{animal_ids: [1, 2], service_gap_ids: [11, 22]}
       cross_product =
         Testable.many_to_many_structs(
-          tx_results,
+          tx_result,
           Write.AnimalServiceGap,
           {:animal_ids, :service_gap_ids})
       
