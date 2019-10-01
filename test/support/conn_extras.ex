@@ -8,6 +8,7 @@ defmodule CritWeb.ConnExtras do
   import CritWeb.Plugs.Accessors
   use Crit.Global.Default
   alias Phoenix.HTML
+  alias Crit.Audit.ToMemory.Server, as: Audit
 
   # ASSERTIONS
 
@@ -71,6 +72,8 @@ defmodule CritWeb.ConnExtras do
     do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
 
   def standard_blank_error, do: "can&#39;t be blank"
+
+  def latest_audit_record(conn), do: Audit.latest(audit_pid(conn))
 
   # USERS
 
