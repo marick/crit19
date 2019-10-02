@@ -19,7 +19,6 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
     end
     create unique_index("animals", [:name, :available],
       name: :unique_available_names)
-
     create table("service_gaps") do
       add :gap, :daterange, null: false
       add :reason, :text, null: false
