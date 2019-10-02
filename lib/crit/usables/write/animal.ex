@@ -11,10 +11,6 @@ defmodule Crit.Usables.Write.Animal do
     timestamps()
   end
 
-  def new(opts) do
-    Enum.into(opts, %__MODULE__{})
-  end
-  
   def changeset(animal, attrs) do
     animal
     |> cast(attrs, [:name, :species_id, :lock_version])
