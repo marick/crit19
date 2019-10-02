@@ -19,6 +19,9 @@ defmodule Ecto.Timespan do
     customary(first, NaiveDateTime.add(first, addition * 60, :second))
   end
 
-  def for_instant(instant), do: new(instant, instant, true, true)
+  def from_date_time_and_duration(%Date{} = date, %Time{} = time, minutes) do
+    {:ok, start} = NaiveDateTime.new(date, time)
+    plus(start, minutes, :minute)
+  end
 
 end

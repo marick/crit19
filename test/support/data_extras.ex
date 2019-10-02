@@ -29,5 +29,5 @@ defmodule Crit.DataExtras do
 
   def assert_date_and_after(%Datespan{} = span, %Date{} = date),
     do: assert_same_date(span, Datespan.date_and_after(date))
-      
+  
 end
