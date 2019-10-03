@@ -4,11 +4,9 @@ defmodule Crit.Usables.Write.Reservation do
   alias Ecto.Timespan
   alias Crit.Sql
 
-  schema "reservation" do
+  schema "reservations" do
     field :timespan, Timespan
     field :species_id, :id
-    field :animal_ids, {:array, :integer}
-    field :procedure_ids, {:array, :integer}
 
 
     field :start_date, :date, virtual: true
@@ -17,8 +15,7 @@ defmodule Crit.Usables.Write.Reservation do
     timestamps()
   end
 
-  @required [:start_date, :start_time, :minutes,
-             :species_id, :animal_ids, :procedure_ids]
+  @required [:start_date, :start_time, :minutes, :species_id]
 
   def changeset(reservation, attrs) do
     reservation

@@ -156,8 +156,7 @@ defmodule Crit.Ecto.TimespanTest do
   end
   
   defp add_reservation!(timespan) do
-    reservation = %Write.Reservation{animal_ids: [1], procedure_ids: [2],
-                                  timespan: timespan}
+    reservation = %Write.Reservation{species_id: @bovine_id, timespan: timespan}
     Sql.insert!(reservation, @institution)
   end
 end
