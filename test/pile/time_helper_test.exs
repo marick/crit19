@@ -9,5 +9,20 @@ defmodule Pile.TimeHelperTest do
 
     assert Date.diff(later, earlier) == 1
   end
+
+  describe "millisecond precision" do
+    test "for Dates" do
+      actual = TimeHelper.millisecond_precision(~D[2019-09-23])
+      expected = NaiveDateTime.from_erl!({{2019, 9, 23}, {0, 0, 0}}, {0, 6})
+      assert actual == expected
+    end
+
+    test "for NaiveDateTimes" do
+      actual = TimeHelper.millisecond_precision(~N[2019-09-23 01:02:03])
+      expected = NaiveDateTime.from_erl!({{2019, 9, 23}, {1, 2, 3}}, {0, 6})
+      assert actual == expected
+    end
+    
+  end
 end
   

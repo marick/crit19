@@ -15,4 +15,19 @@ defmodule Pile.TimeHelper do
 
   def stub_today_date(timezone, [to_return: retval]),
     do: fn ^timezone -> retval end
+
+  # Default date conversions are only accurate to microseconds. Using
+  # them means that values round-tripped through Postgres would come
+  # back with extra digits of zeroes, which breaks tests.
+  
+  def millisecond_precision(%NaiveDateTime{} = time) do
+    as_erl = NaiveDateTime.to_erl(time)
+    NaiveDateTime.from_erl!(as_erl, {0, 6})
+  end
+
+  def millisecond_precision(%Date{} = date) do
+    zero_in_milliseconds = Time.from_erl!({0, 0, 0}, {0, 6})
+    {:ok, result} = NaiveDateTime.new(date, zero_in_milliseconds)
+    result
+  end
 end

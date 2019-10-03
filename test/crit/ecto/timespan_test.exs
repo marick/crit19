@@ -10,6 +10,7 @@ defmodule Crit.Ecto.TimespanTest do
   import Ecto.Timespan
   alias Crit.Usables.Write
   alias Crit.Sql
+  alias Pile.TimeHelper
 
   @moment      ~N[2000-01-01 01:02:03]
   @prev_moment ~N[2000-01-01 01:02:02]
@@ -26,9 +27,12 @@ defmodule Crit.Ecto.TimespanTest do
 
 
   test "conversions" do
-    result = Timespan.from_date_time_and_duration(~D[2019-11-12], ~T[08:00:00], 90)
-    assert result == Timespan.customary(~N[2019-11-12 08:00:00],
-                                        ~N[2019-11-12 09:30:00])
+    actual =
+      Timespan.from_date_time_and_duration(~D[2019-11-12], ~T[08:00:00], 90)
+    # We match the microsecond precision that Postgres gives us.
+    expected_start = ~N[2019-11-12 08:00:00] |> TimeHelper.millisecond_precision
+    expected_end =   ~N[2019-11-12 09:30:00] |> TimeHelper.millisecond_precision
+    assert actual == Timespan.customary(expected_start, expected_end)
   end
   
   

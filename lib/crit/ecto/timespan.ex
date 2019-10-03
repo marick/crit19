@@ -1,18 +1,20 @@
 defmodule Ecto.Timespan do
   use Ecto.Span, db_type: :tsrange
+  alias Pile.TimeHelper
 
   @behaviour Ecto.Type
 
 
   defp convert_to_endpoint_type(%NaiveDateTime{} = endpoint), do: endpoint
 
-  # Default date conversions are only accurate to microseconds. Using
-  # them means a Timespan round-tripped through Postgres would come
-  # back with extra digits of zeroes, which breaks tests.
-  @zero_in_microseconds Time.from_erl!({0, 0, 0}, {0, 6})
-  defp convert_to_endpoint_type(%Date{} = endpoint) do
-    {:ok, result} = NaiveDateTime.new(endpoint, @zero_in_microseconds)
-    result
+  # Postgres uses microsecond precision, and NaiveDateTimes use
+  # millisecond by default. Forcing microsecond precision makes a
+  # number of tests easier (but a few harder), and it's irrelevant to
+  # the domain if some Timespans have six digits of precision and some
+  # have three.
+  
+  defp convert_to_endpoint_type(%Date{} = date) do
+    TimeHelper.millisecond_precision(date)
   end
 
   def plus(first, addition, :minute) do
@@ -21,7 +23,8 @@ defmodule Ecto.Timespan do
 
   def from_date_time_and_duration(%Date{} = date, %Time{} = time, minutes) do
     {:ok, start} = NaiveDateTime.new(date, time)
-    plus(start, minutes, :minute)
+    start
+    |> TimeHelper.millisecond_precision
+    |> plus(minutes, :minute)
   end
-
 end
