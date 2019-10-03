@@ -1,6 +1,28 @@
 defmodule Crit.Usables.Write.ReservationTest do
   use Crit.DataCase
   alias Crit.Usables.Write
+  alias Crit.Sql
+  alias Ecto.Timespan
+
+  @start_date_param "2019-11-12"
+  @start_time_param "13:30:00"
+  @minutes_param "90"
+  @animal_ids_param ["1", "2", "3"]
+  @procedure_ids_param ["11", "22", "33"]
+
+  @start_date ~D[2019-11-12]
+  @start_time ~T{13:30:00}
+  @minutes 90
+  @animal_ids [1, 2, 3]
+  @procedure_ids [11, 22, 33]
+  
+  @params %{"start_date" => @start_date_param,
+            "start_time" => @start_time_param,
+            "minutes" => @minutes_param,
+            "animal_ids" => @animal_ids_param,
+            "procedure_ids" => @procedure_ids_param,
+  }
+            
 
   describe "changeset" do
     test "required fields are checked" do
@@ -19,21 +41,26 @@ defmodule Crit.Usables.Write.ReservationTest do
     test "appropriate conversions are done" do
       changeset = 
         %Write.Reservation{}
-        |> Write.Reservation.changeset(%{start_date: "2019-11-12",
-                                        start_time: "23:50:00",
-                                        minutes: "5"})
-      assert changeset.changes.start_date == ~D{2019-11-12}
-      assert changeset.changes.start_time == ~T{23:50:00}
-      assert changeset.changes.minutes == 5
+        |> Write.Reservation.changeset(@params)
+      assert changeset.changes.start_date == @start_date
+      assert changeset.changes.start_time == @start_time
+      assert changeset.changes.minutes == @minutes
+      assert changeset.changes.animal_ids == @animal_ids
+      assert changeset.changes.procedure_ids == @procedure_ids
     end
   end
 
   describe "insertion" do
     test "success" do
-      # attrs = %{"name" => "physical examinination"}
-      # {:ok, %Write.Reservation{id: _id}} = Write.Reservation.insert(attrs, @institution)
+      {:ok, %{id: id}} = Write.Reservation.create(@params, @institution)
+      fetched = Sql.get(Write.Reservation, id, @institution)
+
+      expected_timespan =
+        Timespan.from_date_time_and_duration(@start_date, @start_time, @minutes)
+      
+      assert fetched.timespan == expected_timespan
+      assert fetched.animal_ids == @animal_ids
+      assert fetched.procedure_ids == @procedure_ids
     end
   end
-    
-
 end
