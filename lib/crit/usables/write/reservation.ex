@@ -9,13 +9,16 @@ defmodule Crit.Usables.Write.Reservation do
     field :species_id, :id
 
 
+    field :animal_ids, {:array, :id}, virtual: true
+    field :procedure_ids, {:array, :id}, virtual: true
     field :start_date, :date, virtual: true
     field :start_time, :time, virtual: true
     field :minutes, :integer, virtual: true
     timestamps()
   end
 
-  @required [:start_date, :start_time, :minutes, :species_id]
+  @required [:start_date, :start_time, :minutes, :species_id, 
+            :animal_ids, :procedure_ids]
 
   def changeset(reservation, attrs) do
     reservation

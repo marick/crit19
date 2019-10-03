@@ -20,7 +20,6 @@ defmodule Crit.Usables.Write.ReservationTest do
             
 
   describe "changeset" do
-    @tag :skip
     test "required fields are checked" do
       errors =
         %Write.Reservation{}
@@ -31,16 +30,23 @@ defmodule Crit.Usables.Write.ReservationTest do
       assert errors.start_time
       assert errors.minutes
       assert errors.species_id
+      assert errors.animal_ids
+      assert errors.procedure_ids
     end
 
-    @tag :skip
     test "appropriate conversions are done" do
+      params =
+        @params
+        |> Map.put("animal_ids", ["1", "2", "3"])
+        |> Map.put("procedure_ids", ["11", "22", "33"])
       %{changes: changes} =
-        %Write.Reservation{} |> Write.Reservation.changeset(@params)
+        %Write.Reservation{} |> Write.Reservation.changeset(params)
       assert changes.start_date == @start_date
       assert changes.start_time == @start_time
       assert changes.minutes == @minutes
       assert changes.species_id == @bovine_id
+      assert changes.animal_ids == [1, 2, 3]
+      assert changes.procedure_ids == [11, 22, 33]
     end
   end
 
