@@ -54,11 +54,6 @@ defmodule Crit.Ecto.BulkInsert do
     |> append_cross_product_script(institution, cross_opts)
   end
 
-  # def simplify_transaction_results({:error, _step_key, failed_changeset, _so_far}
-  #                                  _) do
-  #   {:error, failed_changeset}
-  # end
-
   def simplify_transaction_results(result, desired) when not is_list(desired) do
     simplify_transaction_results(result, [desired])
   end
