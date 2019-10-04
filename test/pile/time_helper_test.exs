@@ -8,7 +8,7 @@ defmodule Pile.TimeHelperTest do
     later = TimeHelper.today_date("Etc/GMT-6")
 
     {{_y, _mo, _d}, {hour, _m, _s}} = NaiveDateTime.utc_now |> NaiveDateTime.to_erl
-    expected = if hour >= 12, do: 1, else: 0
+    expected = if hour >= 18, do: 1, else: 0
     assert Date.diff(later, earlier) == expected
   end
 
