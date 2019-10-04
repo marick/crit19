@@ -3,6 +3,9 @@ defmodule Crit.Usables.Write.Reservation do
   import Ecto.Changeset
   alias Ecto.Timespan
   alias Crit.Sql
+  alias Crit.Usables.Write
+  alias Ecto.Multi
+  alias Crit.Ecto.BulkInsert
 
   schema "reservations" do
     field :timespan, Timespan
@@ -28,9 +31,26 @@ defmodule Crit.Usables.Write.Reservation do
   end
 
   def create(attrs, institution) do
-    %__MODULE__{}
-    |> changeset(attrs)
-    |> Sql.insert(institution)
+    changeset = changeset(%__MODULE__{}, attrs)
+    %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
+
+    script =
+      Multi.new
+      |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
+    
+    case Sql.transaction(script, institution) do
+      {:error, :reservation, changeset, _so_far} ->
+        {:error, changeset} 
+      {:ok, %{reservation: inserted}} -> 
+        {:ok, inserted}
+    end
+
+    # results = 
+    # for animal_id <- animal_ids, procedure_id <- procedure_ids do
+    #   Write.Use.changeset(%Write.Use{animal_id: animal_id, procedure_id: procedure_id, reservation_id: inserted.id}, %{})
+    #   |> Sql.insert(institution)
+    #   |> IO.inspect 
+    # end
   end
 
 

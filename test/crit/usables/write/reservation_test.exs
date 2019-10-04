@@ -3,6 +3,7 @@ defmodule Crit.Usables.Write.ReservationTest do
   alias Crit.Usables.Write
   alias Crit.Sql
   alias Ecto.Timespan
+  alias Crit.Exemplars.ReservationFocused
 
   @start_date_param "2019-11-12"
   @start_time_param "13:30:00"
@@ -51,9 +52,24 @@ defmodule Crit.Usables.Write.ReservationTest do
   end
 
   describe "insertion" do
-    @tag :skip
-    test "success" do
-      {:ok, %{id: id}} = Write.Reservation.create(@params, @institution)
+    setup do
+      animal_ids =
+        ReservationFocused.inserted_animal_ids(["Bossie", "jeff"], @bovine_id)
+        |> Enum.map(&to_string/1)
+      procedure_ids =
+        ReservationFocused.inserted_procedure_ids(["1", "2"])
+        |> Enum.map(&to_string/1)
+
+      params =
+        @params
+        |> Map.put("animal_ids", animal_ids)
+        |> Map.put("procedure_ids", procedure_ids)
+      [params: params]
+    end
+
+
+    test "success", %{params: params} do
+      {:ok, %{id: id}} = Write.Reservation.create(params, @institution)
       fetched = Sql.get(Write.Reservation, id, @institution)
 
       expected_timespan =
@@ -61,6 +77,27 @@ defmodule Crit.Usables.Write.ReservationTest do
       
       assert fetched.timespan == expected_timespan
       assert fetched.species_id == @bovine_id
+    end
+
+    test "reservation entry: validation failure is transmitted", %{params:  params} do
+      assert {:error, changeset} =
+        params
+        |> Map.put("species_id", "")
+        |> Write.Reservation.create(@institution)
+
+      assert errors_on(changeset).species_id
+    end
+    
+    @tag :skip
+    test "reservation entry: species_id constraint failure is transmitted" do
+    end
+
+    @tag :skip
+    test "use: animal_id constraint failure is transmitted" do
+    end
+
+    @tag :skip
+    test "use: procedure_id constraint failure is transmitted" do
     end
   end
 end

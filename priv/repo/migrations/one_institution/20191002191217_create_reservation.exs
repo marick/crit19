@@ -12,7 +12,6 @@ defmodule Crit.Repo.Migrations.CreateReservation do
       add :animal_id, references("animals"), null: false
       add :procedure_id, references("procedures"), null: false
       add :reservation_id, references("reservations"), null: false
-      timestamps()
     end
   end
 end
