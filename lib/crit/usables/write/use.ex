@@ -21,4 +21,12 @@ defmodule Crit.Usables.Write.Use do
     |> foreign_key_constraint(:procedure_id)
     |> foreign_key_constraint(:reservation_id)
   end
+
+  def changeset_with_constraints(a_use), do: changeset(a_use, %{})
+
+  def reservation_uses(reservation_id, animal_ids, procedure_ids) do
+    for a <- animal_ids, p <- procedure_ids do
+      %__MODULE__{reservation_id: reservation_id, animal_id: a, procedure_id: p}
+    end
+  end
 end

@@ -55,28 +55,36 @@ defmodule Crit.Usables.Write.ReservationTest do
     setup do
       animal_ids =
         ReservationFocused.inserted_animal_ids(["Bossie", "jeff"], @bovine_id)
-        |> Enum.map(&to_string/1)
       procedure_ids =
         ReservationFocused.inserted_procedure_ids(["1", "2"])
-        |> Enum.map(&to_string/1)
 
       params =
         @params
-        |> Map.put("animal_ids", animal_ids)
-        |> Map.put("procedure_ids", procedure_ids)
-      [params: params]
+        |> Map.put("animal_ids", Enum.map(animal_ids, &to_string/1))
+        |> Map.put("procedure_ids", Enum.map(procedure_ids, &to_string/1))
+      [params: params, animal_ids: animal_ids, procedure_ids: procedure_ids]
     end
 
 
-    test "success", %{params: params} do
+    test "success",
+        %{params: params, animal_ids: animal_ids, procedure_ids: procedure_ids} do
       {:ok, %{id: id}} = Write.Reservation.create(params, @institution)
-      fetched = Sql.get(Write.Reservation, id, @institution)
+      reservation = Sql.get(Write.Reservation, id, @institution)
 
       expected_timespan =
         Timespan.from_date_time_and_duration(@start_date, @start_time, @minutes)
       
-      assert fetched.timespan == expected_timespan
-      assert fetched.species_id == @bovine_id
+      assert reservation.timespan == expected_timespan
+      assert reservation.species_id == @bovine_id
+
+      # Check for valid uses
+      uses = Sql.all(Write.Use, @institution)
+      assert length(uses) == 4
+      assert one_use = List.first(uses)
+      
+      assert one_use.animal_id in animal_ids
+      assert one_use.procedure_id in procedure_ids
+      assert one_use.reservation_id == reservation.id
     end
 
     test "reservation entry: validation failure is transmitted", %{params:  params} do
