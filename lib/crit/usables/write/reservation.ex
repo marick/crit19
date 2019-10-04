@@ -28,6 +28,7 @@ defmodule Crit.Usables.Write.Reservation do
     |> cast(attrs, @required)
     |> validate_required(@required)
     |> populate_timespan
+    |> foreign_key_constraint(:species_id)
   end
 
   def create(attrs, institution) do

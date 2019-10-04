@@ -96,8 +96,14 @@ defmodule Crit.Usables.Write.ReservationTest do
       assert errors_on(changeset).species_id
     end
     
-    @tag :skip
-    test "reservation entry: species_id constraint failure is transmitted" do
+    test "reservation entry: species_id constraint failure is transmitted",
+      %{params: params} do
+      assert {:error, changeset} =
+        params
+        |> Map.put("species_id", "383838921")
+        |> Write.Reservation.create(@institution)
+
+      assert errors_on(changeset).species_id
     end
 
     @tag :skip

@@ -1,9 +1,6 @@
 defmodule Crit.Usables.Write.Use do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Ecto.Timespan
-  alias Crit.Sql
-
 
   schema "uses" do
     field :animal_id, :id
