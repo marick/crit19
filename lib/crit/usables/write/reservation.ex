@@ -34,37 +34,43 @@ defmodule Crit.Usables.Write.Reservation do
     changeset = changeset(%__MODULE__{}, attrs)
     %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
 
-    insert_cross_product = fn tx_result ->
-      tx_result.reservation.id
-      |> Write.Use.reservation_uses(animal_ids, procedure_ids)
-      |> Enum.reduce(Multi.new, fn use, acc ->
-        Multi.insert(acc,
-          use,  # We have to give a unique name for the result.
-          Write.Use.changeset_with_constraints(use),
-          Sql.multi_opts(institution))
-      end)
-    end
+    use_insertion_script_maker =
+      make_use_insertion_script_maker(animal_ids, procedure_ids, institution)
     
     Multi.new
     |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
-    |> Multi.merge(insert_cross_product)
+    |> Multi.merge(use_insertion_script_maker)
     |> Sql.transaction(institution)
     |> produce_one_result(:reservation)
   end
 
+  defp make_use_insertion_script_maker(animal_ids, procedure_ids, institution) do 
+    fn tx_result ->
 
-  def produce_one_result({:error, _failing_step, changeset, _so_far}, _) do
+      reducer = fn use, multi_so_far ->
+        Multi.insert(multi_so_far,
+          use,  # We have to give a unique name for the result.
+          Write.Use.changeset_with_constraints(use),
+          Sql.multi_opts(institution))
+      end
+      
+      tx_result.reservation.id
+      |> Write.Use.reservation_uses(animal_ids, procedure_ids)
+      |> Enum.reduce(Multi.new, reducer)
+    end
+  end
+  
+
+  defp produce_one_result({:error, _failing_step, changeset, _so_far}, _) do
     {:error, changeset}
   end
   
-  def produce_one_result({:ok, tx_result}, key) do
+  defp produce_one_result({:ok, tx_result}, key) do
     {:ok, Map.get(tx_result, key)}
   end
 
-
-
-  def populate_timespan(%{valid?: false} = changeset), do: changeset
-  def populate_timespan(%{changes: changes} = changeset) do
+  defp populate_timespan(%{valid?: false} = changeset), do: changeset
+  defp populate_timespan(%{changes: changes} = changeset) do
     timespan = Timespan.from_date_time_and_duration(
       changes.start_date, changes.start_time, changes.minutes)
     put_change(changeset, :timespan, timespan)
