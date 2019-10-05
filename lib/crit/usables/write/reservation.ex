@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Write.Reservation do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Ecto.Changeset
   alias Ecto.Timespan
   alias Crit.Sql
   alias Crit.Usables.Write
@@ -37,12 +38,23 @@ defmodule Crit.Usables.Write.Reservation do
 
     use_insertion_script_maker =
       make_use_insertion_script_maker(animal_ids, procedure_ids, institution)
-    
-    Multi.new
-    |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
-    |> Multi.merge(use_insertion_script_maker)
-    |> Sql.transaction(institution)
-    |> produce_one_result(:reservation)
+
+    result = 
+      Multi.new
+      |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
+      |> Multi.merge(use_insertion_script_maker)
+      |> Sql.transaction(institution)
+
+    case result do
+      {:ok, tx_result} ->
+        {:ok, tx_result.reservation}
+      {:error, :reservation, failing_changeset, _so_far} ->
+        {:error, failing_changeset}
+      {:error, _step, _failing_changeset, _so_far} ->
+        changeset
+        |> Changeset.add_error(:animal_ids, "program error")
+        |> Changeset.apply_action(:insert)
+    end
   end
 
   defp make_use_insertion_script_maker(animal_ids, procedure_ids, institution) do 

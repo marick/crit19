@@ -106,8 +106,16 @@ defmodule Crit.Usables.Write.ReservationTest do
       assert errors_on(changeset).species_id
     end
 
-    @tag :skip
-    test "use: animal_id constraint failure is transmitted" do
+    test "use: animal_id constraint failure is transmitted", 
+    %{params: params} do
+
+      bad_params = Map.update!(params, "animal_ids",
+        fn current -> Enum.concat(current, ["88383838"]) end)
+      
+      assert {:error, changeset} =
+        bad_params
+        |> Write.Reservation.create(@institution)
+      assert errors_on(changeset).animal_ids
     end
 
     @tag :skip
