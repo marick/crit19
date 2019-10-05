@@ -13,23 +13,16 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
       &bulk_insert_step/1,
     ]
 
-    case run_steps(%{attrs: attrs, institution: institution}, steps) do 
-      {:ok, tx_result} ->
-        {:ok, tx_result.animal_ids}
-      error ->
-        error
-    end
+    Write.Workflow.run(attrs, institution, steps, :animal_ids)
   end
 
   # The essential steps in the workflow
 
-  defp validation_step(%{attrs: attrs} = state) do
-    changeset = Write.BulkAnimal.compute_insertables(attrs)
-    if changeset.valid? do
-      {:ok, Map.put(state, :bulk_changeset, changeset)}
-    else
-      {:error, changeset}
-    end
+  defp validation_step(state) do
+    Write.Workflow.validation_step(
+      state,
+      &Write.BulkAnimal.compute_insertables/1,
+      :bulk_changeset)
   end
 
   defp split_changeset_step(%{bulk_changeset: changeset} = state) do
@@ -74,15 +67,4 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
     |> BulkInsert.simplify_transaction_results(:animal_ids)
   end
 
-  defp run_steps(state, []),
-    do: {:ok, state}
-  
-  defp run_steps(state, [next | rest]) do
-    case next.(state) do
-      {:ok, state} ->
-        run_steps(state, rest)
-      error ->
-        error
-    end
-  end
 end

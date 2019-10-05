@@ -33,6 +33,50 @@ defmodule Crit.Usables.Write.Reservation do
   end
 
   def create(attrs, institution) do
+    steps = [
+      &validation_step/1,
+      &bulk_insert_step/1,
+    ]
+
+    Write.Workflow.run(attrs, institution, steps, :reservation)
+  end
+
+
+  defp validation_step(state) do
+    Write.Workflow.validation_step(
+      state,
+      (fn attrs -> changeset(%__MODULE__{}, attrs) end),
+      :bulk_changeset)
+  end
+
+  defp bulk_insert_step(%{bulk_changeset: changeset,
+                          institution: institution} = state) do 
+    %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
+
+    use_insertion_script_maker =
+      make_use_insertion_script_maker(animal_ids, procedure_ids, institution)
+
+    result = 
+      Multi.new
+      |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
+      |> Multi.merge(use_insertion_script_maker)
+      |> Sql.transaction(institution)
+
+      case result do 
+        {:ok, tx_result} ->
+          {:ok, Map.put(state, :reservation, tx_result.reservation)}
+        {:error, :reservation, failing_changeset, _so_far} ->
+          {:error, failing_changeset}
+        {:error, _step, failing_changeset, _so_far} ->
+          impossible_input("Animal or procedure id is invalid.",
+            changeset: failing_changeset)
+      end
+  end
+
+
+  
+
+  def create_2(attrs, institution) do
     changeset = changeset(%__MODULE__{}, attrs)
     %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
 
