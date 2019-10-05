@@ -2,6 +2,7 @@ defmodule Crit.Usables.Write.DateComputers do
   use Ecto.Schema
   use Crit.Global.Constants
   import Ecto.Changeset
+  import Crit.Errors
   alias Pile.ChangesetFlow, as: Flow
   alias Pile.TimeHelper
 
@@ -40,11 +41,9 @@ defmodule Crit.Usables.Write.DateComputers do
       {:ok, date} -> 
         put_change(changeset, to, date)
       {:error, _} ->
-        add_error(changeset, from, parse_error_message())
+        impossible_input("invalid date `#{date_string}`")
     end
   end
 
-  def parse_error_message,
-    do: "is not a correct date. This should be impossible. Please report the problem."
   def misorder_error_message, do: "should not be before the start date"
 end  

@@ -1,12 +1,11 @@
 defmodule Crit.Usables.Write.Reservation do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Ecto.Changeset
+  import Crit.Errors
   alias Ecto.Timespan
   alias Crit.Sql
   alias Crit.Usables.Write
   alias Ecto.Multi
-#  alias Crit.Ecto.BulkInsert
 
   schema "reservations" do
     field :timespan, Timespan
@@ -24,12 +23,13 @@ defmodule Crit.Usables.Write.Reservation do
   @required [:start_date, :start_time, :minutes, :species_id, 
             :animal_ids, :procedure_ids]
 
+  # Note: there's deliberately no foreign key constraint added for
+  # species_id. This is an "impossible error"
   def changeset(reservation, attrs) do
     reservation
     |> cast(attrs, @required)
     |> validate_required(@required)
     |> populate_timespan
-    |> foreign_key_constraint(:species_id)
   end
 
   def create(attrs, institution) do
@@ -50,10 +50,9 @@ defmodule Crit.Usables.Write.Reservation do
         {:ok, tx_result.reservation}
       {:error, :reservation, failing_changeset, _so_far} ->
         {:error, failing_changeset}
-      {:error, _step, _failing_changeset, _so_far} ->
-        changeset
-        |> Changeset.add_error(:animal_ids, "program error")
-        |> Changeset.apply_action(:insert)
+      {:error, _step, failing_changeset, _so_far} ->
+        impossible_input("Animal or procedure id is invalid.",
+          changeset: failing_changeset)
     end
   end
 

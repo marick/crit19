@@ -3,7 +3,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables
-  alias Crit.Usables.Write.{DateComputers, NameListComputers}
+  alias Crit.Usables.Write.{NameListComputers}
   alias Crit.Usables.Read
   alias CritWeb.Audit
 
@@ -67,23 +67,38 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     test "renders errors when data is invalid", %{conn: conn, act: act} do
       {_names, params} = animal_creation_data()
 
-      bad_params =
-        params 
-        |> Map.put("names", " ,     ,")
-        |> Map.put("start_date", "yesterday...")
-        |> Map.put("end_date", "2525-05-06")
+      bad_params = Map.put(params, "names", " ,     ,")
 
       act.(conn, bad_params)
       |> assert_purpose(form_for_creating_new_animal())
 
       # error messages
-      |> assert_user_sees(DateComputers.parse_error_message())
       |> assert_user_sees(NameListComputers.no_names_error_message())
       # Fields retain their old values.
       |> assert_user_sees(bad_params["names"])
-      |> assert_user_sees(bad_params["start_date"])
-      |> assert_user_sees(bad_params["end_date"])
     end
+
+    test "a bad start date is supposed to be impossible", %{conn: conn, act: act} do
+      {_names, params} = animal_creation_data()
+
+      bad_params = Map.put(params, "start_date", "yesterday...")
+
+      assert_raise RuntimeError, fn -> 
+        act.(conn, bad_params)
+      end
+    end
+
+    test "a bad end date is supposed to be impossible", %{conn: conn, act: act} do
+      {_names, params} = animal_creation_data()
+
+      bad_params = Map.put(params, "end_date", "2525-13-06")
+
+      assert_raise RuntimeError, fn -> 
+        act.(conn, bad_params)
+      end
+    end
+
+    
 
     test "an audit record is created", %{conn: conn, act: act} do
       {_names, params} = animal_creation_data()

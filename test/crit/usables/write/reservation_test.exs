@@ -96,30 +96,36 @@ defmodule Crit.Usables.Write.ReservationTest do
       assert errors_on(changeset).species_id
     end
     
-    test "reservation entry: species_id constraint failure is transmitted",
+    test "reservation entry: species_id constraint failure should be impossible",
       %{params: params} do
-      assert {:error, changeset} =
-        params
-        |> Map.put("species_id", "383838921")
-        |> Write.Reservation.create(@institution)
 
-      assert errors_on(changeset).species_id
+      bad_params = Map.put(params, "species_id", "383838921")
+
+      assert_raise Ecto.ConstraintError, fn -> 
+        Write.Reservation.create(bad_params, @institution)
+      end
     end
 
-    test "use: animal_id constraint failure is transmitted", 
+    test "use: animal_id constraint failure is supposedly impossible", 
     %{params: params} do
 
       bad_params = Map.update!(params, "animal_ids",
         fn current -> Enum.concat(current, ["88383838"]) end)
-      
-      assert {:error, changeset} =
-        bad_params
-        |> Write.Reservation.create(@institution)
-      assert errors_on(changeset).animal_ids
+
+      assert_raise RuntimeError, fn -> 
+        Write.Reservation.create(bad_params, @institution)
+      end
     end
 
-    @tag :skip
-    test "use: procedure_id constraint failure is transmitted" do
+    test "use: procedure_id constraint failure is supposedly impossible",
+      %{params: params} do
+
+      bad_params = Map.update!(params, "procedure_ids",
+        fn current -> Enum.concat(current, ["88383838"]) end)
+
+      assert_raise RuntimeError, fn -> 
+        Write.Reservation.create(bad_params, @institution)
+      end
     end
   end
 end

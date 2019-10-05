@@ -66,14 +66,12 @@ defmodule Crit.Usables.Write.DateComputersTest do
     assert errors.end_date == [DateComputers.misorder_error_message]
   end
 
-  test "for completeness, a supposedly impossible ill-formed date" do
-    errors =
+  test "a supposedly impossible ill-formed date" do
+
+    assert_raise RuntimeError, "Impossible input: invalid date `todays`", fn -> 
       [start_date: "todays", end_date: "Nev"]
       |> make_changeset_with_dates
       |> DateComputers.put_start_and_end
-      |> errors_on
-    
-      assert errors.start_date == [DateComputers.parse_error_message]
-      assert errors.end_date == [DateComputers.parse_error_message]
     end
+  end
 end  
