@@ -13,7 +13,7 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
       &bulk_insert_step/1,
     ]
 
-    Write.Workflow.run(attrs, institution, steps, :animal_ids)
+    Write.Workflow.run(attrs, institution, steps)
   end
 
   # The essential steps in the workflow
@@ -38,7 +38,7 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
 
     case bulk_insert(changesets, institution) do
       {:ok, %{animal_ids: ids}} ->
-        {:ok, Map.put(state, :animal_ids, ids)}
+        {:ok, ids}
       {:error, _failing_step, failing_changeset, _so_far} ->
         duplicate = failing_changeset.changes.name
         message = ~s|An animal named "#{duplicate}" is already in service|

@@ -38,7 +38,7 @@ defmodule Crit.Usables.Write.Reservation do
       &bulk_insert_step/1,
     ]
 
-    Write.Workflow.run(attrs, institution, steps, :reservation)
+    Write.Workflow.run(attrs, institution, steps)
   end
 
 
@@ -64,7 +64,7 @@ defmodule Crit.Usables.Write.Reservation do
 
       case result do 
         {:ok, tx_result} ->
-          {:ok, Map.put(state, :reservation, tx_result.reservation)}
+          {:ok, tx_result.reservation}
         {:error, :reservation, failing_changeset, _so_far} ->
           {:error, failing_changeset}
         {:error, _step, failing_changeset, _so_far} ->

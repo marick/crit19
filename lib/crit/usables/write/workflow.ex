@@ -5,14 +5,8 @@ defmodule Crit.Usables.Write.Workflow do
   alias Crit.Global
   alias Ecto.Changeset
 
-  def run(attrs, institution, steps, result_key) do
-    result = run_steps(%{attrs: attrs, institution: institution}, steps)
-    case result do
-      {:ok, state} ->
-        {:ok, Map.get(state, result_key)}
-      error ->
-        error
-    end
+  def run(attrs, institution, steps) do
+    run_steps(%{attrs: attrs, institution: institution}, steps)
   end
 
   def run_steps(state, []),
