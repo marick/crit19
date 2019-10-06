@@ -1,9 +1,4 @@
 defmodule Crit.Usables.Write.Workflow do
-  alias Crit.Sql
-  alias Crit.Usables.Write
-  alias Crit.Ecto.BulkInsert
-  alias Crit.Global
-  alias Ecto.Changeset
 
   def run(attrs, institution, steps) do
     run_steps(%{attrs: attrs, institution: institution}, steps)
@@ -31,16 +26,18 @@ defmodule Crit.Usables.Write.Workflow do
     end
   end
 
+
+  # Handle return value from an Sql.transaction.
   
   def on_ok({:ok, tx_result}, [extract: key]) do
     {:ok, tx_result[key]}
   end
   def on_ok(fall_through, _), do: fall_through
 
-  def on_error({:error, step, failing_changeset, _so_far}, handler) do
+  def on_failed_step({:error, step, failing_changeset, _so_far}, handler) do
     handler.(step, failing_changeset)
   end
-  def on_error(fall_through, _), do: fall_through
+  def on_failed_step(fall_through, _), do: fall_through
   
 
 

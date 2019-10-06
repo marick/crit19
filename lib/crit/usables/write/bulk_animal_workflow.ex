@@ -34,11 +34,19 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   defp bulk_insert_step(%{
         original_changeset: changeset,
         changesets: changesets,
-        institution: institution} = state) do
+        institution: institution}) do
 
-    bulk_insert(changesets, institution)
+    %{animal_changesets: animal_changesets,
+      service_gap_changesets: service_gap_changesets} = changesets
+
+    institution
+    |> BulkInsert.three_schema_insertion(
+           insert: animal_changesets, yielding: :animal_ids,
+           insert: service_gap_changesets, yielding: :service_gap_ids,
+           many_to_many: Write.AnimalServiceGap)
+    |> Sql.transaction(institution)
     |> Write.Workflow.on_ok(extract: :animal_ids)
-    |> Write.Workflow.on_error(fn _, failing_changeset ->
+    |> Write.Workflow.on_failed_step(fn _, failing_changeset ->
         duplicate = failing_changeset.changes.name
         message = ~s|An animal named "#{duplicate}" is already in service|
         changeset
@@ -47,24 +55,4 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
         # Note that `apply_action` will return {:error, changeset} in this case.
        end)
   end
-
-
-  
-
-#  ---- 
-
-
-  defp bulk_insert(
-    %{animal_changesets: animal_changesets,
-      service_gap_changesets: service_gap_changesets},
-    institution) do 
-
-    institution
-    |> BulkInsert.three_schema_insertion(
-           insert: animal_changesets, yielding: :animal_ids,
-           insert: service_gap_changesets, yielding: :service_gap_ids,
-           many_to_many: Write.AnimalServiceGap)
-    |> Sql.transaction(institution)
-  end
-
 end

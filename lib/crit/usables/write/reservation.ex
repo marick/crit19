@@ -50,49 +50,23 @@ defmodule Crit.Usables.Write.Reservation do
   end
 
   defp bulk_insert_step(%{original_changeset: changeset,
-                          institution: institution} = state) do 
+                          institution: institution}) do 
     %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
 
     use_insertion_script_maker =
       make_use_insertion_script_maker(animal_ids, procedure_ids, institution)
 
-    result = 
-      Multi.new
-      |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
-      |> Multi.merge(use_insertion_script_maker)
-      |> Sql.transaction(institution)
-      |> Write.Workflow.on_ok(extract: :reservation)
-      |> Write.Workflow.on_error(fn
+    Multi.new
+    |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
+    |> Multi.merge(use_insertion_script_maker)
+    |> Sql.transaction(institution)
+    |> Write.Workflow.on_ok(extract: :reservation)
+    |> Write.Workflow.on_failed_step(fn
         (:reservation, failing_changeset) -> failing_changeset
         (_, failing_changeset) ->
           impossible_input("Animal or procedure id is invalid.",
             changeset: failing_changeset)
-       end)
-    end
-  
-
-  def create_2(attrs, institution) do
-    changeset = changeset(%__MODULE__{}, attrs)
-    %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
-
-    use_insertion_script_maker =
-      make_use_insertion_script_maker(animal_ids, procedure_ids, institution)
-
-    result = 
-      Multi.new
-      |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
-      |> Multi.merge(use_insertion_script_maker)
-      |> Sql.transaction(institution)
-
-    case result do
-      {:ok, tx_result} ->
-        {:ok, tx_result.reservation}
-      {:error, :reservation, failing_changeset, _so_far} ->
-        {:error, failing_changeset}
-      {:error, _step, failing_changeset, _so_far} ->
-        impossible_input("Animal or procedure id is invalid.",
-          changeset: failing_changeset)
-    end
+        end)
   end
 
   defp make_use_insertion_script_maker(animal_ids, procedure_ids, institution) do 
@@ -109,15 +83,6 @@ defmodule Crit.Usables.Write.Reservation do
       |> Write.Use.reservation_uses(animal_ids, procedure_ids)
       |> Enum.reduce(Multi.new, reducer)
     end
-  end
-  
-
-  defp produce_one_result({:error, _failing_step, changeset, _so_far}, _) do
-    {:error, changeset}
-  end
-  
-  defp produce_one_result({:ok, tx_result}, key) do
-    {:ok, Map.get(tx_result, key)}
   end
 
   defp populate_timespan(%{valid?: false} = changeset), do: changeset
