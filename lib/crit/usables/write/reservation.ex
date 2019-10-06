@@ -46,10 +46,10 @@ defmodule Crit.Usables.Write.Reservation do
     Write.Workflow.validation_step(
       state,
       (fn attrs -> changeset(%__MODULE__{}, attrs) end),
-      :bulk_changeset)
+      :original_changeset)
   end
 
-  defp bulk_insert_step(%{bulk_changeset: changeset,
+  defp bulk_insert_step(%{original_changeset: changeset,
                           institution: institution} = state) do 
     %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
 

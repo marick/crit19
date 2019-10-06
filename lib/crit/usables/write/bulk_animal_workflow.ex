@@ -22,17 +22,17 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
     Write.Workflow.validation_step(
       state,
       &Write.BulkAnimal.compute_insertables/1,
-      :bulk_changeset)
+      :original_changeset)
   end
 
-  defp split_changeset_step(%{bulk_changeset: changeset} = state) do
+  defp split_changeset_step(%{original_changeset: changeset} = state) do
     changesets = Write.BulkAnimal.changeset_to_changesets(changeset)
 
     {:ok, Map.put(state, :changesets, changesets)}
   end
 
   defp bulk_insert_step(%{
-        bulk_changeset: changeset,
+        original_changeset: changeset,
         changesets: changesets,
         institution: institution} = state) do
 
