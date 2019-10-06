@@ -61,19 +61,14 @@ defmodule Crit.Usables.Write.Reservation do
       |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
       |> Multi.merge(use_insertion_script_maker)
       |> Sql.transaction(institution)
-
-      case result do 
-        {:ok, tx_result} ->
-          {:ok, tx_result.reservation}
-        {:error, :reservation, failing_changeset, _so_far} ->
-          {:error, failing_changeset}
-        {:error, _step, failing_changeset, _so_far} ->
+      |> Write.Workflow.on_ok(extract: :reservation)
+      |> Write.Workflow.on_error(fn
+        (:reservation, failing_changeset) -> failing_changeset
+        (_, failing_changeset) ->
           impossible_input("Animal or procedure id is invalid.",
             changeset: failing_changeset)
-      end
-  end
-
-
+       end)
+    end
   
 
   def create_2(attrs, institution) do

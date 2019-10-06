@@ -36,19 +36,20 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
         changesets: changesets,
         institution: institution} = state) do
 
-    case bulk_insert(changesets, institution) do
-      {:ok, %{animal_ids: ids}} ->
-        {:ok, ids}
-      {:error, _failing_step, failing_changeset, _so_far} ->
+    bulk_insert(changesets, institution)
+    |> Write.Workflow.on_ok(extract: :animal_ids)
+    |> Write.Workflow.on_error(fn _, failing_changeset ->
         duplicate = failing_changeset.changes.name
         message = ~s|An animal named "#{duplicate}" is already in service|
         changeset
         |> Changeset.add_error(:names, message)
         |> Changeset.apply_action(:insert)
         # Note that `apply_action` will return {:error, changeset} in this case.
-    end
+       end)
   end
 
+
+  
 
 #  ---- 
 

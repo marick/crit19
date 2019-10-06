@@ -31,4 +31,17 @@ defmodule Crit.Usables.Write.Workflow do
     end
   end
 
+  
+  def on_ok({:ok, tx_result}, [extract: key]) do
+    {:ok, tx_result[key]}
+  end
+  def on_ok(fall_through, _), do: fall_through
+
+  def on_error({:error, step, failing_changeset, _so_far}, handler) do
+    handler.(step, failing_changeset)
+  end
+  def on_error(fall_through, _), do: fall_through
+  
+
+
 end  
