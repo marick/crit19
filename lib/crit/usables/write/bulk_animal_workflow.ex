@@ -39,8 +39,8 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
     case bulk_insert(changesets, institution) do
       {:ok, %{animal_ids: ids}} ->
         {:ok, Map.put(state, :animal_ids, ids)}
-      {:error, single_failure} ->
-        duplicate = single_failure.changes.name
+      {:error, _failing_step, failing_changeset, _so_far} ->
+        duplicate = failing_changeset.changes.name
         message = ~s|An animal named "#{duplicate}" is already in service|
         changeset
         |> Changeset.add_error(:names, message)
@@ -64,7 +64,6 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
            insert: service_gap_changesets, yielding: :service_gap_ids,
            many_to_many: Write.AnimalServiceGap)
     |> Sql.transaction(institution)
-    |> BulkInsert.simplify_transaction_results(:animal_ids)
   end
 
 end
