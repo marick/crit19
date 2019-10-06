@@ -3,7 +3,6 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   alias Crit.Usables.Write
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
-  alias Ecto.Changeset
 
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
@@ -21,8 +20,7 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   defp validation_step(state) do
     Write.Workflow.validation_step(
       state,
-      &Write.BulkAnimal.compute_insertables/1,
-      :original_changeset)
+      &Write.BulkAnimal.compute_insertables/1)
   end
 
   defp split_changeset_step(%{original_changeset: changeset} = state) do
@@ -32,27 +30,35 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   end
 
   defp bulk_insert_step(%{
-        original_changeset: changeset,
+        original_changeset: original_changeset,
         changesets: changesets,
         institution: institution}) do
 
     %{animal_changesets: animal_changesets,
       service_gap_changesets: service_gap_changesets} = changesets
 
-    institution
-    |> BulkInsert.three_schema_insertion(
+    script = 
+      institution
+      |> BulkInsert.three_schema_insertion(
            insert: animal_changesets, yielding: :animal_ids,
            insert: service_gap_changesets, yielding: :service_gap_ids,
            many_to_many: Write.AnimalServiceGap)
+
+    script
     |> Sql.transaction(institution)
     |> Write.Workflow.on_ok(extract: :animal_ids)
-    |> Write.Workflow.on_failed_step(fn _, failing_changeset ->
-        duplicate = failing_changeset.changes.name
-        message = ~s|An animal named "#{duplicate}" is already in service|
-        changeset
-        |> Changeset.add_error(:names, message)
-        |> Changeset.apply_action(:insert)
-        # Note that `apply_action` will return {:error, changeset} in this case.
-       end)
+    |> Write.Workflow.on_failed_step(transfer_error_to(original_changeset))
+  end
+
+  # This is dodgy. We happen to know that the only kind of changeset error
+  # that can happen in a transaction is because of a duplicate animal.
+  defp transfer_error_to(original_changeset) do
+    fn _, failing_changeset ->
+      duplicate = failing_changeset.changes.name
+      message = ~s[An animal named "#{duplicate}" is already in service]
+      {:error,
+       Write.Workflow.transfer_constraint_error(original_changeset, :names, message)
+      }
+    end
   end
 end

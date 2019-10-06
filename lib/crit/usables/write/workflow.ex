@@ -1,11 +1,20 @@
 defmodule Crit.Usables.Write.Workflow do
+  alias Ecto.Changeset
+  alias Ecto.ChangesetX
 
-  def run(attrs, institution, steps) do
-    run_steps(%{attrs: attrs, institution: institution}, steps)
+
+  defmodule State do 
+    defstruct attrs: nil, institution: nil, # Must be supplied on creation
+      original_changeset: nil   # There is always a validation of the form
   end
 
-  def run_steps(state, []),
-    do: {:ok, state}
+  def run(attrs, institution, steps) do
+    state = %State{attrs: attrs, institution: institution}
+    run_steps(state , steps)
+  end
+
+  def run_steps(final_result, []),
+    do: {:ok, final_result}
   
   def run_steps(state, [next | rest]) do
     case next.(state) do
@@ -17,18 +26,19 @@ defmodule Crit.Usables.Write.Workflow do
   end
 
 
-  def validation_step(%{attrs: attrs} = state, validator, result_key) do 
-    changeset = validator.(attrs)
+  def validation_step(state, validator) do 
+    changeset = validator.(state.attrs)
     if changeset.valid? do
-      {:ok, Map.put(state, result_key, changeset)}
+      {:ok, Map.put(state, :original_changeset, changeset)}
     else
       {:error, changeset}
     end
   end
 
+  
+
 
   # Handle return value from an Sql.transaction.
-  
   def on_ok({:ok, tx_result}, [extract: key]) do
     {:ok, tx_result[key]}
   end
@@ -38,7 +48,21 @@ defmodule Crit.Usables.Write.Workflow do
     handler.(step, failing_changeset)
   end
   def on_failed_step(fall_through, _), do: fall_through
-  
 
+  @doc """
+  Used when the original changeset had no errors but a derived changeset suffered
+  a constraint error. The problem is associated with one of the original fields.
+
+  Phoenix templates do not, by default, display changeset errors
+  unless they come from an attempt to access the database. (That's so errors due
+  to initial form values do not display error messages even though they're not
+  valid.) So we fake an access.
+  """
+
+  def transfer_constraint_error(original_changeset, field, message) do
+    original_changeset
+    |> Changeset.add_error(field, message)
+    |> ChangesetX.ensure_forms_display_errors
+  end    
 
 end  

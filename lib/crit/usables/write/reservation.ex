@@ -45,8 +45,7 @@ defmodule Crit.Usables.Write.Reservation do
   defp validation_step(state) do
     Write.Workflow.validation_step(
       state,
-      (fn attrs -> changeset(%__MODULE__{}, attrs) end),
-      :original_changeset)
+      (fn attrs -> changeset(%__MODULE__{}, attrs) end))
   end
 
   defp bulk_insert_step(%{original_changeset: changeset,
@@ -56,9 +55,12 @@ defmodule Crit.Usables.Write.Reservation do
     use_insertion_script_maker =
       make_use_insertion_script_maker(animal_ids, procedure_ids, institution)
 
-    Multi.new
-    |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
-    |> Multi.merge(use_insertion_script_maker)
+    script = 
+      Multi.new
+      |> Multi.insert(:reservation, changeset, Sql.multi_opts(institution))
+      |> Multi.merge(use_insertion_script_maker)
+
+    script
     |> Sql.transaction(institution)
     |> Write.Workflow.on_ok(extract: :reservation)
     |> Write.Workflow.on_failed_step(fn
