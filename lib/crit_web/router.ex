@@ -51,6 +51,7 @@ IO.puts(
     scope "/animals" do 
       get "/bulk_create", AnimalController, :bulk_create_form
       post "/bulk_create", AnimalController, :bulk_create
+      post "/update/:animal_id", AnimalController, :update
     end
   end
   

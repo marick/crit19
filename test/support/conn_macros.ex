@@ -13,6 +13,11 @@ defmodule CritWeb.ConnMacros do
         get(conn, unquote(controller).path(action, param))
       end
 
+      defp post_to_action(conn, actions, payload) when is_list(actions) do
+        path = apply(unquote(controller), :path, actions)
+        post(conn, path, payload)
+      end
+
       defp post_to_action(conn, action, payload) do
         post(conn, unquote(controller).path(action), payload)
       end

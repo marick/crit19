@@ -6,6 +6,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables.Write.{NameListComputers}
   alias Crit.Usables.Read
   alias CritWeb.Audit
+  alias Crit.Sql
 
   setup :logged_in_as_usables_manager
 
@@ -21,23 +22,18 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
-  defp animal_creation_data() do
-    {start_date, end_date} = Factory.date_pair()
-    {_species_name, species_id} = Enum.random(Usables.available_species(@institution))
-    
-    names =
-      Faker.Cat.name()
-      |> List.duplicate(Faker.random_between(1, 200))
-      |> Enum.with_index
-      |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
+  describe "update" do
+    setup do
+      animal = Factory.sql_insert!(:animal, @institution)
+      [id: animal.id]
+    end
 
-    params = %{"names" => Enum.join(names, ", "), 
-               "species_id" => species_id,
-               "start_date" => start_date,
-               "end_date" => end_date
-              }
-
-    {names, params}
+    @tag :skip
+    test "species change", %{conn: conn, id: id} do
+      assert Sql.get(Read.Animal, id, @institution).name != "newname" 
+      post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
+      assert Sql.get(Read.Animal, id, @institution).name == "newname" 
+    end
   end
 
   describe "bulk create animals" do
@@ -115,6 +111,26 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert audit.data.in_service_date == typical_animal.in_service_date
       assert audit.data.out_of_service_date == typical_animal.out_of_service_date
     end
+  end
+
+
+  defp animal_creation_data() do
+    {start_date, end_date} = Factory.date_pair()
+    {_species_name, species_id} = Enum.random(Usables.available_species(@institution))
+    
+    names =
+      Faker.Cat.name()
+      |> List.duplicate(Faker.random_between(1, 200))
+      |> Enum.with_index
+      |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
+
+    params = %{"names" => Enum.join(names, ", "), 
+               "species_id" => species_id,
+               "start_date" => start_date,
+               "end_date" => end_date
+              }
+
+    {names, params}
   end
 
   defp one_of_these_as_showable_animal([id | _]) do 
