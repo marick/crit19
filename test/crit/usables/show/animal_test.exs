@@ -13,7 +13,7 @@ defmodule Crit.Usables.Show.AnimalTest do
       base = %Read.Animal{
         id: @id,
         name: "Bossie",
-        species: %Read.Species{name: @bovine_id}
+        species: %Read.Species{name: @bovine, id: @bovine_id}
       }
 
       in_service = %Read.ServiceGap{gap: Datespan.strictly_before(@date)}
@@ -32,7 +32,8 @@ defmodule Crit.Usables.Show.AnimalTest do
 
       assert result.id == @id
       assert result.name == "Bossie"
-      assert result.species_name == @bovine_id
+      assert result.species_name == @bovine
+      assert result.species_id == @bovine_id
       assert result.in_service_date == @iso_date
       assert result.out_of_service_date == @never
     end
@@ -46,7 +47,8 @@ defmodule Crit.Usables.Show.AnimalTest do
         
       assert result.id == @id
       assert result.name == "Bossie"
-      assert result.species_name == @bovine_id
+      assert result.species_name == @bovine
+      assert result.species_id == @bovine_id
       assert result.in_service_date == @iso_date
       assert result.out_of_service_date == @later_iso_date
     end

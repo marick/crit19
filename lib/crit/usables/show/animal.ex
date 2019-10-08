@@ -17,7 +17,7 @@ defmodule Crit.Usables.Show.Animal do
     %Read.Animal{
       id: animal_id,
       name: name,
-      species: %{name: species_name},
+      species: %{name: species_name, id: species_id},
       service_gaps: gaps,
     }) do
 
@@ -39,6 +39,7 @@ defmodule Crit.Usables.Show.Animal do
       id: animal_id,
       name: name,
       species_name: species_name,
+      species_id: species_id,
       in_service_date: in_service_iso,
       out_of_service_date: out_of_service_iso
     }
