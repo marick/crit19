@@ -1,3 +1,6 @@
+<!-- Purpose: <%= Purpose.show_an_animal_in_isolation %> -->
+
+
 <h1>Show Animal</h1>
 
 <ul>
@@ -9,15 +12,6 @@
 
   <li>
     <strong>Species:</strong>
-    <%= @animal.species %>
+    <%= @animal.species_name %>
   </li>
-
-  <li>
-    <strong>Lock version:</strong>
-    <%= @animal.lock_version %>
-  </li>
-
 </ul>
-
-<span><%= link "Edit", to: Routes.usables_animal_path(@conn, :edit, @animal) %></span>
-<span><%= link "Back", to: Routes.usables_animal_path(@conn, :index) %></span>

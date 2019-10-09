@@ -22,4 +22,7 @@ defmodule CritWeb.Templates.Purpose do
   def displaying_animal_summaries, 
     do: "displaying animal summaries"
 
+  def show_an_animal_in_isolation, 
+    do: "show an animal in isolation"
+
 end

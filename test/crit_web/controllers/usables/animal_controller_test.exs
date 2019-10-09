@@ -104,8 +104,13 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
     test "name change", %{conn: conn, id: id} do
       assert animal_name(id) == "OLD NAME" 
-      post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
-      assert animal_name(id) == "newname" 
+      conn =
+        post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
+      assert animal_name(id) == "newname"
+
+      conn
+      |> assert_purpose(show_an_animal_in_isolation())
+      |> assert_user_sees("newname")
    end
   end
 
