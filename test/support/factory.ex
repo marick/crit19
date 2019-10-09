@@ -37,13 +37,20 @@ defmodule Crit.Factory do
   end
 
 
-  def unique_names_string() do 
+  def unique_names_string() do
+    unique_names() |> names_to_input_string()
+  end
+
+  def names_to_input_string(names), do: Enum.join(names, ", ")
+
+  def unique_names() do 
     Faker.Cat.name()
     |> List.duplicate(Faker.random_between(1, 20))
     |> Enum.with_index
     |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
-    |> Enum.join(", ")
   end
+
+
 
   # Warning: this depends on the fact that the test database has
   # at least two species.
