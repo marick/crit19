@@ -2,6 +2,7 @@ defmodule Crit.Usables.Write.Animal do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
+  alias Crit.Sql
 
   schema "animals" do
     field :name, TrimmedString
@@ -21,4 +22,15 @@ defmodule Crit.Usables.Write.Animal do
   def changeset(fields) when is_list(fields) do
     changeset(%__MODULE__{}, Enum.into(fields, %{}))
   end
+
+  def update_for_id(string_id, attrs, institution) do
+    id = String.to_integer(string_id)
+    {:ok, _} = 
+      %__MODULE__{id: id}
+      |> cast(attrs, [:name])
+      |> Sql.update(institution)
+    {:ok, id}
+  end
+
+
 end

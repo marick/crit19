@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
+  alias Crit.Usables.{Show}
   import Ecto.ChangesetX
 
   @basic_params %{
@@ -50,6 +51,21 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert ~s|An animal named "Bossie" is already in service| in errors_on(changeset).names
     end
   end    
+
+  describe "updating an animal" do
+    test "updating the name" do
+      {string_id, original} = showable_animal_named("Original Bossie")
+      params = %{"name" => "New Bossie",
+                 "species_id" => "this should be ignored",
+                 "id" => "this should also be ignored"
+                }
+
+      assert {:ok, new_animal} =
+        Usables.update_animal(string_id, params, @institution)
+      
+      assert new_animal == %Show.Animal{original | name: "New Bossie"}
+    end
+  end
 
   describe "fetching an animal" do
     setup do
@@ -124,5 +140,15 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert bossie.name == "bossie"
       assert jake.name == "Jake"
     end
+  end
+
+  defp showable_animal_named(name) do
+    {:ok, [%Show.Animal{id: id}]} = 
+      @basic_params
+      |> Map.put("names", name)
+      |> Usables.create_animals(@institution)
+    {to_string(id), 
+     Usables.get_complete_animal!(id, @institution)
+    }
   end
 end
