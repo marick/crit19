@@ -3,6 +3,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   alias Crit.Usables
   alias Crit.Usables.{Show}
   import Ecto.ChangesetX
+  alias Crit.Exemplars.Available
 
   @basic_params %{
     "species_id" => @bovine_id,
@@ -143,10 +144,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   end
 
   defp showable_animal_named(name) do
-    {:ok, [%Show.Animal{id: id}]} = 
-      @basic_params
-      |> Map.put("names", name)
-      |> Usables.create_animals(@institution)
+    id = Available.animal_id(name: name)
     {to_string(id), 
      Usables.get_complete_animal!(id, @institution)
     }

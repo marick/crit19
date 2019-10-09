@@ -36,35 +36,13 @@ defmodule Crit.Factory do
      }
   end
 
-  def date_pair() do
-    import Faker.Date, only: [backward: 1, forward: 1]
-    import Date, only: [add: 2]
 
-    kind_of_start = Enum.random(["past", "today", "future"])
-    use_never = Enum.random(["never", "some appropriate date"])
-
-    s = &Date.to_iso8601/1
-
-    case {kind_of_start, use_never} do
-      {"past", "never"} ->
-        { s.(backward(100)), "never"}
-      {"past", _} ->
-        { s.(backward(100) |> add(-100)), 
-          s.(backward(100))
-        }
-
-      {"today", "never"} ->
-        { "today", "never"}
-      {"today", _} ->
-        { "today", s.(forward(100)) }
-
-      {"future", "never"} ->
-        { s.(forward(100)) , "never" }
-      {"future", _} ->
-        { s.(forward(100)),
-          s.(forward(100) |> add(100))
-        }
-    end
+  def unique_names_string() do 
+    Faker.Cat.name()
+    |> List.duplicate(Faker.random_between(1, 20))
+    |> Enum.with_index
+    |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
+    |> Enum.join(", ")
   end
 
   # Warning: this depends on the fact that the test database has

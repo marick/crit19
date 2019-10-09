@@ -1,9 +1,16 @@
 defmodule Crit.Exemplars.Minimal do
+  @moduledoc """
+  This is for dirt-simple structures where only a few most obvious structure
+  fields are relevant. Typically, for example, associated records are not
+  created.
+  """ 
+  
   use ExUnit.CaseTemplate
+  use Crit.Global.Default
+  use Crit.Global.Constants
   alias Crit.Factory
   alias Crit.Users.{Password, PasswordToken}
   alias Crit.Sql
-  use Crit.Global.Default
 
   def user(opts \\ []) do
     user = Factory.sql_insert!(:user, opts, @institution)
