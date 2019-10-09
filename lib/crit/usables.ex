@@ -44,6 +44,13 @@ defmodule Crit.Usables do
     end
   end
 
+  def update_animal(string_id, attrs, institution) do
+    {:ok, id} =
+      string_id
+      |> Write.Animal.update_for_id(attrs, institution)
+    {:ok, get_complete_animal!(id, institution)}
+  end
+
   def bulk_animal_creation_changeset() do
    %Write.BulkAnimal{
      names: "",
@@ -59,4 +66,5 @@ defmodule Crit.Usables do
     |> Sql.all(institution)
     |> Enum.map(fn %Read.Species{name: name, id: id} -> {name, id} end)
   end
+
 end
