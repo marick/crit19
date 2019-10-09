@@ -6,7 +6,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables.Write.{NameListComputers}
   alias Crit.Usables.Read
   alias CritWeb.Audit
-  alias Crit.Sql
+  alias Crit.Exemplars
 
   setup :logged_in_as_usables_manager
 
@@ -19,20 +19,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       |> assert_user_sees(@never)
       |> assert_user_sees(@bovine)
 
-    end
-  end
-
-  describe "update" do
-    setup do
-      animal = Factory.sql_insert!(:animal, @institution)
-      [id: animal.id]
-    end
-
-    @tag :skip
-    test "species change", %{conn: conn, id: id} do
-      assert Sql.get(Read.Animal, id, @institution).name != "newname" 
-      post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
-      assert Sql.get(Read.Animal, id, @institution).name == "newname" 
     end
   end
 
@@ -94,8 +80,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       end
     end
 
-    
-
     test "an audit record is created", %{conn: conn, act: act} do
       {_names, params} = animal_creation_data()
       conn = act.(conn, params)
@@ -113,24 +97,34 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
+  describe "update" do
+    setup do
+      [id: Exemplars.Available.animal_id(name: "OLD NAME")]
+    end
+
+    test "name change", %{conn: conn, id: id} do
+      assert animal_name(id) == "OLD NAME" 
+      post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
+      assert animal_name(id) == "newname" 
+   end
+  end
+
+  
+  defp animal_name(id), do: Usables.get_complete_animal!(id, @institution).name
 
   defp animal_creation_data() do
-    {start_date, end_date} = Factory.date_pair()
+    {start_date, end_date} = Exemplars.Date.date_pair() 
     {_species_name, species_id} = Enum.random(Usables.available_species(@institution))
     
-    names =
-      Faker.Cat.name()
-      |> List.duplicate(Faker.random_between(1, 200))
-      |> Enum.with_index
-      |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
+    namelist = Factory.unique_names()
 
-    params = %{"names" => Enum.join(names, ", "), 
+    params = %{"names" => Factory.names_to_input_string(namelist),
                "species_id" => species_id,
                "start_date" => start_date,
                "end_date" => end_date
               }
 
-    {names, params}
+    {namelist, params}
   end
 
   defp one_of_these_as_showable_animal([id | _]) do 

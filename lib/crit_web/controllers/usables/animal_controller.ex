@@ -30,11 +30,32 @@ defmodule CritWeb.Usables.AnimalController do
     end
   end
 
-  def bulk_create_audit(conn, [one_animal | _rest] = animals) do
+  defp bulk_create_audit(conn, [one_animal | _rest] = animals) do
     audit_data = %{ids: EnumX.ids(animals),
                    in_service_date: one_animal.in_service_date,
                    out_of_service_date: one_animal.out_of_service_date
                   }
     Audit.created_animals(conn, audit_data)
+  end
+
+  def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
+    case Usables.update_animal(id, animal_params, institution(conn)) do
+      {:ok, animal} ->
+        IO.inspect animal
+    end
+    html(conn, "<p>ok</p>")
+
+
+    # user = Users.get_user!(id)
+
+    # case Users.update_user(user, user_params) do
+    #   {:ok, user} ->
+    #     conn
+    #     |> put_flash(:info, "User updated successfully.")
+    #     |> redirect(to: Routes.user_management_user_path(conn, :show, user))
+
+    #   {:error, %Ecto.Changeset{} = changeset} ->
+    #     render(conn, "edit.html", user: user, changeset: changeset)
+    # end
   end
 end
