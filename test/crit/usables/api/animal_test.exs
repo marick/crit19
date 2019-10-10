@@ -66,6 +66,17 @@ defmodule Crit.Usables.Api.AnimalTest do
       
       assert new_animal == %Show.Animal{original | name: "New Bossie"}
     end
+
+    test "unique name constraint violation" do
+      {string_id, _} = showable_animal_named("Original Bossie")
+      showable_animal_named("already exists")
+      params = %{"name" => "already exists"}
+
+      assert {:error, changeset} =
+        Usables.update_animal(string_id, params, @institution)
+
+      assert "has already been taken" in errors_on(changeset).name
+    end
   end
 
   describe "fetching an animal" do

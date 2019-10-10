@@ -16,7 +16,7 @@ defmodule Crit.Usables.Write.Animal do
     animal
     |> cast(attrs, [:name, :species_id, :lock_version])
     |> validate_required([:name, :species_id, :lock_version])
-    |> unique_constraint(:name, name: "unique_available_names")
+    |> constraint_on_name()
   end
 
   def changeset(fields) when is_list(fields) do
@@ -25,12 +25,21 @@ defmodule Crit.Usables.Write.Animal do
 
   def update_for_id(string_id, attrs, institution) do
     id = String.to_integer(string_id)
-    {:ok, _} = 
+
+    db_result = 
       %__MODULE__{id: id}
       |> cast(attrs, [:name])
+      |> constraint_on_name()
       |> Sql.update(institution)
-    {:ok, id}
+
+    case db_result do 
+      {:ok, _} -> 
+        {:ok, id}
+      _ -> 
+        db_result
+    end
   end
 
-
+  defp constraint_on_name(changeset),
+    do: unique_constraint(changeset, :name, name: "unique_available_names")
 end

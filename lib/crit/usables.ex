@@ -45,10 +45,12 @@ defmodule Crit.Usables do
   end
 
   def update_animal(string_id, attrs, institution) do
-    {:ok, id} =
-      string_id
-      |> Write.Animal.update_for_id(attrs, institution)
-    {:ok, get_complete_animal!(id, institution)}
+    case result = Write.Animal.update_for_id(string_id, attrs, institution) do 
+      {:ok, id} -> 
+        {:ok, get_complete_animal!(id, institution)}
+      _ ->
+        result
+    end
   end
 
   def bulk_animal_creation_changeset() do
