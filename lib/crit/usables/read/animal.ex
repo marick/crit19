@@ -1,9 +1,6 @@
 defmodule Crit.Usables.Read.Animal do
-  alias Crit.Usables.Read.{ServiceGap, Species}
-  alias Crit.Ecto.TrimmedString
   import Ecto.Query
   alias Crit.Sql
-  alias Crit.Usables.Write
 
   defmodule Query do
     import Ecto.Query
