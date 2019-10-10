@@ -30,7 +30,8 @@ defmodule Crit.Usables.Write.Animal do
       %__MODULE__{id: id}
       |> cast(attrs, [:name])
       |> constraint_on_name()
-      |> Sql.update(institution)
+      |> optimistic_lock(:lock_version)
+      |> Sql.update([stale_error_field: :optimistic_lock_error], institution)
 
     case db_result do 
       {:ok, _} -> 

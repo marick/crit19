@@ -64,19 +64,73 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert {:ok, new_animal} =
         Usables.update_animal(string_id, params, @institution)
       
-      assert new_animal == %Show.Animal{original | name: "New Bossie"}
+      assert new_animal == %Show.Animal{original |
+                                        name: "New Bossie",
+                                        lock_version: 2
+                                       }
     end
 
-    test "unique name constraint violation" do
-      {string_id, _} = showable_animal_named("Original Bossie")
+    @tag :skip
+    test "unique name constraint violation produces changeset" do
+      {string_id, shown_animal} = showable_animal_named("Original Bossie")
       showable_animal_named("already exists")
       params = %{"name" => "already exists"}
 
       assert {:error, changeset} =
         Usables.update_animal(string_id, params, @institution)
 
+      assert shown_animal == changeset.data
+
       assert "has already been taken" in errors_on(changeset).name
     end
+
+    @tag :skip
+    test "optimistic concurrency failure produces new animal" do
+      {string_id, original} = showable_animal_named("Original Bossie")
+
+      update = fn name -> 
+        params = %{"name" => name,
+          "lock_version" => to_string(original.lock_version)
+         }
+        Usables.update_animal(string_id, params, @institution)
+      end
+
+      assert {:ok, _} = update.("this version wins")
+      assert {:error, changeset} = update.("this version loses")
+
+      IO.inspect changeset.data
+
+      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
+      # Update form with new version.
+      assert changeset.data.name == "this version wins"
+      # All changes have been wiped out.
+      assert changeset.changes == %{}
+    end
+
+    test "optimistic lock failure wins" do
+      # That means that, if both kinds of errors could happen, the
+      # user will get a data refresh with message about the lock
+      # failure.  The user will likely have to reenter data but that's
+      # OK because such clashes will be incredibly rare. (They
+      # wouldn't be worth checking for, except that I want to learn
+      # how to handle optimistic locking.
+      {string_id, original} = showable_animal_named("Original Bossie")
+
+      update = fn name -> 
+        params = %{"name" => name,
+          "lock_version" => to_string(original.lock_version)
+         }
+        Usables.update_animal(string_id, params, @institution)
+      end
+
+      assert {:ok, _} = update.("this version wins")
+      assert {:error, changeset} = update.("this version wins")
+
+      # Just the one error
+      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
+
+    end
+
   end
 
   describe "fetching an animal" do
