@@ -13,7 +13,8 @@ defmodule Crit.Usables.Show.AnimalTest do
       base = %Read.Animal{
         id: @id,
         name: "Bossie",
-        species: %Read.Species{name: @bovine, id: @bovine_id}
+        species: %Read.Species{name: @bovine, id: @bovine_id},
+        lock_version: 1
       }
 
       in_service = %Read.ServiceGap{gap: Datespan.strictly_before(@date)}
@@ -36,6 +37,7 @@ defmodule Crit.Usables.Show.AnimalTest do
       assert result.species_id == @bovine_id
       assert result.in_service_date == @iso_date
       assert result.out_of_service_date == @never
+      assert result.lock_version == 1
     end
     
     test "with two service gaps",
@@ -51,6 +53,7 @@ defmodule Crit.Usables.Show.AnimalTest do
       assert result.species_id == @bovine_id
       assert result.in_service_date == @iso_date
       assert result.out_of_service_date == @later_iso_date
+      assert result.lock_version == 1
     end
   end
 end

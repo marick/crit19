@@ -8,7 +8,8 @@ defmodule Crit.Usables.Show.Animal do
     species_name: nil,
     species_id: nil,
     in_service_date: nil,
-    out_of_service_date: nil
+    out_of_service_date: nil,
+    lock_version: nil
 
   # This hides a mistake, in that we deduce the in-service and out-of-service
   # dates. We shouldn't need to do that. Because they're special, they should
@@ -19,6 +20,7 @@ defmodule Crit.Usables.Show.Animal do
       name: name,
       species: %{name: species_name, id: species_id},
       service_gaps: gaps,
+      lock_version: lock_version,
     }) do
 
     timespans = Enum.map(gaps, &(&1.gap))
@@ -41,7 +43,8 @@ defmodule Crit.Usables.Show.Animal do
       species_name: species_name,
       species_id: species_id,
       in_service_date: in_service_iso,
-      out_of_service_date: out_of_service_iso
+      out_of_service_date: out_of_service_iso,
+      lock_version: lock_version,
     }
   end
 end
