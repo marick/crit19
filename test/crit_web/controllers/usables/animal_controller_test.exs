@@ -4,7 +4,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables
   alias Crit.Usables.Write.{NameListComputers}
-  alias Crit.Usables.Read
+  alias Crit.Usables.Write
   alias CritWeb.Audit
   alias Crit.Exemplars
 
@@ -31,7 +31,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
 
     setup do
-      assert SqlX.all_ids(Read.Animal) == []
+      assert SqlX.all_ids(Write.Animal) == []
       []
     end
 
@@ -41,7 +41,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       
       assert_purpose conn, displaying_animal_summaries()
 
-      assert length(SqlX.all_ids(Read.Animal)) == length(names)
+      assert length(SqlX.all_ids(Write.Animal)) == length(names)
       assert_user_sees(conn, Enum.at(names, 0))
       assert_user_sees(conn, Enum.at(names, -1))
     end
@@ -86,7 +86,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
       {:ok, audit} = latest_audit_record(conn)
 
-      ids = SqlX.all_ids(Read.Animal)
+      ids = SqlX.all_ids(Write.Animal)
       typical_animal = one_of_these_as_showable_animal(ids)
 
       assert audit.event == Audit.events.created_animals

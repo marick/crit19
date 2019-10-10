@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
-  alias Crit.Usables.{Show}
+  alias Crit.Usables.Write
   import Ecto.ChangesetX
   alias Crit.Exemplars.Available
 
@@ -64,7 +64,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert {:ok, new_animal} =
         Usables.update_animal(string_id, params, @institution)
       
-      assert new_animal == %Show.Animal{original |
+      assert new_animal == %Write.Animal{original |
                                         name: "New Bossie",
                                         lock_version: 2
                                        }

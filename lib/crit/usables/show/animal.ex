@@ -1,21 +1,13 @@
 defmodule Crit.Usables.Show.Animal do
   use Crit.Global.Constants
-  alias Crit.Usables.Read
+  alias Crit.Usables.Write
   alias Ecto.Datespan
-
-  defstruct id: nil,
-    name: nil,
-    species_name: nil,
-    species_id: nil,
-    in_service_date: nil,
-    out_of_service_date: nil,
-    lock_version: nil
 
   # This hides a mistake, in that we deduce the in-service and out-of-service
   # dates. We shouldn't need to do that. Because they're special, they should
   # have special fields in the Write.Animal and Read.Animal schemas.
   def convert(
-    %Read.Animal{
+    %Write.Animal{
       id: animal_id,
       name: name,
       species: %{name: species_name, id: species_id},
@@ -37,7 +29,7 @@ defmodule Crit.Usables.Show.Animal do
         date -> Date.to_iso8601(date.first)
       end
 
-    %__MODULE__{
+    %Write.Animal{
       id: animal_id,
       name: name,
       species_name: species_name,

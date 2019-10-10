@@ -1,6 +1,6 @@
 defmodule Crit.Usables.Show.AnimalTest do
   use Crit.DataCase
-  alias Crit.Usables.Read
+  alias Crit.Usables.Write
   alias Crit.Usables.Show
   alias Ecto.Datespan
 
@@ -10,15 +10,15 @@ defmodule Crit.Usables.Show.AnimalTest do
 
   describe "conversion" do
     setup do
-      base = %Read.Animal{
+      base = %Write.Animal{
         id: @id,
         name: "Bossie",
-        species: %Read.Species{name: @bovine, id: @bovine_id},
+        species: %Write.Species{name: @bovine, id: @bovine_id},
         lock_version: 1
       }
 
-      in_service = %Read.ServiceGap{gap: Datespan.strictly_before(@date)}
-      out_of_service = %Read.ServiceGap{gap: Datespan.date_and_after(@later_date)}
+      in_service = %Write.ServiceGap{gap: Datespan.strictly_before(@date)}
+      out_of_service = %Write.ServiceGap{gap: Datespan.date_and_after(@later_date)}
 
       [base: base, in_service: in_service, out_of_service: out_of_service]
     end

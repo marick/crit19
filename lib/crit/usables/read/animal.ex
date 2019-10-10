@@ -1,24 +1,13 @@
 defmodule Crit.Usables.Read.Animal do
-  use Ecto.Schema
   alias Crit.Usables.Read.{ServiceGap, Species}
   alias Crit.Ecto.TrimmedString
   import Ecto.Query
   alias Crit.Sql
-
-  schema "animals" do
-    field :name, TrimmedString
-    field :available, :boolean
-    field :lock_version, :integer
-    
-    belongs_to :species, Species
-    many_to_many :service_gaps, ServiceGap, join_through: "animal__service_gap"
-    
-    timestamps()
-  end
+  alias Crit.Usables.Write
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Usables.Read.Animal
+    alias Crit.Usables.Write.Animal
 
     def all(), do: Ecto.Query.from(Animal)
 
