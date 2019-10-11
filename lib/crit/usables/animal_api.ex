@@ -1,2 +1,16 @@
 defmodule Crit.Usables.AnimalApi do
+  use Crit.Global.Constants
+  # alias Crit.Sql
+  alias Crit.Usables.Animal.Read
+  # import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
+
+  
+  def showable!(id, institution) do
+    case Read.one([id: id], institution) do
+      nil ->
+        raise KeyError, "No animal id #{id}"
+      animal ->
+        Read.put_virtual_fields(animal)
+    end
+  end
 end
