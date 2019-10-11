@@ -1,0 +1,11 @@
+
+<p>
+<%= form_for @changeset, @action, [class: "box"], fn f -> %>
+
+  <%= @changeset.data.species_name %> named
+  <%= text_input(f, :name) %>
+  <%= CritWeb.Bulma.Elements.form_button("Change") %>
+
+<% end %>
+
+</p>
