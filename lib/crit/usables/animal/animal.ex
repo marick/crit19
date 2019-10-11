@@ -1,4 +1,9 @@
-defmodule Crit.Usables.Animal.Schema do
+defmodule Crit.Usables.Animal.Animal do
+
+  @doc """
+  I'd rather call this module `Animal.Schema` but then having foreign
+  keys like `:animal_id` becomes awkward.
+  """
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.Write
