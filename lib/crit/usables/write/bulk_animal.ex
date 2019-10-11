@@ -3,8 +3,9 @@ defmodule Crit.Usables.Write.BulkAnimal do
   import Ecto.Changeset
   import Pile.ChangesetFlow
   alias Crit.Usables.Write.{
-    ServiceGap, DateComputers, NameListComputers, Animal}
+    DateComputers, NameListComputers, Animal}
   alias Crit.Usables.Virtualizers.ServiceGap, as: ServiceGapVirtualizer
+  alias Crit.Usables.ServiceGap
 
 
   embedded_schema do
