@@ -7,15 +7,6 @@ defmodule Crit.Usables do
   alias Crit.Usables.Show
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
-  def get_complete_animal_by_name(name, institution) do
-    case Read.Animal.one([name: name], institution) do
-      nil ->
-        nil
-      animal ->
-        Show.Animal.convert(animal)
-    end
-  end
-
   def all_animals(institution) do
     Read.Animal.all(institution)
     |> Enum.map(&Show.Animal.convert/1)

@@ -49,6 +49,28 @@ defmodule Crit.Usables.Animal.AnimalReadTest do
   end
 
 
+  describe "fetching an animal by something other than an id" do
+    test "fetching by name" do
+      assert animal = AnimalApi.showable_by(:name, "Bossie", @institution)
+      assert is_integer(animal.id)
+      assert animal.name == "Bossie"
+      assert animal.species_name == @bovine
+    end
+
+    test "fetching by name is case independent" do
+      assert animal = AnimalApi.showable_by(:name, "bossie", @institution)
+      assert is_integer(animal.id)
+      assert animal.name == "Bossie"
+      assert animal.species_name == @bovine
+    end
+
+    test "errors return nil" do
+      assert nil == AnimalApi.showable_by(:name, "lossie", @institution)
+    end
+  end
+
+
+
   def add_service_gap_for_animal(animal_id, datespan) do
     gap = %ServiceGap{gap: datespan,
                       reason: "testing"

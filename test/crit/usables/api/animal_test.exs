@@ -134,31 +134,6 @@ defmodule Crit.Usables.Api.AnimalTest do
 
   end
 
-  describe "fetching an animal" do
-    setup do
-      Usables.create_animals(@basic_params, @institution)
-      []
-    end  
-    
-    test "fetching by name" do
-      assert animal = Usables.get_complete_animal_by_name("Bossie", @institution)
-      assert is_integer(animal.id)
-      assert animal.name == "Bossie"
-      assert animal.species_name == @bovine
-    end
-
-    test "fetching by name is case independent" do
-      assert animal = Usables.get_complete_animal_by_name("bossie", @institution)
-      assert is_integer(animal.id)
-      assert animal.name == "Bossie"
-      assert animal.species_name == @bovine
-    end
-
-    test "errors return nil" do
-      assert nil == Usables.get_complete_animal_by_name("lossie", @institution)
-    end
-
-  end
 
   describe "fetching a number of animals" do 
     setup do

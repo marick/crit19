@@ -13,4 +13,14 @@ defmodule Crit.Usables.AnimalApi do
         Read.put_virtual_fields(animal)
     end
   end
+
+  def showable_by(field, value, institution) do
+    case Read.one([{field, value}], institution) do
+      nil ->
+        nil
+      animal ->
+        Read.put_virtual_fields(animal)
+    end
+  end
+    
 end
