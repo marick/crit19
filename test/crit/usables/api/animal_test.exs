@@ -55,6 +55,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   end    
 
   describe "updating an animal" do
+    @tag :skip
     test "updating the name" do
       {string_id, original} = showable_animal_named("Original Bossie")
       params = %{"name" => "New Bossie",

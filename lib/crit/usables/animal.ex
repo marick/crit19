@@ -7,6 +7,7 @@ defmodule Crit.Usables.Animal do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.Write
+  alias Crit.Usables.ServiceGap
 
   schema "animals" do
     # The fields below are the true fields in the table.
@@ -17,7 +18,7 @@ defmodule Crit.Usables.Animal do
     timestamps()
 
     belongs_to :species, Write.Species
-    many_to_many :service_gaps, Write.ServiceGap, join_through: "animal__service_gap"
+    many_to_many :service_gaps, ServiceGap, join_through: "animal__service_gap"
 
     field :species_name, :string, virtual: true
     field :in_service_date, :string, virtual: true
