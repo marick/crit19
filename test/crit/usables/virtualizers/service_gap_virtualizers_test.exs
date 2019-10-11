@@ -1,11 +1,10 @@
-defmodule Crit.Usables.Write.ServiceGapComputersTest do
+defmodule Crit.Usables.Virtualizers.ServiceGapVirtualizersTest do
   use Ecto.Schema
   use Crit.DataCase
-  alias Crit.Usables.Write.ServiceGapComputers
+  alias Crit.Usables.Virtualizers.ServiceGap, as: Virtualizers
   alias Ecto.Datespan
   alias Ecto.Changeset
 
-  # The subset of the Read.Animal schema that `ServiceGapComputers` operates on.
   embedded_schema do
     field :computed_start_date, :date, virtual: true
     field :computed_end_date, :date, virtual: true
@@ -22,29 +21,29 @@ defmodule Crit.Usables.Write.ServiceGapComputersTest do
       actual =
         [computed_start_date: @date, computed_end_date: @later_date]
         |> make_changeset_with_computed_dates
-        |> ServiceGapComputers.expand_start_and_end
+        |> Virtualizers.expand_start_and_end
 
       assert actual.valid?
       assert [in_service, out_of_service] = actual.changes.computed_service_gaps
 
       assert_strictly_before(in_service.gap, @date)
-      assert in_service.reason == ServiceGapComputers.before_service_reason()
+      assert in_service.reason == Virtualizers.before_service_reason()
 
       assert_date_and_after(out_of_service.gap, @later_date)
-      assert out_of_service.reason == ServiceGapComputers.after_service_reason()
+      assert out_of_service.reason == Virtualizers.after_service_reason()
     end
 
     test "one gap because there's no specific end date" do
       actual =
         [computed_start_date: @date, computed_end_date: :missing]
         |> make_changeset_with_computed_dates
-        |> ServiceGapComputers.expand_start_and_end
+        |> Virtualizers.expand_start_and_end
 
       assert actual.valid?
       assert [in_service] = actual.changes.computed_service_gaps
 
       assert_strictly_before(in_service.gap, @date)
-      assert in_service.reason == ServiceGapComputers.before_service_reason()
+      assert in_service.reason == Virtualizers.before_service_reason()
     end
   end
 end  

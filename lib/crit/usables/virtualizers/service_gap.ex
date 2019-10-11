@@ -1,7 +1,7 @@
-defmodule Crit.Usables.Write.ServiceGapComputers do
+defmodule Crit.Usables.Virtualizers.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Usables.Write
+  alias Crit.Usables.ServiceGap
   import Pile.ChangesetFlow
   alias Ecto.Datespan
 
@@ -24,13 +24,13 @@ defmodule Crit.Usables.Write.ServiceGapComputers do
   end
 
   defp pre_service(first_day_in_service),
-    do: %Write.ServiceGap{
+    do: %ServiceGap{
           gap: Datespan.strictly_before(first_day_in_service),
           reason: before_service_reason()
     }
 
   defp post_service(first_day_out_of_service),
-    do: %Write.ServiceGap{
+    do: %ServiceGap{
           gap: Datespan.date_and_after(first_day_out_of_service),
           reason: after_service_reason()
     }

@@ -3,8 +3,8 @@ defmodule Crit.Usables.Write.BulkAnimal do
   import Ecto.Changeset
   import Pile.ChangesetFlow
   alias Crit.Usables.Write.{
-    ServiceGap, DateComputers, ServiceGapComputers, NameListComputers, Animal}
-  alias Crit.Usables.Write.ServiceGapComputers
+    ServiceGap, DateComputers, NameListComputers, Animal}
+  alias Crit.Usables.Virtualizers.ServiceGap, as: ServiceGapVirtualizer
 
 
   embedded_schema do
@@ -34,7 +34,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
         changeset
         |> NameListComputers.split_names
         |> DateComputers.put_start_and_end
-        |> ServiceGapComputers.expand_start_and_end
+        |> ServiceGapVirtualizer.expand_start_and_end
       end)
   end
 
