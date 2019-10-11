@@ -144,10 +144,6 @@ defmodule Crit.Usables.Api.AnimalTest do
       [ids: EnumX.ids(animals)]
     end
 
-    test "all returns animals in (case-independent) alphabetical order" do 
-      assert [alpha, bossie, jake] = Usables.all_animals(@institution)
-    end
-
     test "ids_to_animals returns animals in alphabetical order", %{ids: ids} do
       assert [alpha, bossie, jake] = Usables.ids_to_animals(ids, @institution)
 

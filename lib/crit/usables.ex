@@ -7,11 +7,6 @@ defmodule Crit.Usables do
   alias Crit.Usables.Show
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
-  def all_animals(institution) do
-    Read.Animal.all(institution)
-    |> Enum.map(&Show.Animal.convert/1)
-  end
-
   def ids_to_animals(ids, institution) do
     ids
     |> Read.Animal.ids_to_animals(institution)
