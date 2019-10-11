@@ -98,7 +98,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert {:ok, _} = update.("this version wins")
       assert {:error, changeset} = update.("this version loses")
 
-      IO.inspect changeset.data
+      # IO.inspect changeset.data
 
       assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
       # Update form with new version.

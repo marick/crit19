@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.AnimalServiceGap do
+defmodule Crit.Usables.Hidden.AnimalServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -39,7 +39,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
 
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
-    IO.inspect animal_params
+    # IO.inspect animal_params
     case Usables.update_animal(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         render(conn, "show.html", animal: animal)

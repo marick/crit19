@@ -1,6 +1,7 @@
 defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.BulkInsert
+  alias Crit.Usables.Hidden
   alias Crit.Usables.Write
   alias Crit.Usables.Read
   alias Crit.Ecto.BulkInsert.Testable
@@ -87,7 +88,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       service_gap_opts =
         [schema: Write.ServiceGaps,        ids: :service_gap_ids]
       cross_opts =
-        [schema: Write.AnimalServiceGap, cross: {:animal_ids, :service_gap_ids}]
+        [schema: Hidden.AnimalServiceGap, cross: {:animal_ids, :service_gap_ids}]
       
       
       {:ok, tx_result} = 
@@ -104,7 +105,7 @@ defmodule Crit.Ecto.BulkInsertTest do
         BulkInsert.three_schema_insertion(@institution,
           insert: [@animal_cs],         yielding: :animal_ids, 
           insert: @service_gap_cs_list, yielding: :service_gap_ids,
-          many_to_many: Write.AnimalServiceGap)
+          many_to_many: Hidden.AnimalServiceGap)
         |> Sql.transaction(@institution)
       assertions.(tx_result)
     end
@@ -114,7 +115,7 @@ defmodule Crit.Ecto.BulkInsertTest do
         BulkInsert.three_schema_insertion(@institution,
           insert: [@animal_cs],         yielding: :animal_ids, 
           insert: @service_gap_cs_list, yielding: :service_gap_ids,
-          many_to_many: Write.AnimalServiceGap)
+          many_to_many: Hidden.AnimalServiceGap)
         |> Sql.transaction(@institution)
         |> BulkInsert.simplify_transaction_results([:animal_ids, :service_gap_ids])
 
@@ -135,7 +136,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       bad_try = BulkInsert.three_schema_insertion(@institution,
         insert: duplication ,         yielding: :animal_ids, 
         insert: @service_gap_cs_list, yielding: :service_gap_ids,
-        many_to_many: Write.AnimalServiceGap)
+        many_to_many: Hidden.AnimalServiceGap)
 
       [bad_try: bad_try]
     end
@@ -193,7 +194,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       cross_product =
         Testable.many_to_many_structs(
           tx_result,
-          Write.AnimalServiceGap,
+          Hidden.AnimalServiceGap,
           {:animal_ids, :service_gap_ids})
       
       assert Enum.at(cross_product, 0).animal_id == 1

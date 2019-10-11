@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Write.BulkAnimalWorkflow do
   alias Crit.Sql
   alias Crit.Usables.Write
+  alias Crit.Usables.Hidden
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
 
@@ -42,7 +43,7 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
       |> BulkInsert.three_schema_insertion(
            insert: animal_changesets, yielding: :animal_ids,
            insert: service_gap_changesets, yielding: :service_gap_ids,
-           many_to_many: Write.AnimalServiceGap)
+           many_to_many: Hidden.AnimalServiceGap)
 
     script
     |> Sql.transaction(institution)

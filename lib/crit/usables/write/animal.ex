@@ -45,7 +45,6 @@ defmodule Crit.Usables.Write.Animal do
       |> cast(attrs, [:name])
       |> constraint_on_name()
       |> optimistic_lock(:lock_version)
-      |> IO.inspect
       |> Sql.update([stale_error_field: :optimistic_lock_error], institution)
 
     case db_result do 
