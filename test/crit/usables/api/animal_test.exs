@@ -2,6 +2,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
   alias Crit.Usables.Write
+  alias Crit.Usables.AnimalApi
   import Ecto.ChangesetX
   alias Crit.Exemplars.Available
 
@@ -33,7 +34,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       {:ok, [bossie, jake]} = Usables.create_animals(@basic_params, @institution)
 
       check = fn returned ->
-        fetched = Usables.get_complete_animal!(returned.id, @institution)
+        fetched = AnimalApi.showable!(returned.id, @institution)
         assert fetched.id == returned.id
         assert fetched.name == returned.name
         assert fetched.in_service_date == @iso_date
@@ -157,20 +158,6 @@ defmodule Crit.Usables.Api.AnimalTest do
       assert nil == Usables.get_complete_animal_by_name("lossie", @institution)
     end
 
-    test "fetch by id" do
-      id = Usables.get_complete_animal_by_name("Bossie", @institution).id
-      animal = Usables.get_complete_animal!(id, @institution)
-
-      assert animal.id == id
-      assert animal.name == "Bossie"
-      assert animal.species_name == @bovine
-    end
-    
-    test "no such id" do
-      assert_raise KeyError, fn -> 
-        Usables.get_complete_animal!(83483, @institution)
-      end
-    end
   end
 
   describe "fetching a number of animals" do 
@@ -211,7 +198,7 @@ defmodule Crit.Usables.Api.AnimalTest do
   defp showable_animal_named(name) do
     id = Available.animal_id(name: name)
     {to_string(id), 
-     Usables.get_complete_animal!(id, @institution)
+     AnimalApi.showable!(id, @institution)
     }
   end
 end

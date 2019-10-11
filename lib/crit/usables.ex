@@ -1,19 +1,11 @@
 defmodule Crit.Usables do
   use Crit.Global.Constants
   alias Crit.Sql
+  alias Crit.Usables.AnimalApi
   alias Crit.Usables.Read
   alias Crit.Usables.Write
   alias Crit.Usables.Show
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
-
-  def get_complete_animal!(id, institution) do
-    case Read.Animal.one([id: id], institution) do
-      nil ->
-        raise KeyError, "No animal id #{id}"
-      animal ->
-        Show.Animal.convert(animal)
-    end
-  end
 
   def get_complete_animal_by_name(name, institution) do
     case Read.Animal.one([name: name], institution) do
@@ -47,7 +39,7 @@ defmodule Crit.Usables do
   def update_animal(string_id, attrs, institution) do
     case result = Write.Animal.update_for_id(string_id, attrs, institution) do 
       {:ok, id} -> 
-        {:ok, get_complete_animal!(id, institution)}
+        {:ok, AnimalApi.showable!(id, institution)}
       _ ->
         result
     end

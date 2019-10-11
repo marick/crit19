@@ -5,6 +5,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables
   alias Crit.Usables.Write.{NameListComputers}
   alias Crit.Usables.Write
+  alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
   alias Crit.Exemplars
 
@@ -115,7 +116,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   end
 
   
-  defp animal_name(id), do: Usables.get_complete_animal!(id, @institution).name
+  defp animal_name(id), do: AnimalApi.showable!(id, @institution).name
 
   defp animal_creation_data() do
     {start_date, end_date} = Exemplars.Date.date_pair() 
@@ -133,6 +134,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   end
 
   defp one_of_these_as_showable_animal([id | _]) do 
-    Usables.get_complete_animal!(id, @institution)
+    AnimalApi.showable!(id, @institution)
   end
 end

@@ -39,6 +39,13 @@ defmodule Crit.Usables.Animal.AnimalReadTest do
       assert animal.in_service_date == @iso_date
       assert animal.out_of_service_date == @later_iso_date
     end
+
+    test "no such id" do
+      assert_raise KeyError, fn -> 
+        AnimalApi.showable!(83483, @institution)
+      end
+    end
+    
   end
 
 
