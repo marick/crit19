@@ -1,9 +1,14 @@
-defmodule Crit.Usables.FieldConverters.ServiceGap do
+defmodule Crit.Usables.FieldConverters.ToServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Usables.ServiceGap
   import Pile.ChangesetFlow
   alias Ecto.Datespan
+
+  # Assumes this partial schema
+  #   field :computed_start_date, :date, virtual: true
+  #   field :computed_end_date, :date, virtual: true
+  #   field :computed_service_gaps, {:array, Datespan}, virtual: true
 
   def expand_start_and_end(changeset) do
     given_prerequisite_values_exist(changeset,

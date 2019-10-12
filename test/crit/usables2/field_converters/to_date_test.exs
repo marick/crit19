@@ -1,11 +1,11 @@
-defmodule Crit.Usables.Write.DateComputersTest do
+defmodule Crit.Usables.FieldConverters.ToDateTest do
   use Ecto.Schema
   use Crit.DataCase
-  alias Crit.Usables.Write.DateComputers
+  alias Crit.Usables.FieldConverters.ToDate
   alias Pile.TimeHelper
   alias Ecto.Changeset
 
-  # This is the subset of the Read.Animal schema that `DateComputers` operates on.
+  # This is the subset of the Read.Animal schema that `ToDate` operates on.
   embedded_schema do
     field :start_date, :string
     field :end_date, :string
@@ -24,7 +24,7 @@ defmodule Crit.Usables.Write.DateComputersTest do
     actual =
       [start_date: @iso_date, end_date: @later_iso_date]
       |> make_changeset_with_dates
-      |> DateComputers.put_start_and_end
+      |> ToDate.put_start_and_end
 
       assert actual.valid?
       assert actual.changes.computed_start_date == @date
@@ -35,7 +35,7 @@ defmodule Crit.Usables.Write.DateComputersTest do
     actual =
       [start_date: @today, end_date: @later_iso_date]
       |> make_changeset_with_dates
-      |> DateComputers.put_start_and_end
+      |> ToDate.put_start_and_end
 
     today = TimeHelper.today_date(actual.changes.timezone)
     
@@ -49,7 +49,7 @@ defmodule Crit.Usables.Write.DateComputersTest do
     actual =
       [start_date: @iso_date, end_date: @never]
       |> make_changeset_with_dates
-      |> DateComputers.put_start_and_end
+      |> ToDate.put_start_and_end
 
     assert actual.valid?
     assert actual.changes.computed_start_date == @date
@@ -60,10 +60,10 @@ defmodule Crit.Usables.Write.DateComputersTest do
     errors =
       [start_date: @later_iso_date, end_date: @iso_date]
       |> make_changeset_with_dates
-      |> DateComputers.put_start_and_end
+      |> ToDate.put_start_and_end
       |> errors_on
 
-    assert errors.end_date == [DateComputers.misorder_error_message]
+    assert errors.end_date == [ToDate.misorder_error_message]
   end
 
   test "a supposedly impossible ill-formed date" do
@@ -71,7 +71,7 @@ defmodule Crit.Usables.Write.DateComputersTest do
     assert_raise RuntimeError, "Impossible input: invalid date `todays`", fn -> 
       [start_date: "todays", end_date: "Nev"]
       |> make_changeset_with_dates
-      |> DateComputers.put_start_and_end
+      |> ToDate.put_start_and_end
     end
   end
 end  

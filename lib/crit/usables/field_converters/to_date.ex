@@ -1,10 +1,19 @@
-defmodule Crit.Usables.Write.DateComputers do
+defmodule Crit.Usables.FieldConverters.ToDate do
   use Ecto.Schema
   use Crit.Global.Constants
   import Ecto.Changeset
   import Crit.Errors
   alias Pile.ChangesetFlow, as: Flow
   alias Pile.TimeHelper
+
+  # Assumes this partial schema
+  # field :start_date, :string
+  # field :end_date, :string
+  # field :timezone, :string
+  
+  # field :computed_start_date, :date, virtual: true
+  # field :computed_end_date, :date, virtual: true
+  
 
   def put_start_and_end(changeset) do
     with_start = compute_date(changeset, :start_date, :computed_start_date)

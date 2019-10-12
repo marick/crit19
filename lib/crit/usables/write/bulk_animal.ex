@@ -2,9 +2,8 @@ defmodule Crit.Usables.Write.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
-  alias Crit.Usables.Write.{
-    DateComputers, NameListComputers, Animal}
-  alias Crit.Usables.FieldConverters.ServiceGap, as: ServiceGapConverter
+  alias Crit.Usables.Write.{NameListComputers, Animal}
+  alias Crit.Usables.FieldConverters.{ToDate, ToServiceGap}
   alias Crit.Usables.ServiceGap
 
 
@@ -34,8 +33,8 @@ defmodule Crit.Usables.Write.BulkAnimal do
       fn changeset ->
         changeset
         |> NameListComputers.split_names
-        |> DateComputers.put_start_and_end
-        |> ServiceGapConverter.expand_start_and_end
+        |> ToDate.put_start_and_end
+        |> ToServiceGap.expand_start_and_end
       end)
   end
 
