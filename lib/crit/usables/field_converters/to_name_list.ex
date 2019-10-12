@@ -1,9 +1,13 @@
-defmodule Crit.Usables.Write.NameListComputers do
+defmodule Crit.Usables.FieldConverters.ToNameList do
   use Ecto.Schema
   import Ecto.Changeset
   import Crit.Errors
   alias Crit.Ecto.NameList
 
+  # Assumes this partial schema
+  #   field :names, :string
+  #   field :computed_names, {:array, :string}, virtual: true
+  
   def split_names(changeset) do
     names = changeset.changes.names
     case NameList.cast(names) do

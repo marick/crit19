@@ -2,8 +2,8 @@ defmodule Crit.Usables.Write.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
-  alias Crit.Usables.Write.{NameListComputers, Animal}
-  alias Crit.Usables.FieldConverters.{ToDate, ToServiceGap}
+  alias Crit.Usables.Write.Animal
+  alias Crit.Usables.FieldConverters.{ToDate, ToServiceGap, ToNameList}
   alias Crit.Usables.ServiceGap
 
 
@@ -32,7 +32,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
     given_all_form_values_are_present(changeset(%__MODULE__{}, attrs),
       fn changeset ->
         changeset
-        |> NameListComputers.split_names
+        |> ToNameList.split_names
         |> ToDate.put_start_and_end
         |> ToServiceGap.expand_start_and_end
       end)

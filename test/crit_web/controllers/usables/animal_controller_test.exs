@@ -3,7 +3,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables
-  alias Crit.Usables.Write.{NameListComputers}
+  alias Crit.Usables.FieldConverters.ToNameList
   alias Crit.Usables.Write
   alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
@@ -56,7 +56,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       |> assert_purpose(form_for_creating_new_animal())
 
       # error messages
-      |> assert_user_sees(NameListComputers.no_names_error_message())
+      |> assert_user_sees(ToNameList.no_names_error_message())
       # Fields retain their old values.
       |> assert_user_sees(bad_params["names"])
     end
