@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.Species do
+defmodule Crit.Usables.Hidden.Species do
   use Ecto.Schema
   import Ecto.Changeset
 

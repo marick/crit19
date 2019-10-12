@@ -2,7 +2,7 @@ defmodule Crit.Usables.Write.Animal do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
-  alias Crit.Usables.Write
+  alias Crit.Usables.Hidden
   alias Crit.Sql
   alias Crit.Usables.ServiceGap
 
@@ -14,7 +14,7 @@ defmodule Crit.Usables.Write.Animal do
     # field :species_id is as well, but it's created by `belongs_to` below.
     timestamps()
 
-    belongs_to :species, Write.Species
+    belongs_to :species, Hidden.Species
     many_to_many :service_gaps, ServiceGap, join_through: "animal__service_gap"
 
     field :species_name, :string, virtual: true
