@@ -4,7 +4,7 @@ defmodule Crit.Ecto.BulkInsertTest do
   alias Crit.Usables.Hidden
   alias Crit.Usables.Write
   alias Crit.Usables.ServiceGap
-  alias Crit.Usables.Read
+  alias Crit.Usables.Animal
   alias Crit.Ecto.BulkInsert.Testable
   alias Ecto.Datespan
   alias Crit.Sql
@@ -70,7 +70,7 @@ defmodule Crit.Ecto.BulkInsertTest do
       assertions = fn tx_result ->
         intended_name = @animal_cs.changes.name
 
-        animal = Read.Animal.one([name: intended_name], @institution)
+        animal = Animal.Read.one([name: intended_name], @institution)
 
         assert animal.name == intended_name
         assert [animal.id] == tx_result.animal_ids
@@ -120,7 +120,7 @@ defmodule Crit.Ecto.BulkInsertTest do
         |> Sql.transaction(@institution)
         |> BulkInsert.simplify_transaction_results([:animal_ids, :service_gap_ids])
 
-      assert animal = Read.Animal.one([id: returned_animal_id], @institution)
+      assert animal = Animal.Read.one([id: returned_animal_id], @institution)
       assert [gap_one, gap_two] = animal.service_gaps
 
       assert gap_one.id in service_gap_ids

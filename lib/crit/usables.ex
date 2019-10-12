@@ -2,16 +2,15 @@ defmodule Crit.Usables do
   use Crit.Global.Constants
   alias Crit.Sql
   alias Crit.Usables.AnimalApi
-  alias Crit.Usables.Read, as: ReadTemp
+  alias Crit.Usables.Animal
   alias Crit.Usables.Hidden
   alias Crit.Usables.Write
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
-  alias Crit.Usables.Animal.Read
 
   def ids_to_animals(ids, institution) do
     ids
-    |> ReadTemp.Animal.ids_to_animals(institution)
-    |> Enum.map(&Read.put_virtual_fields/1)
+    |> Animal.Read.ids_to_animals(institution)
+    |> Enum.map(&Animal.Read.put_virtual_fields/1)
   end  
 
   def create_animals(attrs, institution) do
