@@ -13,13 +13,13 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
       &bulk_insert_step/1,
     ]
 
-    Write.Workflow.run(attrs, institution, steps)
+    Sql.Transaction.run(attrs, institution, steps)
   end
 
   # The essential steps in the workflow
 
   defp validation_step(state) do
-    Write.Workflow.validation_step(
+    Sql.Transaction.validation_step(
       state,
       &Write.BulkAnimal.compute_insertables/1)
   end
@@ -47,8 +47,8 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
 
     script
     |> Sql.transaction(institution)
-    |> Write.Workflow.on_ok(extract: :animal_ids)
-    |> Write.Workflow.on_failed_step(transfer_error_to(original_changeset))
+    |> Sql.Transaction.on_ok(extract: :animal_ids)
+    |> Sql.Transaction.on_failed_step(transfer_error_to(original_changeset))
   end
 
   # This is dodgy. We happen to know that the only kind of changeset error
@@ -58,7 +58,7 @@ defmodule Crit.Usables.Write.BulkAnimalWorkflow do
       duplicate = failing_changeset.changes.name
       message = ~s[An animal named "#{duplicate}" is already in service]
       {:error,
-       Write.Workflow.transfer_constraint_error(original_changeset, :names, message)
+       Sql.Transaction.transfer_constraint_error(original_changeset, :names, message)
       }
     end
   end

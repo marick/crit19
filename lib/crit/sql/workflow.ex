@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.Workflow do
+defmodule Crit.Sql.Transaction do
   alias Ecto.Changeset
   alias Ecto.ChangesetX
 

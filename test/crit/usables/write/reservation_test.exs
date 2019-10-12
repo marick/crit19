@@ -1,6 +1,6 @@
 defmodule Crit.Usables.Write.ReservationTest do
   use Crit.DataCase
-  alias Crit.Usables.Write
+  alias Crit.Usables.Reservation
   alias Crit.Usables.Hidden.Use
   alias Crit.Sql
   alias Ecto.Timespan
@@ -24,8 +24,8 @@ defmodule Crit.Usables.Write.ReservationTest do
   describe "changeset" do
     test "required fields are checked" do
       errors =
-        %Write.Reservation{}
-        |> Write.Reservation.changeset(%{})
+        %Reservation{}
+        |> Reservation.changeset(%{})
         |> errors_on
 
       assert errors.start_date
@@ -42,7 +42,7 @@ defmodule Crit.Usables.Write.ReservationTest do
         |> Map.put("animal_ids", ["1", "2", "3"])
         |> Map.put("procedure_ids", ["11", "22", "33"])
       %{changes: changes} =
-        %Write.Reservation{} |> Write.Reservation.changeset(params)
+        %Reservation{} |> Reservation.changeset(params)
       assert changes.start_date == @start_date
       assert changes.start_time == @start_time
       assert changes.minutes == @minutes
@@ -69,8 +69,8 @@ defmodule Crit.Usables.Write.ReservationTest do
 
     test "success",
         %{params: params, animal_ids: animal_ids, procedure_ids: procedure_ids} do
-      {:ok, %{id: id}} = Write.Reservation.create(params, @institution)
-      reservation = Sql.get(Write.Reservation, id, @institution)
+      {:ok, %{id: id}} = Reservation.create(params, @institution)
+      reservation = Sql.get(Reservation, id, @institution)
 
       expected_timespan =
         Timespan.from_date_time_and_duration(@start_date, @start_time, @minutes)
@@ -92,7 +92,7 @@ defmodule Crit.Usables.Write.ReservationTest do
       assert {:error, changeset} =
         params
         |> Map.put("species_id", "")
-        |> Write.Reservation.create(@institution)
+        |> Reservation.create(@institution)
 
       assert errors_on(changeset).species_id
     end
@@ -103,7 +103,7 @@ defmodule Crit.Usables.Write.ReservationTest do
       bad_params = Map.put(params, "species_id", "383838921")
 
       assert_raise Ecto.ConstraintError, fn -> 
-        Write.Reservation.create(bad_params, @institution)
+        Reservation.create(bad_params, @institution)
       end
     end
 
@@ -114,7 +114,7 @@ defmodule Crit.Usables.Write.ReservationTest do
         fn current -> Enum.concat(current, ["88383838"]) end)
 
       assert_raise RuntimeError, fn -> 
-        Write.Reservation.create(bad_params, @institution)
+        Reservation.create(bad_params, @institution)
       end
     end
 
@@ -125,7 +125,7 @@ defmodule Crit.Usables.Write.ReservationTest do
         fn current -> Enum.concat(current, ["88383838"]) end)
 
       assert_raise RuntimeError, fn -> 
-        Write.Reservation.create(bad_params, @institution)
+        Reservation.create(bad_params, @institution)
       end
     end
   end

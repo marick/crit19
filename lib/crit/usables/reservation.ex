@@ -1,10 +1,9 @@
-defmodule Crit.Usables.Write.Reservation do
+defmodule Crit.Usables.Reservation do
   use Ecto.Schema
   import Ecto.Changeset
   import Crit.Errors
   alias Ecto.Timespan
   alias Crit.Sql
-  alias Crit.Usables.Write
   alias Crit.Usables.Hidden.Use
   alias Ecto.Multi
 
@@ -39,12 +38,12 @@ defmodule Crit.Usables.Write.Reservation do
       &bulk_insert_step/1,
     ]
 
-    Write.Workflow.run(attrs, institution, steps)
+    Sql.Transaction.run(attrs, institution, steps)
   end
 
 
   defp validation_step(state) do
-    Write.Workflow.validation_step(
+    Sql.Transaction.validation_step(
       state,
       (fn attrs -> changeset(%__MODULE__{}, attrs) end))
   end
@@ -63,8 +62,8 @@ defmodule Crit.Usables.Write.Reservation do
 
     script
     |> Sql.transaction(institution)
-    |> Write.Workflow.on_ok(extract: :reservation)
-    |> Write.Workflow.on_failed_step(fn
+    |> Sql.Transaction.on_ok(extract: :reservation)
+    |> Sql.Transaction.on_failed_step(fn
         (:reservation, failing_changeset) -> failing_changeset
         (_, failing_changeset) ->
           impossible_input("Animal or procedure id is invalid.",

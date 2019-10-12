@@ -8,7 +8,7 @@ defmodule Crit.Ecto.TimespanTest do
   use Crit.DataCase
   alias Ecto.Timespan
   import Ecto.Timespan
-  alias Crit.Usables.Write
+  alias Crit.Usables.{Reservation}
   alias Crit.Sql
   alias Pile.TimeHelper
 
@@ -145,18 +145,18 @@ defmodule Crit.Ecto.TimespanTest do
 
   defp db_contains?(timespan) do
     {:ok, range} = timespan |> Timespan.dump
-    query = from s in Write.Reservation, where: contains(s.timespan, ^range)
+    query = from s in Reservation, where: contains(s.timespan, ^range)
     Sql.exists?(query, @institution)
   end
   
   defp db_overlaps?(timespan) do
     {:ok, range} = timespan |> Timespan.dump
-    query = from s in Write.Reservation, where: overlaps(s.timespan, ^range)
+    query = from s in Reservation, where: overlaps(s.timespan, ^range)
     Sql.exists?(query, @institution)
   end
   
   defp add_reservation!(timespan) do
-    reservation = %Write.Reservation{species_id: @bovine_id, timespan: timespan}
+    reservation = %Reservation{species_id: @bovine_id, timespan: timespan}
     Sql.insert!(reservation, @institution)
   end
 end
