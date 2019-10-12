@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.BulkAnimalWorkflow do
+defmodule Crit.Usables.Animal.BulkCreationTransaction do
   alias Crit.Sql
   alias Crit.Usables.Write
   alias Crit.Usables.Hidden

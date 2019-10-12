@@ -3,11 +3,12 @@ defmodule Crit.Usables do
   alias Crit.Sql
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Hidden
+  alias Crit.Usables.Animal.BulkCreationTransaction
   alias Crit.Usables.Write
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
   def create_animals(attrs, institution) do
-    case Write.BulkAnimalWorkflow.run(attrs, institution) do
+    case BulkCreationTransaction.run(attrs, institution) do
       {:ok, animal_ids} ->
         {:ok, AnimalApi.ids_to_animals(animal_ids, institution)}
       {:error, changeset} ->
