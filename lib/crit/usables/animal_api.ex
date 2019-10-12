@@ -1,7 +1,7 @@
 defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
   # alias Crit.Sql
-  alias Crit.Usables.Animal.Read
+  alias Crit.Usables.Animal.{Read, Changeset, Write}
   # import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
   
@@ -27,5 +27,21 @@ defmodule Crit.Usables.AnimalApi do
     ids
     |> Read.ids_to_animals(institution)
     |> Enum.map(&Read.put_virtual_fields/1)
-  end  
+  end
+
+
+  def edit_changeset(animal), do: Changeset.edit_changeset(animal)
+
+  def changeset(animal, attrs), do: Changeset.changeset(animal, attrs)
+  def changeset(fields), do: Changeset.changeset(fields)
+  
+  def update(string_id, attrs, institution) do
+    case result = Write.update_for_id(string_id, attrs, institution) do 
+      {:ok, id} -> 
+        {:ok, showable!(id, institution)}
+      _ ->
+        result
+    end
+  end
+
 end

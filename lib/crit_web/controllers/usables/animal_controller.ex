@@ -4,6 +4,7 @@ defmodule CritWeb.Usables.AnimalController do
   import CritWeb.Plugs.Authorize
 
   alias Crit.Usables
+  alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
 
   plug :must_be_able_to, :manage_animals
@@ -40,7 +41,7 @@ defmodule CritWeb.Usables.AnimalController do
 
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
     # IO.inspect animal_params
-    case Usables.update_animal(id, animal_params, institution(conn)) do
+    case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         render(conn, "show.html", animal: animal)
     end

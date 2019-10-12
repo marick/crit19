@@ -8,7 +8,7 @@
         <%= render "edit_animal_form.html",
             assigns 
             |> Map.put(:action, Routes.usables_animal_path(@conn, :update, animal))
-            |> Map.put(:changeset, Crit.Usables.Write.Animal.edit_changeset(animal))
+            |> Map.put(:changeset, Crit.Usables.AnimalApi.edit_changeset(animal))
 
         %>
       </td>

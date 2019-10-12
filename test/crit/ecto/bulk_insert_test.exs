@@ -2,9 +2,9 @@ defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.BulkInsert
   alias Crit.Usables.Hidden
-  alias Crit.Usables.Write
   alias Crit.Usables.ServiceGap
   alias Crit.Usables.Animal
+  alias Crit.Usables.AnimalApi
   alias Crit.Ecto.BulkInsert.Testable
   alias Ecto.Datespan
   alias Crit.Sql
@@ -22,7 +22,7 @@ defmodule Crit.Ecto.BulkInsertTest do
 
   @service_gap_cs_list [@before_service_cs, @after_service_cs]
 
-  @animal_cs Write.Animal.changeset(name: "name", species_id: 1)
+  @animal_cs AnimalApi.changeset(name: "name", species_id: 1)
   
 
   def assert_right_dates [before_service, after_service] do 
@@ -85,7 +85,7 @@ defmodule Crit.Ecto.BulkInsertTest do
 
     test "this is the step-by-step approach", %{assertions: assertions} do 
       animal_opts =
-        [schema: Write.Animal,             ids: :animal_ids]
+        [schema: Animal,             ids: :animal_ids]
       service_gap_opts =
         [schema: ServiceGaps,        ids: :service_gap_ids]
       cross_opts =
@@ -147,7 +147,7 @@ defmodule Crit.Ecto.BulkInsertTest do
 
       assert {:error, transaction_key, failed_changeset, _results_so_far} = 
         Sql.transaction(bad_try, @institution)
-      assert transaction_key == Testable.insert_key(Write.Animal, 1)
+      assert transaction_key == Testable.insert_key(Animal, 1)
       assert failed_changeset.changes.name == @animal_cs.changes.name
       assert "has already been taken" in errors_on(failed_changeset).name
     end

@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Api.AnimalTest do
   use Crit.DataCase
   alias Crit.Usables
-  alias Crit.Usables.Write
+  alias Crit.Usables.Animal
   alias Crit.Usables.AnimalApi
   import Ecto.ChangesetX
   alias Crit.Exemplars.Available
@@ -64,12 +64,12 @@ defmodule Crit.Usables.Api.AnimalTest do
                 }
 
       assert {:ok, new_animal} =
-        Usables.update_animal(string_id, params, @institution)
+        AnimalApi.update(string_id, params, @institution)
       
-      assert new_animal == %Write.Animal{original |
-                                        name: "New Bossie",
-                                        lock_version: 2
-                                       }
+      assert new_animal == %Animal{original |
+                                   name: "New Bossie",
+                                   lock_version: 2
+                                  }
     end
 
     @tag :skip
@@ -79,7 +79,7 @@ defmodule Crit.Usables.Api.AnimalTest do
       params = %{"name" => "already exists"}
 
       assert {:error, changeset} =
-        Usables.update_animal(string_id, params, @institution)
+        AnimalApi.update(string_id, params, @institution)
 
       assert shown_animal == changeset.data
 
@@ -94,7 +94,7 @@ defmodule Crit.Usables.Api.AnimalTest do
         params = %{"name" => name,
           "lock_version" => to_string(original.lock_version)
          }
-        Usables.update_animal(string_id, params, @institution)
+        AnimalApi.update(string_id, params, @institution)
       end
 
       assert {:ok, _} = update.("this version wins")
@@ -122,7 +122,7 @@ defmodule Crit.Usables.Api.AnimalTest do
         params = %{"name" => name,
           "lock_version" => to_string(original.lock_version)
          }
-        Usables.update_animal(string_id, params, @institution)
+        AnimalApi.update(string_id, params, @institution)
       end
 
       assert {:ok, _} = update.("this version wins")

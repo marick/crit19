@@ -1,7 +1,6 @@
 defmodule Crit.Exemplars.ReservationFocused do
   use ExUnit.CaseTemplate
   use Crit.Global.Default
-  alias Crit.Usables.Write
   alias Crit.Usables
   alias Crit.Sql
 
@@ -23,7 +22,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   # Because these have no associated in-service and out-of-service dates,
   # they can be reserved at any time. 
   def inserted_animal_ids(names, species_id) do
-    inserted_named_ids names, %Write.Animal{
+    inserted_named_ids names, %Usables.Animal{
       species_id: species_id
     }
   end

@@ -15,15 +15,6 @@ defmodule Crit.Usables do
     end
   end
 
-  def update_animal(string_id, attrs, institution) do
-    case result = Write.Animal.update_for_id(string_id, attrs, institution) do 
-      {:ok, id} -> 
-        {:ok, AnimalApi.showable!(id, institution)}
-      _ ->
-        result
-    end
-  end
-
   def bulk_animal_creation_changeset() do
    %Write.BulkAnimal{
      names: "",

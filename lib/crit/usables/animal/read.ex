@@ -6,7 +6,7 @@ defmodule Crit.Usables.Animal.Read do
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Usables.Write.Animal
+    alias Crit.Usables.Animal
 
     def all(), do: Ecto.Query.from(Animal)
 

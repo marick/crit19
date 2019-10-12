@@ -2,7 +2,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
-  alias Crit.Usables.Write.Animal
+  alias Crit.Usables.AnimalApi
   alias Crit.Usables.FieldConverters.{ToDate, ToServiceGap, ToNameList}
   alias Crit.Usables.ServiceGap
 
@@ -47,7 +47,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
 
   defp animal_changesets(changes) do
     Enum.map(changes.computed_names, fn name ->
-      Animal.changeset(name: name, species_id: changes.species_id)
+      AnimalApi.changeset(name: name, species_id: changes.species_id)
     end)
   end
 
