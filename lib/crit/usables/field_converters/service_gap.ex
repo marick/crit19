@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Virtualizers.ServiceGap do
+defmodule Crit.Usables.FieldConverters.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Usables.ServiceGap

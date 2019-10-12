@@ -4,7 +4,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
   import Pile.ChangesetFlow
   alias Crit.Usables.Write.{
     DateComputers, NameListComputers, Animal}
-  alias Crit.Usables.Virtualizers.ServiceGap, as: ServiceGapVirtualizer
+  alias Crit.Usables.FieldConverters.ServiceGap, as: ServiceGapConverter
   alias Crit.Usables.ServiceGap
 
 
@@ -35,7 +35,7 @@ defmodule Crit.Usables.Write.BulkAnimal do
         changeset
         |> NameListComputers.split_names
         |> DateComputers.put_start_and_end
-        |> ServiceGapVirtualizer.expand_start_and_end
+        |> ServiceGapConverter.expand_start_and_end
       end)
   end
 
