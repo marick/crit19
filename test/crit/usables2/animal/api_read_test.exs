@@ -1,23 +1,14 @@
-defmodule Crit.Usables.Animal.AnimalReadTest do
+defmodule Crit.Usables.Animal.ApiReadTest do
   use Crit.DataCase
   alias Crit.Usables.{Animal, AnimalApi, ServiceGap}
   alias Crit.Usables.Hidden.AnimalServiceGap
   alias Ecto.Datespan
   alias Crit.Sql
+  alias Crit.Usables
 
-  setup do
-    base = %Animal{
-      name: "Bossie",
-      species_id: @bovine_id,
-      lock_version: 1
-    }
-    %{id: id} = Sql.insert!(base, @institution)
-    # There is always an in-service gap
-    add_service_gap_for_animal(id, Datespan.strictly_before(@date))
-    [id: id]
-  end
-
-  describe "getting a showable animal from its id" do 
+  describe "getting a showable animal from its id" do
+    setup :one_animal_setup
+    
     test "basic conversions", %{id: id} do
       animal = AnimalApi.showable!(id, @institution)
 
@@ -45,11 +36,11 @@ defmodule Crit.Usables.Animal.AnimalReadTest do
         AnimalApi.showable!(83483, @institution)
       end
     end
-    
   end
 
-
   describe "fetching an animal by something other than an id" do
+    setup :one_animal_setup
+
     test "fetching by name" do
       assert animal = AnimalApi.showable_by(:name, "Bossie", @institution)
       assert is_integer(animal.id)
@@ -69,7 +60,54 @@ defmodule Crit.Usables.Animal.AnimalReadTest do
     end
   end
 
+  describe "fetching a number of animals" do
+    setup :three_animal_setup
 
+    test "ids_to_animals returns animals in alphabetical order", %{ids: ids} do
+      assert [alpha, bossie, jake] = AnimalApi.ids_to_animals(ids, @institution)
+
+      assert alpha.name == "Alpha"
+      assert alpha.species_name == @bovine
+      assert alpha.in_service_date == @iso_date
+      assert alpha.out_of_service_date == @never
+
+      assert bossie.name == "bossie"
+      assert jake.name == "Jake"
+    end
+
+    test "bad ids are silently ignored", %{ids: ids} do
+      new_ids = [387373 | ids]
+      
+      assert [alpha, bossie, jake] = AnimalApi.ids_to_animals(new_ids, @institution)
+      assert alpha.name == "Alpha"
+      assert bossie.name == "bossie"
+      assert jake.name == "Jake"
+    end
+  end
+
+  def one_animal_setup(_) do
+    params = %Animal{
+      name: "Bossie",
+      species_id: @bovine_id,
+      lock_version: 1
+    }
+    %{id: id} = Sql.insert!(params, @institution)
+    # There is always an in-service gap
+    add_service_gap_for_animal(id, Datespan.strictly_before(@date))
+    [id: id]
+  end
+
+  def three_animal_setup(_) do
+    params = %{
+      "species_id" => @bovine_id,
+      "names" => "bossie, Jake, Alpha",
+      "start_date" => @iso_date,
+      "end_date" => @never
+    }
+
+    {:ok, animals} = Usables.create_animals(params, @institution)
+    [ids: EnumX.ids(animals)]
+  end
 
   def add_service_gap_for_animal(animal_id, datespan) do
     gap = %ServiceGap{gap: datespan,

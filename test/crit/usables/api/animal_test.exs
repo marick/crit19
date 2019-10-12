@@ -136,36 +136,6 @@ defmodule Crit.Usables.Api.AnimalTest do
   end
 
 
-  describe "fetching a number of animals" do 
-    setup do
-      {:ok, animals} = 
-        @basic_params
-        |> Map.put("names", "bossie, Jake, Alpha")
-        |> Usables.create_animals(@institution)
-      [ids: EnumX.ids(animals)]
-    end
-
-    test "ids_to_animals returns animals in alphabetical order", %{ids: ids} do
-      assert [alpha, bossie, jake] = Usables.ids_to_animals(ids, @institution)
-
-      assert alpha.name == "Alpha"
-      assert alpha.species_name == @bovine
-      assert alpha.in_service_date == @iso_date
-      assert alpha.out_of_service_date == @never
-
-      assert bossie.name == "bossie"
-      assert jake.name == "Jake"
-    end
-
-    test "bad ids are silently ignored", %{ids: ids} do
-      new_ids = [387373 | ids]
-      
-      assert [alpha, bossie, jake] = Usables.ids_to_animals(new_ids, @institution)
-      assert alpha.name == "Alpha"
-      assert bossie.name == "bossie"
-      assert jake.name == "Jake"
-    end
-  end
 
   defp showable_animal_named(name) do
     id = Available.animal_id(name: name)

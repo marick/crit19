@@ -23,4 +23,9 @@ defmodule Crit.Usables.AnimalApi do
     end
   end
     
+  def ids_to_animals(ids, institution) do
+    ids
+    |> Read.ids_to_animals(institution)
+    |> Enum.map(&Read.put_virtual_fields/1)
+  end  
 end

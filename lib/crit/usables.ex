@@ -2,21 +2,14 @@ defmodule Crit.Usables do
   use Crit.Global.Constants
   alias Crit.Sql
   alias Crit.Usables.AnimalApi
-  alias Crit.Usables.Animal
   alias Crit.Usables.Hidden
   alias Crit.Usables.Write
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
-  def ids_to_animals(ids, institution) do
-    ids
-    |> Animal.Read.ids_to_animals(institution)
-    |> Enum.map(&Animal.Read.put_virtual_fields/1)
-  end  
-
   def create_animals(attrs, institution) do
     case Write.BulkAnimalWorkflow.run(attrs, institution) do
       {:ok, animal_ids} ->
-        {:ok, ids_to_animals(animal_ids, institution)}
+        {:ok, AnimalApi.ids_to_animals(animal_ids, institution)}
       {:error, changeset} ->
         {:error, ensure_forms_display_errors(changeset)}
     end
