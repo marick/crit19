@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.Procedure do
+defmodule Crit.Usables.Procedure do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString

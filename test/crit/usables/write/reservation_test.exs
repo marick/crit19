@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Write.ReservationTest do
   use Crit.DataCase
   alias Crit.Usables.Write
+  alias Crit.Usables.Hidden.Use
   alias Crit.Sql
   alias Ecto.Timespan
   alias Crit.Exemplars.ReservationFocused
@@ -78,7 +79,7 @@ defmodule Crit.Usables.Write.ReservationTest do
       assert reservation.species_id == @bovine_id
 
       # Check for valid uses
-      uses = Sql.all(Write.Use, @institution)
+      uses = Sql.all(Use, @institution)
       assert length(uses) == 4
       assert one_use = List.first(uses)
       

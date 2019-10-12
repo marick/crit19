@@ -5,6 +5,7 @@ defmodule Crit.Usables.Write.Reservation do
   alias Ecto.Timespan
   alias Crit.Sql
   alias Crit.Usables.Write
+  alias Crit.Usables.Hidden.Use
   alias Ecto.Multi
 
   schema "reservations" do
@@ -77,12 +78,12 @@ defmodule Crit.Usables.Write.Reservation do
       reducer = fn use, multi_so_far ->
         Multi.insert(multi_so_far,
           use,  # We have to give a unique name for the result.
-          Write.Use.changeset_with_constraints(use),
+          Use.changeset_with_constraints(use),
           Sql.multi_opts(institution))
       end
       
       tx_result.reservation.id
-      |> Write.Use.reservation_uses(animal_ids, procedure_ids)
+      |> Use.reservation_uses(animal_ids, procedure_ids)
       |> Enum.reduce(Multi.new, reducer)
     end
   end
