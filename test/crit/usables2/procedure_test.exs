@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.ProcedureTest do
+defmodule Crit.Usables.ProcedureTest do
   use Crit.DataCase
   alias Crit.Usables.Procedure
 

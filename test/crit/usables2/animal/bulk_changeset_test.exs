@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.BulkAnimalTest do
+defmodule Crit.Usables.Animal.BulkChangesetTest do
   use Crit.DataCase
   alias Crit.Usables.Animal.BulkCreation
 

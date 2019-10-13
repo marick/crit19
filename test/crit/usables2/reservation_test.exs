@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.ReservationTest do
+defmodule Crit.Usables.ReservationTest do
   use Crit.DataCase
   alias Crit.Usables.Reservation
   alias Crit.Usables.Hidden.Use
