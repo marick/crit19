@@ -4,7 +4,6 @@ defmodule Crit.Usables.Animal.UpdateTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars.Available
 
-  @tag :skip
   test "updating the name" do
     {string_id, original} = showable_animal_named("Original Bossie")
     params = %{"name" => "New Bossie",
@@ -19,24 +18,20 @@ defmodule Crit.Usables.Animal.UpdateTest do
                                  name: "New Bossie",
                                  lock_version: 2
                                 }
+
+    assert new_animal == AnimalApi.showable!(original.id, @institution)
   end
 
-  @tag :skip
   test "unique name constraint violation produces changeset" do
-    {string_id, shown_animal} = showable_animal_named("Original Bossie")
+    {string_id, _} = showable_animal_named("Original Bossie")
     showable_animal_named("already exists")
     params = %{"name" => "already exists"}
 
-    assert {:error, changeset} =
-      AnimalApi.update(string_id, params, @institution)
-
-    assert shown_animal == changeset.data
-
+    assert {:error, changeset} = AnimalApi.update(string_id, params, @institution)
     assert "has already been taken" in errors_on(changeset).name
   end
 
-  @tag :skip
-  test "optimistic concurrency failure produces new animal" do
+  test "optimistic concurrency failure produces changeset with new animal" do
     {string_id, original} = showable_animal_named("Original Bossie")
 
     update = fn name -> 
@@ -51,9 +46,13 @@ defmodule Crit.Usables.Animal.UpdateTest do
 
     # IO.inspect changeset.data
 
-    assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
-    # Update form with new version.
     assert changeset.data.name == "this version wins"
+    assert changeset.data.lock_version == 2
+
+    assert changeset.data == AnimalApi.showable!(original.id, @institution)
+    
+
+    assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
     # All changes have been wiped out.
     assert changeset.changes == %{}
   end

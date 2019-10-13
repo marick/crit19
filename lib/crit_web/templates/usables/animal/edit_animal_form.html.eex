@@ -3,8 +3,10 @@
 <%= form_for @changeset, @action, [class: "box"], fn f -> %>
 
   <%= @changeset.data.species_name %> named
-  <%= text_input(f, :name) %>
-  <%= CritWeb.Bulma.Elements.form_button("Change") %>
+  <%= text_input(f, :name) %> <br/>
+  In service: <%= text_input(f, :in_service_date) %>
+  Out of service beginning: <%= text_input(f, :out_of_service_date) %> <br/>
+  <%= submit "Change", class: "button is-success is-small" %>
 
 <% end %>
 
