@@ -110,7 +110,19 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       conn
       |> assert_purpose(show_an_animal_in_isolation())
       |> assert_user_sees("newname")
+    end
+
+    test "duplicate name change", %{conn: conn, id: id} do
+      Exemplars.Available.animal_id(name: "already exists")
+      conn =
+        post_to_action(conn, [:update, id], under(:animal, %{"name" => "already exists"}))
+      assert animal_name(id) == "OLD NAME"
+
+      conn
+      |> assert_purpose(form_for_editing_animal())
+      |> assert_user_sees("already exists")
    end
+    
   end
 
   

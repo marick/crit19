@@ -43,6 +43,9 @@ defmodule CritWeb.Usables.AnimalController do
     case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         render(conn, "show.html", animal: animal)
+      {:error, changeset} ->
+        render(conn, "edit_animal_form.html",
+          changeset: changeset, action: path(:update, id))
     end
 
     # user = Users.get_user!(id)

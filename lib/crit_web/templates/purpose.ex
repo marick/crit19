@@ -25,4 +25,7 @@ defmodule CritWeb.Templates.Purpose do
   def show_an_animal_in_isolation, 
     do: "show an animal in isolation"
 
+  def form_for_editing_animal, 
+    do: "form for editing animal"
+
 end
