@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Api.AnimalTest do
+defmodule Crit.Usables.Animal.BulkCreationTest do
   use Crit.DataCase
   alias Crit.Usables
   alias Crit.Usables.Animal
