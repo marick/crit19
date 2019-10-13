@@ -1,6 +1,6 @@
 defmodule Crit.Usables.Animal.BulkCreationTransaction do
   alias Crit.Sql
-  alias Crit.Usables.Write
+  alias Crit.Usables.Animal
   alias Crit.Usables.Hidden
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
@@ -21,11 +21,11 @@ defmodule Crit.Usables.Animal.BulkCreationTransaction do
   defp validation_step(state) do
     Sql.Transaction.validation_step(
       state,
-      &Write.BulkAnimal.compute_insertables/1)
+      &Animal.BulkCreation.compute_insertables/1)
   end
 
   defp split_changeset_step(%{original_changeset: changeset} = state) do
-    changesets = Write.BulkAnimal.changeset_to_changesets(changeset)
+    changesets = Animal.BulkCreation.changeset_to_changesets(changeset)
 
     {:ok, Map.put(state, :changesets, changesets)}
   end

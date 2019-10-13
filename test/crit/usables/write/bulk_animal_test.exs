@@ -1,6 +1,6 @@
 defmodule Crit.Usables.Write.BulkAnimalTest do
   use Crit.DataCase
-  alias Crit.Usables.Write.BulkAnimal
+  alias Crit.Usables.Animal.BulkCreation
 
   @correct %{
     names: "a, b, c",
@@ -12,7 +12,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
 
   describe "changeset" do
     test "required fields are checked" do
-      errors = %{} |> BulkAnimal.compute_insertables |> errors_on
+      errors = %{} |> BulkCreation.compute_insertables |> errors_on
       
       assert errors.names
       assert errors.species_id
@@ -21,7 +21,7 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
     end
 
     test "the construction derived/virtual values" do
-      changeset = BulkAnimal.compute_insertables(@correct)
+      changeset = BulkCreation.compute_insertables(@correct)
       assert changeset.valid?
 
       changes = changeset.changes
@@ -46,8 +46,8 @@ defmodule Crit.Usables.Write.BulkAnimalTest do
       |> Map.put(:species, "1")
       |> Map.put(:start_date,  @iso_date)
       |> Map.put(:end_date, @never)
-      |> BulkAnimal.compute_insertables
-      |> BulkAnimal.changeset_to_changesets
+      |> BulkCreation.compute_insertables
+      |> BulkCreation.changeset_to_changesets
 
     assert one_cs.changes.name == "one"
     assert one_cs.changes.species_id == 1

@@ -18,7 +18,7 @@ defmodule CritWeb.Usables.AnimalController do
       options: Usables.available_species(institution(conn)))
   end
 
-  def bulk_create(conn, %{"bulk_animal" => animal_params}) do
+  def bulk_create(conn, %{"bulk_creation" => animal_params}) do
     case Usables.create_animals(animal_params, institution(conn)) do
       {:ok, animals} ->
         conn

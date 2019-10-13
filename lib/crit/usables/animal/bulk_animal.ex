@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Write.BulkAnimal do
+defmodule Crit.Usables.Animal.BulkCreation do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow

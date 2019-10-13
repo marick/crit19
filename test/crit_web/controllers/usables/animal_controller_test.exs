@@ -25,7 +25,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   describe "bulk create animals" do
     setup do
       act = fn conn, params ->
-        post_to_action(conn, :bulk_create, under(:bulk_animal, params))
+        post_to_action(conn, :bulk_create, under(:bulk_creation, params))
       end
       [act: act]
     end

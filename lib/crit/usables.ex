@@ -1,10 +1,10 @@
 defmodule Crit.Usables do
   use Crit.Global.Constants
   alias Crit.Sql
+  alias Crit.Usables.Animal
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Hidden
   alias Crit.Usables.Animal.BulkCreationTransaction
-  alias Crit.Usables.Write
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
   def create_animals(attrs, institution) do
@@ -17,13 +17,13 @@ defmodule Crit.Usables do
   end
 
   def bulk_animal_creation_changeset() do
-   %Write.BulkAnimal{
+   %Animal.BulkCreation{
      names: "",
      species_id: 0,
      start_date: @today,
      end_date: @never,
      timezone: "--to be replaced--"}
-     |> Write.BulkAnimal.changeset(%{})
+     |> Animal.BulkCreation.changeset(%{})
   end
 
   def available_species(institution) do
