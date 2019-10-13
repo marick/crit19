@@ -1,6 +1,5 @@
 defmodule Crit.Usables.Animal.BulkCreationTest do
   use Crit.DataCase
-  alias Crit.Usables
   alias Crit.Usables.AnimalApi
   import Ecto.ChangesetX
 
@@ -18,7 +17,7 @@ defmodule Crit.Usables.Animal.BulkCreationTest do
       |> Map.put("end_date", @iso_date)
       |> Map.put("names", ",")
     
-    assert {:error, changeset} = Usables.create_animals(params, @institution)
+    assert {:error, changeset} = AnimalApi.create_animals(params, @institution)
     assert represents_form_errors?(changeset)
 
     errors = errors_on(changeset)
@@ -27,7 +26,7 @@ defmodule Crit.Usables.Animal.BulkCreationTest do
   end
 
   test "without an error, we insert a network" do
-    {:ok, [bossie, jake]} = Usables.create_animals(@basic_params, @institution)
+    {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
     check = fn returned ->
       fetched = AnimalApi.showable!(returned.id, @institution)
@@ -43,8 +42,8 @@ defmodule Crit.Usables.Animal.BulkCreationTest do
   end
 
   test "constraint problems are detected last" do
-    {:ok, [_bossie, _jake]} = Usables.create_animals(@basic_params, @institution)
-    {:error, changeset} =   Usables.create_animals(@basic_params, @institution)
+    {:ok, [_bossie, _jake]} = AnimalApi.create_animals(@basic_params, @institution)
+    {:error, changeset} =   AnimalApi.create_animals(@basic_params, @institution)
 
     assert ~s|An animal named "Bossie" is already in service| in errors_on(changeset).names
   end

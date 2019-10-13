@@ -4,7 +4,6 @@ defmodule Crit.Usables.Animal.ApiReadTest do
   alias Crit.Usables.Hidden.AnimalServiceGap
   alias Ecto.Datespan
   alias Crit.Sql
-  alias Crit.Usables
 
   describe "getting a showable animal from its id" do
     setup :one_animal_setup
@@ -105,7 +104,7 @@ defmodule Crit.Usables.Animal.ApiReadTest do
       "end_date" => @never
     }
 
-    {:ok, animals} = Usables.create_animals(params, @institution)
+    {:ok, animals} = AnimalApi.create_animals(params, @institution)
     [ids: EnumX.ids(animals)]
   end
 

@@ -2,7 +2,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Usables
   alias Crit.Usables.FieldConverters.ToNameList
   alias Crit.Usables.{AnimalApi, Animal}
   alias CritWeb.Audit
@@ -119,7 +118,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
   defp animal_creation_data() do
     {start_date, end_date} = Exemplars.Date.date_pair() 
-    {_species_name, species_id} = Enum.random(Usables.available_species(@institution))
+    {_species_name, species_id} = Enum.random(AnimalApi.available_species(@institution))
     
     namelist = Factory.unique_names()
 

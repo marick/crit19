@@ -9,7 +9,7 @@ defmodule Crit.Exemplars.Available do
   use Crit.Global.Default
   use Crit.Global.Constants
   alias Crit.Factory
-  alias Crit.Usables
+  alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Factory
 
@@ -23,7 +23,7 @@ defmodule Crit.Exemplars.Available do
     {:ok, animals} =
       params
       |> MapX.convert_atom_keys_to_strings
-      |> Usables.create_animals(@institution)
+      |> AnimalApi.create_animals(@institution)
     EnumX.ids(animals)
   end
 
