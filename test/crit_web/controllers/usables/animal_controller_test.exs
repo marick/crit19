@@ -121,8 +121,22 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       conn
       |> assert_purpose(form_for_editing_animal())
       |> assert_user_sees("already exists")
-   end
-    
+    end
+  end
+
+  describe "index" do
+    test "fetching two", %{conn: conn} do
+      should_sort_second = "ZZZZZZ"
+      should_sort_first = "aaaaaa"
+      Exemplars.Available.animal_id(name: should_sort_second)
+      Exemplars.Available.animal_id(name: should_sort_first)
+
+      get_via_action(conn, :index)
+      |> assert_purpose(displaying_animal_summaries())
+      |> assert_user_sees(should_sort_first)
+      |> assert_user_sees(should_sort_second)
+      # Note that the actual test of ordering is at the `crit` level
+    end
   end
 
   

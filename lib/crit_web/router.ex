@@ -53,6 +53,7 @@ IO.puts(
       post "/bulk_create", AnimalController, :bulk_create
       put "/update/:animal_id", AnimalController, :update
       post "/update/:animal_id", AnimalController, :update
+      get "/", AnimalController, :index
     end
   end
   

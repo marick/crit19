@@ -8,6 +8,12 @@ defmodule CritWeb.Usables.AnimalController do
 
   plug :must_be_able_to, :manage_animals
 
+  def index(conn, _params) do
+    animals = AnimalApi.all(institution(conn))
+    render(conn, "index.html", animals: animals)
+  end
+  
+
   def bulk_create_form(conn, _params,
     changeset \\ AnimalApi.bulk_animal_creation_changeset()
   ) do 
@@ -47,17 +53,5 @@ defmodule CritWeb.Usables.AnimalController do
         render(conn, "edit_animal_form.html",
           changeset: changeset, action: path(:update, id))
     end
-
-    # user = Users.get_user!(id)
-
-    # case Users.update_user(user, user_params) do
-    #   {:ok, user} ->
-    #     conn
-    #     |> put_flash(:info, "User updated successfully.")
-    #     |> redirect(to: Routes.user_management_user_path(conn, :show, user))
-
-    #   {:error, %Ecto.Changeset{} = changeset} ->
-    #     render(conn, "edit.html", user: user, changeset: changeset)
-    # end
   end
 end
