@@ -12,7 +12,16 @@ defmodule CritWeb.Usables.AnimalController do
     animals = AnimalApi.all(institution(conn))
     render(conn, "index.html", animals: animals)
   end
-  
+
+  def test(conn, _params) do
+    animal = AnimalApi.showable_by(:name, "BOSSIE", institution(conn)) |> IO.inspect
+    conn
+    |> put_layout(false)
+    |> render("edit_animal_form.html",
+           changeset: AnimalApi.edit_changeset(animal),
+           action: path(:update, animal))
+  end
+    
 
   def bulk_create_form(conn, _params,
     changeset \\ AnimalApi.bulk_animal_creation_changeset()

@@ -1,7 +1,13 @@
 <!-- Purpose: <%= Purpose.displaying_animal_summaries %> -->
 
+
+<div data-controller="single-animal">
+</div>
+
 <table class="table">
   <tbody>
+
+    
 <%= for animal <- @animals do %>
     <tr>
       <td>
