@@ -84,6 +84,17 @@ defmodule Crit.Usables.Animal.ApiReadTest do
     end
   end
 
+  describe "fetching several animals" do
+    setup :three_animal_setup
+
+    test "fetch everything" do 
+      assert [alpha, bossie, jake] = AnimalApi.all(@institution)
+      assert alpha.name == "Alpha"
+      assert bossie.name == "bossie"
+      assert jake.name == "Jake"
+    end
+  end
+
   def one_animal_setup(_) do
     params = %Animal{
       name: "Bossie",

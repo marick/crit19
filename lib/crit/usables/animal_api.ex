@@ -30,9 +30,14 @@ defmodule Crit.Usables.AnimalApi do
   def ids_to_animals(ids, institution) do
     ids
     |> Read.ids_to_animals(institution)
-    |> Enum.map(&Read.put_virtual_fields/1)
+    |> Read.put_virtual_fields
   end
 
+  def all(institution) do
+    institution
+    |> Read.all
+    |> Read.put_virtual_fields
+  end
 
   def edit_changeset(animal), do: Changeset.edit_changeset(animal)
 

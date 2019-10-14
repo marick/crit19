@@ -48,6 +48,10 @@ defmodule Crit.Usables.Animal.Read do
     |> Sql.all(institution)
   end
 
+  def put_virtual_fields(animals) when is_list(animals) do
+    Enum.map(animals, &put_virtual_fields/1)
+  end
+
   def put_virtual_fields(animal) do
     timespans = Enum.map(animal.service_gaps, &(&1.gap))
 
