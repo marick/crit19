@@ -1,6 +1,6 @@
 <!-- Purpose: <%= Purpose.snippet_to_display_animal %> -->
 
-<div class="columns">
+<div class="columns <%=@highlight%>">
   <div class="column is-three-quarters">
     <strong><%= @changeset.data.name %></strong> (<%= @changeset.data.species_name %>) (id: <%= @changeset.data.id %>)
   </div>

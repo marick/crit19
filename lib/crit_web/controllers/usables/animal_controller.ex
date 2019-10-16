@@ -43,15 +43,6 @@ defmodule CritWeb.Usables.AnimalController do
     Audit.created_animals(conn, audit_data)
   end
 
-  def test(conn, _params) do
-    animal = AnimalApi.showable_by(:name, "BOSSIE", institution(conn)) |> IO.inspect
-    conn
-    |> put_layout(false)
-    |> render("_edit_one_animal.html",
-           changeset: AnimalApi.edit_changeset(animal),
-           action: path(:update, animal))
-  end
-
   def update_form(conn, %{"animal_id" => id}) do
     animal = AnimalApi.showable!(id, institution(conn)) |> IO.inspect
     
@@ -69,7 +60,8 @@ defmodule CritWeb.Usables.AnimalController do
         conn
         |> put_layout(false)
         |> render("_show_one_animal.html", 
-            changeset: AnimalApi.edit_changeset(animal))
+            changeset: AnimalApi.edit_changeset(animal),
+            highlight: "has-background-grey-lighter")
       {:error, changeset} ->
         # IO.inspect(changeset, label: "failure")
         conn
