@@ -17,15 +17,14 @@ export default class extends Controller {
     }
 
     update(event) {
+        event.preventDefault()
         var path = this.data.get("update-path")
         var id = this.data.get("id")
         // console.log("update path")
         // console.log(id)
         // console.log(path);
-        event.preventDefault()
 
-        const form = new FormData(document.getElementById('editing_animal' + id));
-        console.log(JSON.stringify(form));
+        const form = new FormData(document.getElementById(id));
 
         var data = {
             method: 'POST',

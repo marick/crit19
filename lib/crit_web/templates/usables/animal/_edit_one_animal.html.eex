@@ -1,6 +1,8 @@
-Purpose: <%= Purpose.form_for_editing_animal %>
-<p>
-<%= form_for @changeset, "/not-used", [class: "box", id: "editing_animal#{@changeset.data.id}", data_action: "single-animal#update"], fn f -> %>
+<!-- Purpose: <%= Purpose.form_for_editing_animal %> -->
+<%= form_for @changeset, "/not-used",
+    [class: "box has-background-warning",
+     id: animal_id_attribute(@changeset.data),
+     data_action: "single-animal#update"], fn f -> %>
 
   <%= @changeset.data.id %>: 
   <%= error_tag f, :optimistic_lock_error %>
@@ -13,5 +15,3 @@ Purpose: <%= Purpose.form_for_editing_animal %>
      Change
   </button>
 <% end %>
-
-<!-- </p> -->
