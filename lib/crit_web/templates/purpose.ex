@@ -28,4 +28,7 @@ defmodule CritWeb.Templates.Purpose do
   def form_for_editing_animal, 
     do: "form for editing animal"
 
+  def snippet_to_display_animal, 
+    do: "snippet to display animal"
+
 end

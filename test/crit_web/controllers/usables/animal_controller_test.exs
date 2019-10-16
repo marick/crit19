@@ -108,7 +108,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       assert animal_name(id) == "newname"
 
       conn
-      |> assert_purpose(show_an_animal_in_isolation())
+      |> assert_purpose(snippet_to_display_animal())
       |> assert_user_sees("newname")
     end
 

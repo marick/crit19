@@ -9,6 +9,7 @@ defmodule Crit.Usables.Animal.Write do
     db_result =
       string_id
       |> Animal.Changeset.update_changeset(attrs)
+      # |> IO.inspect(label: "insertion changeset")
       |> Sql.update([stale_error_field: :optimistic_lock_error], institution)
     
     case db_result do 

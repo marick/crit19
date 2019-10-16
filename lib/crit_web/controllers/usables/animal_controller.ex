@@ -13,16 +13,6 @@ defmodule CritWeb.Usables.AnimalController do
     render(conn, "index.html", animals: animals)
   end
 
-  def test(conn, _params) do
-    animal = AnimalApi.showable_by(:name, "BOSSIE", institution(conn)) |> IO.inspect
-    conn
-    |> put_layout(false)
-    |> render("edit_animal_form.html",
-           changeset: AnimalApi.edit_changeset(animal),
-           action: path(:update, animal))
-  end
-    
-
   def bulk_create_form(conn, _params,
     changeset \\ AnimalApi.bulk_animal_creation_changeset()
   ) do 
@@ -53,14 +43,38 @@ defmodule CritWeb.Usables.AnimalController do
     Audit.created_animals(conn, audit_data)
   end
 
+  def test(conn, _params) do
+    animal = AnimalApi.showable_by(:name, "BOSSIE", institution(conn)) |> IO.inspect
+    conn
+    |> put_layout(false)
+    |> render("_edit_one_animal.html",
+           changeset: AnimalApi.edit_changeset(animal),
+           action: path(:update, animal))
+  end
+
+  def update_form(conn, %{"animal_id" => id}) do
+    animal = AnimalApi.showable!(id, institution(conn)) |> IO.inspect
+    
+    conn
+    |> put_layout(false)
+    |> render("_edit_one_animal.html",
+        changeset: AnimalApi.edit_changeset(animal))
+  end
+  
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
     # IO.inspect animal_params
     case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
-        render(conn, "show.html", animal: animal)
+        # IO.inspect(animal, label: "success")
+        conn
+        |> put_layout(false)
+        |> render("_show_one_animal.html", 
+            changeset: AnimalApi.edit_changeset(animal))
       {:error, changeset} ->
-        render(conn, "edit_animal_form.html",
-          changeset: changeset, action: path(:update, id))
+        # IO.inspect(changeset, label: "failure")
+        conn
+        |> put_layout(false)
+        |> render("_edit_one_animal.html", changeset: changeset)
     end
   end
 end

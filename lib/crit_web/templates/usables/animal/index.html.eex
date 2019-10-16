@@ -1,9 +1,6 @@
 <!-- Purpose: <%= Purpose.displaying_animal_summaries %> -->
 
 
-<div data-controller="single-animal">
-</div>
-
 <table class="table">
   <tbody>
 
@@ -11,12 +8,14 @@
 <%= for animal <- @animals do %>
     <tr>
       <td>
-        <%= render "edit_animal_form.html",
-            assigns 
-            |> Map.put(:action, Routes.usables_animal_path(@conn, :update, animal))
-            |> Map.put(:changeset, AnimalApi.edit_changeset(animal))
+        <div data-controller="single-animal"
+             data-single-animal-id="<%=animal.id%>"
+             data-single-animal-form-path="<%=AnimalController.path(:update_form, animal)%>"
+             data-single-animal-update-path="<%=AnimalController.path(:update, animal)%>">
+          <%= render "_show_one_animal.html",
+              Map.put(assigns, :changeset, AnimalApi.edit_changeset(animal))
 
-        %>
+          %>
       </td>
     </tr>
 <% end %>

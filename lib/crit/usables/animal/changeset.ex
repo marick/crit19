@@ -21,7 +21,7 @@ defmodule Crit.Usables.Animal.Changeset do
   def update_changeset(string_id, attrs) do
     id = String.to_integer(string_id)
     %Animal{id: id}
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :lock_version])
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
   end

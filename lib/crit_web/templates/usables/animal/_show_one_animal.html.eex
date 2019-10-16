@@ -1,0 +1,8 @@
+<!-- Purpose: <%= Purpose.snippet_to_display_animal %> -->
+
+  <button class="button is-success is-small" data-action="single-animal#form">
+     Edit
+  </button>
+                           <br/>  
+  <%= @changeset.data.id %>: <%= @changeset.data.name %> (<%= @changeset.data.species_name %>)
+</div>

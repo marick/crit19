@@ -1,6 +1,7 @@
 defmodule CritWeb.Usables.AnimalView do
   use CritWeb, :view
   alias Crit.Usables.AnimalApi
+  alias CritWeb.Usables.AnimalController
 
   def calendar_widget(f, opts) do
     special_defaults = [advice: ""]
