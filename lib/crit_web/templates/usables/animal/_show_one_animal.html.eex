@@ -1,8 +1,13 @@
 <!-- Purpose: <%= Purpose.snippet_to_display_animal %> -->
 
-  <button class="button is-success is-small" data-action="single-animal#form">
-     Edit
-  </button>
-                           <br/>  
-  <%= @changeset.data.id %>: <%= @changeset.data.name %> (<%= @changeset.data.species_name %>)
+<div class="columns">
+  <div class="column is-three-quarters">
+    <strong><%= @changeset.data.name %></strong> (<%= @changeset.data.species_name %>) (id: <%= @changeset.data.id %>)
+  </div>
+  <div class="column">
+    <button class="button is-success is-small is-pulled-right" data-action="single-animal#form"
+            >
+      Edit
+    </button>
+  </div>
 </div>

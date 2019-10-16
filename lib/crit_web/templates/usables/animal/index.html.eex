@@ -1,7 +1,9 @@
 <!-- Purpose: <%= Purpose.displaying_animal_summaries %> -->
 
 
-<table class="table">
+<%= start_centered_form() %>
+
+<table class="table is-fullwidth">
   <tbody>
 
     
@@ -15,10 +17,13 @@
           <%= render "_show_one_animal.html",
               Map.put(assigns, :changeset, AnimalApi.edit_changeset(animal))
 
-          %>
+              %>
+        </div>
+        </columns>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
 
+<%= end_centered_form() %>
