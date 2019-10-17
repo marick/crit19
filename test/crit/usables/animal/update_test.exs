@@ -31,30 +31,79 @@ defmodule Crit.Usables.Animal.UpdateTest do
     assert "has already been taken" in errors_on(changeset).name
   end
 
-  test "optimistic concurrency failure produces changeset with new animal" do
-    {string_id, original} = showable_animal_named("Original Bossie")
 
-    update = fn name -> 
-      params = %{"name" => name,
-                 "lock_version" => to_string(original.lock_version)
-                }
-      AnimalApi.update(string_id, params, @institution)
+  describe "optimistic concurrency" do
+    setup do
+      {string_id, original} = showable_animal_named("Original Bossie")
+
+      update = fn animal, name -> 
+        params = %{"name" => name,
+                   "lock_version" => to_string(animal.lock_version)
+                  }
+        AnimalApi.update(string_id, params, @institution)
+      end
+      [original: original, update: update]
+    end
+    
+    test "optimistic concurrency failure produces changeset with new animal",
+      %{original: original, update: update} do
+      
+      assert {:ok, updated_first} = update.(original, "this version wins")
+      assert {:error, changeset} = update.(original, "this version loses")
+
+      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
+      # All changes have been wiped out.
+      assert changeset.changes == %{}
+
+      # It is the updated version that is to fill in fields.
+      assert changeset.data == updated_first
+      # Most interestingly...
+      assert changeset.data.name == updated_first.name
+      assert changeset.data.lock_version == updated_first.lock_version
     end
 
-    assert {:ok, _} = update.("this version wins")
-    assert {:error, changeset} = update.("this version loses")
+    test "successful name change updates lock_version in displayed value",
+      %{original: original, update: update} do
+      
+      assert {:ok, updated} = update.(original, "this is a new name")
+      assert updated.lock_version == 2
+    end
 
-    # IO.inspect changeset.data
+    @tag :skip
+    test "UNsuccessful name change DOES NOT update lock_version",
+      %{original: original, update: update} do
 
-    assert changeset.data.name == "this version wins"
-    assert changeset.data.lock_version == 2
+      showable_animal_named("preexisting")
 
-    assert changeset.data == AnimalApi.showable!(original.id, @institution)
-    
+      assert {:error, changeset} = update.(original, "preexisting")
+      IO.inspect changeset
 
-    assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
-    # All changes have been wiped out.
-    assert changeset.changes == %{}
+      
+      assert original.lock_version == 1
+      assert changeset.data.lock_version == original.lock_version
+      assert changeset.changes[:lock_version] == nil # or should be 1
+    end
+
+    # test "why",
+    #   %{original: original, update: update} do
+
+    #   {_, preexisting} = showable_animal_named("preexisting")
+
+    #   IO.inspect original
+    #   IO.inspect preexisting
+
+    #   params = %{"name" => "preexisting",
+    #              "lock_version" => to_string(original.lock_version)
+    #             }
+    #   IO.inspect(params, label: "p====")
+    #   {error, changeset} = AnimalApi.update(to_string(original.id), params, @institution)
+
+    #   IO.inspect changeset, label: "full changeset"
+      
+    #   IO.inspect changeset.changes
+
+    #   IO.inspect changeset.data
+    # end
   end
 
   test "optimistic lock failure wins" do
