@@ -4,7 +4,7 @@
      id: animal_id_attribute(@changeset.data),
      data_action: "single-animal#update"], fn f -> %>
 
-  <%= @changeset.data.id %>: 
+  id <%= @changeset.data.id %>: 
   <%= error_tag f, :optimistic_lock_error %>
   <%= @changeset.data.species_name %> named
   <%= text_input(f, :name) %> <%= error_tag f, :name %> <br/>
