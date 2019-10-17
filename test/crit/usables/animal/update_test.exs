@@ -84,50 +84,15 @@ defmodule Crit.Usables.Animal.UpdateTest do
       assert changeset.changes[:lock_version] == nil # or should be 1
     end
 
-    # test "why",
-    #   %{original: original, update: update} do
+    test "optimistic lock failure wins", %{original: original, update: update} do
+      # Bump the lock version
+      {:ok, _} = update.(original, "this version wins")
 
-    #   {_, preexisting} = showable_animal_named("preexisting")
-
-    #   IO.inspect original
-    #   IO.inspect preexisting
-
-    #   params = %{"name" => "preexisting",
-    #              "lock_version" => to_string(original.lock_version)
-    #             }
-    #   IO.inspect(params, label: "p====")
-    #   {error, changeset} = AnimalApi.update(to_string(original.id), params, @institution)
-
-    #   IO.inspect changeset, label: "full changeset"
+      assert {:error, changeset} = update.(original, "this version wins")
       
-    #   IO.inspect changeset.changes
-
-    #   IO.inspect changeset.data
-    # end
-  end
-
-  test "optimistic lock failure wins" do
-    # That means that, if both kinds of errors could happen, the
-    # user will get a data refresh with message about the lock
-    # failure.  The user will likely have to reenter data but that's
-    # OK because such clashes will be incredibly rare. (They
-    # wouldn't be worth checking for, except that I want to learn
-    # how to handle optimistic locking.
-    {string_id, original} = showable_animal_named("Original Bossie")
-
-    update = fn name -> 
-      params = %{"name" => name,
-                 "lock_version" => to_string(original.lock_version)
-                }
-      AnimalApi.update(string_id, params, @institution)
+      # Just the one error
+      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
     end
-
-    assert {:ok, _} = update.("this version wins")
-    assert {:error, changeset} = update.("this version wins")
-
-    # Just the one error
-    assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
-
   end
 
   defp showable_animal_named(name) do
