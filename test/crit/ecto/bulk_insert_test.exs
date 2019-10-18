@@ -100,67 +100,6 @@ defmodule Crit.Ecto.BulkInsertTest do
         |> Sql.transaction(@institution)
       assertions.(tx_result)
     end
-
-    test "this is the 'simplified' approach", %{assertions: assertions} do 
-      {:ok, tx_result} = 
-        BulkInsert.three_schema_insertion(@institution,
-          insert: [@animal_cs],         yielding: :animal_ids, 
-          insert: @service_gap_cs_list, yielding: :service_gap_ids,
-          many_to_many: Hidden.AnimalServiceGap)
-        |> Sql.transaction(@institution)
-      assertions.(tx_result)
-    end
-
-    test "along with the simplified approach, there's a simpler set of results" do
-      {:ok, %{animal_ids: [returned_animal_id], service_gap_ids: service_gap_ids}} = 
-        BulkInsert.three_schema_insertion(@institution,
-          insert: [@animal_cs],         yielding: :animal_ids, 
-          insert: @service_gap_cs_list, yielding: :service_gap_ids,
-          many_to_many: Hidden.AnimalServiceGap)
-        |> Sql.transaction(@institution)
-        |> BulkInsert.simplify_transaction_results([:animal_ids, :service_gap_ids])
-
-      assert animal = Animal.Read.one([id: returned_animal_id], @institution)
-      assert [gap_one, gap_two] = animal.service_gaps
-
-      assert gap_one.id in service_gap_ids
-      assert gap_two.id in service_gap_ids
-    end
-  end
-
-  describe "constrating violations" do
-    # This is why bulk insertion typically takes changesets. If given
-    # plain structures, it would not report constraint violations nicely.
-      
-    setup do
-      duplication = [@animal_cs, @animal_cs]
-      bad_try = BulkInsert.three_schema_insertion(@institution,
-        insert: duplication ,         yielding: :animal_ids, 
-        insert: @service_gap_cs_list, yielding: :service_gap_ids,
-        many_to_many: Hidden.AnimalServiceGap)
-
-      [bad_try: bad_try]
-    end
-    
-    test "bulk insertion arranges for constraint violations to be handled",
-      %{bad_try: bad_try} do
-
-      assert {:error, transaction_key, failed_changeset, _results_so_far} = 
-        Sql.transaction(bad_try, @institution)
-      assert transaction_key == Testable.insert_key(Animal, 1)
-      assert failed_changeset.changes.name == @animal_cs.changes.name
-      assert "has already been taken" in errors_on(failed_changeset).name
-    end
-
-    test "simplify_transaction_results does what the label says",
-      %{bad_try: bad_try} do
-      
-      assert {:error, failed_changeset} = 
-        Sql.transaction(bad_try, @institution)
-        |> BulkInsert.simplify_transaction_results(:animal_ids)
-      assert failed_changeset.changes.name == @animal_cs.changes.name
-      assert "has already been taken" in errors_on(failed_changeset).name
-    end    
   end
 
   # Tests for support functions

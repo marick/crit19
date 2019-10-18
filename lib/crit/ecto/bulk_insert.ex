@@ -33,27 +33,6 @@ defmodule Crit.Ecto.BulkInsert do
     end
   end
 
-  # One-stop shop here
-
-  def three_schema_insertion(institution,
-    [insert: first_changeset_list, yielding: first_ids,
-     insert: second_changeset_list, yielding: second_ids,
-     many_to_many: cross_product_schema]) do 
-
-    first_schema = List.first(first_changeset_list).data.__struct__
-    second_schema = List.first(second_changeset_list).data.__struct__
-    
-
-    first_opts = [schema: first_schema, ids: first_ids]
-    second_opts = [schema: second_schema, ids: second_ids]
-    cross_opts = [schema: cross_product_schema, cross: {first_ids, second_ids}]
-    
-    Multi.new
-    |> append_idlist_script(first_changeset_list, institution, first_opts)
-    |> append_idlist_script(second_changeset_list, institution, second_opts)
-    |> append_cross_product_script(institution, cross_opts)
-  end
-
   def simplify_transaction_results(result, desired) when not is_list(desired) do
     simplify_transaction_results(result, [desired])
   end
