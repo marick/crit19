@@ -45,6 +45,16 @@ defmodule Crit.Usables.Animal.BulkCreation do
     }
   end
 
+  def changeset_to_changesets__2(%{valid?: true} = changeset) do
+    changes = changeset.changes
+    animals = animal_changesets(changes)
+    service_gaps = service_gap_changesets(changes.computed_service_gaps)
+
+    Enum.map(animals, fn animal_cs ->
+      put_assoc(animal_cs, :service_gaps, service_gaps)
+    end)
+  end
+
   defp animal_changesets(changes) do
     Enum.map(changes.computed_names, fn name ->
       AnimalApi.changeset(name: name, species_id: changes.species_id)
