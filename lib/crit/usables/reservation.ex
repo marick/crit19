@@ -4,6 +4,7 @@ defmodule Crit.Usables.Reservation do
   import Crit.Errors
   alias Ecto.Timespan
   alias Crit.Sql
+  import Crit.Sql.Transaction, only: [make_validation_step: 1]
   alias Crit.Usables.Hidden.Use
   alias Ecto.Multi
 
@@ -33,19 +34,13 @@ defmodule Crit.Usables.Reservation do
   end
 
   def create(attrs, institution) do
+    validation = fn attrs -> changeset(%__MODULE__{}, attrs) end
     steps = [
-      &validation_step/1,
+      make_validation_step(validation),
       &bulk_insert_step/1,
     ]
 
     Sql.Transaction.run(attrs, institution, steps)
-  end
-
-
-  defp validation_step(state) do
-    Sql.Transaction.validation_step(
-      state,
-      (fn attrs -> changeset(%__MODULE__{}, attrs) end))
   end
 
   defp bulk_insert_step(%{original_changeset: changeset,

@@ -1,5 +1,6 @@
 defmodule Crit.Usables.Animal.BulkCreationTransaction do
   alias Crit.Sql
+  import Crit.Sql.Transaction, only: [make_validation_step: 1]
   alias Crit.Usables.Animal
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
@@ -8,20 +9,12 @@ defmodule Crit.Usables.Animal.BulkCreationTransaction do
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
     steps = [
-      &validation_step/1,
+      make_validation_step(&Animal.BulkCreation.compute_insertables/1),
       &split_changeset_step/1,
       &bulk_insert_step/1,
     ]
 
     Sql.Transaction.run(attrs, institution, steps)
-  end
-
-  # The essential steps in the workflow
-
-  defp validation_step(state) do
-    Sql.Transaction.validation_step(
-      state,
-      &Animal.BulkCreation.compute_insertables/1)
   end
 
   defp split_changeset_step(%{original_changeset: changeset} = state) do

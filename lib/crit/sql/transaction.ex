@@ -35,8 +35,9 @@ defmodule Crit.Sql.Transaction do
     end
   end
 
-  
-
+  def make_validation_step(validation_fn) do
+    fn state -> validation_step(state, validation_fn) end
+  end
 
   # Handle return value from an Sql.transaction.
   def on_ok({:ok, tx_result}, [extract: key]) do
