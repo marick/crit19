@@ -1,6 +1,6 @@
 defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
-  alias Crit.Usables.Animal.{Read, Changeset, Write}
+  alias Crit.Usables.Animal.{Read, Write}
   alias Crit.Sql
   alias Crit.Usables.Animal
   alias Crit.Usables.AnimalApi
@@ -39,10 +39,10 @@ defmodule Crit.Usables.AnimalApi do
     |> Read.put_virtual_fields
   end
 
-  def edit_changeset(animal), do: Changeset.edit_changeset(animal)
+  def form_changeset(animal), do: Animal.form_changeset(animal)
 
-  def changeset(animal, attrs), do: Changeset.changeset(animal, attrs)
-  def changeset(fields), do: Changeset.changeset(fields)
+  def changeset(animal, attrs), do: Animal.changeset(animal, attrs)
+  def changeset(fields), do: Animal.changeset(fields)
   
   def update(string_id, attrs, institution) do
     case result = Write.update_for_id(string_id, attrs, institution) do 

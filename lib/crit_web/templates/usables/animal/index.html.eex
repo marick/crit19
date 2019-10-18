@@ -16,7 +16,7 @@
              data-single-animal-update-path="<%=AnimalController.path(:update, animal)%>">
           <%= render "_show_one_animal.html",
               assigns
-              |> Map.put(:changeset, AnimalApi.edit_changeset(animal))
+              |> Map.put(:changeset, AnimalApi.form_changeset(animal))
               |> Map.put(:highlight, "")
               %>
         </div>

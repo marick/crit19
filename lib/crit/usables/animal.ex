@@ -8,6 +8,7 @@ defmodule Crit.Usables.Animal do
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.Hidden.Species
   alias Crit.Usables.ServiceGap
+  import Ecto.Changeset
 
   schema "animals" do
     # The fields below are the true fields in the table.
@@ -24,4 +25,33 @@ defmodule Crit.Usables.Animal do
     field :in_service_date, :string, virtual: true
     field :out_of_service_date, :string, virtual: true
   end
+
+
+  def changeset(animal, attrs) do
+    animal
+    |> cast(attrs, [:name, :species_id, :lock_version])
+    |> validate_required([:name, :species_id, :lock_version])
+    |> constraint_on_name()
+  end
+
+  def changeset(fields) when is_list(fields) do
+    changeset(%__MODULE__{}, Enum.into(fields, %{}))
+  end
+
+  def form_changeset(animal) do 
+    change(animal)
+  end
+
+  def update_changeset(string_id, attrs) do
+    id = String.to_integer(string_id)
+    %__MODULE__{id: id}
+    |> cast(attrs, [:name, :lock_version])
+    |> constraint_on_name()
+    |> optimistic_lock(:lock_version)
+  end
+  
+  defp constraint_on_name(changeset),
+    do: unique_constraint(changeset, :name, name: "unique_available_names")
+  
+  
 end
