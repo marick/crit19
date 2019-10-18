@@ -8,6 +8,7 @@ defmodule Crit.Usables.Animal.Write do
   def update_for_id(string_id, attrs, institution) do
     db_result =
       string_id
+      |> String.to_integer
       |> Animal.update_changeset(attrs)
       # |> IO.inspect(label: "insertion changeset")
       |> Sql.update([stale_error_field: :optimistic_lock_error], institution)

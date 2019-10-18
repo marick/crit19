@@ -42,8 +42,7 @@ defmodule Crit.Usables.Animal do
     change(animal)
   end
 
-  def update_changeset(string_id, attrs) do
-    id = String.to_integer(string_id)
+  def update_changeset(id, attrs) do
     %__MODULE__{id: id}
     |> cast(attrs, [:name, :lock_version])
     |> constraint_on_name()
