@@ -40,13 +40,6 @@ defmodule Crit.Usables.Animal.BulkCreation do
 
   def changeset_to_changesets(%{valid?: true} = changeset) do
     changes = changeset.changes
-    %{animal_changesets: animal_changesets(changes),
-      service_gap_changesets: service_gap_changesets(changes.computed_service_gaps)
-    }
-  end
-
-  def changeset_to_changesets__2(%{valid?: true} = changeset) do
-    changes = changeset.changes
     animals = animal_changesets(changes)
     service_gaps = service_gap_changesets(changes.computed_service_gaps)
 

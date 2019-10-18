@@ -1,9 +1,9 @@
 defmodule Crit.Usables.Animal.BulkCreationTransaction do
   alias Crit.Sql
   alias Crit.Usables.Animal
-  alias Crit.Usables.Hidden
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
+  alias Ecto.Multi
 
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
@@ -30,27 +30,23 @@ defmodule Crit.Usables.Animal.BulkCreationTransaction do
     {:ok, Map.put(state, :changesets, changesets)}
   end
 
+
   defp bulk_insert_step(%{
         original_changeset: original_changeset,
         changesets: changesets,
         institution: institution}) do
 
-    %{animal_changesets: animal_changesets,
-      service_gap_changesets: service_gap_changesets} = changesets
-
+    for_tx_labels = [schema: Animal, ids: :animal_ids]
     script = 
-      institution
-      |> BulkInsert.three_schema_insertion(
-           insert: animal_changesets, yielding: :animal_ids,
-           insert: service_gap_changesets, yielding: :service_gap_ids,
-           many_to_many: Hidden.AnimalServiceGap)
+      Multi.new
+      |> BulkInsert.append_idlist_script(changesets, institution, for_tx_labels)
 
     script
     |> Sql.transaction(institution)
     |> Sql.Transaction.on_ok(extract: :animal_ids)
     |> Sql.Transaction.on_failed_step(transfer_error_to(original_changeset))
   end
-
+  
   # This is dodgy. We happen to know that the only kind of changeset error
   # that can happen in a transaction is because of a duplicate animal.
   defp transfer_error_to(original_changeset) do

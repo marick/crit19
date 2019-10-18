@@ -39,26 +39,6 @@ defmodule Crit.Usables.Animal.BulkChangesetTest do
   end
 
   test "breaking a valid changeset into changesets for insertion" do
-    %{animal_changesets: [one_cs, two_cs],
-      service_gap_changesets: [gap_cs]
-    } =
-      @correct
-      |> Map.put(:names,  "one, two")
-      |> Map.put(:species, "1")
-      |> Map.put(:start_date,  @iso_date)
-      |> Map.put(:end_date, @never)
-      |> BulkCreation.compute_insertables
-      |> BulkCreation.changeset_to_changesets
-
-    assert one_cs.changes.name == "one"
-    assert one_cs.changes.species_id == 1
-    assert two_cs.changes.name == "two"
-    
-    assert_strictly_before(gap_cs.changes.gap, @date)
-    assert gap_cs.changes.reason == "before animal was put in service"
-  end
-
-  test "breaking a valid changeset into changesets for insertion (version 2)" do
     [one_cs, two_cs] = 
       @correct
       |> Map.put(:names,  "one, two")
@@ -66,7 +46,7 @@ defmodule Crit.Usables.Animal.BulkChangesetTest do
       |> Map.put(:start_date,  @iso_date)
       |> Map.put(:end_date, @never)
       |> BulkCreation.compute_insertables
-      |> BulkCreation.changeset_to_changesets__2
+      |> BulkCreation.changeset_to_changesets
 
     assert one_cs.changes.name == "one"
     assert one_cs.changes.species_id == 1
