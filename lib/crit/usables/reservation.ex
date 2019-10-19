@@ -4,7 +4,6 @@ defmodule Crit.Usables.Reservation do
   alias Ecto.Timespan
   alias Crit.Sql
   alias Crit.Usables.Hidden.Use
-  alias Crit.Usables.Hidden.Use
 
   schema "reservations" do
     field :timespan, Timespan

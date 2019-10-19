@@ -1,14 +1,10 @@
 defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.BulkInsert
-  alias Crit.Usables.Hidden
   alias Crit.Usables.ServiceGap
-  alias Crit.Usables.Animal
-  alias Crit.Usables.AnimalApi
   alias Crit.Ecto.BulkInsert.Testable
   alias Ecto.Datespan
   alias Crit.Sql
-  alias Ecto.Multi
 
   @before_service_cs ServiceGap.changeset(
     gap: Datespan.strictly_before(@date),
@@ -22,8 +18,6 @@ defmodule Crit.Ecto.BulkInsertTest do
 
   @service_gap_cs_list [@before_service_cs, @after_service_cs]
 
-  @animal_cs AnimalApi.changeset(name: "name", species_id: 1)
-  
 
   def assert_right_dates [before_service, after_service] do 
     assert_strictly_before(before_service.gap, @date)
@@ -65,43 +59,6 @@ defmodule Crit.Ecto.BulkInsertTest do
     end
   end
 
-  describe "cross_product structs can be inserted" do
-    setup do
-      assertions = fn tx_result ->
-        intended_name = @animal_cs.changes.name
-
-        animal = Animal.Read.one([name: intended_name], @institution)
-
-        assert animal.name == intended_name
-        assert [animal.id] == tx_result.animal_ids
-        
-        # I will probably someday regret assuming these are returned in insertion order.
-        assert [%{reason: before_service}, %{reason: after_service}] = animal.service_gaps
-        assert before_service == @before_service_cs.changes.reason
-        assert after_service == @after_service_cs.changes.reason
-      end
-      [assertions: assertions]
-    end
-
-    test "this is the step-by-step approach", %{assertions: assertions} do 
-      animal_opts =
-        [schema: Animal,             ids: :animal_ids]
-      service_gap_opts =
-        [schema: ServiceGaps,        ids: :service_gap_ids]
-      cross_opts =
-        [schema: Hidden.AnimalServiceGap, cross: {:animal_ids, :service_gap_ids}]
-      
-      
-      {:ok, tx_result} = 
-        Multi.new
-        |> BulkInsert.append_idlist_script([@animal_cs], @institution, animal_opts)
-        |> BulkInsert.append_idlist_script(@service_gap_cs_list, @institution, service_gap_opts)
-        |> BulkInsert.append_cross_product_script(@institution, cross_opts)
-        |> Sql.transaction(@institution)
-      assertions.(tx_result)
-    end
-  end
-
   # Tests for support functions
 
   describe "collecting ids" do
@@ -125,20 +82,6 @@ defmodule Crit.Ecto.BulkInsertTest do
 
       assert {:ok, [:some_gap_id, :another_gap_id]} =
         Testable.collect_ids(transaction_result_so_far, schema: ServiceGap)
-    end
-
-
-    test "cross product and creation of many-to-many structs" do
-      tx_result =
-        %{animal_ids: [1, 2], service_gap_ids: [11, 22]}
-      cross_product =
-        Testable.many_to_many_structs(
-          tx_result,
-          Hidden.AnimalServiceGap,
-          {:animal_ids, :service_gap_ids})
-      
-      assert Enum.at(cross_product, 0).animal_id == 1
-      assert Enum.at(cross_product, 0).service_gap_id == 11
     end
   end
 end

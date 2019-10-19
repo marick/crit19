@@ -4,7 +4,6 @@ defmodule Crit.Usables.Animal.BulkCreationTransaction do
   alias Crit.Usables.Animal
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
-  alias Ecto.Multi
 
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
@@ -23,18 +22,13 @@ defmodule Crit.Usables.Animal.BulkCreationTransaction do
     {:ok, Map.put(state, :changesets, changesets)}
   end
 
-
   defp bulk_insert_step(%{
         original_changeset: original_changeset,
         changesets: changesets,
         institution: institution}) do
 
-    for_tx_labels = [schema: Animal, ids: :animal_ids]
-    script = 
-      Multi.new
-      |> BulkInsert.append_idlist_script(changesets, institution, for_tx_labels)
-
-    script
+    changesets
+    |> BulkInsert.idlist_script(institution, schema: Animal, ids: :animal_ids)
     |> Sql.transaction(institution)
     |> Sql.Transaction.on_ok(extract: :animal_ids)
     |> Sql.Transaction.on_failed_step(transfer_error_to(original_changeset))
