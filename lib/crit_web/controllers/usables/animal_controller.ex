@@ -57,16 +57,15 @@ defmodule CritWeb.Usables.AnimalController do
     case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         # IO.inspect(animal, label: "success")
-        conn
-        |> put_layout(false)
-        |> render("_show_one_animal.html", 
-            changeset: AnimalApi.form_changeset(animal),
-            highlight: "has-background-grey-lighter")
+        Common.render_for_replacement(conn,
+          "_show_one_animal.html",
+          changeset: AnimalApi.form_changeset(animal),
+          highlight: "has-background-grey-lighter")
       {:error, changeset} ->
         # IO.inspect(changeset, label: "failure")
-        conn
-        |> put_layout(false)
-        |> render("_edit_one_animal.html", changeset: changeset)
+        Common.render_for_replacement(conn,
+          "_edit_one_animal.html",
+          changeset: changeset)
     end
   end
 end
