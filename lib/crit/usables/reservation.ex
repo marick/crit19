@@ -3,9 +3,7 @@ defmodule Crit.Usables.Reservation do
   import Ecto.Changeset
   alias Ecto.Timespan
   alias Crit.Sql
-  import Crit.Sql.Transaction, only: [make_validation_step: 1]
   alias Crit.Usables.Hidden.Use
-  alias Crit.Usables.{Animal, Procedure}
   alias Crit.Usables.Hidden.Use
 
   schema "reservations" do
@@ -25,33 +23,29 @@ defmodule Crit.Usables.Reservation do
   @required [:start_date, :start_time, :minutes, :species_id, 
             :animal_ids, :procedure_ids]
 
-  # Note: there's deliberately no foreign key constraint added for
-  # species_id. This is an "impossible error"
   def changeset(reservation, attrs) do
     reservation
     |> cast(attrs, @required)
     |> validate_required(@required)
-    |> populate_timespan
     |> foreign_key_constraint(:species_id)
   end
 
-  def create(attrs, institution) do
-    validation = fn attrs -> changeset(%__MODULE__{}, attrs) end
-    steps = [
-      make_validation_step(validation),
-      &bulk_insert_step/1,
-    ]
-
-    Sql.Transaction.run(attrs, institution, steps)
+  def creation_changeset(reservation, attrs) do
+    changeset(reservation, attrs)
+    |> populate_timespan
+    |> put_uses
   end
 
-  defp bulk_insert_step(%{original_changeset: changeset,
-                          institution: institution}) do 
-    %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
-
-    changeset
-    |> put_assoc(:uses, Use.changesets_for_new_uses(animal_ids, procedure_ids))
+  def create(attrs, institution) do
+    creation_changeset(%__MODULE__{}, attrs)
     |> Sql.insert(institution)
+  end
+
+  defp put_uses(%{valid?: false} = changeset), do: changeset
+  defp put_uses(changeset) do 
+    %{animal_ids: animal_ids, procedure_ids: procedure_ids} = changeset.changes
+    uses = Use.changesets_for_new_uses(animal_ids, procedure_ids)
+    put_assoc(changeset, :uses, uses)
   end
 
   defp populate_timespan(%{valid?: false} = changeset), do: changeset
