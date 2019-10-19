@@ -96,15 +96,14 @@ defmodule Crit.Usables.ReservationTest do
 
       assert errors_on(changeset).species_id
     end
-    
+
     test "reservation entry: species_id constraint failure should be impossible",
       %{params: params} do
 
       bad_params = Map.put(params, "species_id", "383838921")
 
-      assert_raise Ecto.ConstraintError, fn -> 
-        Reservation.create(bad_params, @institution)
-      end
+      {:error, changeset} = Reservation.create(bad_params, @institution)
+      assert errors_on(changeset).species_id
     end
 
     test "use: animal_id constraint failure is supposedly impossible", 
@@ -113,9 +112,12 @@ defmodule Crit.Usables.ReservationTest do
       bad_params = Map.update!(params, "animal_ids",
         fn current -> Enum.concat(current, ["88383838"]) end)
 
-      assert_raise RuntimeError, fn -> 
-        Reservation.create(bad_params, @institution)
-      end
+      {:error, changeset} = Reservation.create(bad_params, @institution)
+
+      refute changeset.valid?
+      # Note that the error is buried within the changeset, not at the
+      # top level. However, we don't report this error anyway because
+      # it's impossible.
     end
 
     test "use: procedure_id constraint failure is supposedly impossible",
@@ -124,9 +126,12 @@ defmodule Crit.Usables.ReservationTest do
       bad_params = Map.update!(params, "procedure_ids",
         fn current -> Enum.concat(current, ["88383838"]) end)
 
-      assert_raise RuntimeError, fn -> 
-        Reservation.create(bad_params, @institution)
-      end
+      {:error, changeset} = Reservation.create(bad_params, @institution)
+
+      refute changeset.valid?
+      # Note that the error is buried within the changeset, not at the
+      # top level. However, we don't report this error anyway because
+      # it's impossible.
     end
   end
 end

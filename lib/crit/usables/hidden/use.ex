@@ -13,17 +13,25 @@ defmodule Crit.Usables.Hidden.Use do
   def changeset(a_use, attrs) do
     a_use
     |> cast(attrs, @required)
-    |> validate_required(@required)
     |> foreign_key_constraint(:animal_id)
     |> foreign_key_constraint(:procedure_id)
     |> foreign_key_constraint(:reservation_id)
   end
+  
+  def changesets_for_new_uses(animal_ids, procedure_ids) do 
+    unsaved_uses(animal_ids, procedure_ids)
+    |> Enum.map(&create_changeset_with_constraints/1)
+  end
 
-  def changeset_with_constraints(a_use), do: changeset(a_use, %{})
+  defp create_changeset_with_constraints(a_use) do 
+    change(a_use)
+    |> foreign_key_constraint(:animal_id)
+    |> foreign_key_constraint(:procedure_id)
+  end
 
-  def reservation_uses(reservation_id, animal_ids, procedure_ids) do
+  defp unsaved_uses(animal_ids, procedure_ids) do
     for a <- animal_ids, p <- procedure_ids do
-      %__MODULE__{reservation_id: reservation_id, animal_id: a, procedure_id: p}
+      %__MODULE__{animal_id: a, procedure_id: p}
     end
   end
 end
