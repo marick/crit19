@@ -1,10 +1,10 @@
-defmodule Crit.Usables.Animal.BulkCreation do
+defmodule Crit.Usables.Schemas.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.FieldConverters.{ToDate, ToServiceGap, ToNameList}
-  alias Crit.Usables.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
 
 
   embedded_schema do

@@ -2,7 +2,7 @@ defmodule Crit.Ecto.DateSpanTest do
   use Crit.DataCase
   alias Ecto.Datespan
   import Ecto.Datespan
-  alias Crit.Usables.ServiceGap  # Convenient for testing
+  alias Crit.Usables.Schemas.ServiceGap  # Convenient for testing
   alias Crit.Sql
 
   

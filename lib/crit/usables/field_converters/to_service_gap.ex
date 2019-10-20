@@ -1,7 +1,7 @@
 defmodule Crit.Usables.FieldConverters.ToServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Usables.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   import Pile.ChangesetFlow
   alias Ecto.Datespan
 

@@ -1,6 +1,6 @@
-defmodule Crit.Usables.ProcedureTest do
+defmodule Crit.Usables.Schemas.ProcedureTest do
   use Crit.DataCase
-  alias Crit.Usables.Procedure
+  alias Crit.Usables.Schemas.Procedure
 
   describe "changeset" do
     test "required fields are checked" do

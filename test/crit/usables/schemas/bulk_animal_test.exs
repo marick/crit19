@@ -1,6 +1,6 @@
-defmodule Crit.Usables.Animal.BulkChangesetTest do
+defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
   use Crit.DataCase
-  alias Crit.Usables.Animal.BulkCreation
+  alias Crit.Usables.Schemas.BulkAnimal
   alias Ecto.Datespan
 
   @correct %{
@@ -13,7 +13,7 @@ defmodule Crit.Usables.Animal.BulkChangesetTest do
 
   describe "changeset" do
     test "required fields are checked" do
-      errors = %{} |> BulkCreation.compute_insertables |> errors_on
+      errors = %{} |> BulkAnimal.compute_insertables |> errors_on
       
       assert errors.names
       assert errors.species_id
@@ -22,7 +22,7 @@ defmodule Crit.Usables.Animal.BulkChangesetTest do
     end
 
     test "the construction of derived/virtual values" do
-      changeset = BulkCreation.compute_insertables(@correct)
+      changeset = BulkAnimal.compute_insertables(@correct)
       assert changeset.valid?
 
       changes = changeset.changes
@@ -45,8 +45,8 @@ defmodule Crit.Usables.Animal.BulkChangesetTest do
       |> Map.put(:species, "1")
       |> Map.put(:start_date,  @iso_date)
       |> Map.put(:end_date, @never)
-      |> BulkCreation.compute_insertables
-      |> BulkCreation.changeset_to_changesets
+      |> BulkAnimal.compute_insertables
+      |> BulkAnimal.changeset_to_changesets
 
     assert one_cs.changes.name == "one"
     assert one_cs.changes.species_id == 1

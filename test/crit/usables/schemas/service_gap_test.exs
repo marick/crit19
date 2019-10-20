@@ -1,6 +1,6 @@
-defmodule Crit.Usables.ServiceGapTest do
+defmodule Crit.Usables.Schemas.ServiceGapTest do
   use Crit.DataCase
-  alias Crit.Usables.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   alias Ecto.Datespan
 
   describe "dividing by type" do

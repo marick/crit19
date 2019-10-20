@@ -8,7 +8,7 @@ defmodule Crit.Ecto.TimespanTest do
   use Crit.DataCase
   alias Ecto.Timespan
   import Ecto.Timespan
-  alias Crit.Usables.{Reservation}
+  alias Crit.Usables.Schema.{Reservation}
   alias Crit.Sql
   alias Pile.TimeHelper
 

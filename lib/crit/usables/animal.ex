@@ -7,7 +7,7 @@ defmodule Crit.Usables.Animal do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.Hidden.Species
-  alias Crit.Usables.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   import Ecto.Changeset
 
   schema "animals" do

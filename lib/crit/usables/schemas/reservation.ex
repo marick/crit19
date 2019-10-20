@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Reservation do
+defmodule Crit.Usables.Schema.Reservation do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Timespan

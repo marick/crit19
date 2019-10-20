@@ -5,6 +5,7 @@ defmodule Crit.Usables.AnimalApi do
   alias Crit.Usables.Animal
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Hidden
+  alias Crit.Usables.Schemas.BulkAnimal
   alias Crit.Usables.Animal.BulkCreationTransaction
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
@@ -63,13 +64,13 @@ defmodule Crit.Usables.AnimalApi do
   end
 
   def bulk_animal_creation_changeset() do
-   %Animal.BulkCreation{
+   %BulkAnimal{
      names: "",
      species_id: 0,
      start_date: @today,
      end_date: @never,
      timezone: "--to be replaced--"}
-     |> Animal.BulkCreation.changeset(%{})
+     |> BulkAnimal.changeset(%{})
   end
 
   def available_species(institution) do

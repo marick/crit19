@@ -3,7 +3,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
   import Phoenix.HTML.Form
   import Phoenix.HTML, only: [safe_to_string: 1]
   import CritWeb.Usables.AnimalView
-  alias Crit.Usables.Animal.BulkCreation
+  alias Crit.Usables.Schemas.BulkAnimal
 
   test "full example" do
     path = "--some--path--"
@@ -12,7 +12,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
     advice = "--some--advice--"
     controller = "--some-controller--"
     
-    calendar = form_for(BulkCreation.changeset(%BulkCreation{}, %{}), path, (fn f ->
+    calendar = form_for(BulkAnimal.changeset(%BulkAnimal{}, %{}), path, (fn f ->
       calendar_widget f,
       tag: tag,
       label: label_text,
@@ -25,7 +25,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
     assert calendar =~ ~r|action="#{path}"|
 
     # Positioning of helpful text
-    assert calendar =~ ~r|<label .*? for="bulk_creation_#{tag}" .*? > [[:space:]]*
+    assert calendar =~ ~r|<label .*? for="bulk_animal_#{tag}" .*? > [[:space:]]*
                              #{label_text} [[:space:]]*
                           </label>  [[:space:]]*
                           #{advice}
@@ -34,7 +34,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
     # The text input                          
     assert calendar =~ ~r|<input [[:space:]]
                               class="input"  .*?
-                              id="bulk_creation_#{tag} .*?
+                              id="bulk_animal_#{tag} .*?
                           >
                          |sx
 

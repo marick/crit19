@@ -1,7 +1,7 @@
 defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
   alias Crit.Ecto.BulkInsert
-  alias Crit.Usables.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Ecto.BulkInsert.Testable
   alias Ecto.Datespan
   alias Crit.Sql

@@ -2,6 +2,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   use ExUnit.CaseTemplate
   use Crit.Global.Default
   alias Crit.Usables
+  alias Crit.Usables.Schemas.{Procedure}
   alias Crit.Sql
 
 
@@ -28,7 +29,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   end
 
   def inserted_procedure_ids(names) do
-    inserted_named_ids names, %Usables.Procedure{}
+    inserted_named_ids names, %Procedure{}
   end
 end
 
