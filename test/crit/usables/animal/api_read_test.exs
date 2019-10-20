@@ -1,7 +1,7 @@
-defmodule Crit.Usables.Animal.ApiReadTest do
+defmodule Crit.Usables.Schemas.Animal.ApiReadTest do
   use Crit.DataCase
-  alias Crit.Usables.{Animal, AnimalApi, ServiceGap}
-  alias Crit.Usables.Schemas.{ServiceGap}
+  alias Crit.Usables.{AnimalApi}
+  alias Crit.Usables.Schemas.{Animal, ServiceGap}
   alias Crit.Usables.Hidden.AnimalServiceGap
   alias Ecto.Datespan
   alias Crit.Sql

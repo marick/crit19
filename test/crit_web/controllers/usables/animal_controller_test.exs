@@ -3,7 +3,8 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables.FieldConverters.ToNameList
-  alias Crit.Usables.{AnimalApi, Animal}
+  alias Crit.Usables.AnimalApi
+  alias Crit.Usables.Schemas.Animal
   alias CritWeb.Audit
   alias Crit.Exemplars
 

@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Animal do
+defmodule Crit.Usables.Schemas.Animal do
 
   @doc """
   I'd rather call this module `Animal.Schema` but then having foreign

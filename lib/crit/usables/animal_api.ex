@@ -2,10 +2,9 @@ defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
   alias Crit.Usables.Animal.{Read, Write}
   alias Crit.Sql
-  alias Crit.Usables.Animal
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Hidden
-  alias Crit.Usables.Schemas.BulkAnimal
+  alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   alias Crit.Usables.Animal.BulkCreationTransaction
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 

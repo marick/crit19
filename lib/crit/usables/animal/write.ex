@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Animal.Write do
   alias Ecto.ChangesetX
   alias Ecto.Changeset
-  alias Crit.Usables.Animal
+  alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.AnimalApi
   alias Crit.Sql
 

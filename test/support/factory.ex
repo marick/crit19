@@ -1,7 +1,7 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
-  alias Crit.Usables.Animal
+  alias Crit.Usables.Schemas.Animal
   alias Crit.Sql
   require Faker
 

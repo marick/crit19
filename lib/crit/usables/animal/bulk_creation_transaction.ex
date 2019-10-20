@@ -1,8 +1,7 @@
 defmodule Crit.Usables.Animal.BulkCreationTransaction do
   alias Crit.Sql
   import Crit.Sql.Transaction, only: [make_validation_step: 1]
-  alias Crit.Usables.Animal
-  alias Crit.Usables.Schemas.BulkAnimal
+  alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
 

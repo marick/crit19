@@ -1,6 +1,6 @@
 defmodule Crit.Usables.Animal.UpdateTest do
   use Crit.DataCase
-  alias Crit.Usables.Animal
+  alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars.Available
 
