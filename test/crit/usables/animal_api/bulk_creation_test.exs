@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Animal.BulkCreationTest do
+defmodule Crit.Usables.AnimalApi.BulkCreationTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   import Ecto.ChangesetX
