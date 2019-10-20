@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Animal.Write do
+defmodule Crit.Usables.AnimalImpl.Write do
   alias Ecto.ChangesetX
   alias Ecto.Changeset
   alias Crit.Usables.Schemas.Animal

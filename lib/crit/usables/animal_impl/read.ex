@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Animal.Read do
+defmodule Crit.Usables.AnimalImpl.Read do
   use Crit.Global.Constants
   alias Ecto.Datespan
   import Ecto.Query
