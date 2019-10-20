@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Hidden.Species do
+defmodule Crit.Usables.HiddenSchemas.Species do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -14,7 +14,7 @@ defmodule Crit.Usables.Hidden.Species do
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Usables.Hidden.Species
+    alias Crit.Usables.HiddenSchemas.Species
 
     def ordered() do
       from s in Species, order_by: s.name

@@ -2,7 +2,7 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.{Animal, ServiceGap}
-  alias Crit.Usables.Hidden.AnimalServiceGap
+  alias Crit.Usables.HiddenSchemas.AnimalServiceGap
   alias Ecto.Datespan
   alias Crit.Sql
 

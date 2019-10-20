@@ -3,7 +3,7 @@ defmodule Crit.Usables.Schema.Reservation do
   import Ecto.Changeset
   alias Ecto.Timespan
   alias Crit.Sql
-  alias Crit.Usables.Hidden.Use
+  alias Crit.Usables.HiddenSchemas.Use
 
   schema "reservations" do
     field :timespan, Timespan

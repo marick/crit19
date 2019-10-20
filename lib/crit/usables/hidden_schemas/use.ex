@@ -1,4 +1,4 @@
-defmodule Crit.Usables.Hidden.Use do
+defmodule Crit.Usables.HiddenSchemas.Use do
   use Ecto.Schema
   import Ecto.Changeset
 

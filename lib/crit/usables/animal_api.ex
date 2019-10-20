@@ -3,7 +3,7 @@ defmodule Crit.Usables.AnimalApi do
   alias Crit.Usables.AnimalImpl.{Read, Write, BulkCreationTransaction}
   alias Crit.Sql
   alias Crit.Usables.AnimalApi
-  alias Crit.Usables.Hidden
+  alias Crit.Usables.HiddenSchemas
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
@@ -72,9 +72,9 @@ defmodule Crit.Usables.AnimalApi do
   end
 
   def available_species(institution) do
-    Hidden.Species.Query.ordered()
+    HiddenSchemas.Species.Query.ordered()
     |> Sql.all(institution)
-    |> Enum.map(fn %Hidden.Species{name: name, id: id} -> {name, id} end)
+    |> Enum.map(fn %HiddenSchemas.Species{name: name, id: id} -> {name, id} end)
   end
 
 end

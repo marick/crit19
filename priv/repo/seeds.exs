@@ -13,7 +13,7 @@
 alias Crit.Users
 alias Crit.Users.{User,PermissionList}
 alias Crit.Sql
-alias Crit.Usables.Hidden.Species
+alias Crit.Usables.HiddenSchemas.Species
 alias Crit.Global.Constants
 alias Crit.Global.Default
 
