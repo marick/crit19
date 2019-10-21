@@ -2,9 +2,6 @@ defmodule Ecto.Timespan do
   use Ecto.Span, db_type: :tsrange, type: Time
   alias Pile.TimeHelper
 
-  @behaviour Ecto.Type
-
-
   defp convert_to_endpoint_type(%NaiveDateTime{} = endpoint), do: endpoint
 
   # Postgres uses microsecond precision, and NaiveDateTimes use

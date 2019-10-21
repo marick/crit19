@@ -8,6 +8,7 @@ defmodule Ecto.Span do
     db_contain_string = "?::#{db_type} @> ?::#{db_type}"
     
     quote do
+      use Ecto.Type
 
       # We have to duplicate Postgrex.Range because of how behaviors work.
       defstruct [:first, :last, :lower_inclusive, :upper_inclusive]
@@ -101,10 +102,6 @@ defmodule Ecto.Span do
         && equal_in?.(:first)
         && equal_in?.(:last)
       end
-
-      # Implement these iff they're ever used
-      @impl Ecto.Type
-      def embed_as(_format), do: raise "embed_as not implemented"
 
       defmacro overlaps(span1, span2) do
         postgres_expr = unquote(db_overlap_string)

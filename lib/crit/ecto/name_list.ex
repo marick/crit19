@@ -1,9 +1,11 @@
 defmodule Crit.Ecto.NameList do
   alias Crit.Ecto.TrimmedString
-  
-  @behaviour Ecto.Type
+  use Ecto.Type
+
+  @impl Ecto.Type
   def type, do: {:array, TrimmedString}
 
+  @impl Ecto.Type
   def cast(comma_separated) when is_binary(comma_separated) do
     array = 
       comma_separated
@@ -17,11 +19,8 @@ defmodule Crit.Ecto.NameList do
   def cast(_), do: :error
 
   # This is only intended for virtual fields.
+  @impl Ecto.Type
   def load(_string), do: :error
+  @impl Ecto.Type
   def dump(_string), do: :error
-
-
-  # Implement these iff they're ever used
-  # def embed_as(_format), do: raise "embed_as not implemented"
-  # def equal?(_, _), do: raise "equal? not implemented"
 end
