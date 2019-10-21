@@ -7,7 +7,7 @@ defmodule Crit.Usables.AnimalApi do
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
 
-  
+
   def showable!(id, institution) do
     case Read.one([id: id], institution) do
       nil ->
@@ -25,7 +25,7 @@ defmodule Crit.Usables.AnimalApi do
         Read.put_virtual_fields(animal)
     end
   end
-    
+
   def ids_to_animals(ids, institution) do
     ids
     |> Read.ids_to_animals(institution)
@@ -42,13 +42,13 @@ defmodule Crit.Usables.AnimalApi do
 
   def changeset(animal, attrs), do: Animal.changeset(animal, attrs)
   def changeset(fields), do: Animal.changeset(fields)
-  
+
   def update(string_id, attrs, institution) do
-    case result = Write.update_for_id(string_id, attrs, institution) do 
-      {:ok, id} -> 
+    case Write.update_for_id(string_id, attrs, institution) do
+      {:ok, id} ->
         {:ok, showable!(id, institution)}
-      _ ->
-        result
+      {:error, changeset} ->
+        {:error, Ecto.Changeset.delete_change(changeset, :lock_version)}
     end
   end
 

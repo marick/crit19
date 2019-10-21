@@ -1,12 +1,12 @@
 mix ecto.create
 MIX_ENV=test mix ecto.create
 
-psql -d crit_dev -c "CREATE SCHEMA global"
-psql -d crit_dev -c "CREATE SCHEMA demo"
-psql -d crit_dev -c "CREATE SCHEMA illinois"
+psql -d crit_dev -c "CREATE SCHEMA global" -U bem
+psql -d crit_dev -c "CREATE SCHEMA demo"  -U bem
+psql -d crit_dev -c "CREATE SCHEMA illinois"  -U bem
 
-psql -d crit_test -c "CREATE SCHEMA global"
-psql -d crit_test -c "CREATE SCHEMA demo"
+psql -d crit_test -c "CREATE SCHEMA global" -U bem
+psql -d crit_test -c "CREATE SCHEMA demo" -U bem
 
 EXTENSIONS=priv/repo/migrations/extensions/
 GLOBAL=priv/repo/migrations/global/

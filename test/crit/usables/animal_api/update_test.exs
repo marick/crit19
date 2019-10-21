@@ -13,7 +13,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
 
     assert {:ok, new_animal} =
       AnimalApi.update(string_id, params, @institution)
-    
+
     assert new_animal == %Animal{original |
                                  name: "New Bossie",
                                  lock_version: 2
@@ -36,7 +36,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
     setup do
       {string_id, original} = showable_animal_named("Original Bossie")
 
-      update = fn animal, name -> 
+      update = fn animal, name ->
         params = %{"name" => name,
                    "lock_version" => to_string(animal.lock_version)
                   }
@@ -44,10 +44,10 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       end
       [original: original, update: update]
     end
-    
+
     test "optimistic concurrency failure produces changeset with new animal",
       %{original: original, update: update} do
-      
+
       assert {:ok, updated_first} = update.(original, "this version wins")
       assert {:error, changeset} = update.(original, "this version loses")
 
@@ -64,13 +64,12 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
 
     test "successful name change updates lock_version in displayed value",
       %{original: original, update: update} do
-      
+
       assert {:ok, updated} = update.(original, "this is a new name")
       assert updated.lock_version == 2
     end
 
-    @tag :skip
-    test "UNsuccessful name change DOES NOT update lock_version",
+    test "Unsuccessful name change DOES NOT update lock_version",
       %{original: original, update: update} do
 
       showable_animal_named("preexisting")
@@ -78,10 +77,9 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       assert {:error, changeset} = update.(original, "preexisting")
       IO.inspect changeset
 
-      
       assert original.lock_version == 1
       assert changeset.data.lock_version == original.lock_version
-      assert changeset.changes[:lock_version] == nil # or should be 1
+      assert changeset.changes[:lock_version] == nil
     end
 
     test "optimistic lock failure wins", %{original: original, update: update} do
@@ -89,7 +87,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       {:ok, _} = update.(original, "this version wins")
 
       assert {:error, changeset} = update.(original, "this version wins")
-      
+
       # Just the one error
       assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
     end
@@ -97,7 +95,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
 
   defp showable_animal_named(name) do
     id = Available.animal_id(name: name)
-    {to_string(id), 
+    {to_string(id),
      AnimalApi.showable!(id, @institution)
     }
   end
