@@ -1,7 +1,8 @@
 # Derived from https://github.com/aliou/radch
 
 defmodule Ecto.Span do
-  defmacro __using__(db_type: db_type) do
+  defmacro __using__(db_type: db_type,
+                     type: elixir_type) do
 
     db_overlap_string = "?::#{db_type} && ?::#{db_type}"
     db_contain_string = "?::#{db_type} @> ?::#{db_type}"
@@ -71,6 +72,39 @@ defmodule Ecto.Span do
         {:ok, result} = dump(x)
         result
       end
+
+      # This is a ridiculous amount of code just to avoid using `==` on `Date`.
+      @impl Ecto.Type
+      def equal?(nil, _), do: false
+      def equal?(_, nil), do: false
+      def equal?(one, two) do
+        # Too lazy to implement Access
+        get = fn span, key -> Map.get(span, key) end
+
+        equal_in? = fn key ->
+          left = get.(one, key)
+          right = get.(two, key)
+          case {left, right} do
+            {:unbound, :unbound} -> true
+            {:unbound, _} -> false
+            {_, :unbound} -> false
+            _ -> 
+              (unquote(elixir_type).compare(right, left) == :eq)
+          end
+        end
+
+        # Strictly for an :unbound value, whether it's lower or upper
+        # inclusive shouldn't matter. Since we always follow the same
+        # convention, that doesn't matter.
+           get.(one, :lower_inclusive) == get.(two, :lower_inclusive)
+        && get.(one, :upper_inclusive) == get.(two, :upper_inclusive)
+        && equal_in?.(:first)
+        && equal_in?.(:last)
+      end
+
+      # Implement these iff they're ever used
+      @impl Ecto.Type
+      def embed_as(_format), do: raise "embed_as not implemented"
 
       defmacro overlaps(span1, span2) do
         postgres_expr = unquote(db_overlap_string)

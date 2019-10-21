@@ -1,5 +1,5 @@
 defmodule Ecto.Timespan do
-  use Ecto.Span, db_type: :tsrange
+  use Ecto.Span, db_type: :tsrange, type: Time
   alias Pile.TimeHelper
 
   @behaviour Ecto.Type

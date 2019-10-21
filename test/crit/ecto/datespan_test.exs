@@ -31,6 +31,84 @@ defmodule Crit.Ecto.DateSpanTest do
     Sql.exists?(query, @institution)
   end
 
+  test "equality" do
+    # I don't know why equal? sometimes gets passed nils.
+    refute Datespan.equal?(
+      nil,
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]))
+
+    refute Datespan.equal?(
+      nil,
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]))
+
+    assert Datespan.equal?(
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]),
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]))
+
+    refute Datespan.equal?(
+      Datespan.customary(~D[2001-01-01], ~D[2222-12-22]),
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]))
+
+    refute Datespan.equal?(
+      Datespan.customary(~D[2111-11-11], ~D[2002-01-01]),
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]))
+
+    refute Datespan.equal?(
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]),
+      Datespan.infinite_up(~D[2001-01-01], :inclusive))
+
+    # Not strictly necessary - confirmation test
+    refute Datespan.equal?(
+      Datespan.customary(~D[2001-01-01], ~D[2002-01-01]),
+      Datespan.infinite_up(~D[2001-01-01], :exclusive))
+
+    refute Datespan.equal?(
+      Datespan.infinite_down(~D[2001-01-01], :inclusive),
+      Datespan.customary(~D[1999-01-01], ~D[2001-01-01]))
+
+    # Not strictly necessary - confirmation test
+    refute Datespan.equal?(
+      Datespan.infinite_down(~D[2001-01-01], :exclusive),
+      Datespan.customary(~D[1999-01-01], ~D[2001-01-01]))
+
+    assert Datespan.equal?(
+      Datespan.infinite_down(~D[2001-01-01], :exclusive),
+      Datespan.infinite_down(~D[2001-01-01], :exclusive))
+
+    # Not strictly necessary - confirmation test
+    assert Datespan.equal?(
+      Datespan.infinite_down(~D[2001-01-01], :inclusive),
+      Datespan.infinite_down(~D[2001-01-01], :inclusive))
+
+    refute Datespan.equal?(
+      Datespan.infinite_down(~D[2001-01-01], :exclusive),
+      Datespan.infinite_down(~D[2001-01-01], :inclusive))
+
+    # Not strictly necessary - confirmation test
+    refute Datespan.equal?(
+      Datespan.infinite_down(~D[2111-11-11], :inclusive),
+      Datespan.infinite_down(~D[2001-01-01], :inclusive))
+
+    # Not strictly necessary - confirmation test
+    assert Datespan.equal?(
+      Datespan.infinite_up(~D[2001-01-01], :exclusive),
+      Datespan.infinite_up(~D[2001-01-01], :exclusive))
+
+    # Not strictly necessary - confirmation test
+    assert Datespan.equal?(
+      Datespan.infinite_up(~D[2001-01-01], :inclusive),
+      Datespan.infinite_up(~D[2001-01-01], :inclusive))
+
+    refute Datespan.equal?(
+      Datespan.infinite_up(~D[2001-01-01], :exclusive),
+      Datespan.infinite_up(~D[2001-01-01], :inclusive))
+
+    # Not strictly necessary - confirmation test
+    refute Datespan.equal?(
+      Datespan.infinite_up(~D[2111-11-11], :inclusive),
+      Datespan.infinite_up(~D[2001-01-01], :inclusive))
+  end
+
   test "shorthand: strictly_before" do
     span = Datespan.strictly_before(@day)
     assert_same_date(span, Datespan.infinite_down(@day, :exclusive))

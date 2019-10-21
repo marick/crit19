@@ -19,4 +19,9 @@ defmodule Crit.Ecto.NameList do
   # This is only intended for virtual fields.
   def load(_string), do: :error
   def dump(_string), do: :error
+
+
+  # Implement these iff they're ever used
+  # def embed_as(_format), do: raise "embed_as not implemented"
+  # def equal?(_, _), do: raise "equal? not implemented"
 end
