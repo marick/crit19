@@ -75,7 +75,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       showable_animal_named("preexisting")
 
       assert {:error, changeset} = update.(original, "preexisting")
-      IO.inspect changeset
 
       assert original.lock_version == 1
       assert changeset.data.lock_version == original.lock_version

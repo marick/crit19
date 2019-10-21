@@ -5,7 +5,7 @@ defmodule Crit.Usables.AnimalApi do
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.HiddenSchemas
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
-  import Ecto.ChangesetX, only: [ensure_forms_display_errors: 1]
+  alias Ecto.ChangesetX
 
 
   def showable!(id, institution) do
@@ -45,10 +45,8 @@ defmodule Crit.Usables.AnimalApi do
 
   def update(string_id, attrs, institution) do
     case Write.update_for_id(string_id, attrs, institution) do
-      {:ok, id} ->
-        {:ok, showable!(id, institution)}
-      {:error, changeset} ->
-        {:error, Ecto.Changeset.delete_change(changeset, :lock_version)}
+      {:ok, id} -> {:ok, showable!(id, institution)}
+      {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
     end
   end
 
@@ -57,7 +55,7 @@ defmodule Crit.Usables.AnimalApi do
       {:ok, animal_ids} ->
         {:ok, AnimalApi.ids_to_animals(animal_ids, institution)}
       {:error, changeset} ->
-        {:error, ensure_forms_display_errors(changeset)}
+        {:error, ChangesetX.ensure_forms_display_errors(changeset)}
     end
   end
 
