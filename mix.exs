@@ -5,7 +5,7 @@ defmodule Crit.MixProject do
     [
       app: :crit,
       version: "0.1.0",
-      elixir: "~> 1.8",
+      elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -43,7 +43,7 @@ defmodule Crit.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
-      {:calendar, "~> 0.17"},
+      {:calendar, "~> 1.0"},
       {:faker, "~> 0.12", only: :test},
       {:ex_machina, "~> 2.3"},
       {:pbkdf2_elixir, "~> 1.0"},
