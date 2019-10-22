@@ -10,6 +10,7 @@ defmodule Crit.Exemplars.Minimal do
   use Crit.Global.Constants
   alias Crit.Factory
   alias Crit.Users.{Password, PasswordToken}
+  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Sql
 
   def user(opts \\ []) do
@@ -22,4 +23,6 @@ defmodule Crit.Exemplars.Minimal do
   def animal(opts \\ []) do
     Factory.sql_insert!(:animal, opts, @institution)
   end
+
+  def service_gap(id) when is_integer(id), do: %ServiceGap{id: id}
 end

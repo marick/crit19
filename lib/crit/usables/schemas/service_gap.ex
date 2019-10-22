@@ -2,6 +2,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Datespan
+  alias Crit.Sql
 
   schema "service_gaps" do
     field :gap, Datespan
@@ -18,14 +19,20 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     |> validate_required(@required)
   end
 
-  def update_changeset(attrs) do
-    %__MODULE__{}
-    |> cast(attrs, [:in_service_date])
-    |> IO.inspect
-  end
-
   def changeset(fields) when is_list(fields) do
     changeset(%__MODULE__{}, Enum.into(fields, %{}))
+  end
+
+  def update_in_service_date(struct, attrs, institution) do
+    struct
+    |> cast(attrs, [:in_service_date])
+    |> put_new_in_service_date
+    |> Sql.update(institution)
+  end
+
+  defp put_new_in_service_date(changeset) do
+    new_date = changeset.changes.in_service_date
+    put_change(changeset, :gap, Datespan.strictly_before(new_date))
   end
 
   def separate_kinds(service_gaps) do
