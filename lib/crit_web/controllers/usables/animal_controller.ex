@@ -44,7 +44,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
 
   def update_form(conn, %{"animal_id" => id}) do
-    animal = AnimalApi.showable!(id, institution(conn)) |> IO.inspect
+    animal = AnimalApi.showable!(id, institution(conn))
     
     conn
     |> put_layout(false)

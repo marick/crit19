@@ -30,10 +30,10 @@ defmodule Crit.Exemplars.Available do
   def animal_id(opts \\ []) do
     true_opts =
       case Keyword.get(opts, :name) do
-        nil -> opts
+        nil -> Keyword.put(opts, :names, Faker.Cat.name())
         name -> Keyword.put(opts, :names, name)
       end
-        
+
     [id] = animal_ids(true_opts)
     id
   end

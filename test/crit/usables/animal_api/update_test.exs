@@ -4,33 +4,65 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars.Available
 
-  test "updating the name" do
-    {string_id, original} = showable_animal_named("Original Bossie")
-    params = %{"name" => "New Bossie",
-               "species_id" => "this should be ignored",
-               "id" => "this should also be ignored"
-              }
+  describe "updating the name and common behaviors" do
 
-    assert {:ok, new_animal} =
-      AnimalApi.update(string_id, params, @institution)
-
-    assert new_animal == %Animal{original |
-                                 name: "New Bossie",
-                                 lock_version: 2
-                                }
-
-    assert new_animal == AnimalApi.showable!(original.id, @institution)
+    test "success" do
+      {string_id, original} = showable_animal_named("Original Bossie")
+      params = %{"name" => "New Bossie",
+                 "species_id" => "this should be ignored",
+                 "id" => "this should also be ignored"
+                }
+      
+      assert {:ok, new_animal} =
+        AnimalApi.update(string_id, params, @institution)
+      
+      assert new_animal == %Animal{original |
+                                   name: "New Bossie",
+                                   lock_version: 2
+                                  }
+      
+      assert new_animal == AnimalApi.showable!(original.id, @institution)
+    end
+    
+    test "unique name constraint violation produces changeset" do
+      {string_id, _} = showable_animal_named("Original Bossie")
+      showable_animal_named("already exists")
+      params = %{"name" => "already exists"}
+      
+      assert {:error, changeset} = AnimalApi.update(string_id, params, @institution)
+      assert "has already been taken" in errors_on(changeset).name
+    end
   end
 
-  test "unique name constraint violation produces changeset" do
-    {string_id, _} = showable_animal_named("Original Bossie")
-    showable_animal_named("already exists")
-    params = %{"name" => "already exists"}
+  describe "updating gaps" do
+    @tag :skip
+    test "update in-service date" do
+      original = "2011-11-11"
+      new = "2222-01-22"
+      id = Available.animal_id(start_date: original)
+      # IO.inspect AnimalApi.showable!(id, @institution)
 
-    assert {:error, changeset} = AnimalApi.update(string_id, params, @institution)
-    assert "has already been taken" in errors_on(changeset).name
+      params = %{"in_service_date" => new}
+      
+      assert {:ok, new_animal} =
+        AnimalApi.update(to_string(id), params, @institution)
+
+      assert new_animal.in_service_date == new
+    end
+
+    @tag :skip
+    test "update out-of-service date" 
+
+    @tag :skip
+    test "delete out-of-service date" # and make sure join table is updated
+
+    @tag :skip
+    test "add new out-of-service date" # and make sure join table is updated
+
+    @tag :skip
+    test "allow date updates to work even though name update fails." 
   end
-
+  
 
   describe "optimistic concurrency" do
     setup do
