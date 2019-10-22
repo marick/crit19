@@ -2,6 +2,8 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.Schemas.ServiceGap
   alias Ecto.Datespan
+  alias Ecto.Changeset
+  alias Crit.Sql
 
   describe "dividing by type" do
     test "has in-service and out-of-service date" do
@@ -27,5 +29,18 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       assert result.others == []
     end
   end
-  
+
+  test "service gaps can be updated" do
+    {:ok, service_gap} =
+      %ServiceGap{gap: Datespan.strictly_before(@date), reason: "in service"}
+      |> Sql.insert(@institution)
+
+    params = %{"in_service_date" => @later_iso_date}
+    changeset = ServiceGap.update_changeset(%ServiceGap{id: service_gap.id}, params)
+
+    Sql.update(changeset, @institution) |> IO.inspect
+
+
+  end
+
 end

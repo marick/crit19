@@ -12,27 +12,28 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
                  "species_id" => "this should be ignored",
                  "id" => "this should also be ignored"
                 }
-      
+
       assert {:ok, new_animal} =
         AnimalApi.update(string_id, params, @institution)
-      
+
       assert new_animal == %Animal{original |
                                    name: "New Bossie",
                                    lock_version: 2
                                   }
-      
+
       assert new_animal == AnimalApi.showable!(original.id, @institution)
     end
-    
+
     test "unique name constraint violation produces changeset" do
       {string_id, _} = showable_animal_named("Original Bossie")
       showable_animal_named("already exists")
       params = %{"name" => "already exists"}
-      
+
       assert {:error, changeset} = AnimalApi.update(string_id, params, @institution)
       assert "has already been taken" in errors_on(changeset).name
     end
   end
+
 
   describe "updating gaps" do
     @tag :skip
@@ -43,7 +44,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       # IO.inspect AnimalApi.showable!(id, @institution)
 
       params = %{"in_service_date" => new}
-      
+
       assert {:ok, new_animal} =
         AnimalApi.update(to_string(id), params, @institution)
 
@@ -51,7 +52,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
     end
 
     @tag :skip
-    test "update out-of-service date" 
+    test "update out-of-service date"
 
     @tag :skip
     test "delete out-of-service date" # and make sure join table is updated
@@ -60,9 +61,9 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
     test "add new out-of-service date" # and make sure join table is updated
 
     @tag :skip
-    test "allow date updates to work even though name update fails." 
+    test "allow date updates to work even though name update fails."
   end
-  
+
 
   describe "optimistic concurrency" do
     setup do

@@ -6,6 +6,8 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   schema "service_gaps" do
     field :gap, Datespan
     field :reason, :string
+
+    field :in_service_date, :date, virtual: true
   end
 
   @required [:gap, :reason]
@@ -14,6 +16,12 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     struct
     |> cast(attrs, @required)
     |> validate_required(@required)
+  end
+
+  def update_changeset(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, [:in_service_date])
+    |> IO.inspect
   end
 
   def changeset(fields) when is_list(fields) do

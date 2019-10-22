@@ -10,25 +10,10 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     "end_date" => @never
   }
 
-  test "an error produces a changeset" do
-    params =
-      @basic_params
-      |> Map.put("start_date", @later_iso_date)
-      |> Map.put("end_date", @iso_date)
-      |> Map.put("names", ",")
-    
-    assert {:error, changeset} = AnimalApi.create_animals(params, @institution)
-    assert represents_form_errors?(changeset)
-
-    errors = errors_on(changeset)
-    assert [_message] = errors.end_date
-    assert [_message] = errors.names
-  end
-
-  test "without an error, we insert a network" do
+  test "creates multiple animals at once" do
     {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
-    check = fn returned ->
+    check_animal_properties_inserted = fn returned ->
       fetched = AnimalApi.showable!(returned.id, @institution)
       assert fetched.id == returned.id
       assert fetched.name == returned.name
@@ -37,14 +22,29 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
       assert returned.species_name == @bovine
     end
 
-    check.(bossie)
-    check.(jake)
+    check_animal_properties_inserted.(bossie)
+    check_animal_properties_inserted.(jake)
+  end
+
+  test "an error returns a changeset" do
+    params =
+      @basic_params
+      |> Map.put("start_date", @later_iso_date)
+      |> Map.put("end_date", @iso_date)
+      |> Map.put("names", ",")
+
+    assert {:error, changeset} = AnimalApi.create_animals(params, @institution)
+    assert represents_form_errors?(changeset)
+
+    errors = errors_on(changeset)
+    assert length(errors.end_date) == 1
+    assert length(errors.names) == 1
   end
 
   test "constraint problems are detected last" do
-    {:ok, [_bossie, _jake]} = AnimalApi.create_animals(@basic_params, @institution)
-    {:error, changeset} =   AnimalApi.create_animals(@basic_params, @institution)
+    {:ok, _} = AnimalApi.create_animals(@basic_params, @institution)
+    {:error, changeset} = AnimalApi.create_animals(@basic_params, @institution)
 
     assert ~s|An animal named "Bossie" is already in service| in errors_on(changeset).names
   end
-end    
+end
