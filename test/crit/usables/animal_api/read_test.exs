@@ -112,8 +112,8 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
     params = %{
       "species_id" => @bovine_id,
       "names" => "bossie, Jake, Alpha",
-      "start_date" => @iso_date,
-      "end_date" => @never
+      "in_service_date" => @iso_date,
+      "out_of_service_date" => @never
     }
 
     {:ok, animals} = AnimalApi.create_animals(params, @institution)

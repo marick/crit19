@@ -6,8 +6,8 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
   @correct %{
     names: "a, b, c",
     species_id: "1",
-    start_date: @iso_date,
-    end_date: @later_iso_date,
+    in_service_date: @iso_date,
+    out_of_service_date: @later_iso_date,
     timezone: "America/Chicago",
   }
 
@@ -17,8 +17,8 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
       
       assert errors.names
       assert errors.species_id
-      assert errors.start_date
-      assert errors.end_date
+      assert errors.in_service_date
+      assert errors.out_of_service_date
     end
 
     test "the construction of derived/virtual values" do
@@ -43,8 +43,8 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
       @correct
       |> Map.put(:names,  "one, two")
       |> Map.put(:species, "1")
-      |> Map.put(:start_date,  @iso_date)
-      |> Map.put(:end_date, @never)
+      |> Map.put(:in_service_date,  @iso_date)
+      |> Map.put(:out_of_service_date, @never)
       |> BulkAnimal.compute_insertables
       |> BulkAnimal.changeset_to_changesets
 

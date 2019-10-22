@@ -6,8 +6,8 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
   @basic_params %{
     "species_id" => @bovine_id,
     "names" => "Bossie, Jake",
-    "start_date" => @iso_date,
-    "end_date" => @never
+    "in_service_date" => @iso_date,
+    "out_of_service_date" => @never
   }
 
   test "creates multiple animals at once" do
@@ -29,15 +29,15 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
   test "an error returns a changeset" do
     params =
       @basic_params
-      |> Map.put("start_date", @later_iso_date)
-      |> Map.put("end_date", @iso_date)
+      |> Map.put("in_service_date", @later_iso_date)
+      |> Map.put("out_of_service_date", @iso_date)
       |> Map.put("names", ",")
 
     assert {:error, changeset} = AnimalApi.create_animals(params, @institution)
     assert represents_form_errors?(changeset)
 
     errors = errors_on(changeset)
-    assert length(errors.end_date) == 1
+    assert length(errors.out_of_service_date) == 1
     assert length(errors.names) == 1
   end
 

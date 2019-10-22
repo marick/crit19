@@ -6,8 +6,8 @@ defmodule Crit.Usables.FieldConverters.ToServiceGapTest do
   alias Ecto.Changeset
 
   embedded_schema do
-    field :computed_start_date, :date, virtual: true
-    field :computed_end_date, :date, virtual: true
+    field :computed_in_service_date, :date, virtual: true
+    field :computed_out_of_service_date, :date, virtual: true
     field :computed_service_gaps, {:array, Datespan}, virtual: true
   end
 
@@ -19,7 +19,7 @@ defmodule Crit.Usables.FieldConverters.ToServiceGapTest do
   describe "converting dates into service gaps" do
     test "two gaps because there is an end date" do
       actual =
-        [computed_start_date: @date, computed_end_date: @later_date]
+        [computed_in_service_date: @date, computed_out_of_service_date: @later_date]
         |> make_changeset_with_computed_dates
         |> ToServiceGap.expand_start_and_end
 
@@ -35,7 +35,7 @@ defmodule Crit.Usables.FieldConverters.ToServiceGapTest do
 
     test "one gap because there's no specific end date" do
       actual =
-        [computed_start_date: @date, computed_end_date: :missing]
+        [computed_in_service_date: @date, computed_out_of_service_date: :missing]
         |> make_changeset_with_computed_dates
         |> ToServiceGap.expand_start_and_end
 

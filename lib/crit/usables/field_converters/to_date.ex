@@ -7,35 +7,35 @@ defmodule Crit.Usables.FieldConverters.ToDate do
   alias Pile.TimeHelper
 
   # Assumes this partial schema
-  # field :start_date, :string
-  # field :end_date, :string
+  # field :in_service_date, :string
+  # field :out_of_service_date, :string
   # field :timezone, :string
   
-  # field :computed_start_date, :date, virtual: true
-  # field :computed_end_date, :date, virtual: true
+  # field :computed_in_service_date, :date, virtual: true
+  # field :computed_out_of_service_date, :date, virtual: true
   
 
   def put_start_and_end(changeset) do
-    with_start = compute_date(changeset, :start_date, :computed_start_date)
+    with_start = compute_date(changeset, :in_service_date, :computed_in_service_date)
 
-    if changeset.changes.end_date == @never do
+    if changeset.changes.out_of_service_date == @never do
       with_start
-      |> put_change(:computed_end_date, :missing)
+      |> put_change(:computed_out_of_service_date, :missing)
     else
       with_start
-      |> compute_date(:end_date, :computed_end_date)
+      |> compute_date(:out_of_service_date, :computed_out_of_service_date)
       |> check_date_order
     end
   end
 
   defp check_date_order(changeset) do
     Flow.given_prerequisite_values_exist(changeset,
-      [:computed_start_date, :computed_end_date],
+      [:computed_in_service_date, :computed_out_of_service_date],
       fn [should_be_earlier, should_be_later] ->
         if Date.compare(should_be_earlier, should_be_later) == :lt do
           changeset
         else
-          add_error(changeset, :end_date, misorder_error_message())
+          add_error(changeset, :out_of_service_date, misorder_error_message())
         end      
       end)
   end

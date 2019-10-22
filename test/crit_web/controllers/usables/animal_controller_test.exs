@@ -63,7 +63,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     test "a bad start date is supposed to be impossible", %{conn: conn, act: act} do
       {_names, params} = animal_creation_data()
 
-      bad_params = Map.put(params, "start_date", "yesterday...")
+      bad_params = Map.put(params, "in_service_date", "yesterday...")
 
       assert_raise RuntimeError, fn -> 
         act.(conn, bad_params)
@@ -73,7 +73,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     test "a bad end date is supposed to be impossible", %{conn: conn, act: act} do
       {_names, params} = animal_creation_data()
 
-      bad_params = Map.put(params, "end_date", "2525-13-06")
+      bad_params = Map.put(params, "out_of_service_date", "2525-13-06")
 
       assert_raise RuntimeError, fn -> 
         act.(conn, bad_params)
@@ -144,15 +144,15 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   defp animal_name(id), do: AnimalApi.showable!(id, @institution).name
 
   defp animal_creation_data() do
-    {start_date, end_date} = Exemplars.Date.date_pair() 
+    {in_service_date, out_of_service_date} = Exemplars.Date.date_pair() 
     {_species_name, species_id} = Enum.random(AnimalApi.available_species(@institution))
     
     namelist = Factory.unique_names()
 
     params = %{"names" => Factory.names_to_input_string(namelist),
                "species_id" => species_id,
-               "start_date" => start_date,
-               "end_date" => end_date
+               "in_service_date" => in_service_date,
+               "out_of_service_date" => out_of_service_date
               }
 
     {namelist, params}

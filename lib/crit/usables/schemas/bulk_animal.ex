@@ -10,17 +10,17 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
   embedded_schema do
     field :names, :string
     field :species_id, :integer
-    field :start_date, :string
-    field :end_date, :string
+    field :in_service_date, :string
+    field :out_of_service_date, :string
     field :timezone, :string
 
-    field :computed_start_date, :date, virtual: true
-    field :computed_end_date, :date, virtual: true
+    field :computed_in_service_date, :date, virtual: true
+    field :computed_out_of_service_date, :date, virtual: true
     field :computed_names, {:array, :string}, virtual: true
     field :computed_service_gaps, {:array, ServiceGap}, virtual: true
   end
 
-  @required [:names, :species_id, :start_date, :end_date, :timezone]
+  @required [:names, :species_id, :in_service_date, :out_of_service_date, :timezone]
 
   def changeset(bulk, attrs) do
     bulk

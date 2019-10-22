@@ -30,6 +30,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     end
   end
 
+  @tag :skip
   test "service gaps can be updated" do
     {:ok, service_gap} =
       %ServiceGap{gap: Datespan.strictly_before(@date), reason: "in service"}

@@ -6,21 +6,21 @@ defmodule Crit.Usables.FieldConverters.ToServiceGap do
   alias Ecto.Datespan
 
   # Assumes this partial schema
-  #   field :computed_start_date, :date, virtual: true
-  #   field :computed_end_date, :date, virtual: true
+  #   field :computed_in_service_date, :date, virtual: true
+  #   field :computed_out_of_service_date, :date, virtual: true
   #   field :computed_service_gaps, {:array, Datespan}, virtual: true
 
   def expand_start_and_end(changeset) do
     given_prerequisite_values_exist(changeset,
-      [:computed_start_date, :computed_end_date],
-      fn [computed_start_date, computed_end_date] ->
+      [:computed_in_service_date, :computed_out_of_service_date],
+      fn [computed_in_service_date, computed_out_of_service_date] ->
         spans = 
-          if computed_end_date == :missing do
-            [pre_service(computed_start_date)
+          if computed_out_of_service_date == :missing do
+            [pre_service(computed_in_service_date)
             ]
           else
-            [pre_service(computed_start_date), 
-             post_service(computed_end_date)
+            [pre_service(computed_in_service_date), 
+             post_service(computed_out_of_service_date)
             ]
           end
 
