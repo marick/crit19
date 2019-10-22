@@ -1,6 +1,7 @@
 defmodule Crit.Usables.FieldConverters.ToServiceGapTest do
   use Ecto.Schema
   use Crit.DataCase
+  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Usables.FieldConverters.ToServiceGap
   alias Ecto.Datespan
   alias Ecto.Changeset
@@ -27,10 +28,10 @@ defmodule Crit.Usables.FieldConverters.ToServiceGapTest do
       assert [in_service, out_of_service] = actual.changes.computed_service_gaps
 
       assert_strictly_before(in_service.gap, @date)
-      assert in_service.reason == ToServiceGap.before_service_reason()
+      assert in_service.reason == ServiceGap.before_service_reason()
 
       assert_date_and_after(out_of_service.gap, @later_date)
-      assert out_of_service.reason == ToServiceGap.after_service_reason()
+      assert out_of_service.reason == ServiceGap.after_service_reason()
     end
 
     test "one gap because there's no specific end date" do
@@ -43,7 +44,7 @@ defmodule Crit.Usables.FieldConverters.ToServiceGapTest do
       assert [in_service] = actual.changes.computed_service_gaps
 
       assert_strictly_before(in_service.gap, @date)
-      assert in_service.reason == ToServiceGap.before_service_reason()
+      assert in_service.reason == ServiceGap.before_service_reason()
     end
   end
 end  

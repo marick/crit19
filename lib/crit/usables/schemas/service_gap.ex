@@ -46,8 +46,26 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     }
   end
 
+  def in_service_gap(first_day_in_service),
+    do: %__MODULE__{
+          gap: Datespan.strictly_before(first_day_in_service),
+          reason: before_service_reason()
+    }
+
+  def out_of_service_gap(first_day_out_of_service),
+    do: %__MODULE__{
+          gap: Datespan.date_and_after(first_day_out_of_service),
+          reason: after_service_reason()
+    }
+  
+
+  
+
   defp is_for_in_service?(service_gap),
     do: Datespan.infinite_down?(service_gap.gap)
   defp is_for_out_of_service?(service_gap),
-    do: Datespan.infinite_up?(service_gap.gap)
+      do: Datespan.infinite_up?(service_gap.gap)
+
+  def before_service_reason(), do: "before animal was put in service"
+  def after_service_reason(), do: "animal taken out of service"
 end
