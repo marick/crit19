@@ -30,6 +30,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     |> Sql.update(institution)
   end
 
+  defp put_new_in_service_date(%{valid?: false} = changeset), do: changeset
   defp put_new_in_service_date(changeset) do
     new_date = changeset.changes.in_service_date
     put_change(changeset, :gap, Datespan.strictly_before(new_date))

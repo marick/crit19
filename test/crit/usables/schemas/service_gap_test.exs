@@ -32,6 +32,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
   describe "updating a gap used as the in-service date" do
     setup do
+      in_service_gap = Factory.in_service_gap
       {:ok, in_service_gap} =
         ServiceGap.in_service_gap(@date)
         |> Sql.insert(@institution)
@@ -45,14 +46,28 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     end
 
     test "in-service gaps can be updated",
-      %{in_service_gap: service_gap, act_on: act_on} do
+      %{in_service_gap: original, act_on: act_on} do
 
       assert {:ok, _} =
-        act_on.(service_gap.id, %{"in_service_date" => @later_iso_date})
+        act_on.(original.id, %{"in_service_date" => @later_iso_date})
       
-      assert fetched = Sql.get(ServiceGap, service_gap.id, @institution)
+      assert fetched = Sql.get(ServiceGap, original.id, @institution)
       assert fetched.gap == Datespan.strictly_before(@later_date)
-      assert fetched.reason == service_gap.reason
+      assert fetched.reason == original.reason
     end
+
+    test "a bad in-service gap date produces the usual sort of changeset",
+      %{in_service_gap: original, act_on: act_on} do
+
+      assert {:error, changeset} =
+        act_on.(original.id, %{"in_service_date" => "bogus"})
+
+      assert "is invalid" in errors_on(changeset).in_service_date
+
+      # No change.
+      assert fetched = Sql.get(ServiceGap, original.id, @institution)
+      assert fetched.gap == original.gap
+    end
+    
   end
 end
