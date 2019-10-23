@@ -8,7 +8,7 @@ defmodule Crit.Sql.Transaction do
       original_changeset: nil   # There is always a validation of the form
   end
 
-  def run(attrs, institution, steps) do
+  def run_creation(attrs, institution, steps) do
     state = %State{attrs: attrs, institution: institution}
     run_steps(state , steps)
   end
@@ -26,7 +26,7 @@ defmodule Crit.Sql.Transaction do
   end
 
 
-  def validation_step(state, validator) do 
+  def creation_validation_step(state, validator) do 
     changeset = validator.(state.attrs)
     if changeset.valid? do
       {:ok, Map.put(state, :original_changeset, changeset)}
@@ -35,8 +35,8 @@ defmodule Crit.Sql.Transaction do
     end
   end
 
-  def make_validation_step(validation_fn) do
-    fn state -> validation_step(state, validation_fn) end
+  def make_creation_validation_step(validation_fn) do
+    fn state -> creation_validation_step(state, validation_fn) end
   end
 
   # Handle return value from an Sql.transaction.

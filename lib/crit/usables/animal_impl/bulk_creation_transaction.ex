@@ -1,6 +1,6 @@
 defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
   alias Crit.Sql
-  import Crit.Sql.Transaction, only: [make_validation_step: 1]
+  import Crit.Sql.Transaction, only: [make_creation_validation_step: 1]
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   alias Crit.Ecto.BulkInsert
   alias Crit.Global
@@ -8,12 +8,12 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
     steps = [
-      make_validation_step(&BulkAnimal.compute_insertables/1),
+      make_creation_validation_step(&BulkAnimal.compute_insertables/1),
       &split_changeset_step/1,
       &bulk_insert_step/1,
     ]
 
-    Sql.Transaction.run(attrs, institution, steps)
+    Sql.Transaction.run_creation(attrs, institution, steps)
   end
 
   defp split_changeset_step(%{original_changeset: changeset} = state) do
