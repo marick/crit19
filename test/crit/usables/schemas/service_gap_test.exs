@@ -32,7 +32,6 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
   describe "updating a gap used as the in-service date" do
     setup do
-      in_service_gap = Factory.in_service_gap
       {:ok, in_service_gap} =
         ServiceGap.in_service_gap(@date)
         |> Sql.insert(@institution)
