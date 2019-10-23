@@ -49,6 +49,13 @@ defmodule Crit.Usables.Schemas.Animal do
     |> optimistic_lock(:lock_version)
   end
   
+  def update_changeset__2(struct, attrs) do
+    struct
+    |> cast(attrs, [:name, :lock_version])
+    |> constraint_on_name()
+    |> optimistic_lock(:lock_version)
+  end
+  
   defp constraint_on_name(changeset),
     do: unique_constraint(changeset, :name, name: "unique_available_names")
 end
