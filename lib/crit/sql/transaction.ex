@@ -4,13 +4,22 @@ defmodule Crit.Sql.Transaction do
 
 
   defmodule State do 
-    defstruct attrs: nil, institution: nil, # Must be supplied on creation
+    defstruct attrs: nil, institution: nil, # Must be supplied
+      current_struct: nil,      # Must be supplied on update
       original_changeset: nil   # There is always a validation of the form
   end
 
   def run_creation(attrs, institution, steps) do
     state = %State{attrs: attrs, institution: institution}
-    run_steps(state , steps)
+    run_steps(state, steps)
+  end
+
+  def run_update(struct, attrs, institution, steps) do
+    state = %State{attrs: attrs,
+                   institution: institution,
+                   current_struct: struct
+                  }
+    run_steps(state, steps)
   end
 
   def run_steps(final_result, []),
@@ -26,8 +35,7 @@ defmodule Crit.Sql.Transaction do
   end
 
 
-  def creation_validation_step(state, validator) do 
-    changeset = validator.(state.attrs)
+  defp record_validation_results(state, changeset) do 
     if changeset.valid? do
       {:ok, Map.put(state, :original_changeset, changeset)}
     else
@@ -35,8 +43,18 @@ defmodule Crit.Sql.Transaction do
     end
   end
 
-  def make_creation_validation_step(validation_fn) do
-    fn state -> creation_validation_step(state, validation_fn) end
+  def make_creation_validation_step(validator) do
+    fn state ->
+      changeset = validator.(state.attrs)
+      record_validation_results(state, changeset)
+    end
+  end
+
+  def make_update_validation_step(validator) do
+    fn state ->
+      changeset = validator.(state.current_struct, state.attrs)
+      record_validation_results(state, changeset)
+    end
   end
 
   # Handle return value from an Sql.transaction.
