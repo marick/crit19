@@ -1,12 +1,29 @@
 defmodule Crit.Usables.AnimalImpl.UpdateTransaction do
   alias Crit.Sql
   import Crit.Sql.Transaction, only: [make_update_validation_step: 1]
-  alias Crit.Usables.Schemas.{Animal}
+  alias Crit.Usables.Schemas.{Animal,ServiceGap}
   alias Ecto.Multi
   alias Ecto.Changeset
   alias Ecto.ChangesetX
   alias Crit.Usables.AnimalApi
 
+  defmodule Testable do
+    import Ecto.Changeset
+    alias Ecto.Datespan
+    def in_service_gap_changeset(animal_changeset) do
+      new =
+        animal_changeset.changes.in_service_date
+        |> Date.from_iso8601!
+        |> Datespan.strictly_before
+
+      IO.inspect new
+      IO.inspect animal_changeset.data
+
+      [ServiceGap.changeset(List.first(animal_changeset.data.service_gaps), %{gap: new})]
+      |> IO.inspect
+    end
+    
+  end
 
   def run(animal, supplied_attrs, institution) do
     steps = [

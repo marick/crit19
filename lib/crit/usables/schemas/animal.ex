@@ -22,7 +22,9 @@ defmodule Crit.Usables.Schemas.Animal do
     many_to_many :service_gaps, ServiceGap, join_through: "animal__service_gap"
 
     field :species_name, :string, virtual: true
+    field :in_service_id, :integer, virtual: true
     field :in_service_date, :string, virtual: true
+    field :out_of_service_id, :integer, virtual: true
     field :out_of_service_date, :string, virtual: true
   end
 
@@ -44,9 +46,12 @@ defmodule Crit.Usables.Schemas.Animal do
 
   def update_changeset(struct, attrs) do
     struct
-    |> cast(attrs, [:name, :lock_version])
+    |> cast(attrs, [:name, :lock_version,
+                   :in_service_date, :in_service_id,
+                   :out_of_service_date, :out_of_service_id])
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
+    |> IO.inspect
   end
   
   defp constraint_on_name(changeset),
