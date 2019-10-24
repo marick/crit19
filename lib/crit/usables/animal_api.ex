@@ -45,16 +45,9 @@ defmodule Crit.Usables.AnimalApi do
   def changeset(animal, attrs), do: Animal.changeset(animal, attrs)
   def changeset(fields), do: Animal.changeset(fields)
 
-  @spec update(String.t(), Map.t(), String.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
+  @spec update(String.t(), Map.t(), String.t())
+  :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
   def update(string_id, attrs, institution) do
-    case Write.update_for_id(string_id, attrs, institution) do
-      {:ok, id} -> {:ok, showable!(id, institution)}
-      {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
-    end
-  end
-
-  @spec update__2(String.t(), Map.t(), String.t()) :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
-  def update__2(string_id, attrs, institution) do
     animal = showable!(string_id, institution)
     case UpdateTransaction.run(animal, attrs, institution) do
       {:ok, id} -> {:ok, showable!(id, institution)}

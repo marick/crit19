@@ -42,14 +42,7 @@ defmodule Crit.Usables.Schemas.Animal do
     change(animal)
   end
 
-  def update_changeset(id, attrs) do
-    %__MODULE__{id: id}
-    |> cast(attrs, [:name, :lock_version])
-    |> constraint_on_name()
-    |> optimistic_lock(:lock_version)
-  end
-  
-  def update_changeset__2(struct, attrs) do
+  def update_changeset(struct, attrs) do
     struct
     |> cast(attrs, [:name, :lock_version])
     |> constraint_on_name()

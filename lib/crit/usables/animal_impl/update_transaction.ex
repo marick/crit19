@@ -10,7 +10,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateTransaction do
 
   def run(animal, supplied_attrs, institution) do
     steps = [
-      make_update_validation_step(&Animal.update_changeset__2/2),
+      make_update_validation_step(&Animal.update_changeset/2),
       &split_changeset_step/1,
       &transaction_step/1,
     ]
