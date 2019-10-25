@@ -23,11 +23,11 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     changeset(%__MODULE__{}, Enum.into(fields, %{}))
   end
 
-  def update_in_service_date(struct, attrs, institution) do
+
+  def update_changeset(struct, attrs) do
     struct
     |> cast(attrs, [:in_service_date])
     |> put_new_in_service_date
-    |> Sql.update(institution)
   end
 
   defp put_new_in_service_date(%{valid?: false} = changeset), do: changeset
