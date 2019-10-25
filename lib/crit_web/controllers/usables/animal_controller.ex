@@ -53,16 +53,13 @@ defmodule CritWeb.Usables.AnimalController do
   end
   
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
-    # IO.inspect animal_params
     case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
-        # IO.inspect(animal, label: "success")
         Common.render_for_replacement(conn,
           "_show_one_animal.html",
           changeset: AnimalApi.form_changeset(animal),
           highlight: "has-background-grey-lighter")
       {:error, changeset} ->
-        # IO.inspect(changeset, label: "failure")
         Common.render_for_replacement(conn,
           "_edit_one_animal.html",
           changeset: changeset)

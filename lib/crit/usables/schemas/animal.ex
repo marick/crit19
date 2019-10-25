@@ -51,7 +51,6 @@ defmodule Crit.Usables.Schemas.Animal do
                    :out_of_service_date, :out_of_service_id])
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
-    |> IO.inspect
   end
   
   defp constraint_on_name(changeset),

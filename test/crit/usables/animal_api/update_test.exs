@@ -42,8 +42,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       original = "2011-11-11"
       new = "2222-01-22"
       id = Available.animal_id(in_service_date: original)
-      # IO.inspect AnimalApi.showable!(id, @institution)
-
+      
       params = %{"in_service_date" => new}
 
       assert {:ok, new_animal} =
