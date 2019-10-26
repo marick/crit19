@@ -8,7 +8,7 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
   def run(supplied_attrs, institution) do
     attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
     steps = [
-      make_creation_validation_step(&BulkAnimal.compute_insertables/1),
+      make_creation_validation_step(&BulkAnimal.creation_changeset/1),
       &split_changeset_step/1,
       &bulk_insert_step/1,
     ]
@@ -16,8 +16,22 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
     Sql.Transaction.run_creation(attrs, institution, steps)
   end
 
+  def changeset_to_changesets(%{changes: changes}) do
+    base_attrs = %{species_id: changes.species_id,
+                   in_service_date: changes.in_service_date,
+                   out_of_service_date: changes[:out_of_service_date]
+                  }
+    
+    one_animal = fn name ->
+      Animal.creation_changeset(Map.put(base_attrs, :name, name))
+    end
+
+    Enum.map(changes.computed_names, one_animal)
+  end
+  
+
   defp split_changeset_step(%{original_changeset: changeset} = state) do
-    changesets = BulkAnimal.changeset_to_changesets(changeset)
+    changesets = changeset_to_changesets(changeset)
 
     {:ok, Map.put(state, :changesets, changesets)}
   end

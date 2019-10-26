@@ -31,7 +31,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
     |> validate_required(@form_fields)
   end
 
-  def compute_insertables(attrs) do
+  def creation_changeset(attrs) do
     given_all_form_values_are_present(changeset(%__MODULE__{}, attrs),
       fn changeset ->
         changeset
@@ -40,18 +40,6 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
       end)
   end
 
-  def changeset_to_changesets(%{changes: changes}) do
-    base_attrs = %{species_id: changes.species_id,
-                   in_service_date: changes.in_service_date,
-                   out_of_service_date: changes[:out_of_service_date]
-                  }
-    
-    one_animal = fn name ->
-      Animal.creation_changeset(Map.put(base_attrs, :name, name))
-    end
-
-    Enum.map(changes.computed_names, one_animal)
-  end
 
   # defp animal_changesets(changes) do
   #   Enum.map(changes.computed_names, fn name ->
