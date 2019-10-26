@@ -1,6 +1,5 @@
 defmodule Crit.Usables.AnimalImpl.Read do
   use Crit.Global.Constants
-  alias Ecto.Datespan
   import Ecto.Query
   alias Crit.Sql
 
@@ -53,24 +52,24 @@ defmodule Crit.Usables.AnimalImpl.Read do
   end
 
   def put_virtual_fields(animal) do
-    timespans = Enum.map(animal.service_gaps, &(&1.gap))
+    # timespans = Enum.map(animal.service_gaps, &(&1.gap))
 
-    in_service_date =
-      timespans
-      |> Enum.find(&Datespan.infinite_down?/1)
+    # in_service_date =
+    #   timespans
+    #   |> Enum.find(&Datespan.infinite_down?/1)
 
-    in_service_iso = Date.to_iso8601(in_service_date.last)
+    # in_service_iso = Date.to_iso8601(in_service_date.last)
 
-    out_of_service_iso = 
-      case Enum.find(timespans, &Datespan.infinite_up?/1) do
-        nil -> @never
-        date -> Date.to_iso8601(date.first)
-      end
+    # out_of_service_iso = 
+    #   case Enum.find(timespans, &Datespan.infinite_up?/1) do
+    #     nil -> @never
+    #     date -> Date.to_iso8601(date.first)
+    #   end
     
     %{ animal |
        species_name: animal.species.name, 
-       in_service_date: in_service_iso,
-       out_of_service_date: out_of_service_iso
+       # in_service_date: in_service_iso,
+       # out_of_service_date: out_of_service_iso
     }
 
     

@@ -7,25 +7,22 @@ defmodule Crit.Usables.Schemas.Animal do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.HiddenSchemas.Species
-  alias Crit.Usables.Schemas.ServiceGap
   import Ecto.Changeset
 
   schema "animals" do
     # The fields below are the true fields in the table.
     field :name, TrimmedString
+    field :in_service_date, :date, virtual: true
+    field :out_of_service_date, :date, virtual: true
     field :available, :boolean, default: true
     field :lock_version, :integer, default: 1
+    
     # field :species_id is as well, but it's created by `belongs_to` below.
     timestamps()
 
     belongs_to :species, Species
-    many_to_many :service_gaps, ServiceGap, join_through: "animal__service_gap"
 
     field :species_name, :string, virtual: true
-    field :in_service_id, :integer, virtual: true
-    field :in_service_date, :string, virtual: true
-    field :out_of_service_id, :integer, virtual: true
-    field :out_of_service_date, :string, virtual: true
   end
 
 
@@ -46,9 +43,7 @@ defmodule Crit.Usables.Schemas.Animal do
 
   def update_changeset(struct, attrs) do
     struct
-    |> cast(attrs, [:name, :lock_version,
-                   :in_service_date, :in_service_id,
-                   :out_of_service_date, :out_of_service_id])
+    |> cast(attrs, [:name, :lock_version, :in_service_date, :out_of_service_date])
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
   end

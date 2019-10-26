@@ -10,6 +10,7 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     "out_of_service_date" => @never
   }
 
+  @tag :skip
   test "creates multiple animals at once" do
     {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
@@ -26,6 +27,7 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     check_animal_properties_inserted.(jake)
   end
 
+  @tag :skip
   test "an error returns a changeset" do
     params =
       @basic_params
@@ -41,6 +43,7 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     assert length(errors.names) == 1
   end
 
+  @tag :skip
   test "constraint problems are detected last" do
     {:ok, _} = AnimalApi.create_animals(@basic_params, @institution)
     {:error, changeset} = AnimalApi.create_animals(@basic_params, @institution)

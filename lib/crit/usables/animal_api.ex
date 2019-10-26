@@ -1,13 +1,10 @@
 defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
-  alias Crit.Usables.AnimalImpl.{Read, Write,
-                                 BulkCreationTransaction,
-                                 UpdateTransaction}
+  alias Crit.Usables.AnimalImpl.{Read}
   alias Crit.Sql
-  alias Crit.Usables.AnimalApi
   alias Crit.Usables.HiddenSchemas
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
-  alias Ecto.ChangesetX
+  # alias Ecto.ChangesetX
 
 
   def showable!(id, institution) do
@@ -47,22 +44,22 @@ defmodule Crit.Usables.AnimalApi do
 
   @spec update(String.t(), Map.t(), String.t())
   :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
-  def update(string_id, attrs, institution) do
-    animal = showable!(string_id, institution)
-    case UpdateTransaction.run(animal, attrs, institution) do
-      {:ok, id} -> {:ok, showable!(id, institution)}
-      {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
-    end
+  def update(_string_id, _attrs, _institution) do
+    # animal = showable!(string_id, institution)
+    # case UpdateTransaction.run(animal, attrs, institution) do
+    #   {:ok, id} -> {:ok, showable!(id, institution)}
+    #   {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
+    # end
   end
 
   
-  def create_animals(attrs, institution) do
-    case BulkCreationTransaction.run(attrs, institution) do
-      {:ok, animal_ids} ->
-        {:ok, AnimalApi.ids_to_animals(animal_ids, institution)}
-      {:error, changeset} ->
-        {:error, ChangesetX.ensure_forms_display_errors(changeset)}
-    end
+  def create_animals(_attrs, _institution) do
+    # case BulkCreationTransaction.run(attrs, institution) do
+    #   {:ok, animal_ids} ->
+    #     {:ok, AnimalApi.ids_to_animals(animal_ids, institution)}
+    #   {:error, changeset} ->
+    #     {:error, ChangesetX.ensure_forms_display_errors(changeset)}
+    # end
   end
 
   def bulk_animal_creation_changeset() do
