@@ -12,8 +12,8 @@ defmodule Crit.Usables.Schemas.Animal do
   schema "animals" do
     # The fields below are the true fields in the table.
     field :name, TrimmedString
-    field :in_service_date, :date, virtual: true
-    field :out_of_service_date, :date, virtual: true
+    field :in_service_date, :date
+    field :out_of_service_date, :date
     field :available, :boolean, default: true
     field :lock_version, :integer, default: 1
     
@@ -23,16 +23,30 @@ defmodule Crit.Usables.Schemas.Animal do
     belongs_to :species, Species
 
     field :species_name, :string, virtual: true
+    field :in_service_datestring, :string, virtual: true
+    field :out_of_service_datestring, :string, virtual: true
   end
 
+  @required [:name, :species_id, :lock_version,
+             :in_service_date, :out_of_service_date]
 
+
+  # delete?
   def changeset(animal, attrs) do
     animal
-    |> cast(attrs, [:name, :species_id, :lock_version])
-    |> validate_required([:name, :species_id, :lock_version])
+    |> cast(attrs, @required)
+    |> validate_required(@required)
     |> constraint_on_name()
   end
 
+  def creation_changeset(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, @required)
+    |> validate_required(@required)
+    |> constraint_on_name()
+  end
+
+  # delete?
   def changeset(fields) when is_list(fields) do
     changeset(%__MODULE__{}, Enum.into(fields, %{}))
   end

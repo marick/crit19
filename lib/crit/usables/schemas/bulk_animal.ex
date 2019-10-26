@@ -4,6 +4,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
   import Pile.ChangesetFlow
   # alias Crit.Usables.AnimalApi
   alias Crit.Usables.FieldConverters.{ToDate, ToNameList}
+  alias Crit.Usables.Schemas.Animal
 
 
   embedded_schema do
@@ -39,14 +40,17 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
       end)
   end
 
-  def changeset_to_changesets(%{valid?: true} = _changeset) do
-    # changes = changeset.changes
-    # animals = animal_changesets(changes)
-    # service_gaps = service_gap_changesets(changes.computed_service_gaps)
+  def changeset_to_changesets(%{changes: changes}) do
+    base_attrs = %{species_id: changes.species_id,
+                   in_service_date: changes.in_service_date,
+                   out_of_service_date: changes[:out_of_service_date]
+                  }
+    
+    one_animal = fn name ->
+      Animal.creation_changeset(Map.put(base_attrs, :name, name))
+    end
 
-    # Enum.map(animals, fn animal_cs ->
-    #   put_assoc(animal_cs, :service_gaps, service_gaps)
-    # end)
+    Enum.map(changes.computed_names, one_animal)
   end
 
   # defp animal_changesets(changes) do
