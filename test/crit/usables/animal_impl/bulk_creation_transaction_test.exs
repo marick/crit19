@@ -1,7 +1,7 @@
 defmodule Crit.Usables.AnimalImpl.BulkCreationTransactionTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalImpl.BulkCreationTransaction 
-  alias Crit.Usables.Schemas.BulkAnimal
+  alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   # alias Ecto.Datespan
 
   describe "breaking a valid changeset into changesets for insertion" do

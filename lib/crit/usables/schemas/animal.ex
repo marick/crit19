@@ -27,21 +27,21 @@ defmodule Crit.Usables.Schemas.Animal do
     field :out_of_service_datestring, :string, virtual: true
   end
 
-  @required [:name, :species_id, :lock_version,
-             :in_service_date, :out_of_service_date]
+  @required [:name, :species_id, :lock_version, :in_service_date]
+  @relevant @required ++ [:out_of_service_date]
 
 
   # delete?
   def changeset(animal, attrs) do
     animal
-    |> cast(attrs, @required)
+    |> cast(attrs, @relevant)
     |> validate_required(@required)
     |> constraint_on_name()
   end
 
   def creation_changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, @required)
+    |> cast(attrs, @relevant)
     |> validate_required(@required)
     |> constraint_on_name()
   end

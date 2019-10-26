@@ -6,11 +6,10 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
   @basic_params %{
     "species_id" => @bovine_id,
     "names" => "Bossie, Jake",
-    "in_service_date" => @iso_date,
-    "out_of_service_date" => @never
+    "in_service_datestring" => @iso_date,
+    "out_of_service_datestring" => @never
   }
 
-  @tag :skip
   test "creates multiple animals at once" do
     {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
@@ -18,8 +17,8 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
       fetched = AnimalApi.showable!(returned.id, @institution)
       assert fetched.id == returned.id
       assert fetched.name == returned.name
-      assert fetched.in_service_date == @iso_date
-      assert fetched.out_of_service_date == @never
+      assert fetched.in_service_datestring == @iso_date
+      assert fetched.out_of_service_datestring == @never
       assert returned.species_name == @bovine
     end
 

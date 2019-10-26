@@ -1,10 +1,10 @@
 defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
-  alias Crit.Usables.AnimalImpl.{Read}
+  alias Crit.Usables.AnimalImpl.{Read,BulkCreationTransaction}
   alias Crit.Sql
   alias Crit.Usables.HiddenSchemas
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
-  # alias Ecto.ChangesetX
+  alias Ecto.ChangesetX
 
 
   def showable!(id, institution) do
@@ -53,13 +53,13 @@ defmodule Crit.Usables.AnimalApi do
   end
 
   
-  def create_animals(_attrs, _institution) do
-    # case BulkCreationTransaction.run(attrs, institution) do
-    #   {:ok, animal_ids} ->
-    #     {:ok, AnimalApi.ids_to_animals(animal_ids, institution)}
-    #   {:error, changeset} ->
-    #     {:error, ChangesetX.ensure_forms_display_errors(changeset)}
-    # end
+  def create_animals(attrs, institution) do
+    case BulkCreationTransaction.run(attrs, institution) do
+      {:ok, animal_ids} ->
+        {:ok, ids_to_animals(animal_ids, institution)}
+      {:error, changeset} ->
+        {:error, ChangesetX.ensure_forms_display_errors(changeset)}
+    end
   end
 
   def bulk_animal_creation_changeset() do

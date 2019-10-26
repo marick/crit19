@@ -1,8 +1,6 @@
 defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Schemas.BulkAnimal
-  alias Crit.Usables.Schemas.Animal
-  # alias Ecto.Datespan
 
   @correct %{
     names: "a, b, c",
