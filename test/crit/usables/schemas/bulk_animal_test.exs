@@ -6,8 +6,8 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
   @correct %{
     names: "a, b, c",
     species_id: "1",
-    in_service_date: @iso_date,
-    out_of_service_date: @later_iso_date,
+    in_service_datestring: @iso_date,
+    out_of_service_datestring: @later_iso_date,
     timezone: "America/Chicago",
   }
 
@@ -17,25 +17,19 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
       
       assert errors.names
       assert errors.species_id
-      assert errors.in_service_date
-      assert errors.out_of_service_date
+      assert errors.in_service_datestring
+      assert errors.out_of_service_datestring
     end
 
-    @tag :skip
-    test "the construction of derived/virtual values" do
-      # changeset = BulkAnimal.compute_insertables(@correct)
-      # assert changeset.valid?
+    test "the construction of cast and derived values" do
+      changeset = BulkAnimal.compute_insertables(@correct)
+      assert changeset.valid?
 
-      # changes = changeset.changes
-      # assert changes.computed_names == ["a", "b", "c"]
-      # assert changes.species_id == 1
-
-      # assert [in_service, out_of_service] = changes.computed_service_gaps
-      # assert_strictly_before(in_service.gap, @date)
-      # assert in_service.reason == "before animal was put in service"
-
-      # assert_date_and_after(out_of_service.gap, @later_date)
-      # assert out_of_service.reason == "animal taken out of service"
+      changes = changeset.changes
+      assert changes.species_id == 1
+      assert changes.computed_names == ["a", "b", "c"]
+      assert changes.in_service_date == @date
+      assert changes.out_of_service_date == @later_date
     end
   end
 

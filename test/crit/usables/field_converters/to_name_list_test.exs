@@ -4,35 +4,36 @@ defmodule Crit.Usables.FieldConverters.ToNameListTest do
   alias Crit.Usables.FieldConverters.ToNameList
   alias Ecto.Changeset
 
-  # This is the subset of the Read.Animal schema that `ToNameList` operates on.
-  embedded_schema do
-    field :names, :string
-    field :computed_names, {:array, :string}, virtual: true
-  end
+  # This works on a schema with two fields with this structure:
   
-  def make_changeset_with_names(opts \\ []) do
-    default = %{}
-    Changeset.change(%__MODULE__{}, Enum.into(opts, default))
+  embedded_schema do
+    field :from_field, :string
+    field :to_field, {:array, :string}, virtual: true
+  end
+
+  def split_names(changeset),
+    do: ToNameList.split_names(changeset, from: :from_field, to: :to_field)
+  
+  def changeset_containing(opts) do
+    Changeset.change(%__MODULE__{}, opts)
   end
 
   describe "splitting names" do
     test "computes names and handles whitespace" do
       actual =
-        [names: "  a, bb  , c   d "]
-        |> make_changeset_with_names
-        |> ToNameList.split_names
+        changeset_containing(from_field: "  a, bb  , c   d ")
+        |> split_names
       
-      assert actual.changes.computed_names == ["a", "bb", "c   d"]
+      assert actual.changes.to_field == ["a", "bb", "c   d"]
     end
 
     test "will reject a sneaky way of getting an empty list" do
       errors =
-        [names: " ,"]
-        |> make_changeset_with_names
-        |> ToNameList.split_names
+        changeset_containing(from_field: " ,")
+        |> split_names
         |> errors_on
-      
-      assert errors.names == [ToNameList.no_names_error_message]
+
+      assert errors.from_field == [ToNameList.no_names_error_message]
     end
   end
 end  

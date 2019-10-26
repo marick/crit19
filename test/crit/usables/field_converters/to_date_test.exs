@@ -5,14 +5,16 @@ defmodule Crit.Usables.FieldConverters.ToDateTest do
   alias Pile.TimeHelper
   alias Ecto.Changeset
 
-  # This is the subset of the Read.Animal schema that `ToDate` operates on.
+  # Assumes this partial schema. Fields are constant because they come from
+  # the domain.
+  
   embedded_schema do
-    field :in_service_date, :string
-    field :out_of_service_date, :string
+    field :in_service_datestring, :string
+    field :out_of_service_datestring, :string
     field :timezone, :string
-
-    field :computed_in_service_date, :date, virtual: true
-    field :computed_out_of_service_date, :date, virtual: true
+    
+    field :in_service_date, :date
+    field :out_of_service_date, :date
   end
   
   def make_changeset_with_dates(date_opts) do
@@ -22,56 +24,56 @@ defmodule Crit.Usables.FieldConverters.ToDateTest do
   
   test "explicit dates" do
     actual =
-      [in_service_date: @iso_date, out_of_service_date: @later_iso_date]
+      [in_service_datestring: @iso_date, out_of_service_datestring: @later_iso_date]
       |> make_changeset_with_dates
-      |> ToDate.put_start_and_end
+      |> ToDate.put_service_dates
 
       assert actual.valid?
-      assert actual.changes.computed_in_service_date == @date
-      assert actual.changes.computed_out_of_service_date == @later_date
+      assert actual.changes.in_service_date == @date
+      assert actual.changes.out_of_service_date == @later_date
   end
 
   test "starting date is today" do
     actual =
-      [in_service_date: @today, out_of_service_date: @later_iso_date]
+      [in_service_datestring: @today, out_of_service_datestring: @later_iso_date]
       |> make_changeset_with_dates
-      |> ToDate.put_start_and_end
+      |> ToDate.put_service_dates
 
     today = TimeHelper.today_date(actual.changes.timezone)
     
     # Yes, this test will fail if it runs across a date boundary. So sue me.
     assert actual.valid?
-    assert actual.changes.computed_in_service_date == today
-    assert actual.changes.computed_out_of_service_date == @later_date
+    assert actual.changes.in_service_date == today
+    assert actual.changes.out_of_service_date == @later_date
   end
 
   test "ending day is 'never', which marks the end date with a `nothing` value" do
     actual =
-      [in_service_date: @iso_date, out_of_service_date: @never]
+      [in_service_datestring: @iso_date, out_of_service_datestring: @never]
       |> make_changeset_with_dates
-      |> ToDate.put_start_and_end
+      |> ToDate.put_service_dates
 
     assert actual.valid?
-    assert actual.changes.computed_in_service_date == @date
-    assert actual.changes.computed_out_of_service_date == :missing
+    assert actual.changes.in_service_date == @date
+    refute actual.changes[:out_of_service_date]
   end
 
   test "error case: dates are misordered" do
     errors =
-      [in_service_date: @later_iso_date, out_of_service_date: @iso_date]
+      [in_service_datestring: @later_iso_date, out_of_service_datestring: @iso_date]
       |> make_changeset_with_dates
-      |> ToDate.put_start_and_end
+      |> ToDate.put_service_dates
       |> errors_on
 
-    assert errors.out_of_service_date == [ToDate.misorder_error_message]
+    assert errors.out_of_service_datestring == [ToDate.misorder_error_message]
   end
 
   test "a supposedly impossible ill-formed date" do
 
     assert_raise RuntimeError, "Impossible input: invalid date `todays`", fn -> 
-      [in_service_date: "todays", out_of_service_date: "Nev"]
+      [in_service_datestring: "todays", out_of_service_datestring: "Nev"]
       |> make_changeset_with_dates
-      |> ToDate.put_start_and_end
+      |> ToDate.put_service_dates
     end
   end
 end  

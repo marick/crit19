@@ -6,36 +6,37 @@ defmodule Crit.Usables.FieldConverters.ToDate do
   alias Pile.ChangesetFlow, as: Flow
   alias Pile.TimeHelper
 
-  # Assumes this partial schema
-  # field :in_service_date, :string
-  # field :out_of_service_date, :string
+  # Assumes this partial schema. Fields are constant because they come from
+  # the domain.
+  
+  # field :in_service_datestring, :string
+  # field :out_of_service_datestring, :string
   # field :timezone, :string
   
-  # field :computed_in_service_date, :date, virtual: true
-  # field :computed_out_of_service_date, :date, virtual: true
-  
+  # field :in_service_date, :date
+  # field :out_of_service_date, :date
 
-  def put_start_and_end(changeset) do
-    with_start = compute_date(changeset, :in_service_date, :computed_in_service_date)
+  def put_service_dates(changeset) do
+    with_start = compute_date(changeset, :in_service_datestring, :in_service_date)
 
-    if changeset.changes.out_of_service_date == @never do
+    if changeset.changes.out_of_service_datestring == @never do
+      # this value is allowed to be NULL in the database
       with_start
-      |> put_change(:computed_out_of_service_date, :missing)
     else
       with_start
-      |> compute_date(:out_of_service_date, :computed_out_of_service_date)
+      |> compute_date(:out_of_service_datestring, :out_of_service_date)
       |> check_date_order
     end
   end
 
   defp check_date_order(changeset) do
     Flow.given_prerequisite_values_exist(changeset,
-      [:computed_in_service_date, :computed_out_of_service_date],
+      [:in_service_date, :out_of_service_date],
       fn [should_be_earlier, should_be_later] ->
         if Date.compare(should_be_earlier, should_be_later) == :lt do
           changeset
         else
-          add_error(changeset, :out_of_service_date, misorder_error_message())
+          add_error(changeset, :out_of_service_datestring, misorder_error_message())
         end      
       end)
   end
