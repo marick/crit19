@@ -17,8 +17,8 @@ defmodule Crit.Exemplars.Available do
     params = Enum.into(opts,
       %{names: Factory.unique_names_string(),
         species_id: to_string(Factory.some_species_id()),
-        in_service_date: Exemplars.Date.iso_today_or_earlier(), 
-        out_of_service_date: Exemplars.Date.iso_later_than_today(),
+        in_service_datestring: Exemplars.Date.iso_today_or_earlier(), 
+        out_of_service_datestring: Exemplars.Date.iso_later_than_today(),
       })
     {:ok, animals} =
       params
