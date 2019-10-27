@@ -52,13 +52,11 @@ defmodule Crit.Usables.AnimalImpl.Read do
   end
 
   def put_virtual_fields(animal) do
-    # timespans = Enum.map(animal.service_gaps, &(&1.gap))
-
     in_service_datestring = Date.to_iso8601(animal.in_service_date)
     out_of_service_datestring = 
       case animal.out_of_service_date do 
         nil -> @never
-        date -> Date.to_iso8601(animal.out_of_service_date)
+        date -> Date.to_iso8601(date)
       end
     
     %{ animal |

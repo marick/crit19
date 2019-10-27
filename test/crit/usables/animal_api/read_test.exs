@@ -5,34 +5,31 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
   alias Crit.Sql
 
   describe "getting a showable animal from its id" do
-    setup :one_animal_setup
+    setup :two_animals_setup
     
-    @tag :skip
-    test "basic conversions", %{id: id} do
+    test "basic conversions",
+      %{never_out_of_service_id: id} do
       animal = AnimalApi.showable!(id, @institution)
 
-      assert animal.name == "Bossie"
+      assert animal.name == "Never out"
       assert animal.lock_version == 1
       assert animal.species_id == @bovine_id
       assert animal.species_name == @bovine
     end
 
-    @tag :skip
-    test "with a single service gap", %{id: id} do
+    test "with only an in-service date",
+      %{never_out_of_service_id: id} do
       animal = AnimalApi.showable!(id, @institution)
-      assert animal.in_service_date == @iso_date
-      assert animal.out_of_service_date == @never
+      assert animal.in_service_datestring == @iso_date
+      assert animal.out_of_service_datestring == @never
     end
 
-    @tag :skip
-    test "with an out-of-service gap", %{id: _id} do
-      # add_service_gap_for_animal(id, Datespan.date_and_after(@later_date))
-      # animal = AnimalApi.showable!(id, @institution)
-      # assert animal.in_service_date == @iso_date
-      # assert animal.out_of_service_date == @later_iso_date
+    test "with an out-of-service gap", %{goes_out_of_service_id: id} do
+      animal = AnimalApi.showable!(id, @institution)
+      assert animal.in_service_datestring == @iso_date
+      assert animal.out_of_service_datestring == @later_iso_date
     end
 
-    @tag :skip
     test "no such id" do
       assert_raise KeyError, fn -> 
         AnimalApi.showable!(83483, @institution)
@@ -41,25 +38,23 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
   end
 
   describe "fetching an animal by something other than an id" do
-    setup :one_animal_setup
 
-    @tag :skip
+    setup :two_animals_setup
+
     test "fetching by name" do
-      assert animal = AnimalApi.showable_by(:name, "Bossie", @institution)
+      assert animal = AnimalApi.showable_by(:name, "Never out", @institution)
       assert is_integer(animal.id)
-      assert animal.name == "Bossie"
+      assert animal.name == "Never out"
       assert animal.species_name == @bovine
+      assert animal.in_service_datestring == @iso_date
     end
 
-    @tag :skip
     test "fetching by name is case independent" do
-      assert animal = AnimalApi.showable_by(:name, "bossie", @institution)
+      assert animal = AnimalApi.showable_by(:name, "never ouT", @institution)
       assert is_integer(animal.id)
-      assert animal.name == "Bossie"
-      assert animal.species_name == @bovine
+      assert animal.name == "Never out"
     end
 
-    @tag :skip
     test "errors return nil" do
       assert nil == AnimalApi.showable_by(:name, "lossie", @institution)
     end
@@ -68,20 +63,18 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
   describe "fetching a number of animals" do
     setup :three_animal_setup
 
-    @tag :skip
     test "ids_to_animals returns animals in alphabetical order", %{ids: ids} do
       assert [alpha, bossie, jake] = AnimalApi.ids_to_animals(ids, @institution)
 
       assert alpha.name == "Alpha"
       assert alpha.species_name == @bovine
-      assert alpha.in_service_date == @iso_date
-      assert alpha.out_of_service_date == @never
+      assert alpha.in_service_datestring == @iso_date
+      assert alpha.out_of_service_datestring == @never
 
       assert bossie.name == "bossie"
       assert jake.name == "Jake"
     end
 
-    @tag :skip
     test "bad ids are silently ignored", %{ids: ids} do
       new_ids = [387373 | ids]
       
@@ -95,8 +88,7 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
   describe "fetching several animals" do
     setup :three_animal_setup
 
-    @tag :skip
-    test "fetch everything" do 
+    test "fetch everything - again in alphabetical order" do 
       assert [alpha, bossie, jake] = AnimalApi.all(@institution)
       assert alpha.name == "Alpha"
       assert bossie.name == "bossie"
@@ -104,37 +96,38 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
     end
   end
 
-  def one_animal_setup(_) do
-    params = %Animal{
-      name: "Bossie",
+  defp two_animals_setup(_) do
+    base = %Animal{
       species_id: @bovine_id,
-      lock_version: 1
+      lock_version: 1,
+      in_service_date: @date,
     }
-    %{id: id} = Sql.insert!(params, @institution)
-    # # There is always an in-service gap
-    # add_service_gap_for_animal(id, Datespan.strictly_before(@date))
-    [id: id]
+    
+    %{id: never_out_of_service_id} =
+      base
+      |> Map.put(:name, "Never out")
+      |> Sql.insert!(@institution)
+    
+    %{id: goes_out_of_service_id} =
+      base
+      |> Map.put(:name, "out")
+      |> Map.put(:out_of_service_date, @later_date)
+      |> Sql.insert!(@institution)
+    
+    [goes_out_of_service_id: goes_out_of_service_id,
+     never_out_of_service_id: never_out_of_service_id]
   end
-
-  def three_animal_setup(_) do
+  
+  defp three_animal_setup(_) do
     params = %{
       "species_id" => @bovine_id,
       "names" => "bossie, Jake, Alpha",
-      "in_service_date" => @iso_date,
-      "out_of_service_date" => @never
+      "in_service_datestring" => @iso_date,
+      "out_of_service_datestring" => @never
     }
 
     {:ok, animals} = AnimalApi.create_animals(params, @institution)
     [ids: EnumX.ids(animals)]
   end
 
-  # def add_service_gap_for_animal(animal_id, datespan) do
-  #   gap = %ServiceGap{gap: datespan,
-  #                     reason: "testing"
-  #                    }
-  #   %{id: gap_id} = Sql.insert!(gap, @institution)
-
-  #   join_record = %AnimalServiceGap{animal_id: animal_id, service_gap_id: gap_id}
-  #   Sql.insert!(join_record, @institution)
-  # end
 end
