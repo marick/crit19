@@ -19,11 +19,11 @@ defmodule Crit.Exemplars.ReservationFocused do
     |> EnumX.ids
   end
 
-  # Because these have no associated in-service and out-of-service dates,
-  # they can be reserved at any time. 
+  # These are available for any reasonable reservation date.
   def inserted_animal_ids(names, species_id) do
     inserted_named_ids names, %Animal{
-      species_id: species_id
+      species_id: species_id,
+      in_service_date: ~D[1990-01-01],
     }
   end
 

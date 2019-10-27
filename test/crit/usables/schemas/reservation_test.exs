@@ -22,7 +22,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
             
 
   describe "changeset" do
-    @tag :skip
     test "required fields are checked" do
       errors =
         %Reservation{}
@@ -37,7 +36,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
       assert errors.procedure_ids
     end
 
-    @tag :skip
     test "appropriate conversions are done" do
       params =
         @params
@@ -69,7 +67,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
     end
 
 
-    @tag :skip
     test "success",
         %{params: params, animal_ids: animal_ids, procedure_ids: procedure_ids} do
       {:ok, %{id: id}} = Reservation.create(params, @institution)
@@ -91,7 +88,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
       assert one_use.reservation_id == reservation.id
     end
 
-    @tag :skip
     test "reservation entry: validation failure is transmitted", %{params:  params} do
       assert {:error, changeset} =
         params
@@ -101,7 +97,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
       assert errors_on(changeset).species_id
     end
 
-    @tag :skip
     test "reservation entry: species_id constraint failure should be impossible",
       %{params: params} do
 
@@ -111,7 +106,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
       assert errors_on(changeset).species_id
     end
 
-    @tag :skip
     test "use: animal_id constraint failure is supposedly impossible", 
     %{params: params} do
 
@@ -126,7 +120,6 @@ defmodule Crit.Usables.Schemas.ReservationTest do
       # it's impossible.
     end
 
-    @tag :skip
     test "use: procedure_id constraint failure is supposedly impossible",
       %{params: params} do
 
