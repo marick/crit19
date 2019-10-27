@@ -39,11 +39,8 @@ defmodule Crit.Usables.AnimalApi do
 
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
-  def changeset(animal, attrs), do: Animal.changeset(animal, attrs)
-  def changeset(fields), do: Animal.changeset(fields)
-
   @spec update(String.t(), Map.t(), String.t())
-  :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
+    :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
   def update(_string_id, _attrs, _institution) do
     # animal = showable!(string_id, institution)
     # case UpdateTransaction.run(animal, attrs, institution) do

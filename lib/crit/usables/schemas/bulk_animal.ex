@@ -37,12 +37,4 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
         |> ToDate.put_service_dates
       end)
   end
-
-
-  # defp animal_changesets(changes) do
-  #   Enum.map(changes.computed_names, fn name ->
-  #     AnimalApi.changeset(name: name, species_id: changes.species_id)
-  #   end)
-  # end
-
 end

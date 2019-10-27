@@ -31,7 +31,6 @@ defmodule Crit.Usables.Schemas.Animal do
   @relevant @required ++ [:out_of_service_date]
 
 
-  # delete?
   def changeset(animal, attrs) do
     animal
     |> cast(attrs, @relevant)
@@ -40,15 +39,7 @@ defmodule Crit.Usables.Schemas.Animal do
   end
 
   def creation_changeset(attrs) do
-    %__MODULE__{}
-    |> cast(attrs, @relevant)
-    |> validate_required(@required)
-    |> constraint_on_name()
-  end
-
-  # delete?
-  def changeset(fields) when is_list(fields) do
-    changeset(%__MODULE__{}, Enum.into(fields, %{}))
+    changeset(%__MODULE__{}, attrs)
   end
 
   def form_changeset(animal) do 

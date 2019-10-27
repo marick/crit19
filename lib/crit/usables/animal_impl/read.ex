@@ -64,7 +64,5 @@ defmodule Crit.Usables.AnimalImpl.Read do
        in_service_datestring: in_service_datestring,
        out_of_service_datestring: out_of_service_datestring
     }
-
-    
   end
 end
