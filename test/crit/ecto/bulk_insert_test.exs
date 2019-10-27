@@ -1,70 +1,68 @@
 defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
-  # alias Crit.Ecto.BulkInsert
-  # alias Crit.Ecto.BulkInsert.Testable
-  # alias Crit.Sql
+  alias Crit.Usables.Schemas.Procedure
+  alias Crit.Ecto.BulkInsert
+  alias Crit.Ecto.BulkInsert.Testable
+  alias Crit.Sql
+
+  @procedures [%Procedure{name: "spay"}, %Procedure{name: "physical exam"}]
 
   describe "insertion_script" do
-    @tag :skip
     test "insertion where nothing is done with the result" do
-      # assert {:ok, _result} =
-      #   @service_gap_cs_list
-      #   |> BulkInsert.insertion_script(@institution, schema: ServiceGap)
-      #   |> Sql.transaction(@institution)
+      assert {:ok, _result} =
+        @procedures
+        |> BulkInsert.insertion_script(@institution, schema: Procedure)
+        |> Sql.transaction(@institution)
 
-      # assert [before_service, after_service] =
-      #   Crit.Sql.all(ServiceGap, @institution)
-      # assert_right_dates [before_service, after_service]      
+      # Note: by default, Ecto orders return values by ids
+      assert [%{name: "spay"}, %{name: "physical exam"}] =
+        Sql.all(Procedure, @institution)
     end
   end
 
   describe "can also ask for the ids of the insertion" do
-    # setup do  
-    #   opts = [schema: ServiceGap, ids: :gap_ids]
+    setup do  
+      opts = [schema: Procedure, ids: :procedure_ids]
 
-    #   {:ok, tx_result} =
-    #     @service_gap_cs_list
-    #     |> BulkInsert.idlist_script(@institution, opts)
-    #     |> Sql.transaction(@institution)
+      {:ok, tx_result} =
+        @procedures
+        |> BulkInsert.idlist_script(@institution, opts)
+        |> Sql.transaction(@institution)
 
-    #   [tx_result: tx_result]
-    # end
+      [tx_result: tx_result]
+    end
 
-    @tag :skip
-    test "it returns collected ids", %{tx_result: _tx_result} do
-      # [before_id, after_id] = tx_result.gap_ids
+    test "it returns collected ids", %{tx_result: tx_result} do
+      [spay_id, physical_exam_id] = tx_result.procedure_ids
 
-      # before_service = Sql.get(ServiceGap, before_id, @institution)
-      # after_service = Sql.get(ServiceGap, after_id, @institution)
-      # assert_right_dates [before_service, after_service]      
+      %{name: "spay"} = Sql.get(Procedure, spay_id, @institution)
+      %{name: "physical exam"} = Sql.get(Procedure, physical_exam_id, @institution)
     end
   end
 
   # Tests for support functions
 
   describe "collecting ids" do
-    @tag :skip
     test "no filtering needed" do
-      # transaction_result_so_far =
-      #   %{Testable.insert_key(ServiceGap, 0) => %{id: :some_gap_id},
-      #     Testable.insert_key(ServiceGap, 1) => %{id: :another_gap_id},
-      #    }
-      # # Note that order is preserved.
-      # assert {:ok, [:some_gap_id, :another_gap_id]} =
-      #   Testable.collect_ids(transaction_result_so_far, schema: ServiceGap)
+      transaction_result_so_far =
+        %{Testable.insert_key(Procedure, 0) => %{id: :some_id},
+          Testable.insert_key(Procedure, 1) => %{id: :another_id},
+         }
+      # Note that order is preserved.
+      assert {:ok, [:some_id, :another_id]} =
+        Testable.collect_ids(transaction_result_so_far, schema: Procedure)
     end
     
-    @tag :skip
     test "some keys need to be ignored" do
-      # transaction_result_so_far =
-      #   %{Testable.insert_key(ServiceGap, 0) =>    %{id: :some_gap_id},
-      #     :some_random_key                   =>    :SOME_RANDOM_VALUE,
-      #     Testable.insert_key(:wrong_schema, 0) => :SOME_OTHER_RANDOM_VALUE,
-      #     Testable.insert_key(ServiceGap, 1) =>    %{id: :another_gap_id}
-      #    }
+      transaction_result_so_far =
+        %{Testable.insert_key(Procedure, 0) =>    %{id: :some_id},
+          :some_random_key                   =>    :SOME_RANDOM_VALUE,
+          Testable.insert_key(:wrong_schema, 0) => :SOME_OTHER_RANDOM_VALUE,
+          Testable.insert_key(Procedure, 1) =>    %{id: :another_id}
+         }
 
-      # assert {:ok, [:some_gap_id, :another_gap_id]} =
-      #   Testable.collect_ids(transaction_result_so_far, schema: ServiceGap)
+      assert {:ok, [:some_id, :another_id]} =
+        Testable.collect_ids(transaction_result_so_far, schema: Procedure)
     end
   end
 end
