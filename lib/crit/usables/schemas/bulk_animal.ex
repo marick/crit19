@@ -2,9 +2,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
-  # alias Crit.Usables.AnimalApi
   alias Crit.Usables.FieldConverters.{ToDate, ToNameList}
-  alias Crit.Usables.Schemas.Animal
 
 
   embedded_schema do

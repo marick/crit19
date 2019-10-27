@@ -66,8 +66,8 @@ defmodule Crit.Usables.AnimalApi do
    %BulkAnimal{
      names: "",
      species_id: 0,
-     in_service_date: @today,
-     out_of_service_date: @never,
+     in_service_datestring: @today,
+     out_of_service_datestring: @never,
      timezone: "--to be replaced--"}
      |> BulkAnimal.changeset(%{})
   end
