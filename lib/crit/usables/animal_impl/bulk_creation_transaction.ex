@@ -45,18 +45,14 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
     |> BulkInsert.idlist_script(institution, schema: Animal, ids: :animal_ids)
     |> Sql.transaction(institution)
     |> Sql.Transaction.on_ok(extract: :animal_ids)
-    |> Sql.Transaction.on_failed_step(transfer_error_to(original_changeset))
+    |> Sql.Transaction.on_error(original_changeset, name: transfer_name_error())
   end
   
-  # This is dodgy. We happen to know that the only kind of changeset error
-  # that can happen in a transaction is because of a duplicate animal.
-  defp transfer_error_to(original_changeset) do
-    fn _, failing_changeset ->
+  defp transfer_name_error do
+    fn failing_changeset, original_changeset ->
       duplicate = failing_changeset.changes.name
       message = ~s[An animal named "#{duplicate}" is already in service]
-      {:error,
-       Sql.Transaction.transfer_constraint_error(original_changeset, :names, message)
-      }
+      Sql.Transaction.transfer_constraint_error(original_changeset, :names, message)
     end
   end
 end

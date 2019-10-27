@@ -1,6 +1,7 @@
 defmodule Crit.Sql.Transaction do
   alias Ecto.Changeset
   alias Ecto.ChangesetX
+  import Crit.Errors
 
 
   defmodule State do 
@@ -58,15 +59,29 @@ defmodule Crit.Sql.Transaction do
   end
 
   # Handle return value from an Sql.transaction.
+  def on_ok({:error, _, _, _} = fall_through, _), do: fall_through
   def on_ok({:ok, tx_result}, [extract: key]) do
     {:ok, tx_result[key]}
   end
-  def on_ok(fall_through, _), do: fall_through
 
-  def on_failed_step({:error, step, failing_changeset, _so_far}, handler) do
-    handler.(step, failing_changeset)
+  def on_error({:ok, _} = fall_through, _, _), do: fall_through
+  def on_error({:error, _step, failing_changeset, _so_far},
+    changeset_for_errors, handlers) do
+    
+    handler_map = Enum.into(handlers, %{})
+    reducer = fn {failing_field, _}, acc ->
+      case handler_map[failing_field] do
+        nil ->
+          program_error("Unhandled error for field #{failing_field}.")
+        handler -> 
+          handler.(failing_changeset, acc)
+      end
+    end
+
+    {:error, 
+     Enum.reduce(failing_changeset.errors, changeset_for_errors, reducer)
+    }
   end
-  def on_failed_step(fall_through, _), do: fall_through
 
   @doc """
   Used when the original changeset had no errors but a derived changeset suffered
@@ -78,8 +93,8 @@ defmodule Crit.Sql.Transaction do
   valid.) So we fake an access.
   """
 
-  def transfer_constraint_error(original_changeset, field, message) do
-    original_changeset
+  def transfer_constraint_error(changeset_for_errors, field, message) do
+    changeset_for_errors
     |> Changeset.add_error(field, message)
     |> ChangesetX.ensure_forms_display_errors
   end    

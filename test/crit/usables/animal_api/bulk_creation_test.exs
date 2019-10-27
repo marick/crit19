@@ -26,23 +26,21 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     check_animal_properties_inserted.(jake)
   end
 
-  @tag :skip
-  test "an error returns a changeset" do
+  test "a error returns a changeset" do
     params =
       @basic_params
-      |> Map.put("in_service_date", @later_iso_date)
-      |> Map.put("out_of_service_date", @iso_date)
-      |> Map.put("names", ",")
+      |> Map.put("in_service_datestring", @later_iso_date) # out of order
+      |> Map.put("out_of_service_datestring", @iso_date)
+      |> Map.put("names", ",") # no name
 
     assert {:error, changeset} = AnimalApi.create_animals(params, @institution)
     assert represents_form_errors?(changeset)
 
     errors = errors_on(changeset)
-    assert length(errors.out_of_service_date) == 1
+    assert length(errors.out_of_service_datestring) == 1
     assert length(errors.names) == 1
   end
 
-  @tag :skip
   test "constraint problems are detected last" do
     {:ok, _} = AnimalApi.create_animals(@basic_params, @institution)
     {:error, changeset} = AnimalApi.create_animals(@basic_params, @institution)
