@@ -23,7 +23,7 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
                   }
     
     one_animal = fn name ->
-      Animal.creation_changeset(Map.put(base_attrs, :name, name))
+      Animal.from_bulk_creation_changeset(Map.put(base_attrs, :name, name))
     end
 
     Enum.map(changes.computed_names, one_animal)

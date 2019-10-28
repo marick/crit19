@@ -27,13 +27,14 @@ defmodule Crit.Usables.Schemas.Animal do
     field :out_of_service_datestring, :string, virtual: true
   end
 
-  @required [:name, :species_id, :lock_version, :in_service_date]
-  @relevant @required ++ [:out_of_service_date]
-
-  def creation_changeset(attrs) do
+  # This changeset comes from bulk creation with the datestrings
+  # already turned into dates. This is periloous - rethink?
+  def from_bulk_creation_changeset(attrs) do
+    required = [:name, :species_id, :lock_version, :in_service_date]
+    relevant = required ++ [:out_of_service_date]
     %__MODULE__{}
-    |> cast(attrs, @relevant)
-    |> validate_required(@required)
+    |> cast(attrs, relevant)
+    |> validate_required(required)
     |> constraint_on_name()
   end
 
