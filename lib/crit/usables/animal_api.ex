@@ -1,6 +1,6 @@
 defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
-  alias Crit.Usables.AnimalImpl.{Read,BulkCreationTransaction}
+  alias Crit.Usables.AnimalImpl.{Read,BulkCreationTransaction,Write}
   alias Crit.Sql
   alias Crit.Usables.HiddenSchemas
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
@@ -41,12 +41,12 @@ defmodule Crit.Usables.AnimalApi do
 
   @spec update(String.t(), Map.t(), String.t())
     :: {:error, Ecto.Changeset.t()} | {:ok, Animal.t()}
-  def update(_string_id, _attrs, _institution) do
-    # animal = showable!(string_id, institution)
-    # case UpdateTransaction.run(animal, attrs, institution) do
-    #   {:ok, id} -> {:ok, showable!(id, institution)}
-    #   {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
-    # end
+  def update(string_id, attrs, institution) do
+    animal = showable!(string_id, institution)
+    case Write.update(animal, attrs, institution) do
+      {:ok, animal} -> {:ok, animal}
+      {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
+    end
   end
 
   

@@ -5,7 +5,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
   alias Crit.Exemplars.Available
 
   describe "updating the name and common behaviors" do
-    @tag :skip
     test "success" do
       {string_id, original} = showable_animal_named("Original Bossie")
       params = %{"name" => "New Bossie",
@@ -24,7 +23,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       assert new_animal == AnimalApi.showable!(original.id, @institution)
     end
 
-    @tag :skip
     test "unique name constraint violation produces changeset" do
       {string_id, _} = showable_animal_named("Original Bossie")
       showable_animal_named("already exists")
@@ -33,12 +31,10 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       assert {:error, changeset} = AnimalApi.update(string_id, params, @institution)
       assert "has already been taken" in errors_on(changeset).name
     end
-
-
   end
 
 
-  describe "updating gaps" do
+  describe "updating service dates" do
     @tag :skip
     test "update in-service date" do
       original = "2011-11-11"
@@ -80,7 +76,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       [original: original, update: update]
     end
 
-    @tag :skip
     test "optimistic concurrency failure produces changeset with new animal",
       %{original: original, update: update} do
 
@@ -98,7 +93,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       assert changeset.data.lock_version == updated_first.lock_version
     end
 
-    @tag :skip
     test "successful name change updates lock_version in displayed value",
       %{original: original, update: update} do
 
@@ -106,7 +100,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       assert updated.lock_version == 2
     end
 
-    @tag :skip
     test "Unsuccessful name change DOES NOT update lock_version",
       %{original: original, update: update} do
 
@@ -119,7 +112,6 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       assert changeset.changes[:lock_version] == nil
     end
 
-    @tag :skip
     test "optimistic lock failure wins", %{original: original, update: update} do
       # Bump the lock version
       {:ok, _} = update.(original, "this version wins")

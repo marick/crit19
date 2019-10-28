@@ -102,7 +102,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       [id: Exemplars.Available.animal_id(name: "OLD NAME")]
     end
 
-    @tag :skip
     test "name change", %{conn: conn, id: id} do
       assert animal_name(id) == "OLD NAME" 
       conn =
@@ -114,7 +113,6 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       |> assert_user_sees("newname")
     end
 
-    @tag :skip
     test "duplicate name change", %{conn: conn, id: id} do
       Exemplars.Available.animal_id(name: "already exists")
       conn =

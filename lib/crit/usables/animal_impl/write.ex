@@ -5,29 +5,25 @@ defmodule Crit.Usables.AnimalImpl.Write do
   alias Crit.Usables.AnimalApi
   alias Crit.Sql
 
-  def update_for_id(string_id, attrs, institution) do
-    case update_result(string_id, attrs, institution) do
-      {:ok, %Animal{id: id}} ->
-        {:ok, id}
-
+  def update(animal, attrs, institution) do
+    case update_result(animal, attrs, institution) do
       {:error, %{errors: [{:optimistic_lock_error, _}]}} ->
-        {:error, changeset_for_lock_error(string_id, institution)}
+        {:error, changeset_for_lock_error(animal.id, institution)}
 
       result ->
         result
     end
   end
 
-  defp update_result(string_id, attrs, institution) do
-    string_id
-    |> String.to_integer()
+  defp update_result(animal, attrs, institution) do
+    animal
     |> Animal.update_changeset(attrs)
     |> Sql.update([stale_error_field: :optimistic_lock_error], institution)
   end
 
-  defp changeset_for_lock_error(string_id, institution) do
-    AnimalApi.showable!(String.to_integer(string_id), institution)
-    |> Animal.changeset(%{})
+  defp changeset_for_lock_error(id, institution) do
+    AnimalApi.showable!(id, institution)
+    |> Animal.form_changeset
     |> Changeset.add_error(
       :optimistic_lock_error,
       "Someone else was editing the animal while you were."

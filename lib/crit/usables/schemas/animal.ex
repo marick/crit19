@@ -30,16 +30,11 @@ defmodule Crit.Usables.Schemas.Animal do
   @required [:name, :species_id, :lock_version, :in_service_date]
   @relevant @required ++ [:out_of_service_date]
 
-
-  def changeset(animal, attrs) do
-    animal
+  def creation_changeset(attrs) do
+    %__MODULE__{}
     |> cast(attrs, @relevant)
     |> validate_required(@required)
     |> constraint_on_name()
-  end
-
-  def creation_changeset(attrs) do
-    changeset(%__MODULE__{}, attrs)
   end
 
   def form_changeset(animal) do 
