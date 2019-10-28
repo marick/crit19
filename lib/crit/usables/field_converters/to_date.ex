@@ -16,6 +16,66 @@ defmodule Crit.Usables.FieldConverters.ToDate do
   # field :in_service_date, :date
   # field :out_of_service_date, :date
 
+  def put_service_dates__2(changeset) do
+    changeset
+    |> put_in_service__2
+    |> put_out_of_service__2
+    |> check_date_order__2
+  end
+
+  def service_common__2(changeset, datestring, to) do 
+    if datestring == nil do 
+      changeset
+    else
+      case Date.from_iso8601(datestring) do
+        {:ok, date} ->
+          put_change(changeset, to, date)
+        {:error, _} -> 
+          impossible_input("invalid date `#{datestring}`")
+      end
+    end
+  end
+
+  def put_in_service__2(changeset) do
+    from = :in_service_datestring
+    to = :in_service_date
+    datestring = changeset.changes[from]
+    case datestring == @today do
+      true ->
+        timezone = changeset.changes.timezone    
+        today = TimeHelper.today_date(timezone)
+        put_change(changeset, to, today)
+      false ->
+        service_common__2(changeset, datestring, to)
+    end
+  end
+
+  def put_out_of_service__2(changeset) do
+    from = :out_of_service_datestring
+    to = :out_of_service_date
+    datestring = changeset.changes[from]
+    case datestring == @never do
+      true -> 
+        changeset
+      false ->
+        service_common__2(changeset, datestring, to)
+    end
+  end
+
+  def check_date_order__2(changeset) do
+    should_be_earlier = fetch_field!(changeset, :in_service_date)
+    should_be_later = fetch_field!(changeset, :out_of_service_date)
+    if Date.compare(should_be_earlier, should_be_later) == :lt do
+      changeset
+    else
+      add_error(changeset, :out_of_service_datestring, misorder_error_message())
+    end      
+  end
+  
+  
+
+  
+
   def put_service_dates(changeset) do
     with_start = compute_date(changeset, :in_service_datestring, :in_service_date)
 
@@ -42,8 +102,8 @@ defmodule Crit.Usables.FieldConverters.ToDate do
   end
 
   defp compute_date(changeset, from, to) do
-    date_string = changeset.changes[from]
-    case date_string == @today || Date.from_iso8601(date_string) do
+    datestring = changeset.changes[from]
+    case datestring == @today || Date.from_iso8601(datestring) do
       true ->
         timezone = changeset.changes.timezone
         today = TimeHelper.today_date(timezone)
@@ -51,7 +111,7 @@ defmodule Crit.Usables.FieldConverters.ToDate do
       {:ok, date} -> 
         put_change(changeset, to, date)
       {:error, _} ->
-        impossible_input("invalid date `#{date_string}`")
+        impossible_input("invalid date `#{datestring}`")
     end
   end
 
