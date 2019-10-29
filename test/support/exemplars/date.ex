@@ -11,6 +11,24 @@ defmodule Crit.Exemplars.Date do
     Enum.random([iso, @never])
   end
 
+  def service_dates() do
+    in_service = Faker.Date.backward(1000)
+    out_of_service = Faker.Date.forward(1000)
+
+    next_in_service = Faker.Date.backward(1000)
+    next_out_of_service = Faker.Date.forward(1000)
+
+    %{in_service: in_service,
+      out_of_service: out_of_service,
+      next_in_service: next_in_service,
+      next_out_of_service: next_out_of_service, 
+
+      iso_in_service: Date.to_iso8601(in_service),
+      iso_out_of_service: Date.to_iso8601(out_of_service),
+      iso_next_in_service: Date.to_iso8601(next_in_service),
+      iso_next_out_of_service: Date.to_iso8601(next_out_of_service)
+    }
+  end
 
   def date_pair() do
     import Faker.Date, only: [backward: 1, forward: 1]

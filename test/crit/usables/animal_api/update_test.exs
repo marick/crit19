@@ -2,15 +2,13 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
   use Crit.DataCase
   alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.AnimalApi
-  alias Crit.Exemplars.Available
+  alias Crit.Exemplars.{Available, Date}
+  alias Crit.Usables.FieldConverters.ToDate
 
   describe "updating the name and common behaviors" do
     test "success" do
       {string_id, original} = showable_animal_named("Original Bossie")
-      params = %{"name" => "New Bossie",
-                 "species_id" => "this should be ignored",
-                 "id" => "this should also be ignored"
-                }
+      params = params_except(original, %{"name" => "New Bossie"})
 
       assert {:ok, new_animal} =
         AnimalApi.update(string_id, params, @institution)
@@ -24,9 +22,9 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
     end
 
     test "unique name constraint violation produces changeset" do
-      {string_id, _} = showable_animal_named("Original Bossie")
+      {string_id, original} = showable_animal_named("Original Bossie")
       showable_animal_named("already exists")
-      params = %{"name" => "already exists"}
+      params = params_except(original, %{"name" => "already exists"})
 
       assert {:error, changeset} = AnimalApi.update(string_id, params, @institution)
       assert "has already been taken" in errors_on(changeset).name
@@ -35,31 +33,123 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
 
 
   describe "updating service dates" do
-    @tag :skip
-    test "update in-service date" do
-      original = "2011-11-11"
-      new = "2222-01-22"
-      id = Available.animal_id(in_service_date: original)
-      
-      params = %{"in_service_date" => new}
-
+    setup do
+      [dates: Date.service_dates()]
+    end
+    
+    defp act id, params do
       assert {:ok, new_animal} =
         AnimalApi.update(to_string(id), params, @institution)
-
-      assert new_animal.in_service_date == new
+      new_animal
     end
 
-    @tag :skip
-    test "update out-of-service date"
+    test "update in-service date", %{dates: dates} do
+      original_animal = dated_animal(
+        in_service_datestring: dates.iso_in_service,
+        out_of_service_datestring: "never"
+      )
+        
+      params = %{"in_service_datestring" => dates.iso_next_in_service,
+                 "out_of_service_datestring" => "never",
+                }
+      new_animal = act(original_animal.id, params)
+      assert new_animal == %{original_animal | 
+                             in_service_datestring: dates.iso_next_in_service,
+                             in_service_date: dates.next_in_service,
+                             lock_version: 2
+                           }
+    end
 
-    @tag :skip
-    test "delete out-of-service date" # and make sure join table is updated
+    test "update out-of-service date", %{dates: dates} do
+      original_animal = dated_animal(
+        in_service_datestring: dates.iso_in_service,
+        in_service_date: dates.in_service,
+        out_of_service_datestring: dates.iso_out_of_service,
+        out_of_service_date: dates.out_of_service
+      )
+      params = %{"in_service_datestring" => dates.iso_in_service,
+                 "out_of_service_datestring" => dates.iso_next_out_of_service}
+      new_animal = act(original_animal.id, params)
 
-    @tag :skip
-    test "add new out-of-service date" # and make sure join table is updated
+      assert new_animal == %{original_animal | 
+                             out_of_service_datestring: dates.iso_next_out_of_service,
+                             out_of_service_date: dates.next_out_of_service,
+                             lock_version: 2
+                           }
+    end
 
-    @tag :skip
-    test "allow date updates to work even though name update fails."
+    test "update both dates", %{dates: dates} do
+      original_animal = dated_animal(
+        in_service_datestring: dates.iso_in_service,
+        in_service_date: dates.in_service,
+        out_of_service_datestring: dates.iso_out_of_service,
+        out_of_service_date: dates.out_of_service
+      )
+      params = %{"in_service_datestring" => dates.iso_next_in_service,
+                 "out_of_service_datestring" => dates.iso_next_out_of_service}
+      new_animal = act(original_animal.id, params)
+
+      assert new_animal == %{original_animal | 
+                             in_service_datestring: dates.iso_next_in_service,
+                             in_service_date: dates.next_in_service,
+                             out_of_service_datestring: dates.iso_next_out_of_service,
+                             out_of_service_date: dates.next_out_of_service,
+                             lock_version: 2
+                           }
+    end
+    
+    test "delete out-of-service date", %{dates: dates} do 
+      original_animal = dated_animal(
+        in_service_datestring: dates.iso_in_service,
+        in_service_date: dates.in_service,
+        out_of_service_datestring: dates.iso_out_of_service,
+        out_of_service_date: dates.out_of_service
+      )
+      params = %{"in_service_datestring" => dates.iso_in_service,
+                 "out_of_service_datestring" => @never}
+      new_animal = act(original_animal.id, params)
+
+      assert new_animal == %{original_animal | 
+                             in_service_datestring: dates.iso_in_service,
+                             in_service_date: dates.in_service,
+                             out_of_service_datestring: @never,
+                             lock_version: 2
+                           }
+    end
+    
+    test "add new out-of-service date", %{dates: dates} do 
+      original_animal = dated_animal(
+        in_service_datestring: dates.iso_in_service,
+        in_service_date: dates.in_service,
+        out_of_service_datestring: @never
+      )
+      params = %{"in_service_datestring" => dates.iso_in_service,
+                 "out_of_service_datestring" => dates.iso_next_out_of_service}
+      new_animal = act(original_animal.id, params)
+
+      assert new_animal == %{original_animal | 
+                             in_service_datestring: dates.iso_in_service,
+                             in_service_date: dates.in_service,
+                             out_of_service_datestring: dates.iso_next_out_of_service,
+                             out_of_service_date: dates.next_out_of_service,
+                             lock_version: 2
+                            }
+    end
+
+    test "reject out-of-order-dates", %{dates: dates} do
+      original_animal = dated_animal(
+        in_service_datestring: dates.iso_in_service,
+        in_service_date: dates.in_service,
+        out_of_service_datestring: dates.iso_out_of_service,
+        out_of_service_date: dates.out_of_service
+      )
+      #           vv                                       vvvvvv
+      params = %{"in_service_datestring" => dates.iso_next_out_of_service,
+                 "out_of_service_datestring" => dates.iso_next_in_service}
+      #           ^^^^^^                                       ^^
+      assert {:error, changeset} = AnimalApi.update(original_animal.id, params, @institution)
+      assert ToDate.misorder_error_message in errors_on(changeset).out_of_service_datestring
+    end
   end
 
 
@@ -68,9 +158,9 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       {string_id, original} = showable_animal_named("Original Bossie")
 
       update = fn animal, name ->
-        params = %{"name" => name,
-                   "lock_version" => to_string(animal.lock_version)
-                  }
+        params = params_except(original, %{
+            "name" => name,
+            "lock_version" => to_string(animal.lock_version)})
         AnimalApi.update(string_id, params, @institution)
       end
       [original: original, update: update]
@@ -121,6 +211,21 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       # Just the one error
       assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
     end
+  end
+
+  defp dated_animal(opts) do
+    id = Available.animal_id(opts)
+    AnimalApi.showable!(id, @institution)
+  end
+
+  defp params_except(animal, overrides) do
+    from_animal =
+      %{"name" => animal.name,
+        "lock_version" => animal.lock_version,
+        "in_service_datestring" => animal.in_service_datestring,
+        "out_of_service_datestring" => animal.out_of_service_datestring
+       }
+    Map.merge(from_animal, overrides)
   end
 
   defp showable_animal_named(name) do

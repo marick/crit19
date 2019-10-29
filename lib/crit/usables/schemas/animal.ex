@@ -8,6 +8,7 @@ defmodule Crit.Usables.Schemas.Animal do
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.HiddenSchemas.Species
   import Ecto.Changeset
+  alias Crit.Usables.FieldConverters.ToDate
 
   schema "animals" do
     # The fields below are the true fields in the table.
@@ -22,13 +23,14 @@ defmodule Crit.Usables.Schemas.Animal do
 
     belongs_to :species, Species
 
+    field :timezone, :string, virtual: true
     field :species_name, :string, virtual: true
     field :in_service_datestring, :string, virtual: true
     field :out_of_service_datestring, :string, virtual: true
   end
 
   # This changeset comes from bulk creation with the datestrings
-  # already turned into dates. This is periloous - rethink?
+  # already turned into dates. This is perilous - rethink?
   def from_bulk_creation_changeset(attrs) do
     required = [:name, :species_id, :lock_version, :in_service_date]
     relevant = required ++ [:out_of_service_date]
@@ -43,8 +45,12 @@ defmodule Crit.Usables.Schemas.Animal do
   end
 
   def update_changeset(struct, attrs) do
+    required = [:name, :lock_version,
+                :in_service_datestring, :out_of_service_datestring]
     struct
-    |> cast(attrs, [:name, :lock_version, :in_service_date, :out_of_service_date])
+    |> cast(attrs, required)
+    |> validate_required(required)
+    |> ToDate.put_service_dates
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
   end
