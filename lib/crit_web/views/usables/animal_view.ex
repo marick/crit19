@@ -25,11 +25,11 @@ defmodule CritWeb.Usables.AnimalView do
       }
   
     ~E"""
-    <div data-controller="calendar" data-calendar-which="<%=arg.which%>"
+    <div data-controller="calendar"
        style="max-width: 540px">
 
     <%= field %>
-    <div id="<%= arg.which %>" display="none"> </div>
+    <div data-target="calendar.div" display="none"> </div>
     </div>
     """
   end

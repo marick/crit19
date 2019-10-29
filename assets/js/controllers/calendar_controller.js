@@ -5,23 +5,12 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 
 export default class extends Controller {
-    static targets = [ "wrapper", "input" ];
-
-
-    initialize() {
-        this.calendarId = this.data.get("which")
-        console.log("start calendar init" + this.calendarId);
-    }
-
-    connect() {
-        console.log(this.data.get("which"))
-    }
+    static targets = [ "wrapper", "input", "div" ];
 
     reveal() {
-        console.log("start calendar reveal " + this.calendarId)
-        var calendarEl = document.getElementById(this.calendarId);
+        console.log(this.divTarget)
 
-        this.calendar = new Calendar(calendarEl, {
+        this.calendar = new Calendar(this.divTarget, {
             plugins: [ dayGridPlugin, interactionPlugin ],
             defaultView: 'dayGridMonth'
         });

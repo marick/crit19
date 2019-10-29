@@ -13,15 +13,13 @@
         tag: :in_service_datestring,
         label: "Date Put Into Service",
         advice: "The animal can be reserved on the morning of the selected date.
-                 Click for a calendar.",
-        which: "start-calendar"
+                 Click for a calendar."
       %>
 
   <%= calendar_widget f,
         tag: :out_of_service_datestring,
         label: "Date Removed From Service",
-        advice: "The animal can no longer be reserved starting at the selected date.",
-        which: "end-calendar"
+        advice: "The animal can no longer be reserved starting at the selected date."
       %>
 
   <%= labeled_text_field f, :names, "Animal names", %{
