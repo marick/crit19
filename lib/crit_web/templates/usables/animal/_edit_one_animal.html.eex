@@ -9,8 +9,14 @@
   <%= @changeset.data.species_name %> named
   <%= text_input(f, :name) %> <%= error_tag f, :name %> <br/>
   <%= hidden_input(f, :lock_version) %>
-  In service: <%= text_input(f, :in_service_datestring) %>
-  Out of service beginning: <%= text_input(f, :out_of_service_datestring) %> <br/>
+
+  <%= small_calendar_widget f,
+      "In service: ", :in_service_datestring
+      %>
+
+  <%= small_calendar_widget f,
+      "Out of service beginning: ", :out_of_service_datestring
+      %>
   <button class="button is-success is-small" >
      Change
   </button>

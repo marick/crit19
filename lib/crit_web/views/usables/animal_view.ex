@@ -33,4 +33,21 @@ defmodule CritWeb.Usables.AnimalView do
     </div>
     """
   end
+
+
+  def small_calendar_widget(f, label, tag) do
+    ~E"""
+    <div data-controller="calendar">
+       <div data-target="calendar.wrapper">
+         <%= label %>
+         <%= text_input(f, tag,
+                        data_target: "calendar.input",
+                        data_action: "click->calendar#reveal") %>
+         <div><%= error_tag(f, tag) %></div>
+       </div>
+       <div data-target="calendar.div" display="none"> </div>
+    </div>
+    """
+  end
+
 end
