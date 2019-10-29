@@ -14,22 +14,22 @@ defmodule CritWeb.Usables.AnimalView do
     field =
       labeled_text_field f, arg.tag, arg.label, %{
         wrapper_extras:
-          [data_target: "#{arg.controller}.wrapper"],
+          [data_target: "calendar.wrapper"],
         advice: arg.advice,
         input_extras: [
           readonly: true,
-          data_target: "#{arg.controller}.input",
-          data_action: "click->#{arg.controller}#reveal",
+          data_target: "calendar.input",
+          data_action: "click->calendar#reveal",
           required: true
         ]
       }
   
     ~E"""
-    <div data-controller="<%= arg.controller %>" 
+    <div data-controller="calendar" data-calendar-which="<%=arg.which%>"
        style="max-width: 540px">
 
     <%= field %>
-    <div id="<%= arg.controller %>" display="none"> </div>
+    <div id="<%= arg.which %>" display="none"> </div>
     </div>
     """
   end
