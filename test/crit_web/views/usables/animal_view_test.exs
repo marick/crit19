@@ -13,7 +13,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
     controller = "--some-controller--"
     
     calendar = form_for(BulkAnimal.changeset(%BulkAnimal{}, %{}), path, (fn f ->
-      calendar_widget f,
+      big_calendar_widget f,
       tag: tag,
       label: label_text,
       advice: advice,
@@ -40,16 +40,16 @@ defmodule CritWeb.Usables.AnimalViewTest do
 
     # Where the controllers go
     assert calendar =~ ~r|<div                                          [[:space:]]
-                               data-controller="#{controller}"              .*?>.*?
+                               data-controller="calendar"              .*?>.*?
                             <div                                        [[:space:]]
                                  class="field"                          [[:space:]]+
-                                 data-target="#{controller}.wrapper"        .*?>.*?
-                              <input                                            .*?
-                                     data-action="click.*?#{controller}.reveal  .*?
-                                     data-target="#{controller}.input"      .*?>.*?
+                                 data-target="calendar.wrapper"        .*?>.*?
+                              <input                                   .*?
+                                  data-action="click.*?#calendar.reveal .*?
+                                  data-target="calendar.inp ut"        .*?>.*?
                             </div>                                      [[:space:]]*
                             <div                                        [[:space:]]
-                                 id="#{controller}"                     [[:space:]]
+                                 data-target="calendar.div"             [[:space:]]
                                  display="none"                         >[[:space:]]
                                  # This is where the calendar goes.
                             </div>
