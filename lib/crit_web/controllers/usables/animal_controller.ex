@@ -5,7 +5,8 @@ defmodule CritWeb.Usables.AnimalController do
 
   alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
-
+  alias Crit.Usables.HiddenSchemas.ServiceGap
+  
   plug :must_be_able_to, :manage_animals
 
   def index(conn, _params) do
@@ -42,9 +43,12 @@ defmodule CritWeb.Usables.AnimalController do
                   }
     Audit.created_animals(conn, audit_data)
   end
-
+  
   def update_form(conn, %{"animal_id" => id}) do
     animal = AnimalApi.showable!(id, institution(conn))
+    |> Map.put(:service_gaps, [
+          %ServiceGap{id: 12, start_date: ~D[2001-01-01], end_date: ~D[2002-02-02], reason: "first"},
+          %ServiceGap{id: 34, start_date: ~D[2003-03-03], end_date: ~D[2004-04-04], reason: "second"}])
     
     conn
     |> put_layout(false)
@@ -53,6 +57,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
   
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
+    IO.inspect animal_params
     case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,

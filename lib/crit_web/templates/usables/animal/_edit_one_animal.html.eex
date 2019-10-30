@@ -17,6 +17,18 @@
   <%= small_calendar_widget f,
       "Out of service beginning: ", :out_of_service_datestring
       %>
+
+  <p>
+    <strong>Gaps in the animal's availability:</strong>
+  </p>
+  <%= inputs_for f, :service_gaps, [append: [%ServiceGap{}]], fn fgaps -> %>
+  <div>
+    <hr/>
+    From: <%= text_input fgaps, :start_date, size: 10 %>
+    back on: <%= text_input fgaps, :end_date, size: 10 %><br/>
+    Because: <%= text_input fgaps, :reason, size: 40 %>
+    </div>
+  <% end %>
   <button class="button is-success is-small" >
      Change
   </button>
