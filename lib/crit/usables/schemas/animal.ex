@@ -6,7 +6,7 @@ defmodule Crit.Usables.Schemas.Animal do
   """
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
-  alias Crit.Usables.HiddenSchemas.Species
+  alias Crit.Usables.HiddenSchemas.{Species,ServiceGap}
   import Ecto.Changeset
   alias Crit.Usables.FieldConverters.ToDate
 
@@ -22,6 +22,7 @@ defmodule Crit.Usables.Schemas.Animal do
     timestamps()
 
     belongs_to :species, Species
+    has_many :service_gaps, ServiceGap
 
     field :timezone, :string, virtual: true
     field :species_name, :string, virtual: true
@@ -40,7 +41,7 @@ defmodule Crit.Usables.Schemas.Animal do
     |> constraint_on_name()
   end
 
-  def form_changeset(animal) do 
+  def form_changeset(animal) do
     change(animal)
   end
 
