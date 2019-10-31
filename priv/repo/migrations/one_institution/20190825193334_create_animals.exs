@@ -22,9 +22,10 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
     create unique_index("animals", [:name, :available],
       name: :unique_available_names)
     create table("service_gaps") do
-      add :gap, :daterange, null: false
+      add :animal_id, references("animals", on_delete: :restrict), null: false
+      add :span, :daterange, null: false
       add :reason, :text, null: false
     end
-    create index("service_gaps", :gap, using: :gist)
+    create index("service_gaps", :span, using: :gist)
   end
 end
