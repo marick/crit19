@@ -8,8 +8,8 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGap do
     field :span, Datespan
     field :reason, :string
 
-    field :start_date, :date
-    field :end_date, :date
+    field :start_date, :date, virtual: true
+    field :end_date, :date, virtual: true
   end
 
 

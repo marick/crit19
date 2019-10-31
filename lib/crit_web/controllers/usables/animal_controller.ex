@@ -57,7 +57,6 @@ defmodule CritWeb.Usables.AnimalController do
   end
   
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
-    IO.inspect animal_params
     case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,

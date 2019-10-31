@@ -18,7 +18,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
     end
 
     def preload_common(query) do
-      query |> preload([:species])
+      query |> preload([:species, :service_gaps])
     end
 
     def ordered(query) do
