@@ -3,7 +3,6 @@ defmodule Ecto.Datespan do
 
   defp convert_to_endpoint_type(%Date{} = date), do: date
 
-
-  defp start_string(span), do: span.first |> Date.to_iso8601
-  defp end_string(span), do: span.last |> Date.to_iso8601
+  def start_string(span), do: span.first |> Date.to_iso8601
+  def end_string(span), do: span.last |> Date.to_iso8601
 end
