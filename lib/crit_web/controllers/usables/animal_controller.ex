@@ -47,8 +47,8 @@ defmodule CritWeb.Usables.AnimalController do
   def update_form(conn, %{"animal_id" => id}) do
     animal = AnimalApi.showable!(id, institution(conn))
     |> Map.put(:service_gaps, [
-          %ServiceGap{id: 12, start_date: ~D[2001-01-01], end_date: ~D[2002-02-02], reason: "first"},
-          %ServiceGap{id: 34, start_date: ~D[2003-03-03], end_date: ~D[2004-04-04], reason: "second"}])
+          %ServiceGap{id: 12, in_service_date: ~D[2001-01-01], out_of_service_date: ~D[2002-02-02], reason: "first"},
+          %ServiceGap{id: 34, in_service_date: ~D[2003-03-03], out_of_service_date: ~D[2004-04-04], reason: "second"}])
     
     conn
     |> put_layout(false)

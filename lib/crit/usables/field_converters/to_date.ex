@@ -75,5 +75,10 @@ defmodule Crit.Usables.FieldConverters.ToDate do
     end      
   end
 
+  def note_misorder(changeset, field) do
+    add_error(changeset, field, misorder_error_message())
+  end
+    
+
   def misorder_error_message, do: "should not be before the start date"
 end  
