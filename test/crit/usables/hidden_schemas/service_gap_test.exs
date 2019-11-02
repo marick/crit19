@@ -1,5 +1,7 @@
 defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
   use Crit.DataCase
+  alias Crit.Usables.AnimalApi
+  alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.HiddenSchemas.ServiceGap
   alias Crit.Usables.FieldConverters.ToDate
   alias Ecto.Datespan
@@ -197,8 +199,65 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
   end
   
   describe "retrieval gaps are manipulated via animals" do
-    @tag :skip
-    test "insertion"
+    setup do 
+      animal_id = Available.animal_id
+      attrs = %{animal_id: animal_id,
+                in_service_date: @iso_date,
+                out_of_service_date: @iso_date_bump,
+                reason: "reason"}
+
+      insertion_result = 
+        %ServiceGap{}
+        |> ServiceGap.changeset(attrs)
+        |> Sql.insert!(@institution)
+
+      complete_gap = 
+        ServiceGap
+        |> Sql.get(insertion_result.id, @institution)
+        |> ServiceGap.complete_fields
+
+      complete_animal = AnimalApi.showable!(animal_id, @institution)
+      
+      [complete_gap: complete_gap, complete_animal: complete_animal]
+    end
+    
+    test "insertion of new value",
+      %{complete_gap: complete_gap, complete_animal: complete_animal} do
+      IO.puts("# TEMP UNTIL SHOWABLE! WORKS RIGHT.")
+      complete_animal = %{complete_animal | service_gaps: [complete_gap]}
+      
+      animal_update_attrs = %{
+        id: complete_animal.id,
+        name: complete_animal.name,
+        in_service_date: Date.to_iso8601(complete_animal.in_service_date),
+        out_of_service_date: Date.to_iso8601(complete_animal.out_of_service_date),
+        lock_version: complete_animal.lock_version,
+        service_gaps: [
+          %{id: complete_gap.id,
+            in_service_date: complete_gap.in_service_date,
+            out_of_service_date: complete_gap.out_of_service_date,
+            reason: complete_gap.reason},
+          %{in_service_date: @later_iso_date,
+            out_of_service_date: @later_iso_date_bump,
+            reason: "addition"
+          }
+        ]}
+
+
+      changeset = Animal.update_changeset(complete_animal, animal_update_attrs)
+      assert [old_sg_changeset, new_sg_changeset] = changeset.changes.service_gaps
+
+      assert old_sg_changeset.valid?
+      assert old_sg_changeset.changes == %{}
+
+      assert new_sg_changeset.valid?
+      assert new_sg_changeset.changes.reason == "addition"
+      assert new_sg_changeset.changes.span == Datespan.customary(@later_date, @later_date_bump)
+
+      IO.inspect Sql.update(changeset, @institution)
+
+      IO.inspect Sql.all(ServiceGap, @institution)
+    end
   end
 
   defp assert_span_has_not_been_added(%{changes: changes}), 

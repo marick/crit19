@@ -21,9 +21,11 @@ defmodule Crit.Usables.Schemas.Animal do
     # field :species_id is as well, but it's created by `belongs_to` below.
     timestamps()
 
+    # Associations
     belongs_to :species, Species
     has_many :service_gaps, ServiceGap
 
+    # Virtual fields used for displays or forms presented to a human
     field :timezone, :string, virtual: true
     field :species_name, :string, virtual: true
     field :in_service_datestring, :string, virtual: true
@@ -51,6 +53,7 @@ defmodule Crit.Usables.Schemas.Animal do
     struct
     |> cast(attrs, required)
     |> validate_required(required)
+    |> cast_assoc(:service_gaps)
     |> ToDate.put_service_dates
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
