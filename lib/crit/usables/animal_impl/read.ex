@@ -2,6 +2,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
   use Crit.Global.Constants
   import Ecto.Query
   alias Crit.Sql
+  alias Crit.Usables.HiddenSchemas.ServiceGap
 
   defmodule Query do
     import Ecto.Query
@@ -62,7 +63,8 @@ defmodule Crit.Usables.AnimalImpl.Read do
     %{ animal |
        species_name: animal.species.name, 
        in_service_datestring: in_service_datestring,
-       out_of_service_datestring: out_of_service_datestring
+       out_of_service_datestring: out_of_service_datestring,
+       service_gaps: Enum.map(animal.service_gaps, &ServiceGap.complete_fields/1)
     }
   end
 end

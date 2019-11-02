@@ -24,7 +24,7 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
       assert animal.out_of_service_datestring == @never
     end
 
-    test "with an out-of-service gap", %{goes_out_of_service_id: id} do
+    test "with an out-of-service date", %{goes_out_of_service_id: id} do
       animal = AnimalApi.showable!(id, @institution)
       assert animal.in_service_datestring == @iso_date
       assert animal.out_of_service_datestring == @later_iso_date
@@ -34,6 +34,14 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
       assert_raise KeyError, fn -> 
         AnimalApi.showable!(83483, @institution)
       end
+    end
+
+    @tag :skip
+    test "add service gap conversion" do
+      # Create an animal
+      # Add a service gap
+      # check that the gap is returned AND that the virtual fields are
+      # filled in.
     end
   end
 

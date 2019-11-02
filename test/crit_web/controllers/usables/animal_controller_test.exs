@@ -140,6 +140,13 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
+
+  @tag :skip
+  test "check that service gap attributes are flattened" do
+    # They come back as a map from index to structs. The controller
+    # needs to call the animal api with a proper array of attributes.
+  end
+
   
   defp animal_name(id), do: AnimalApi.showable!(id, @institution).name
 

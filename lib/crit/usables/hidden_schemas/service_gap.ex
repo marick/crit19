@@ -30,7 +30,6 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGap do
       out_of_service_date: gap.span.last}
   end
 
-
   defp validate_order(%{valid?: false} = changeset), do: changeset
   defp validate_order(changeset) do
     {should_be_earlier, should_be_later} = dates(changeset)
