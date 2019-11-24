@@ -59,18 +59,9 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
   end
 
   describe "direct manipulation of changesets: CREATE and READ" do
-    setup do 
-      animal_id = Available.animal_id
-      attrs = %{animal_id: animal_id,
-                in_service_date: @iso_date,
-                out_of_service_date: @later_iso_date,
-                reason: "reason"}
-
-      insertion_result = 
-        %ServiceGap{}
-        |> ServiceGap.changeset(attrs)
-        |> Sql.insert!(@institution)
-      
+    setup do
+      attrs = attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = insert(attrs)
       retrieved_gap = Sql.get(ServiceGap, insertion_result.id, @institution)
       [attrs: attrs, insertion_result: insertion_result, retrieved_gap: retrieved_gap]
     end
@@ -123,22 +114,10 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
     
     # processing of dates is independent of whether the dates are in the data
     # or in the attributes
-    setup do 
-      animal_id = Available.animal_id
-      attrs = %{animal_id: animal_id,
-                in_service_date: @iso_date,
-                out_of_service_date: @later_iso_date,
-                reason: "reason"}
-
-      insertion_result = 
-        %ServiceGap{}
-        |> ServiceGap.changeset(attrs)
-        |> Sql.insert!(@institution)
-
-      complete = 
-        ServiceGap
-        |> Sql.get(insertion_result.id, @institution)
-        |> ServiceGap.complete_fields
+    setup do
+      attrs = attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = insert(attrs)
+      complete = get_and_complete(insertion_result.id)
       
       [complete: complete, attrs: attrs]
     end
@@ -199,23 +178,11 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
   end
   
   describe "retrieval gaps are manipulated via animals" do
-    setup do 
+    setup do
       animal_id = Available.animal_id
-      attrs = %{animal_id: animal_id,
-                in_service_date: @iso_date,
-                out_of_service_date: @iso_date_bump,
-                reason: "reason"}
-
-      insertion_result = 
-        %ServiceGap{}
-        |> ServiceGap.changeset(attrs)
-        |> Sql.insert!(@institution)
-
-      complete_gap = 
-        ServiceGap
-        |> Sql.get(insertion_result.id, @institution)
-        |> ServiceGap.complete_fields
-
+      attrs = attrs(@iso_date, @iso_date_bump, "reason", animal_id: animal_id)
+      insertion_result = insert(attrs)
+      complete_gap = get_and_complete(insertion_result.id)
       complete_animal = AnimalApi.showable!(animal_id, @institution)
       
       [complete_gap: complete_gap, complete_animal: complete_animal]
@@ -223,44 +190,96 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
     
     test "insertion of new value",
       %{complete_gap: complete_gap, complete_animal: complete_animal} do
-      IO.puts("# TEMP UNTIL SHOWABLE! WORKS RIGHT.")
-      complete_animal = %{complete_animal | service_gaps: [complete_gap]}
-      
-      animal_update_attrs = %{
-        id: complete_animal.id,
-        name: complete_animal.name,
-        in_service_date: Date.to_iso8601(complete_animal.in_service_date),
-        out_of_service_date: Date.to_iso8601(complete_animal.out_of_service_date),
-        lock_version: complete_animal.lock_version,
-        service_gaps: [
-          %{id: complete_gap.id,
-            in_service_date: complete_gap.in_service_date,
-            out_of_service_date: complete_gap.out_of_service_date,
-            reason: complete_gap.reason},
-          %{in_service_date: @later_iso_date,
-            out_of_service_date: @later_iso_date_bump,
-            reason: "addition"
-          }
-        ]}
 
+      new_gap_params = %{in_service_date: @later_iso_date,
+                         out_of_service_date: @later_iso_date_bump,
+                         reason: "addition"
+                        }
+
+      animal_update_attrs =
+        same_animal_with_service_gap_params(complete_animal, [
+              form_params_for_existing(complete_gap),
+              new_gap_params
+            ])
 
       changeset = Animal.update_changeset(complete_animal, animal_update_attrs)
       assert [old_sg_changeset, new_sg_changeset] = changeset.changes.service_gaps
 
-      assert old_sg_changeset.valid?
-      assert old_sg_changeset.changes == %{}
+      assert_nothing_done_for = fn (service_gap_changeset) ->
+        assert service_gap_changeset.valid?
+        assert service_gap_changeset.changes == %{}
+      end
 
-      assert new_sg_changeset.valid?
-      assert new_sg_changeset.changes.reason == "addition"
-      assert new_sg_changeset.changes.span == Datespan.customary(@later_date, @later_date_bump)
+      assert_nothing_done_for.(old_sg_changeset)
 
-      IO.inspect Sql.update(changeset, @institution)
+      assert_valid_changeset_with = fn changeset, opts ->
+        optmap = Enum.into(opts, %{})
 
-      IO.inspect Sql.all(ServiceGap, @institution)
+        assert changeset.valid?
+        # this should really map over the optmap
+        assert changeset.changes.reason == optmap.reason
+        assert changeset.changes.span == optmap.span
+      end
+
+      assert_valid_changeset_with.(new_sg_changeset,
+        reason: "addition",
+        span: Datespan.customary(@later_date, @later_date_bump)
+      )
+
+      assert {:ok, %{service_gaps: [old, new]}} = Sql.update(changeset, @institution)
+
+      assert old == complete_gap
+      
+      assert is_integer(new.id)
+      assert new.in_service_date == @later_date
+      assert new.out_of_service_date == @later_date_bump
+      assert new.reason == "addition"
+      assert new.span == Datespan.customary(@later_date, @later_date_bump)
     end
   end
 
   defp assert_span_has_not_been_added(%{changes: changes}), 
-    do: refute changes[:span] 
-  
+    do: refute changes[:span]
+
+  defp insert(attrs) do
+    %ServiceGap{}
+    |> ServiceGap.changeset(attrs)
+    |> Sql.insert!(@institution)
+  end
+
+  defp get_and_complete(id) do
+    ServiceGap
+    |> Sql.get(id, @institution)
+    |> ServiceGap.complete_fields
+  end
+
+  defp attrs(in_service_date, out_of_service_date, reason, opts \\ []) do
+    defaults = %{animal_id: Available.animal_id}
+    optmap = Enum.into(opts, defaults)
+    %{animal_id: optmap.animal_id,
+      in_service_date: in_service_date,
+      out_of_service_date: out_of_service_date,
+      reason: reason}
+  end
+
+  defp form_params_for_existing(service_gap) do 
+    %{id: service_gap.id,
+      in_service_date: service_gap.in_service_date,
+      out_of_service_date: service_gap.out_of_service_date,
+      reason: service_gap.reason}
+  end
+
+
+  defp same_animal_with_service_gap_params(animal, service_gaps) do
+    IO.puts("TODO note: never")
+    %{id: animal.id,
+      name: animal.name,
+      in_service_date: Date.to_iso8601(animal.in_service_date),
+      # This will sometimes fail because the animal may have a "never"
+      # out-of-service date.
+      out_of_service_date: Date.to_iso8601(animal.out_of_service_date),
+      lock_version: animal.lock_version,
+      service_gaps: service_gaps
+    }
+  end
 end
