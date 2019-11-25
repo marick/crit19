@@ -3,8 +3,8 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.HiddenSchemas.ServiceGap
+  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
   alias Crit.Usables.FieldConverters.ToDate
-  alias Ecto.Datespan
   alias Crit.Exemplars.Available
   alias Crit.Sql
 
@@ -28,9 +28,9 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       |> assert_valid
       |> assert_changes(in_service_date: @date,
                         out_of_service_date: @later_date,
-                        reason: "reason")
-      # And the span is created
-      |> assert_span(@date, @later_date)
+                        reason: "reason",
+                        # And the span is created
+                        span: span(@date, @later_date))
     end
     
 
@@ -42,7 +42,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
       handle(%{})
       |> assert_errors([:in_service_date, :out_of_service_date, :reason])
-      |> assert_span_has_not_been_added
+      |> assert_unchanged(:span)
     end
 
     test "dates must be in the right order" do
@@ -51,7 +51,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
                 reason: "reason"}
       handle(given)
       |> assert_error(out_of_service_date: ToDate.misorder_error_message)
-      |> assert_span_has_not_been_added
+      |> assert_unchanged(:span)
 
       # Other fields are available to fill form fields
       |> assert_changes(in_service_date: @date,
@@ -70,7 +70,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       
     test "insertion", %{insertion_result: result, attrs: attrs} do
       assert result.animal_id == attrs.animal_id
-      assert result.span == Datespan.customary(@date, @later_date)
+      assert result.span == span(@date, @later_date)
       assert result.reason == attrs.reason
       # We also get the virtual fields.
       # The date fields are converted, which is OK because EEX knows
@@ -84,7 +84,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
       # We get the non-virtual fields
       assert retrieved.animal_id == attrs.animal_id
-      assert retrieved.span == Datespan.customary(@date, @later_date)
+      assert retrieved.span == span(@date, @later_date)
       assert retrieved.reason == attrs.reason
 
       # but not the virtual ones
@@ -101,7 +101,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
       # And other fields are still there
       assert complete.animal_id == attrs.animal_id
-      assert complete.span == Datespan.customary(@date, @later_date)
+      assert complete.span == span(@date, @later_date)
       assert complete.reason == attrs.reason
     end
   end
@@ -122,7 +122,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       |> assert_valid
       |> assert_unchanged
       # Implied by above, but let's be really explicit:
-      |> assert_span_has_not_been_added
+      |> assert_unchanged(:span)
     end
 
     test "the in-service date is new", %{complete: complete, attrs: attrs} do
@@ -130,7 +130,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       %{changes: changes} = changeset = ServiceGap.changeset(complete, new_attrs)
       assert changeset.valid?
       assert changes.in_service_date == @bumped_date
-      assert changes.span == Datespan.customary(@bumped_date, @later_date)
+      assert changes.span == span(@bumped_date, @later_date)
 
       refute changes[:out_of_service_date]
     end
@@ -141,7 +141,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       %{changes: changes} = changeset = ServiceGap.changeset(complete, new_attrs)
       assert changeset.valid?
       assert changes.out_of_service_date == @later_bumped_date
-      assert changes.span == Datespan.customary(@date, @later_bumped_date)
+      assert changes.span == span(@date, @later_bumped_date)
 
       refute changes[:in_service_date]
     end
@@ -217,7 +217,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
       assert_valid_changeset_with.(new_sg_changeset,
         reason: "addition",
-        span: Datespan.customary(@later_date, @later_bumped_date)
+        span: span(@later_date, @later_bumped_date)
       )
 
       assert {:ok, %{service_gaps: [old, new]}} = Sql.update(changeset, @institution)
@@ -228,17 +228,9 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       assert new.in_service_date == @later_date
       assert new.out_of_service_date == @later_bumped_date
       assert new.reason == "addition"
-      assert new.span == Datespan.customary(@later_date, @later_bumped_date)
+      assert new.span == span(@later_date, @later_bumped_date)
     end
   end
-
-  defp assert_span_has_not_been_added(changeset) do 
-    refute changeset.changes[:span]
-    changeset
-  end
-
-  defp assert_span(changeset, in_service, out_of_service),
-    do: assert_changed_to(changeset, :span, Datespan.customary(in_service, out_of_service))
 
   defp insert(attrs) do
     %ServiceGap{}
