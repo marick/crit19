@@ -127,23 +127,25 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
     test "the in-service date is new", %{complete: complete, attrs: attrs} do
       new_attrs = %{attrs | in_service_date: @iso_bumped_date}
-      %{changes: changes} = changeset = ServiceGap.changeset(complete, new_attrs)
-      assert changeset.valid?
-      assert changes.in_service_date == @bumped_date
-      assert changes.span == span(@bumped_date, @later_date)
 
-      refute changes[:out_of_service_date]
+      ServiceGap.changeset(complete, new_attrs)
+      |> assert_valid
+      |> assert_changes(in_service_date: @bumped_date,
+                        span: span(@bumped_date, @later_date))
+
+      |> assert_unchanged(:out_of_service_date)
     end
 
 
     test "out-of-service date is new", %{complete: complete, attrs: attrs} do
       new_attrs = %{attrs | out_of_service_date: @later_iso_bumped_date}
-      %{changes: changes} = changeset = ServiceGap.changeset(complete, new_attrs)
-      assert changeset.valid?
-      assert changes.out_of_service_date == @later_bumped_date
-      assert changes.span == span(@date, @later_bumped_date)
 
-      refute changes[:in_service_date]
+      
+      ServiceGap.changeset(complete, new_attrs)
+      |> assert_valid
+      |> assert_changes(out_of_service_date: @later_bumped_date,
+                        span: span(@date, @later_bumped_date))
+      |> assert_unchanged(:in_service_date)
     end
 
 
@@ -171,58 +173,62 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
     end
   end
   
-  describe "retrieval gaps are manipulated via animals" do
-    setup do
+  describe "service gaps are manipulated via animals" do
+
+    defp an_existing_animal_with_one_service_gap(_) do 
       animal_id = Available.animal_id
       attrs = attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
       insertion_result = insert(attrs)
-      complete_gap = get_and_complete(insertion_result.id)
+      original_gap = get_and_complete(insertion_result.id)
       complete_animal = AnimalApi.showable!(animal_id, @institution)
       
-      [complete_gap: complete_gap, complete_animal: complete_animal]
+      [original_gap: original_gap, complete_animal: complete_animal]
     end
-    
-    test "insertion of new value",
-      %{complete_gap: complete_gap, complete_animal: complete_animal} do
 
+    setup :an_existing_animal_with_one_service_gap
+
+    setup(%{original_gap: gap, complete_animal: animal}) do
       new_gap_params = %{in_service_date: @later_iso_date,
                          out_of_service_date: @later_iso_bumped_date,
                          reason: "addition"
                         }
 
       animal_update_attrs =
-        same_animal_with_service_gap_params(complete_animal, [
-              form_params_for_existing(complete_gap),
+        same_animal_with_service_gap_params(animal, [
+              form_params_for_existing(gap),
               new_gap_params
             ])
 
-      changeset = Animal.update_changeset(complete_animal, animal_update_attrs)
-      assert [old_sg_changeset, new_sg_changeset] = changeset.changes.service_gaps
+      [animal_attrs: animal_update_attrs]
+    end
+    
+    test "What kind of changesets are produced by the `update_changeset`",
+      %{complete_animal: complete_animal, animal_attrs: attrs} do
 
-      assert_nothing_done_for = fn (service_gap_changeset) ->
-        assert service_gap_changeset.valid?
-        assert service_gap_changeset.changes == %{}
-      end
+      [old_sg_changeset, new_sg_changeset] = 
+        complete_animal
+        |> Animal.update_changeset(attrs)
+        |> (fn cs -> cs.changes.service_gaps end).()
 
-      assert_nothing_done_for.(old_sg_changeset)
+      # No changes for the old service gap (therefore, it will not be UPDATED)
+      old_sg_changeset |> assert_valid |> assert_unchanged
 
-      assert_valid_changeset_with = fn changeset, opts ->
-        optmap = Enum.into(opts, %{})
+      # The new service gap, however, has a fleshed-out changeset
+      new_sg_changeset
+      |> assert_valid
+      |> assert_changes(reason: "addition",
+                        span: span(@later_date, @later_bumped_date))
+    end
 
-        assert changeset.valid?
-        # this should really map over the optmap
-        assert changeset.changes.reason == optmap.reason
-        assert changeset.changes.span == optmap.span
-      end
+    test "the results of using the changeset",
+      %{original_gap: original_gap, complete_animal: complete_animal, animal_attrs: attrs} do
 
-      assert_valid_changeset_with.(new_sg_changeset,
-        reason: "addition",
-        span: span(@later_date, @later_bumped_date)
-      )
+      {:ok, %{service_gaps: [old, new]}} = 
+        complete_animal
+        |> Animal.update_changeset(attrs)
+        |> Sql.update(@institution)
 
-      assert {:ok, %{service_gaps: [old, new]}} = Sql.update(changeset, @institution)
-
-      assert old == complete_gap
+      assert old == original_gap
       
       assert is_integer(new.id)
       assert new.in_service_date == @later_date
@@ -231,6 +237,8 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       assert new.span == span(@later_date, @later_bumped_date)
     end
   end
+
+  
 
   defp insert(attrs) do
     %ServiceGap{}
