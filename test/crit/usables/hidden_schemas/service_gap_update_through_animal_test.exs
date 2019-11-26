@@ -43,16 +43,14 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
     end
 
     test "the results of using the changeset",
-      %{original_gap: original_gap,
-        complete_animal: complete_animal,
-        animal_attrs: attrs} do
+      %{complete_animal: complete_animal, animal_attrs: attrs} do
 
       {:ok, %{service_gaps: [old, new]}} = 
         complete_animal
         |> Animal.update_changeset(attrs)
         |> Sql.update(@institution)
       
-      assert old == original_gap
+      assert old == original_gap(complete_animal)
       
       assert is_integer(new.id)
       assert new.in_service_date == @later_date
@@ -62,14 +60,13 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
     end
   end
 
-  defp an_existing_animal_with_one_service_gap(_) do 
+  defp an_existing_animal_with_one_service_gap(_) do
     animal_id = Available.animal_id
-    attrs = ServiceGapX.attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
-    insertion_result = ServiceGapX.insert(attrs)
-    original_gap = ServiceGapX.get_and_complete(insertion_result.id)
-    complete_animal = AnimalApi.showable!(animal_id, @institution)
+    ServiceGapX.insert(
+      ServiceGapX.attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
+    )
     
-    [original_gap: original_gap, complete_animal: complete_animal]
+    [complete_animal: AnimalApi.showable!(animal_id, @institution)]
   end
 
   defp original_gap(%Animal{service_gaps: [original | _]}), do: original
