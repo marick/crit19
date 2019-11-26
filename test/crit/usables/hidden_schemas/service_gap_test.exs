@@ -98,4 +98,71 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       assert complete.reason == attrs.reason
     end
   end
+
+  describe "behavior of `changeset` given an existing service gap" do
+    # processing of dates is independent of whether the dates are in the data
+    # or in the attributes
+    setup do
+      attrs = ServiceGapX.attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = ServiceGapX.insert(attrs)
+      complete = ServiceGapX.get_and_complete(insertion_result.id)
+      
+      [complete: complete, attrs: attrs]
+    end
+
+    test "Updating to all the same values", %{complete: complete, attrs: attrs} do
+      ServiceGap.changeset(complete, attrs)
+      |> assert_valid
+      |> assert_unchanged
+      # Implied by above, but let's be really explicit:
+      |> assert_unchanged(:span)
+    end
+
+    test "the in-service date is new", %{complete: complete, attrs: attrs} do
+      new_attrs = %{attrs | in_service_date: @iso_bumped_date}
+
+      ServiceGap.changeset(complete, new_attrs)
+      |> assert_valid
+      |> assert_changes(in_service_date: @bumped_date,
+                        span: span(@bumped_date, @later_date))
+
+      |> assert_unchanged(:out_of_service_date)
+    end
+
+
+    test "out-of-service date is new", %{complete: complete, attrs: attrs} do
+      new_attrs = %{attrs | out_of_service_date: @later_iso_bumped_date}
+
+      
+      ServiceGap.changeset(complete, new_attrs)
+      |> assert_valid
+      |> assert_changes(out_of_service_date: @later_bumped_date,
+                        span: span(@date, @later_bumped_date))
+      |> assert_unchanged(:in_service_date)
+    end
+
+
+    test "date mismatches are checked when just in_service date changes",
+      %{complete: complete, attrs: attrs} do
+      new_attrs = %{attrs | in_service_date: @later_iso_date}
+      
+      ServiceGap.changeset(complete, new_attrs)
+      # Note that the error is always associated to the out-of-service error
+      |> assert_error(out_of_service_date: ToDate.misorder_error_message)
+      |> assert_change(in_service_date: @later_date)
+      
+      |> assert_unchanged([:out_of_service_date, :span])
+    end
+
+    test "date mismatches are checked when only out_of_service date changes",
+      %{complete: complete, attrs: attrs} do
+      new_attrs = %{attrs | out_of_service_date: @iso_date}
+      
+      ServiceGap.changeset(complete, new_attrs)
+      |> assert_error(out_of_service_date: ToDate.misorder_error_message)
+      |> assert_change(out_of_service_date: @date)
+      
+      |> assert_unchanged([:in_service_date, :span])
+    end
+  end
 end
