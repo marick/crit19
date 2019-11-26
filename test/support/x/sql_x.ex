@@ -1,4 +1,4 @@
-defmodule Crit.SqlX do
+defmodule Crit.X.SqlX do
   @moduledoc """
   Shorthand Sql functions for use in tests.
   """

@@ -27,7 +27,7 @@ defmodule Crit.DataCase do
       use Crit.Global.Default
       use Crit.Global.Constants
       use Crit.Exemplars.Simple
-      alias Crit.SqlX
+      alias Crit.X.SqlX
     end
   end
 

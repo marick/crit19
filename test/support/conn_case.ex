@@ -29,7 +29,7 @@ defmodule CritWeb.ConnCase do
       use Crit.Global.Default
       use Crit.Global.Constants
       use Crit.Exemplars.Simple
-      alias Crit.SqlX
+      alias Crit.X.SqlX
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint
