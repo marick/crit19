@@ -1,12 +1,15 @@
-defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
+defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.HiddenSchemas.ServiceGap
-  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
   alias Crit.Usables.FieldConverters.ToDate
   alias Crit.Exemplars.Available
   alias Crit.Sql
+
+  alias Crit.X.ServiceGapX
+  alias Crit.X.AnimalX
+  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
 
@@ -14,9 +17,9 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
     # processing of dates is independent of whether the dates are in the data
     # or in the attributes
     setup do
-      attrs = attrs(@iso_date, @later_iso_date, "reason")
-      insertion_result = insert(attrs)
-      complete = get_and_complete(insertion_result.id)
+      attrs = ServiceGapX.attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = ServiceGapX.insert(attrs)
+      complete = ServiceGapX.get_and_complete(insertion_result.id)
       
       [complete: complete, attrs: attrs]
     end
@@ -81,9 +84,9 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
     defp an_existing_animal_with_one_service_gap(_) do 
       animal_id = Available.animal_id
-      attrs = attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
-      insertion_result = insert(attrs)
-      original_gap = get_and_complete(insertion_result.id)
+      attrs = ServiceGapX.attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
+      insertion_result = ServiceGapX.insert(attrs)
+      original_gap = ServiceGapX.get_and_complete(insertion_result.id)
       complete_animal = AnimalApi.showable!(animal_id, @institution)
       
       [original_gap: original_gap, complete_animal: complete_animal]
@@ -91,19 +94,12 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
     setup :an_existing_animal_with_one_service_gap
 
-    setup(%{original_gap: gap, complete_animal: animal}) do
-      new_gap_params = %{in_service_date: @later_iso_date,
-                         out_of_service_date: @later_iso_bumped_date,
-                         reason: "addition"
-                        }
-
-      animal_update_attrs =
-        same_animal_with_service_gap_params(animal, [
-              form_params_for_existing(gap),
-              new_gap_params
-            ])
-
-      [animal_attrs: animal_update_attrs]
+    setup(%{complete_animal: animal}) do
+      new_gap = %{in_service_date: @later_iso_date,
+                  out_of_service_date: @later_iso_bumped_date,
+                  reason: "addition"
+                 }
+      [animal_attrs: AnimalX.attrs_plus_service_gap(animal, new_gap)]
     end
     
     test "What kind of changesets are produced by the `update_changeset`",
@@ -140,49 +136,5 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       assert new.reason == "addition"
       assert new.span == span(@later_date, @later_bumped_date)
     end
-  end
-
-  
-
-  defp insert(attrs) do
-    %ServiceGap{}
-    |> ServiceGap.changeset(attrs)
-    |> Sql.insert!(@institution)
-  end
-
-  defp get_and_complete(id) do
-    ServiceGap
-    |> Sql.get(id, @institution)
-    |> ServiceGap.complete_fields
-  end
-
-  defp attrs(in_service_date, out_of_service_date, reason, opts \\ []) do
-    defaults = %{animal_id: Available.animal_id}
-    optmap = Enum.into(opts, defaults)
-    %{animal_id: optmap.animal_id,
-      in_service_date: in_service_date,
-      out_of_service_date: out_of_service_date,
-      reason: reason}
-  end
-
-  defp form_params_for_existing(service_gap) do 
-    %{id: service_gap.id,
-      in_service_date: service_gap.in_service_date,
-      out_of_service_date: service_gap.out_of_service_date,
-      reason: service_gap.reason}
-  end
-
-
-  defp same_animal_with_service_gap_params(animal, service_gaps) do
-    IO.puts("TODO note: never")
-    %{id: animal.id,
-      name: animal.name,
-      in_service_date: Date.to_iso8601(animal.in_service_date),
-      # This will sometimes fail because the animal may have a "never"
-      # out-of-service date.
-      out_of_service_date: Date.to_iso8601(animal.out_of_service_date),
-      lock_version: animal.lock_version,
-      service_gaps: service_gaps
-    }
   end
 end

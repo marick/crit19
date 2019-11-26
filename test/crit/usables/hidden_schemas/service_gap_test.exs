@@ -1,10 +1,11 @@
 defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.HiddenSchemas.ServiceGap
-  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
   alias Crit.Usables.FieldConverters.ToDate
-  alias Crit.Exemplars.Available
   alias Crit.Sql
+
+  alias Crit.X.ServiceGapX
+  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
 
@@ -54,8 +55,8 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
 
   describe "direct manipulation of changesets: CREATE and READ" do
     setup do
-      attrs = attrs(@iso_date, @later_iso_date, "reason")
-      insertion_result = insert(attrs)
+      attrs = ServiceGapX.attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = ServiceGapX.insert(attrs)
       retrieved_gap = Sql.get(ServiceGap, insertion_result.id, @institution)
       [attrs: attrs, insertion_result: insertion_result, retrieved_gap: retrieved_gap]
     end
@@ -96,20 +97,5 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
       assert complete.span == span(@date, @later_date)
       assert complete.reason == attrs.reason
     end
-  end
-
-  defp insert(attrs) do
-    %ServiceGap{}
-    |> ServiceGap.changeset(attrs)
-    |> Sql.insert!(@institution)
-  end
-
-  defp attrs(in_service_date, out_of_service_date, reason, opts \\ []) do
-    defaults = %{animal_id: Available.animal_id}
-    optmap = Enum.into(opts, defaults)
-    %{animal_id: optmap.animal_id,
-      in_service_date: in_service_date,
-      out_of_service_date: out_of_service_date,
-      reason: reason}
   end
 end
