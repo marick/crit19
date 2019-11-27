@@ -11,6 +11,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGap do
 
     field :in_service_date, :date, virtual: true
     field :out_of_service_date, :date, virtual: true
+    field :delete, :boolean, default: false, virtual: true
   end
 
   @required_for_insertion [:reason, :in_service_date, :out_of_service_date]

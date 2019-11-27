@@ -28,7 +28,8 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
     @addition_input %{
       in_service_date: @later_iso_date,
       out_of_service_date: @later_iso_bumped_date,
-      reason: "addition"
+      reason: "addition",
+      delete: false
     }
 
     # These are the *non-virtual* fields that must be present in the CHANGESET
@@ -47,6 +48,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
       in_service_date: @later_date,
       out_of_service_date: @later_bumped_date,
       reason: "addition",
+      delete: false,
 
       span: span(@later_date, @later_bumped_date)
     }
@@ -104,6 +106,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
       assert retained_gap == original_gap(animal)
     end
   end
+
 
   defp original_gap(animal), do: AnimalX.service_gap_n(animal, 0)
   defp new_gap(animal), do: AnimalX.service_gap_n(animal, 1)
