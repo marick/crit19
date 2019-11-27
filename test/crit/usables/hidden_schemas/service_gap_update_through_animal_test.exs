@@ -24,15 +24,13 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
       [animal_attrs: AnimalX.attrs_plus_service_gap(animal, new_gap)]
     end
     
-    test "What kind of service gap changesets are produced by `Animal.update_changeset`",
+    test "service gap changesets produced by `Animal.update_changeset`",
       %{complete_animal: complete_animal, animal_attrs: attrs} do
 
       [old_sg_changeset, new_sg_changeset] = 
-        complete_animal
-        |> Animal.update_changeset(attrs)
-        |> (fn cs -> cs.changes.service_gaps end).()
+        Animal.update_changeset(complete_animal, attrs).changes.service_gaps
 
-      # No changes for the old service gap (therefore, it will not be UPDATED)
+      # No changes for the old service gap (therefore, it will not be UPDATEd)
       old_sg_changeset |> assert_valid |> assert_unchanged
 
       # The new service gap, however, has a fleshed-out changeset
@@ -45,18 +43,19 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
     test "the results of using the changeset",
       %{complete_animal: complete_animal, animal_attrs: attrs} do
 
-      {:ok, %{service_gaps: [old, new]}} = 
+      {:ok, %{service_gaps: [retained_gap, added_gap]}} = 
         complete_animal
         |> Animal.update_changeset(attrs)
         |> Sql.update(@institution)
       
-      assert old == original_gap(complete_animal)
-      
-      assert is_integer(new.id)
-      assert new.in_service_date == @later_date
-      assert new.out_of_service_date == @later_bumped_date
-      assert new.reason == "addition"
-      assert new.span == span(@later_date, @later_bumped_date)
+      assert retained_gap == original_gap(complete_animal)
+
+      added_gap
+      |> assert_fields(in_service_date: @later_date,
+                       out_of_service_date: @later_bumped_date,
+                       reason: "addition",
+                       span: span(@later_date, @later_bumped_date),
+                       id: &is_integer/1)
     end
   end
 
@@ -69,5 +68,6 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
     [complete_animal: AnimalApi.showable!(animal_id, @institution)]
   end
 
-  defp original_gap(%Animal{service_gaps: [original | _]}), do: original
+  defp original_gap(animal), do: AnimalX.service_gap_n(animal, 0)
+  defp new_gap(animal), do: AnimalX.service_gap_n(animal, 1)
 end

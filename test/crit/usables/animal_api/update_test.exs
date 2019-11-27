@@ -1,35 +1,31 @@
 defmodule Crit.Usables.AnimalApi.UpdateTest do
   use Crit.DataCase
-  alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Usables.FieldConverters.ToDate
 
-  defp on_success(id, params) do
+  defp update_for_success(id, params) do
     assert {:ok, new_animal} =
       AnimalApi.update(to_string(id), params, @institution)
     new_animal
   end
 
-  defp on_error(id, params) do
+  defp update_for_error(id, params) do
     assert {:error, changeset} = AnimalApi.update(id, params, @institution)
     errors_on(changeset)
   end
-    
-
 
   describe "updating the name and common behaviors" do
     test "success" do
       original = showable_animal_named("Original Bossie")
       params = params_except(original, %{"name" => "New Bossie"})
 
-      new_animal = on_success(original.id, params)
-      assert new_animal == %Animal{original |
-                                   name: "New Bossie",
-                                   lock_version: 2
-                                  }
-
-      assert new_animal == AnimalApi.showable!(original.id, @institution)
+      update_for_success(original.id, params)
+      |> assert_fields(name: "New Bossie", lock_version: 2)
+      |> assert_copy(original,
+                     except: [:name, :lock_version, :updated_at])
+      |> assert_copy(AnimalApi.showable!(original.id, @institution),
+                     except: [:updated_at])
     end
 
     test "unique name constraint violation produces changeset" do
@@ -37,7 +33,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       showable_animal_named("already exists")
       params = params_except(original, %{"name" => "already exists"})
 
-      assert "has already been taken" in on_error(original.id, params).name
+      assert "has already been taken" in update_for_error(original.id, params).name
     end
   end
 
@@ -55,7 +51,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
         
       params = %{"in_service_datestring" => dates.iso_next_in_service,
                  "out_of_service_datestring" => "never"}
-      new_animal = on_success(original_animal.id, params)
+      new_animal = update_for_success(original_animal.id, params)
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_next_in_service,
                              in_service_date: dates.next_in_service,
@@ -70,7 +66,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = on_success(animal.id, params)
+      new_animal = update_for_success(animal.id, params)
 
       assert new_animal == %{animal | 
                              out_of_service_datestring: dates.iso_next_out_of_service,
@@ -86,7 +82,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       )
       params = %{"in_service_datestring" => dates.iso_next_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = on_success(original_animal.id, params)
+      new_animal = update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_next_in_service,
@@ -104,7 +100,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => @never}
-      new_animal = on_success(original_animal.id, params)
+      new_animal = update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_in_service,
@@ -121,7 +117,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = on_success(original_animal.id, params)
+      new_animal = update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_in_service,

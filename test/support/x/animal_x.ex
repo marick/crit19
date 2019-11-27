@@ -37,5 +37,6 @@ defmodule Crit.X.AnimalX do
     new_animal = %{animal | service_gaps: new_gaps}
     attrs(new_animal)
   end
-  
+
+  def service_gap_n(%Animal{service_gaps: gaps}, n), do: Enum.at(gaps, n)
 end
