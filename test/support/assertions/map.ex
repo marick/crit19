@@ -2,14 +2,20 @@ defmodule Crit.Assertions.Map do
   import Crit.Assertions.Defchain
   import ExUnit.Assertions
 
-  defchain assert_fields(kvs, list) do 
-    Enum.map(list, fn
+  defchain assert_fields(kvs, list_or_map) do
+    list_or_map
+    |> Enum.into(%{})
+    |> Enum.map(fn
       {key, expected} ->
         assert Map.has_key?(kvs, key)
         assert_extended_equality(Map.get(kvs, key), expected, key)
       key ->
         assert Map.has_key?(kvs, key)
     end)
+  end
+
+  defchain assert_field(kvs, list_or_map) do
+    assert_fields(kvs, list_or_map)
   end
 
   defchain assert_copy(left, right, opts \\ []) do
