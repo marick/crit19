@@ -1,6 +1,7 @@
 defmodule Crit.Assertions.Changeset do
   import Crit.Assertions.Defchain
   import ExUnit.Assertions
+  import Crit.Assertions.Map
   alias Ecto.Changeset
   import Crit.DataCase, only: [errors_on: 1]
 
@@ -11,13 +12,7 @@ defmodule Crit.Assertions.Changeset do
     do: refute changeset.valid?
 
   defchain assert_changes(%Changeset{} = changeset, list) do
-    Enum.map(list, fn
-      {field, expected} ->
-        assert changeset.changes[field] == expected
-        assert Map.has_key?(changeset.changes, field) 
-      field ->
-        assert Map.has_key?(changeset.changes, field)
-    end)
+    assert_fields(changeset.changes, list)
   end
 
   defchain assert_change(cs, arg2) when is_list(arg2), do: assert_changes(cs, arg2)
