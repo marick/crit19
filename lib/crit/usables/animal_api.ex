@@ -12,7 +12,7 @@ defmodule Crit.Usables.AnimalApi do
       nil ->
         raise KeyError, "No animal id #{id}"
       animal ->
-        Read.put_virtual_fields(animal)
+        Read.put_updatable_fields(animal)
     end
   end
 
@@ -21,20 +21,20 @@ defmodule Crit.Usables.AnimalApi do
       nil ->
         nil
       animal ->
-        Read.put_virtual_fields(animal)
+        Read.put_updatable_fields(animal)
     end
   end
 
   def ids_to_animals(ids, institution) do
     ids
     |> Read.ids_to_animals(institution)
-    |> Read.put_virtual_fields
+    |> Read.put_updatable_fields
   end
 
   def all(institution) do
     institution
     |> Read.all
-    |> Read.put_virtual_fields
+    |> Read.put_updatable_fields
   end
 
   def form_changeset(animal), do: Animal.form_changeset(animal)

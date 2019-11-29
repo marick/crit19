@@ -25,7 +25,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     |> put_span
   end
 
-  def with_updatable_fields(%__MODULE__{} = gap) do
+  def put_updatable_fields(%__MODULE__{} = gap) do
     %{gap |
       in_service_date: gap.span.first,
       out_of_service_date: gap.span.last}

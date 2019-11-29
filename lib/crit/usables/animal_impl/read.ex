@@ -48,11 +48,11 @@ defmodule Crit.Usables.AnimalImpl.Read do
     |> Sql.all(institution)
   end
 
-  def put_virtual_fields(animals) when is_list(animals) do
-    Enum.map(animals, &put_virtual_fields/1)
+  def put_updatable_fields(animals) when is_list(animals) do
+    Enum.map(animals, &put_updatable_fields/1)
   end
 
-  def put_virtual_fields(animal) do
+  def put_updatable_fields(animal) do
     in_service_datestring = Date.to_iso8601(animal.in_service_date)
     out_of_service_datestring = 
       case animal.out_of_service_date do 
@@ -64,7 +64,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
        species_name: animal.species.name, 
        in_service_datestring: in_service_datestring,
        out_of_service_datestring: out_of_service_datestring,
-       service_gaps: Enum.map(animal.service_gaps, &ServiceGap.with_updatable_fields/1)
+       service_gaps: Enum.map(animal.service_gaps, &ServiceGap.put_updatable_fields/1)
     }
   end
 end
