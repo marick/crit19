@@ -6,7 +6,8 @@ defmodule Crit.Usables.Schemas.Animal do
   """
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
-  alias Crit.Usables.HiddenSchemas.{Species,ServiceGap}
+  alias Crit.Usables.HiddenSchemas.Species
+  alias Crit.Usables.Schemas.ServiceGap
   import Ecto.Changeset
   alias Crit.Usables.FieldConverters.ToDate
 

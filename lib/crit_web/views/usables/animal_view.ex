@@ -2,7 +2,7 @@ defmodule CritWeb.Usables.AnimalView do
   use CritWeb, :view
   alias Crit.Usables.AnimalApi
   alias CritWeb.Usables.AnimalController
-  alias Crit.Usables.HiddenSchemas.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
 
   def animal_id_attribute(animal) do
     "editing_animal#{animal.id}"

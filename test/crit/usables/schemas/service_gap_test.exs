@@ -1,11 +1,11 @@
-defmodule Crit.Usables.HiddenSchemas.ServiceGapTest do
+defmodule Crit.Usables.Schemas.ServiceGapTest do
   use Crit.DataCase
-  alias Crit.Usables.HiddenSchemas.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Usables.FieldConverters.ToDate
   alias Crit.Sql
 
   alias Crit.X.ServiceGapX
-  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
+  import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
 

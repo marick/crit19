@@ -1,4 +1,4 @@
-defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
+defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
@@ -7,7 +7,7 @@ defmodule Crit.Usables.HiddenSchemas.ServiceGapUpdateThroughAnimalTest do
 
   alias Crit.X.ServiceGapX
   alias Crit.X.AnimalX
-  import Crit.Usables.HiddenSchemas.ServiceGap, only: [span: 2]
+  import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
 

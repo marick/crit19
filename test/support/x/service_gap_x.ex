@@ -4,7 +4,7 @@ defmodule Crit.X.ServiceGapX do
   """
 
   use Crit.Global.Default
-  alias Crit.Usables.HiddenSchemas.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Sql
   alias Crit.Exemplars.Available
 

@@ -5,7 +5,7 @@ defmodule CritWeb.Usables.AnimalController do
 
   alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
-  alias Crit.Usables.HiddenSchemas.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   
   plug :must_be_able_to, :manage_animals
 

@@ -6,7 +6,7 @@ defmodule Crit.X.AnimalX do
   use Crit.Global.Default
   use Crit.Global.Constants
   alias Crit.Usables.Schemas.Animal
-  alias Crit.Usables.HiddenSchemas.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.X.ServiceGapX
 
   def attrs(%Animal{} = animal) do

@@ -2,7 +2,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
   use Crit.Global.Constants
   import Ecto.Query
   alias Crit.Sql
-  alias Crit.Usables.HiddenSchemas.ServiceGap
+  alias Crit.Usables.Schemas.ServiceGap
 
   defmodule Query do
     import Ecto.Query

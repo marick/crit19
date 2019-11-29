@@ -1,4 +1,4 @@
-defmodule Crit.Usables.HiddenSchemas.ServiceGap do
+defmodule Crit.Usables.Schemas.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Datespan
