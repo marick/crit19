@@ -1,8 +1,9 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   alias Crit.Users.{User,PermissionList}
-  alias Crit.Usables.Schemas.Animal
+  alias Crit.Usables.Schemas.{Animal,ServiceGap}
   alias Crit.Sql
+  alias Crit.Exemplars
   require Faker
 
   def sql_insert!(tag, opts \\ [], institution) do
@@ -33,6 +34,17 @@ defmodule Crit.Factory do
       name: Faker.Cat.name(),
       species_id: some_species_id()
      }
+  end
+
+  def service_gap_factory() do
+    span = ServiceGap.span(
+      Exemplars.Date.today_or_earlier,
+      Exemplars.Date.later_than_today)
+
+    %ServiceGap{
+      reason: sequence(:reason, &"reason#{&1}"),
+      span: span
+    }
   end
 
 

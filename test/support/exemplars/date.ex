@@ -1,13 +1,16 @@
 defmodule Crit.Exemplars.Date do
   use Crit.Global.Constants
 
+  def today_or_earlier(), do: Faker.Date.backward(1000)
+  def later_than_today(), do: Faker.Date.forward(1000)
+
   def iso_today_or_earlier() do 
-    iso = Faker.Date.backward(1000) |> Date.to_iso8601
+    iso = Date.to_iso8601(today_or_earlier())
     Enum.random([iso, @today])
   end
 
   def iso_later_than_today() do
-    iso = Faker.Date.forward(1000) |> Date.to_iso8601
+    iso = Date.to_iso8601(later_than_today())
     Enum.random([iso, @never])
   end
 

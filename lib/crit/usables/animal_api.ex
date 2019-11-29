@@ -72,5 +72,4 @@ defmodule Crit.Usables.AnimalApi do
     |> Sql.all(institution)
     |> Enum.map(fn %HiddenSchemas.Species{name: name, id: id} -> {name, id} end)
   end
-
 end
