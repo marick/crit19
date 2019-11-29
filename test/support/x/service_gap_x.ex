@@ -33,6 +33,6 @@ defmodule Crit.X.ServiceGapX do
   def get_updatable(id) do
     ServiceGap
     |> Sql.get(id, @institution)
-    |> ServiceGap.with_updatable_fields
+    |> ServiceGap.put_updatable_fields
   end
 end
