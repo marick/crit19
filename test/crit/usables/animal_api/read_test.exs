@@ -36,6 +36,7 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
       end
     end
 
+    @tag :skip
     test "add service gap conversion" do
       # Create an animal
       # Add a service gap

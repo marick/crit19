@@ -30,9 +30,9 @@ defmodule Crit.X.ServiceGapX do
       reason: service_gap.reason}
   end
 
-  def get_and_complete(id) do
+  def get_updatable(id) do
     ServiceGap
     |> Sql.get(id, @institution)
-    |> ServiceGap.complete_fields
+    |> ServiceGap.with_updatable_fields
   end
 end

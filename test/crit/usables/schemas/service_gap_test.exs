@@ -87,15 +87,15 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
     test "... so there's a function for that",
       %{retrieved_gap: retrieved, attrs: attrs} do
-      complete = ServiceGap.complete_fields(retrieved)
+      updatable = ServiceGap.with_updatable_fields(retrieved)
 
-      assert complete.in_service_date == @date
-      assert complete.out_of_service_date == @later_date
+      assert updatable.in_service_date == @date
+      assert updatable.out_of_service_date == @later_date
 
       # And other fields are still there
-      assert complete.animal_id == attrs.animal_id
-      assert complete.span == span(@date, @later_date)
-      assert complete.reason == attrs.reason
+      assert updatable.animal_id == attrs.animal_id
+      assert updatable.span == span(@date, @later_date)
+      assert updatable.reason == attrs.reason
     end
   end
 
@@ -105,23 +105,23 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     setup do
       attrs = ServiceGapX.attrs(@iso_date, @later_iso_date, "reason")
       insertion_result = ServiceGapX.insert(attrs)
-      complete = ServiceGapX.get_and_complete(insertion_result.id)
+      updatable = ServiceGapX.get_updatable(insertion_result.id)
       
-      [complete: complete, attrs: attrs]
+      [updatable: updatable, attrs: attrs]
     end
 
-    test "Updating to all the same values", %{complete: complete, attrs: attrs} do
-      ServiceGap.changeset(complete, attrs)
+    test "Updating to all the same values", %{updatable: updatable, attrs: attrs} do
+      ServiceGap.changeset(updatable, attrs)
       |> assert_valid
       |> assert_unchanged
       # Implied by above, but let's be really explicit:
       |> assert_unchanged(:span)
     end
 
-    test "the in-service date is new", %{complete: complete, attrs: attrs} do
+    test "the in-service date is new", %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | in_service_date: @iso_bumped_date}
 
-      ServiceGap.changeset(complete, new_attrs)
+      ServiceGap.changeset(updatable, new_attrs)
       |> assert_valid
       |> assert_changes(in_service_date: @bumped_date,
                         span: span(@bumped_date, @later_date))
@@ -130,11 +130,11 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     end
 
 
-    test "out-of-service date is new", %{complete: complete, attrs: attrs} do
+    test "out-of-service date is new", %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | out_of_service_date: @later_iso_bumped_date}
 
       
-      ServiceGap.changeset(complete, new_attrs)
+      ServiceGap.changeset(updatable, new_attrs)
       |> assert_valid
       |> assert_changes(out_of_service_date: @later_bumped_date,
                         span: span(@date, @later_bumped_date))
@@ -143,10 +143,10 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
 
     test "date mismatches are checked when just in_service date changes",
-      %{complete: complete, attrs: attrs} do
+      %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | in_service_date: @later_iso_date}
       
-      ServiceGap.changeset(complete, new_attrs)
+      ServiceGap.changeset(updatable, new_attrs)
       # Note that the error is always associated to the out-of-service error
       |> assert_error(out_of_service_date: ToDate.misorder_error_message)
       |> assert_change(in_service_date: @later_date)
@@ -155,10 +155,10 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     end
 
     test "date mismatches are checked when only out_of_service date changes",
-      %{complete: complete, attrs: attrs} do
+      %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | out_of_service_date: @iso_date}
       
-      ServiceGap.changeset(complete, new_attrs)
+      ServiceGap.changeset(updatable, new_attrs)
       |> assert_error(out_of_service_date: ToDate.misorder_error_message)
       |> assert_change(out_of_service_date: @date)
       

@@ -109,7 +109,6 @@ defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
 
 
   defp original_gap(animal), do: AnimalX.service_gap_n(animal, 0)
-  defp new_gap(animal), do: AnimalX.service_gap_n(animal, 1)
 
   defp make_changesets(animal, attrs),
     do: Animal.update_changeset(animal, attrs).changes.service_gaps

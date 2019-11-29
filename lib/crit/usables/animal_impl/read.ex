@@ -64,7 +64,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
        species_name: animal.species.name, 
        in_service_datestring: in_service_datestring,
        out_of_service_datestring: out_of_service_datestring,
-       service_gaps: Enum.map(animal.service_gaps, &ServiceGap.complete_fields/1)
+       service_gaps: Enum.map(animal.service_gaps, &ServiceGap.with_updatable_fields/1)
     }
   end
 end
