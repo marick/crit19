@@ -22,7 +22,7 @@ defmodule Crit.Usables.AnimalImpl.Write do
   end
 
   defp changeset_for_lock_error(id, institution) do
-    AnimalApi.showable!(id, institution)
+    AnimalApi.updatable!(id, institution)
     |> Animal.form_changeset
     |> Changeset.add_error(
       :optimistic_lock_error,

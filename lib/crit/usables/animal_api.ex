@@ -7,7 +7,7 @@ defmodule Crit.Usables.AnimalApi do
   alias Ecto.ChangesetX
 
 
-  def showable!(id, institution) do
+  def updatable!(id, institution) do
     case Read.one([id: id], institution) do
       nil ->
         raise KeyError, "No animal id #{id}"
@@ -16,7 +16,7 @@ defmodule Crit.Usables.AnimalApi do
     end
   end
 
-  def showable_by(field, value, institution) do
+  def updatable_by(field, value, institution) do
     case Read.one([{field, value}], institution) do
       nil ->
         nil
@@ -40,7 +40,7 @@ defmodule Crit.Usables.AnimalApi do
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
   def update(string_id, attrs, institution) do
-    animal = showable!(string_id, institution)
+    animal = updatable!(string_id, institution)
     case Write.update(animal, attrs, institution) do
       {:ok, animal} -> {:ok, animal}
       {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}

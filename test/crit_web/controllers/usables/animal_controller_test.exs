@@ -87,7 +87,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       {:ok, audit} = latest_audit_record(conn)
 
       ids = SqlX.all_ids(Animal)
-      typical_animal = one_of_these_as_showable_animal(ids)
+      typical_animal = one_of_these_as_updatable_animal(ids)
 
       assert audit.event == Audit.events.created_animals
       assert audit.event_owner_id == user_id(conn)
@@ -148,7 +148,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   end
 
   
-  defp animal_name(id), do: AnimalApi.showable!(id, @institution).name
+  defp animal_name(id), do: AnimalApi.updatable!(id, @institution).name
 
   defp animal_creation_data() do
     {in_service_datestring, out_of_service_datestring} = Exemplars.Date.date_pair() 
@@ -165,7 +165,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     {namelist, params}
   end
 
-  defp one_of_these_as_showable_animal([id | _]) do 
-    AnimalApi.showable!(id, @institution)
+  defp one_of_these_as_updatable_animal([id | _]) do 
+    AnimalApi.updatable!(id, @institution)
   end
 end

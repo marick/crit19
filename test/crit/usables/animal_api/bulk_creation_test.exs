@@ -14,7 +14,7 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
     check_animal_properties_inserted = fn returned ->
-      fetched = AnimalApi.showable!(returned.id, @institution)
+      fetched = AnimalApi.updatable!(returned.id, @institution)
       assert fetched.id == returned.id
       assert fetched.name == returned.name
       assert fetched.in_service_datestring == @iso_date

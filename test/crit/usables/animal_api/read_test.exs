@@ -4,12 +4,12 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
   alias Crit.Usables.Schemas.{Animal}
   alias Crit.Sql
 
-  describe "getting a showable animal from its id" do
+  describe "getting a updatable animal from its id" do
     setup :two_animals_setup
     
     test "basic conversions",
       %{never_out_of_service_id: id} do
-      animal = AnimalApi.showable!(id, @institution)
+      animal = AnimalApi.updatable!(id, @institution)
 
       assert animal.name == "Never out"
       assert animal.lock_version == 1
@@ -19,24 +19,23 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
 
     test "with only an in-service date",
       %{never_out_of_service_id: id} do
-      animal = AnimalApi.showable!(id, @institution)
+      animal = AnimalApi.updatable!(id, @institution)
       assert animal.in_service_datestring == @iso_date
       assert animal.out_of_service_datestring == @never
     end
 
     test "with an out-of-service date", %{goes_out_of_service_id: id} do
-      animal = AnimalApi.showable!(id, @institution)
+      animal = AnimalApi.updatable!(id, @institution)
       assert animal.in_service_datestring == @iso_date
       assert animal.out_of_service_datestring == @later_iso_date
     end
 
     test "no such id" do
       assert_raise KeyError, fn -> 
-        AnimalApi.showable!(83483, @institution)
+        AnimalApi.updatable!(83483, @institution)
       end
     end
 
-    @tag :skip
     test "add service gap conversion" do
       # Create an animal
       # Add a service gap
@@ -50,7 +49,7 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
     setup :two_animals_setup
 
     test "fetching by name" do
-      assert animal = AnimalApi.showable_by(:name, "Never out", @institution)
+      assert animal = AnimalApi.updatable_by(:name, "Never out", @institution)
       assert is_integer(animal.id)
       assert animal.name == "Never out"
       assert animal.species_name == @bovine
@@ -58,13 +57,13 @@ defmodule Crit.Usables.Schemas.AnimalApi.ReadTest do
     end
 
     test "fetching by name is case independent" do
-      assert animal = AnimalApi.showable_by(:name, "never ouT", @institution)
+      assert animal = AnimalApi.updatable_by(:name, "never ouT", @institution)
       assert is_integer(animal.id)
       assert animal.name == "Never out"
     end
 
     test "errors return nil" do
-      assert nil == AnimalApi.showable_by(:name, "lossie", @institution)
+      assert nil == AnimalApi.updatable_by(:name, "lossie", @institution)
     end
   end
 

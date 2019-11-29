@@ -17,20 +17,20 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
 
   describe "updating the name and common behaviors" do
     test "success" do
-      original = showable_animal_named("Original Bossie")
+      original = updatable_animal_named("Original Bossie")
       params = params_except(original, %{"name" => "New Bossie"})
 
       update_for_success(original.id, params)
       |> assert_fields(name: "New Bossie", lock_version: 2)
       |> assert_copy(original,
                      except: [:name, :lock_version, :updated_at])
-      |> assert_copy(AnimalApi.showable!(original.id, @institution),
+      |> assert_copy(AnimalApi.updatable!(original.id, @institution),
                      except: [:updated_at])
     end
 
     test "unique name constraint violation produces changeset" do
-      original = showable_animal_named("Original Bossie")
-      showable_animal_named("already exists")
+      original = updatable_animal_named("Original Bossie")
+      updatable_animal_named("already exists")
       params = params_except(original, %{"name" => "already exists"})
 
       assert "has already been taken" in update_for_error(original.id, params).name
@@ -145,7 +145,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
 
   describe "optimistic concurrency" do
     setup do
-      original = showable_animal_named("Original Bossie")
+      original = updatable_animal_named("Original Bossie")
 
       update = fn animal, name ->
         params = params_except(original, %{
@@ -183,7 +183,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
     test "Unsuccessful name change DOES NOT update lock_version",
       %{original: original, update: update} do
 
-      showable_animal_named("preexisting")
+      updatable_animal_named("preexisting")
 
       assert {:error, changeset} = update.(original, "preexisting")
 
@@ -216,7 +216,7 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
       end
     
     id = Exemplars.Available.animal_id(with_out_of_service)
-    AnimalApi.showable!(id, @institution)
+    AnimalApi.updatable!(id, @institution)
   end
 
   defp params_except(animal, overrides) do
@@ -229,8 +229,8 @@ defmodule Crit.Usables.AnimalApi.UpdateTest do
     Map.merge(from_animal, overrides)
   end
 
-  defp showable_animal_named(name) do
+  defp updatable_animal_named(name) do
     id = Exemplars.Available.animal_id(name: name)
-    AnimalApi.showable!(id, @institution)
+    AnimalApi.updatable!(id, @institution)
   end
 end

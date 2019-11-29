@@ -19,7 +19,7 @@ defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
       ServiceGapX.attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
     )
     
-    [animal: AnimalApi.showable!(animal_id, @institution)]
+    [animal: AnimalApi.updatable!(animal_id, @institution)]
   end
   
   describe "adding a service gap" do
@@ -123,7 +123,7 @@ defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
   end
 
   defp retrieve_update(animal) do 
-    %Animal{service_gaps: gaps} = AnimalApi.showable!(animal.id, @institution)
+    %Animal{service_gaps: gaps} = AnimalApi.updatable!(animal.id, @institution)
     gaps
   end
 end
