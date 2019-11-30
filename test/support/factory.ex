@@ -36,6 +36,17 @@ defmodule Crit.Factory do
      }
   end
 
+  def usable_animal_factory() do
+    %Animal{
+      id: 5,
+      name: Faker.Cat.name(),
+      species_id: some_species_id(),
+      in_service_datestring: "foo",
+      out_of_service_datestring: "bar",
+      service_gaps: []
+     }
+  end
+
   def service_gap_factory() do
     span = ServiceGap.span(
       Exemplars.Date.today_or_earlier,

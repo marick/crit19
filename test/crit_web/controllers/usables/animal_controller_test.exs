@@ -7,6 +7,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   alias Crit.Usables.Schemas.Animal
   alias CritWeb.Audit
   alias Crit.Exemplars
+  alias Ecto.Changeset
 
   setup :logged_in_as_usables_manager
 
@@ -102,7 +103,40 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       [id: Exemplars.Available.animal_id(name: "OLD NAME")]
     end
 
+    test "update is successful", %{conn: conn} do
+      given AnimalApi.update, [@id_M, @params_M, @institution],
+        do: {:ok, Factory.build(:usable_animal)}
+
+      # then...
+      conn = post_to_action(conn, [:update, @id_M], under(:animal, @params_M))
+
+      # ...means:
+      conn
+      |> assert_purpose(snippet_to_display_animal())
+    end
+
+
+    test "an update failure", %{conn: conn} do
+      given AnimalApi.update, [@id_M, @params_M, @institution] do
+        changeset =
+          Factory.build(:usable_animal)
+          |> Animal.update_changeset(%{name: "Duplicate"})
+          |> Map.put(:action, :update)
+          |> Changeset.add_error(:name, "already exists")
+        {:error, changeset}
+      end
+
+      # then...
+      conn = post_to_action(conn, [:update, @id_M], under(:animal, @params_M))
+
+      # ...means:
+      conn
+      |> assert_purpose(form_for_editing_animal())
+      |> assert_user_sees("already exists")
+    end
+
     test "name change", %{conn: conn, id: id} do
+      IO.puts "move this test"
       assert animal_name(id) == "OLD NAME" 
       conn =
         post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
@@ -114,6 +148,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
 
     test "duplicate name change", %{conn: conn, id: id} do
+      IO.puts "move this test"
       Exemplars.Available.animal_id(name: "already exists")
       conn =
         post_to_action(conn, [:update, id], under(:animal, %{"name" => "already exists"}))
