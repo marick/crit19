@@ -49,8 +49,8 @@ defmodule Crit.MixProject do
       {:pbkdf2_elixir, "~> 1.0"},
       {:puid, "~> 1.0"},
       {:assertions, "~> 0.10", only: :test},
-      {:mox, "~> 0.5", only: :test},
       {:tzdata, "~> 1.0.1"},
+      {:mockery, "~> 2.3.0", runtime: false}
     ]
   end
 
