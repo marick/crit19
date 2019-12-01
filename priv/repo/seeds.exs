@@ -14,6 +14,8 @@ alias Crit.Users
 alias Crit.Users.{User,PermissionList}
 alias Crit.Sql
 alias Crit.Usables.HiddenSchemas.Species
+alias Crit.Usables.AnimalApi
+alias Crit.Usables.Schemas.ServiceGap
 alias Crit.Global.Constants
 alias Crit.Global.Default
 
@@ -35,8 +37,8 @@ institution = Default.institution.short_name
 }, institution
 
 :ok = Users.set_password("marick",
-  %{"new_password" => "merchant-province-weepy-communal",
-    "new_password_confirmation" => "merchant-province-weepy-communal"},
+  %{"new_password" => "weepy-communal",
+    "new_password_confirmation" => "weepy-communal"},
   institution)
 
 # This is needless wankery to make sure that ids used in tests
@@ -49,3 +51,17 @@ equine_id = Constants.equine_id
   Sql.insert!(%Species{name: Constants.bovine}, institution)
 %{id: ^equine_id} =
   Sql.insert!(%Species{name: Constants.equine}, institution)
+
+
+{:ok, [hank]} = AnimalApi.create_animals(%{"names" => "Hank",
+                                    "species_id" => equine_id,
+                                    "in_service_datestring" => "today",
+                                    "out_of_service_datestring" => "never"
+                                    }, institution)
+Sql.insert!(%ServiceGap{
+      animal_id: hank.id,
+      span: ServiceGap.span(~D[2023-01-01], ~D[2023-03-03]),
+      reason: "seed"}, institution)
+
+
+IO.inspect AnimalApi.updatable!(hank.id, institution)
