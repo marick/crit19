@@ -4,164 +4,16 @@ defmodule CritWeb.Usables.AnimalControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables.FieldConverters.ToNameList
   alias Crit.Usables.AnimalApi
-  alias Crit.Usables.Schemas.Animal
+  alias Crit.Usables.Schemas.{Animal, ServiceGap}
   alias CritWeb.Audit
   alias Crit.Exemplars
-  alias Ecto.Changeset
+
+  # All controller tests are end-to-end tests.
 
   setup :logged_in_as_usables_manager
 
-  describe "bulk creation form" do
-    test "renders form", %{conn: conn} do
-      conn
-      |> get_via_action(:bulk_create_form)
-      |> assert_purpose(form_for_creating_new_animal())
-      |> assert_user_sees(@today)
-      |> assert_user_sees(@never)
-      |> assert_user_sees(@bovine)
-
-    end
-  end
-
-  describe "bulk create animals" do
-    setup do
-      act = fn conn, params ->
-        post_to_action(conn, :bulk_create, under(:bulk_animal, params))
-      end
-      [act: act]
-    end
-
-    setup do
-      assert SqlX.all_ids(Animal) == []
-      []
-    end
-
-    test "success case", %{conn: conn, act: act} do
-      {names, params} = animal_creation_data()
-      conn = act.(conn, params)
-      
-      assert_purpose conn, displaying_animal_summaries()
-
-      assert length(SqlX.all_ids(Animal)) == length(names)
-      assert_user_sees(conn, Enum.at(names, 0))
-      assert_user_sees(conn, Enum.at(names, -1))
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, act: act} do
-      {_names, params} = animal_creation_data()
-
-      bad_params = Map.put(params, "names", " ,     ,")
-
-      act.(conn, bad_params)
-      |> assert_purpose(form_for_creating_new_animal())
-
-      # error messages
-      |> assert_user_sees(ToNameList.no_names_error_message())
-      # Fields retain their old values.
-      |> assert_user_sees(bad_params["names"])
-    end
-
-    test "a bad start date is supposed to be impossible", %{conn: conn, act: act} do
-      {_names, params} = animal_creation_data()
-
-      bad_params = Map.put(params, "in_service_datestring", "yesterday...")
-
-      assert_raise RuntimeError, fn -> 
-        act.(conn, bad_params)
-      end
-    end
-
-    test "a bad end date is supposed to be impossible", %{conn: conn, act: act} do
-      {_names, params} = animal_creation_data()
-
-      bad_params = Map.put(params, "out_of_service_datestring", "2525-13-06")
-
-      assert_raise RuntimeError, fn -> 
-        act.(conn, bad_params)
-      end
-    end
-
-    test "an audit record is created", %{conn: conn, act: act} do
-      {_names, params} = animal_creation_data()
-      conn = act.(conn, params)
-
-      {:ok, audit} = latest_audit_record(conn)
-
-      ids = SqlX.all_ids(Animal)
-      typical_animal = one_of_these_as_updatable_animal(ids)
-
-      assert audit.event == Audit.events.created_animals
-      assert audit.event_owner_id == user_id(conn)
-      assert audit.data.ids == ids
-      assert audit.data.in_service_date == typical_animal.in_service_date
-      assert audit.data.out_of_service_date == typical_animal.out_of_service_date
-    end
-  end
-
-  describe "update" do
-    setup do
-      [id: Exemplars.Available.animal_id(name: "OLD NAME")]
-    end
-
-    test "update is successful", %{conn: conn} do
-      given AnimalApi.update, [@id_M, @params_M, @institution],
-        do: {:ok, Factory.build(:usable_animal)}
-
-      # then...
-      conn = post_to_action(conn, [:update, @id_M], under(:animal, @params_M))
-
-      # ...means:
-      conn
-      |> assert_purpose(snippet_to_display_animal())
-    end
-
-
-    test "an update failure", %{conn: conn} do
-      given AnimalApi.update, [@id_M, @params_M, @institution] do
-        changeset =
-          Factory.build(:usable_animal)
-          |> Animal.update_changeset(%{name: "Duplicate"})
-          |> Map.put(:action, :update)
-          |> Changeset.add_error(:name, "already exists")
-        {:error, changeset}
-      end
-
-      # then...
-      conn = post_to_action(conn, [:update, @id_M], under(:animal, @params_M))
-
-      # ...means:
-      conn
-      |> assert_purpose(form_for_editing_animal())
-      |> assert_user_sees("already exists")
-    end
-
-    test "name change", %{conn: conn, id: id} do
-      IO.puts "move this test"
-      assert animal_name(id) == "OLD NAME" 
-      conn =
-        post_to_action(conn, [:update, id], under(:animal, %{"name" => "newname"}))
-      assert animal_name(id) == "newname"
-
-      conn
-      |> assert_purpose(snippet_to_display_animal())
-      |> assert_user_sees("newname")
-    end
-
-    test "duplicate name change", %{conn: conn, id: id} do
-      IO.puts "move this test"
-      Exemplars.Available.animal_id(name: "already exists")
-      conn =
-        post_to_action(conn, [:update, id], under(:animal, %{"name" => "already exists"}))
-      assert animal_name(id) == "OLD NAME"
-
-      conn
-      |> assert_purpose(form_for_editing_animal())
-      |> assert_user_sees("already exists")
-    end
-  end
-
-  describe "index" do
-    test "fetching two", %{conn: conn} do
+  describe "fetching a set of animals" do
+    test "order matters", %{conn: conn} do
       should_sort_second = "ZZZZZZ"
       should_sort_first = "aaaaaa"
       Exemplars.Available.animal_id(name: should_sort_second)
@@ -175,32 +27,160 @@ defmodule CritWeb.Usables.AnimalControllerTest do
     end
   end
 
-
-  @tag :skip
-  test "check that service gap attributes are flattened" do
-    # They come back as a map from index to structs. The controller
-    # needs to call the animal api with a proper array of attributes.
+  describe "request the bulk creation form" do
+    test "renders form", %{conn: conn} do
+      conn
+      |> get_via_action(:bulk_create_form)
+      |> assert_purpose(form_for_creating_new_animal())
+      |> assert_user_sees(@today)
+      |> assert_user_sees(@never)
+      |> assert_user_sees(@bovine)
+    end
   end
 
-  
-  defp animal_name(id), do: AnimalApi.updatable!(id, @institution).name
+  describe "bulk create animals" do
+    setup do
+      act = fn conn, params ->
+        post_to_action(conn, :bulk_create, under(:bulk_animal, params))
+      end
+      [act: act]
+    end
 
-  defp animal_creation_data() do
-    {in_service_datestring, out_of_service_datestring} = Exemplars.Date.date_pair() 
-    {_species_name, species_id} = Enum.random(AnimalApi.available_species(@institution))
+    setup do
+      # It's relatively easy to accidentally put persistent data into
+      # the test database, so this checks for that
+      assert SqlX.all_ids(Animal) == []
+      []
+    end
+
+    test "success case", %{conn: conn, act: act} do
+      {names, params} = bulk_creation_params()
+      conn = act.(conn, params)
+      
+      assert_purpose conn, displaying_animal_summaries()
+
+      assert length(SqlX.all_ids(Animal)) == length(names)
+      assert_user_sees(conn, Enum.at(names, 0))
+      assert_user_sees(conn, Enum.at(names, -1))
+    end
+
+    test "renders errors when data is invalid", %{conn: conn, act: act} do
+      {_names, params} = bulk_creation_params()
+
+      bad_params = Map.put(params, "names", " ,     ,")
+
+      act.(conn, bad_params)
+      |> assert_purpose(form_for_creating_new_animal())
+
+      # error messages
+      |> assert_user_sees(ToNameList.no_names_error_message())
+      # Fields retain their old values.
+      |> assert_user_sees(bad_params["names"])
+    end
+
+    test "an audit record is created", %{conn: conn, act: act} do
+      {_names, params} = bulk_creation_params()
+      conn = act.(conn, params)
+
+      {:ok, audit} = latest_audit_record(conn)
+
+      ids = SqlX.all_ids(Animal)
+      typical_animal = AnimalApi.updatable!(hd(ids), @institution)
+
+      assert audit.event == Audit.events.created_animals
+      assert audit.event_owner_id == user_id(conn)
+      assert audit.data.ids == ids
+      assert audit.data.in_service_date == typical_animal.in_service_date
+      assert audit.data.out_of_service_date == typical_animal.out_of_service_date
+    end
+  end
+
+
+  describe "update a single animal" do
+    setup do
+      id = Exemplars.Available.animal_id(name: "original name")
+      _will_changed = Factory.sql_insert!(:service_gap, [animal_id: id], @institution)
+      _will_vanish = Factory.sql_insert!(:service_gap, [animal_id: id], @institution)
+      
+      [animal_id: id]
+    end
     
+    test "success", %{conn: conn, animal_id: animal_id} do
+      new_service_gap = %{"in_service_date" => "2300-01-02",
+                          "out_of_service_date" => "2300-01-03",
+                          "reason" => "newly added"
+                         }
+      
+      params =
+        animal_id
+        |> AnimalApi.updatable!(@institution)
+        |> animal_to_params
+        # change a field in the animal itself
+        |> Map.put("name", "new name")
+        # change a field in one of the service gaps
+        |> put_in(["service_gaps", "0", "reason"], "fixored reason")
+        # delete the other 
+        |> put_in(["service_gaps", "1", "delete"], "true")
+        |> put_in(["service_gaps", "2"], new_service_gap)
+
+      post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
+      |> assert_purpose(snippet_to_display_animal())
+      # Note that service gaps are not displayed as a part of a snippet
+      |> assert_user_sees("new name")
+      
+      # Check that the changes propagate
+      animal = AnimalApi.updatable!(animal_id, @institution)
+      assert_field(animal, name: "new name")
+
+      IO.puts "Service gap deletion does not yet work."
+      [changed, _deleted, added] =
+        animal.service_gaps |> Enum.sort_by(fn gap -> gap.id end)
+
+      assert_field(changed,
+        reason: "fixored reason")
+      assert_fields(added,
+        reason: "newly added",
+        span: ServiceGap.span(~D[2300-01-02], ~D[2300-01-03]))
+    end
+
+    @tag :skip
+    test "update failures produce appropriate annotations" do
+    end
+  end
+
+
+  defp bulk_creation_params() do
+    {in_service_datestring, out_of_service_datestring} = Exemplars.Date.date_pair()
     namelist = Factory.unique_names()
 
     params = %{"names" => Factory.names_to_input_string(namelist),
-               "species_id" => species_id,
+               "species_id" => Factory.some_species_id,
                "in_service_datestring" => in_service_datestring,
                "out_of_service_datestring" => out_of_service_datestring
               }
 
     {namelist, params}
   end
+  
+  defp animal_to_params(animal) do
+    base = 
+      %{"in_service_datestring" => animal.in_service_datestring,
+        "lock_version" => to_string(animal.lock_version),
+        "name" => animal.name,
+        "out_of_service_datestring" => animal.out_of_service_datestring,
+       }
+    service_gaps =
+      Enum.reduce(Enum.with_index(animal.service_gaps), %{}, fn {sg, i}, acc ->
+        Map.put(acc,
+          to_string(i),
+          %{"id" => to_string(sg.id),
+            "in_service_date" => Date.to_iso8601(sg.span.first),
+            "out_of_service_date" => Date.to_iso8601(sg.span.last),
+            "reason" => sg.reason,
+            "delete" => "false"
+          })
+      end)
 
-  defp one_of_these_as_updatable_animal([id | _]) do 
-    AnimalApi.updatable!(id, @institution)
+    Map.put(base, "service_gaps", service_gaps)
   end
 end

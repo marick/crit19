@@ -31,6 +31,7 @@ defmodule CritWeb.ConnCase do
       use Crit.Exemplars.Simple
       use Crit.Mock
       alias Crit.X.SqlX
+      import Crit.Assertions.Map
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint
