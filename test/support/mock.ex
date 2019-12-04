@@ -23,8 +23,10 @@ defmodule Crit.Mock do
       # These are frequent metaconstants: that is, values about which 
       # nothing is known but their identity and type.
       @id__ "any old id"
+      @id_list__ ["one id", "another"]
       @params__ %{"params__" => "values__"}
       @animal__ "any old animal"
+      @animal_list__ ["any old animal", "and another"]
     end
   end
 end

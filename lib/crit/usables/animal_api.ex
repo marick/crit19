@@ -27,16 +27,15 @@ defmodule Crit.Usables.AnimalApi do
 
   def ids_to_animals(ids, institution) do
     ids
-    |> Read.ids_to_animals(institution)
-    |> Read.put_updatable_fields
+    |> some(Read).ids_to_animals(institution)
+    |> some(Read).put_updatable_fields
   end
 
   def all(institution) do
     institution
-    |> Read.all
-    |> Read.put_updatable_fields
+    |> some(Read).all
+    |> some(Read).put_updatable_fields
   end
-
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
   def update(string_id, attrs, institution) do
