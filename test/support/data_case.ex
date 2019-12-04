@@ -29,6 +29,7 @@ defmodule Crit.DataCase do
       use Crit.Exemplars.Simple
       alias Crit.X.SqlX
       import Crit.Assertions.Map
+      use Crit.Mock
     end
   end
 

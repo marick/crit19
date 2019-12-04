@@ -5,7 +5,6 @@ defmodule CritWeb.Usables.AnimalController do
 
   alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
-  alias Crit.Usables.Schemas.ServiceGap
   import Mockery.Macro
   
   plug :must_be_able_to, :manage_animals

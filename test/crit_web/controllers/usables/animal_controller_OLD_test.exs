@@ -5,7 +5,6 @@ defmodule CritWeb.Usables.AnimalControllerOLDTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias Crit.Exemplars
-  alias Ecto.Changeset
 
   setup :logged_in_as_usables_manager
 
@@ -46,46 +45,6 @@ defmodule CritWeb.Usables.AnimalControllerOLDTest do
       end
     end
   end
-
-  describe "update" do
-    setup do
-      [id: Exemplars.Available.animal_id(name: "OLD NAME")]
-    end
-
-    # Save these until there are other mock tests
-    test "update is successful", %{conn: conn} do
-      given AnimalApi.update, [@id_M, @params_M, @institution],
-        do: {:ok, Factory.build(:usable_animal)}
-
-      # then...
-      conn = post_to_action(conn, [:update, @id_M], under(:animal, @params_M))
-
-      # ...means:
-      conn
-      |> assert_purpose(snippet_to_display_animal())
-    end
-
-
-    test "an update failure", %{conn: conn} do
-      given AnimalApi.update, [@id_M, @params_M, @institution] do
-        changeset =
-          Factory.build(:usable_animal)
-          |> Animal.update_changeset(%{name: "Duplicate"})
-          |> Map.put(:action, :update)
-          |> Changeset.add_error(:name, "some duplicate name message")
-        {:error, changeset}
-      end
-
-      # then...
-      conn = post_to_action(conn, [:update, @id_M], under(:animal, @params_M))
-
-      # ...means:
-      conn
-      |> assert_purpose(form_for_editing_animal())
-      |> assert_user_sees("some duplicate name message")
-    end
-  end
-
 
   defp animal_creation_data() do
     {in_service_datestring, out_of_service_datestring} = Exemplars.Date.date_pair() 

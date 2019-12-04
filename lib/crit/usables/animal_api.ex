@@ -1,27 +1,27 @@
 defmodule Crit.Usables.AnimalApi do
   use Crit.Global.Constants
+  import Pile.Interface
   alias Crit.Usables.AnimalImpl.{Read,BulkCreationTransaction,Write}
   alias Crit.Sql
   alias Crit.Usables.HiddenSchemas
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   alias Ecto.ChangesetX
 
-
   def updatable!(id, institution) do
-    case Read.one([id: id], institution) do
+    case some(Read).one([id: id], institution) do
       nil ->
         raise KeyError, "No animal id #{id}"
       animal ->
-        Read.put_updatable_fields(animal)
+        some(Read).put_updatable_fields(animal)
     end
   end
 
   def updatable_by(field, value, institution) do
-    case Read.one([{field, value}], institution) do
+    case some(Read).one([{field, value}], institution) do
       nil ->
         nil
       animal ->
-        Read.put_updatable_fields(animal)
+        some(Read).put_updatable_fields(animal)
     end
   end
 
