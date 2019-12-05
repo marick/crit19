@@ -12,19 +12,14 @@ defmodule CritWeb.Usables.AnimalControllerTest do
 
   setup :logged_in_as_usables_manager
 
-  describe "fetching a set of animals" do
-    test "order matters", %{conn: conn} do
-      should_sort_second = "ZZZZZZ"
-      should_sort_first = "aaaaaa"
-      Exemplars.Available.animal_id(name: should_sort_second)
-      Exemplars.Available.animal_id(name: should_sort_first)
-
+  test "fetching a set of animals", %{conn: conn} do
+    %{name: name1} = Factory.sql_insert!(:animal, @institution)
+    %{name: name2} = Factory.sql_insert!(:animal, @institution)
+    
       get_via_action(conn, :index)
       |> assert_purpose(displaying_animal_summaries())
-      |> assert_user_sees(should_sort_first)
-      |> assert_user_sees(should_sort_second)
-      # Note that the actual test of ordering is at the `crit` level
-    end
+      |> assert_user_sees(name1)
+      |> assert_user_sees(name2)
   end
 
   describe "request the bulk creation form" do
