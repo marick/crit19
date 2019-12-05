@@ -2,10 +2,8 @@ defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
-  alias Crit.Exemplars.Available
   alias Crit.Sql
 
-  alias Crit.X.ServiceGapX
   alias Crit.X.AnimalX
   import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
@@ -14,10 +12,8 @@ defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
   # Let's set the context: an animal with one service gap. It will be edited in
   # various ways. 
   defp an_updatable_animal_with_one_service_gap(_) do
-    animal_id = Available.animal_id
-    ServiceGapX.insert(
-      ServiceGapX.attrs(@iso_date, @iso_bumped_date, "reason", animal_id: animal_id)
-    )
+    %{id: animal_id} = Factory.sql_insert!(:animal, @institution)
+    Factory.sql_insert!(:service_gap, [animal_id: animal_id], @institution)
     
     [animal: AnimalApi.updatable!(animal_id, @institution)]
   end
