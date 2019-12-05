@@ -32,18 +32,9 @@ defmodule Crit.Factory do
   def animal_factory() do
     %Animal{
       name: Faker.Cat.name(),
-      species_id: some_species_id()
-     }
-  end
-
-  def usable_animal_factory() do
-    %Animal{
-      id: 5,
-      name: Faker.Cat.name(),
       species_id: some_species_id(),
-      in_service_datestring: "foo",
-      out_of_service_datestring: "bar",
-      service_gaps: []
+      in_service_date: Exemplars.Date.today_or_earlier,
+      out_of_service_date: Exemplars.Date.later_than_today,
      }
   end
 

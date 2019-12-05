@@ -1,128 +1,127 @@
 defmodule Crit.Usables.AnimalImpl.ReadTest do
   use Crit.DataCase
-  # alias Crit.Usables.AnimalApi
-  # alias Crit.Usables.Schemas.{Animal}
-  # alias Crit.Sql
-  # alias Crit.Usables.AnimalImpl.Read 
-
-
-  test "undone" do
-    IO.inspect __MODULE__, label: "undone"
-  end
+  alias Crit.Usables.Schemas.{Animal, ServiceGap}
+  alias Crit.Usables.HiddenSchemas.{Species}
+  alias Crit.Usables.AnimalImpl.Read 
 
   describe "put_updatable_fields" do
+    setup do
+      [as_fetched: %Animal{
+        species: %Species{name: @bovine},
+        in_service_date: @date,
+        out_of_service_date: @later_date,
+        service_gaps: [%ServiceGap{
+                          span: ServiceGap.span(@bumped_date, @later_bumped_date),
+                          reason: "reason"}
+                      ]
+       },
 
-    # test "basic conversions",
-    #   %{never_out_of_service_id: id} do
-    #   animal = AnimalApi.updatable!(id, @institution)
+       new_animal_fields: %{
+         species_name: @bovine,
+         in_service_datestring: @iso_date,
+         out_of_service_datestring: @later_iso_date,
+       },
 
-    #   assert animal.name == "Never out"
-    #   assert animal.lock_version == 1
-    #   assert animal.species_id == @bovine_id
-    #   assert animal.species_name == @bovine
-    # end
-
-    # test "with only an in-service date",
-    #   %{never_out_of_service_id: id} do
-    #   animal = AnimalApi.updatable!(id, @institution)
-    #   assert animal.in_service_datestring == @iso_date
-    #   assert animal.out_of_service_datestring == @never
-    # end
-
-    # test "with an out-of-service date", %{goes_out_of_service_id: id} do
-    #   animal = AnimalApi.updatable!(id, @institution)
-    #   assert animal.in_service_datestring == @iso_date
-    #   assert animal.out_of_service_datestring == @later_iso_date
-    # end
-
-    # test "add service gap conversion" do
-    #   # Create an animal
-    #   # Add a service gap
-    #   # check that the gap is returned AND that the virtual fields are
-    #   # filled in.
-    # end
+       # Note: it's valid for fields to be Date structures rather than
+       # strings because EEX knows how to render them.
+       new_service_gap_fields: %{
+         in_service_date: @bumped_date,
+         out_of_service_date: @later_bumped_date,
+       },
+      ]
+    end
     
-    # test "fetching animal by name is case independent" do
-    #   assert animal = AnimalApi.updatable_by(:name, "never ouT", @institution)
-    #   assert is_integer(animal.id)
-    #   assert animal.name == "Never out"
-    # end
+    test "basic conversions",
+      %{as_fetched: fetched, new_service_gap_fields: new_service_gap_fields,
+        new_animal_fields: new_animal_fields}  do
+      %Animal{service_gaps: [updatable_gap]} = updatable =
+        Read.put_updatable_fields(fetched)
 
-    test "put_updatable_fields can take a list argument" do
+      assert_fields(updatable, new_animal_fields)
+      assert_fields(updatable_gap, new_service_gap_fields)
+    end
+
+    test "with only an in-service date", %{as_fetched: fetched} do
+      fetched
+      |> Map.put(:out_of_service_date, nil)
+      |> Read.put_updatable_fields
+      |> assert_field(out_of_service_datestring: @never)
+    end
+    
+    test "put_updatable_fields can take a list argument", %{as_fetched: fetched} do
+      [updatable] = Read.put_updatable_fields([fetched])
+      # It's enough to confirm a single conversion.
+      assert_field(updatable, species_name: @bovine)
+    end
+  end
+
+  describe "properties common to queries" do
+    setup do
+      animal = Factory.sql_insert!(:animal, @institution)
+
+      [from_all] = Read.all(@institution)
+      from_one = Read.one([name: animal.name], @institution)
+      [from_ids] = Read.ids_to_animals([animal.id], @institution)
+
+      assert from_all == from_one
+      assert from_one == from_ids
+
+      [fetched: from_all]
+    end
+  
+    test "the species and service gaps are loaded", %{fetched: fetched} do
+      assert Ecto.assoc_loaded?(fetched.species)
+      assert Ecto.assoc_loaded?(fetched.service_gaps)
     end
   end
 
 
-  describe "queries" do
-    # test "ids_to_animals returns animals in alphabetical order", %{ids: ids} do
-      # assert [alpha, bossie, jake] = AnimalApi.ids_to_animals(ids, @institution)
+  describe "bulk queries order by name" do
+    test "... not by id order when fetching by ids" do 
+      %{id: id1} = Factory.sql_insert!(:animal, [name: "ZZZ"], @institution)
+      %{id: id3} = Factory.sql_insert!(:animal, [name: "m"], @institution)
+      %{id: id2} = Factory.sql_insert!(:animal, [name: "aaaaa"], @institution)
 
-      # assert alpha.name == "Alpha"
-      # assert alpha.species_name == @bovine
-      # assert alpha.in_service_datestring == @iso_date
-      # assert alpha.out_of_service_datestring == @never
+      ordering = 
+        Read.ids_to_animals([id1, id2, id3], @institution)
+        |> Enum.map(&(&1.name))
 
-      # assert bossie.name == "bossie"
-      # assert jake.name == "Jake"
-    # end
+      assert ordering == ["aaaaa", "m", "ZZZ"]
+    end
 
-  # describe "ditto `all`" do
-  #   setup :three_animal_setup
+    test "when using `all`" do
+      # This won't always fail, since the animals could happen to be generated
+      # in sorted order. But note that the names are different for each run of
+      # the test.
 
-  #   test "fetch everything - again in alphabetical order" do 
-  #     assert [alpha, bossie, jake] = AnimalApi.all(@institution)
-  #     assert alpha.name == "Alpha"
-  #     assert bossie.name == "bossie"
-  #     assert jake.name == "Jake"
-  #   end
-  # end
+      Factory.sql_insert!(:animal, @institution)
+      Factory.sql_insert!(:animal, @institution)
+      Factory.sql_insert!(:animal, @institution)
 
-    # test "bad ids are silently ignored", %{ids: ids} do
-      # new_ids = [387373 | ids]
-      
-      # assert [alpha, bossie, jake] = AnimalApi.ids_to_animals(new_ids, @institution)
-      # assert alpha.name == "Alpha"
-      # assert bossie.name == "bossie"
-      # assert jake.name == "Jake"
-    # end
+      as_read = Read.all(@institution) |> Enum.map(&(&1.name))
+      sorted = Enum.sort(as_read)
 
+      assert as_read == sorted
+    end
   end
-  
 
-  # defp two_animals_setup(_) do
-  #   base = %Animal{
-  #     species_id: @bovine_id,
-  #     lock_version: 1,
-  #     in_service_date: @date,
-  #   }
-    
-  #   %{id: never_out_of_service_id} =
-  #     base
-  #     |> Map.put(:name, "Never out")
-  #     |> Sql.insert!(@institution)
-    
-  #   %{id: goes_out_of_service_id} =
-  #     base
-  #     |> Map.put(:name, "out")
-  #     |> Map.put(:out_of_service_date, @later_date)
-  #     |> Sql.insert!(@institution)
-    
-  #   [goes_out_of_service_id: goes_out_of_service_id,
-  #    never_out_of_service_id: never_out_of_service_id]
-  # end
-  
-  # defp three_animal_setup(_) do
-  #   params = %{
-  #     "species_id" => @bovine_id,
-  #     "names" => "bossie, Jake, Alpha",
-  #     "in_service_datestring" => @iso_date,
-  #     "out_of_service_datestring" => @never
-  #   }
+  test "fetching animal by name is case independent" do
+    %{name: name} = Factory.sql_insert!(:animal, @institution)
 
-  #   {:ok, animals} = AnimalApi.create_animals(params, @institution)
-  #   [ids: EnumX.ids(animals)]
-  # end
+    upname = String.upcase(name)
+    downname = String.downcase(name)
 
+    assert upname != downname
 
-  
+    up_fetched = Read.one([name: upname], @institution) 
+    down_fetched = Read.one([name: downname], @institution)
+
+    assert up_fetched == down_fetched
+  end
+
+  test "when fetching ids, missing ids are silently ignored" do
+    %{id: id} = Factory.sql_insert!(:animal, @institution)
+
+    [%{id: ^id}] = Read.ids_to_animals([id * 2000, id * 4000, id], @institution)
+  end
 end
