@@ -10,8 +10,11 @@ defmodule Crit.Usables.AnimalImpl.Write do
       {:error, %{errors: [{:optimistic_lock_error, _}]}} ->
         {:error, changeset_for_lock_error(animal.id, institution)}
 
-      result ->
-        result
+      {:error, changeset} ->
+        {:error, ChangesetX.flush_lock_version(changeset)}
+
+      {:ok, result} ->
+        {:ok, result}
     end
   end
 

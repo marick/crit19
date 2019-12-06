@@ -40,13 +40,10 @@ defmodule Crit.Usables.AnimalApi do
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
   def update(string_id, attrs, institution) do
-    animal = updatable!(string_id, institution)
-    case Write.update(animal, attrs, institution) do
-      {:ok, animal} -> {:ok, animal}
-      {:error, changeset} -> {:error, ChangesetX.flush_lock_version(changeset)}
-    end
+    string_id
+    |> updatable!(institution)
+    |> Write.update(attrs, institution)
   end
-
   
   def create_animals(attrs, institution) do
     case BulkCreationTransaction.run(attrs, institution) do
