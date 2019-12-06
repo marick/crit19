@@ -5,7 +5,6 @@ defmodule CritWeb.Usables.AnimalController do
 
   alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
-  import Mockery.Macro
   
   plug :must_be_able_to, :manage_animals
 
@@ -54,7 +53,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
   
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
-    case mockable(AnimalApi).update(id, animal_params, institution(conn)) do
+    case AnimalApi.update(id, animal_params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,
           "_show_one_animal.html",

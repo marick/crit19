@@ -36,6 +36,7 @@ defmodule Crit.Usables.AnimalApi do
     |> some(Read).all
     |> some(Read).put_updatable_fields
   end
+
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
   def update(string_id, attrs, institution) do
