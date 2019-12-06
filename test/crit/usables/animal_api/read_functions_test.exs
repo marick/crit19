@@ -1,5 +1,5 @@
 defmodule Crit.Usables.Schemas.AnimalApi.ReadFunctionsTest do
-  use Crit.DataCase
+  use Crit.DataCase, async: true
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.AnimalImpl.Read 
 

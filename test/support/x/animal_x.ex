@@ -5,6 +5,8 @@ defmodule Crit.X.AnimalX do
 
   use Crit.Global.Default
   use Crit.Global.Constants
+  alias Crit.Usables.AnimalApi
+  alias Crit.Exemplars
   alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.Schemas.ServiceGap
   alias Crit.X.ServiceGapX
@@ -39,4 +41,42 @@ defmodule Crit.X.AnimalX do
   end
 
   def service_gap_n(%Animal{service_gaps: gaps}, n), do: Enum.at(gaps, n)
+
+  def update_for_success(id, params) do
+    {:ok, new_animal} =
+      AnimalApi.update(to_string(id), params, @institution)
+    new_animal
+  end
+
+  def update_for_error(id, params) do
+    {:error, changeset} = AnimalApi.update(id, params, @institution)
+    errors_on(changeset)
+  end
+
+  def updatable_animal_named(name) do
+    id = Exemplars.Available.animal_id(name: name)
+    AnimalApi.updatable!(id, @institution)
+  end
+  
+  def params_except(%Animal{} = animal, overrides) do
+    from_animal =
+      %{"name" => animal.name,
+        "lock_version" => animal.lock_version,
+        "in_service_datestring" => animal.in_service_datestring,
+        "out_of_service_datestring" => animal.out_of_service_datestring
+       }
+    Map.merge(from_animal, overrides)
+  end
+
+
+  IO.puts "Don't have two copies of `errors_on`."
+
+  defp errors_on(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
+      Regex.replace(~r"%{(\w+)}", message, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
+  end
+  
 end

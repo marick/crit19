@@ -1,4 +1,4 @@
-defmodule Crit.Usables.AnimalImpl.BulkCreationTransactionTest do
+defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalImpl.BulkCreationTransaction 
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}

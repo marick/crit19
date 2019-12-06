@@ -1,4 +1,4 @@
-defmodule Crit.Usables.AnimalApi.UpdateOLDTest do
+defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
@@ -8,33 +8,6 @@ defmodule Crit.Usables.AnimalApi.UpdateOLDTest do
     assert {:ok, new_animal} =
       AnimalApi.update(to_string(id), params, @institution)
     new_animal
-  end
-
-  defp update_for_error(id, params) do
-    assert {:error, changeset} = AnimalApi.update(id, params, @institution)
-    errors_on(changeset)
-  end
-
-  describe "updating the name and common behaviors" do
-    test "success" do
-      original = updatable_animal_named("Original Bossie")
-      params = params_except(original, %{"name" => "New Bossie"})
-
-      update_for_success(original.id, params)
-      |> assert_fields(name: "New Bossie", lock_version: 2)
-      |> assert_copy(original,
-                     except: [:name, :lock_version, :updated_at])
-      |> assert_copy(AnimalApi.updatable!(original.id, @institution),
-                     except: [:updated_at])
-    end
-
-    test "unique name constraint violation produces changeset" do
-      original = updatable_animal_named("Original Bossie")
-      updatable_animal_named("already exists")
-      params = params_except(original, %{"name" => "already exists"})
-
-      assert "has already been taken" in update_for_error(original.id, params).name
-    end
   end
 
 
