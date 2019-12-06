@@ -1,4 +1,4 @@
-defmodule Crit.Usables.AnimalImpl.ServiceGapCreationTest do
+defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal

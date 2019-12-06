@@ -1,15 +1,9 @@
-defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
+defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Usables.FieldConverters.ToDate
-
-  defp update_for_success(id, params) do
-    assert {:ok, new_animal} =
-      AnimalApi.update(to_string(id), params, @institution)
-    new_animal
-  end
-
+  alias Crit.X.AnimalX
 
   describe "updating service dates" do
     setup do
@@ -24,7 +18,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
         
       params = %{"in_service_datestring" => dates.iso_next_in_service,
                  "out_of_service_datestring" => "never"}
-      new_animal = update_for_success(original_animal.id, params)
+      new_animal = AnimalX.update_for_success(original_animal.id, params)
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_next_in_service,
                              in_service_date: dates.next_in_service,
@@ -39,7 +33,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = update_for_success(animal.id, params)
+      new_animal = AnimalX.update_for_success(animal.id, params)
 
       assert new_animal == %{animal | 
                              out_of_service_datestring: dates.iso_next_out_of_service,
@@ -55,7 +49,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
       )
       params = %{"in_service_datestring" => dates.iso_next_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = update_for_success(original_animal.id, params)
+      new_animal = AnimalX.update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_next_in_service,
@@ -73,7 +67,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => @never}
-      new_animal = update_for_success(original_animal.id, params)
+      new_animal = AnimalX.update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_in_service,
@@ -90,7 +84,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = update_for_success(original_animal.id, params)
+      new_animal = AnimalX.update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_in_service,
@@ -115,67 +109,6 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
     end
   end
 
-
-  describe "optimistic concurrency" do
-    setup do
-      original = updatable_animal_named("Original Bossie")
-
-      update = fn animal, name ->
-        params = params_except(original, %{
-            "name" => name,
-            "lock_version" => to_string(animal.lock_version)})
-        AnimalApi.update(original.id, params, @institution)
-      end
-      [original: original, update: update]
-    end
-
-    test "optimistic concurrency failure produces changeset with new animal",
-      %{original: original, update: update} do
-
-      assert {:ok, updated_first} = update.(original, "this version wins")
-      assert {:error, changeset} = update.(original, "this version loses")
-
-      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
-      # All changes have been wiped out.
-      assert changeset.changes == %{}
-
-      # It is the updated version that is to fill in fields.
-      assert changeset.data == updated_first
-      # Most interestingly...
-      assert changeset.data.name == updated_first.name
-      assert changeset.data.lock_version == updated_first.lock_version
-    end
-
-    test "successful name change updates lock_version in displayed value",
-      %{original: original, update: update} do
-
-      assert {:ok, updated} = update.(original, "this is a new name")
-      assert updated.lock_version == 2
-    end
-
-    test "Unsuccessful name change DOES NOT update lock_version",
-      %{original: original, update: update} do
-
-      updatable_animal_named("preexisting")
-
-      assert {:error, changeset} = update.(original, "preexisting")
-
-      assert original.lock_version == 1
-      assert changeset.data.lock_version == original.lock_version
-      assert changeset.changes[:lock_version] == nil
-    end
-
-    test "optimistic lock failure wins", %{original: original, update: update} do
-      # Bump the lock version
-      {:ok, _} = update.(original, "this version wins")
-
-      assert {:error, changeset} = update.(original, "this version wins")
-
-      # Just the one error
-      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
-    end
-  end
-
   defp dated_animal(opts) do
     with_in_service =
       Keyword.put(opts, :in_service,
@@ -189,21 +122,6 @@ defmodule Crit.Usables.AnimalImpl.UpdateOLDTest do
       end
     
     id = Exemplars.Available.animal_id(with_out_of_service)
-    AnimalApi.updatable!(id, @institution)
-  end
-
-  defp params_except(animal, overrides) do
-    from_animal =
-      %{"name" => animal.name,
-        "lock_version" => animal.lock_version,
-        "in_service_datestring" => animal.in_service_datestring,
-        "out_of_service_datestring" => animal.out_of_service_datestring
-       }
-    Map.merge(from_animal, overrides)
-  end
-
-  defp updatable_animal_named(name) do
-    id = Exemplars.Available.animal_id(name: name)
     AnimalApi.updatable!(id, @institution)
   end
 end
