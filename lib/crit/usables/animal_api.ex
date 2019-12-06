@@ -41,8 +41,8 @@ defmodule Crit.Usables.AnimalApi do
 
   def update(string_id, attrs, institution) do
     string_id
-    |> updatable!(institution)
-    |> Write.update(attrs, institution)
+    |> some(__MODULE__).updatable!(institution)
+    |> some(Write).update(attrs, institution)
   end
   
   def create_animals(attrs, institution) do
