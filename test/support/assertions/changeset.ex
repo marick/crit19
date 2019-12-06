@@ -42,30 +42,4 @@ defmodule Crit.Assertions.Changeset do
 
   defchain assert_error(cs, arg2) when is_atom(arg2), do: assert_errors(cs, [arg2])
   defchain assert_error(cs, arg2),                    do: assert_errors(cs,  arg2)
-    
-  
-
-
-
-
-
-
-
-
-  
-  defchain assert_changed_to(%Changeset{} = changeset, field, expected) do 
-    assert changeset.changes[field] == expected
-    assert Map.has_key?(changeset.changes, field)
-  end
-
-  defchain assert_recorded_changes(%Changeset{} = changeset, data_map, fields)
-  when is_list(fields) do
-    Enum.map(fields, fn field ->
-      assert_changed_to(changeset, field, data_map[field])
-    end)
-  end
-
 end
-
-
-
