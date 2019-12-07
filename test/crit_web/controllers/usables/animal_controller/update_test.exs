@@ -5,6 +5,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Exemplars
+  alias Crit.X.AnimalX
 
   setup :logged_in_as_usables_manager
 
@@ -26,7 +27,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> animal_to_params
+        |> AnimalX.params
         # change a field in the animal itself
         |> Map.put("name", "new name")
         # change a field in one of the service gaps
@@ -54,30 +55,26 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
         span: ServiceGap.span(~D[2300-01-02], ~D[2300-01-03]))
     end
 
-    @tag :skip
-    test "update failures produce appropriate annotations" do
+    test "update failures produce appropriate annotations", 
+    %{conn: conn, animal_id: animal_id} do
+
+      Exemplars.Available.animal_id(name: "name clash")
+
+      params =
+        animal_id
+        |> AnimalApi.updatable!(@institution)
+        |> AnimalX.params
+        # Dates are in wrong order
+        |> put_in(["in_service_datestring"], @later_iso_date)
+        |> put_in(["out_of_service_datestring"], @iso_date)
+        # ... and there's an error in a service gap change.
+        |> put_in(["service_gaps", "0", "out_of_service_date"], "nver")
+
+      post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
+      |> assert_purpose(form_for_editing_animal())
+      |> assert_user_sees("should not be before the start date")
+      |> assert_user_sees("is invalid")
     end
   end
   
-  defp animal_to_params(animal) do
-    base = 
-      %{"in_service_datestring" => animal.in_service_datestring,
-        "lock_version" => to_string(animal.lock_version),
-        "name" => animal.name,
-        "out_of_service_datestring" => animal.out_of_service_datestring,
-       }
-    service_gaps =
-      Enum.reduce(Enum.with_index(animal.service_gaps), %{}, fn {sg, i}, acc ->
-        Map.put(acc,
-          to_string(i),
-          %{"id" => to_string(sg.id),
-            "in_service_date" => Date.to_iso8601(sg.span.first),
-            "out_of_service_date" => Date.to_iso8601(sg.span.last),
-            "reason" => sg.reason,
-            "delete" => "false"
-          })
-      end)
-
-    Map.put(base, "service_gaps", service_gaps)
-  end
 end

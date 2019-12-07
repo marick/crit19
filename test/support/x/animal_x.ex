@@ -40,6 +40,35 @@ defmodule Crit.X.AnimalX do
     attrs(new_animal)
   end
 
+  # This is like `attrs`, except it produces something closer to form parameters:
+  # 1. map keys are strings, not atoms.
+  # 2. The service gap array is returned as a map from (string) index to
+  #    the map representing the service gap.
+  # This is likely overkill, since Ecto seems to treat both formats the same.
+  def params(%Animal{} = animal) do
+    base = 
+      %{"in_service_datestring" => animal.in_service_datestring,
+        "lock_version" => to_string(animal.lock_version),
+        "name" => animal.name,
+        "out_of_service_datestring" => animal.out_of_service_datestring,
+       }
+    service_gaps =
+      Enum.reduce(Enum.with_index(animal.service_gaps), %{}, fn {sg, i}, acc ->
+        Map.put(acc,
+          to_string(i),
+          %{"id" => to_string(sg.id),
+            "in_service_date" => Date.to_iso8601(sg.span.first),
+            "out_of_service_date" => Date.to_iso8601(sg.span.last),
+            "reason" => sg.reason,
+            "delete" => "false"
+          })
+      end)
+
+    Map.put(base, "service_gaps", service_gaps)
+  end
+
+  
+
   def service_gap_n(%Animal{service_gaps: gaps}, n), do: Enum.at(gaps, n)
 
   def update_for_success(id, params) do

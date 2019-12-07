@@ -25,8 +25,11 @@
   <div>
     <hr/>
     From: <%= text_input fgaps, :in_service_date, size: 10 %>
-    back on: <%= text_input fgaps, :out_of_service_date, size: 10 %><br/>
+          <%= error_tag fgaps, :in_service_date %>
+    back on: <%= text_input fgaps, :out_of_service_date, size: 10 %>
+             <%= error_tag fgaps, :out_of_service_date %><br/>
     Because: <%= text_input fgaps, :reason, size: 40 %>
+             <%= error_tag fgaps, :reason %>
     </div>
   <% end %>
   <button class="button is-success is-small" >
