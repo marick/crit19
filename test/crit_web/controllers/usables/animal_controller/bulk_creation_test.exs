@@ -8,8 +8,6 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
   alias CritWeb.Audit
   alias Crit.Exemplars
 
-  # All controller tests are end-to-end tests.
-
   setup :logged_in_as_usables_manager
 
   describe "request the bulk creation form" do

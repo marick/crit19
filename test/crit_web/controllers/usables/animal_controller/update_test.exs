@@ -76,5 +76,4 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       |> assert_user_sees("is invalid")
     end
   end
-  
 end
