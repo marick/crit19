@@ -20,14 +20,18 @@ defmodule Crit.X.ServiceGapX do
     %{animal_id: optmap.animal_id,
       in_service_date: in_service_date,
       out_of_service_date: out_of_service_date,
-      reason: reason}
+      reason: reason,
+      delete: false
+    }
   end
 
   def attrs(service_gap) do 
     %{id: service_gap.id,
       in_service_date: service_gap.in_service_date,
       out_of_service_date: service_gap.out_of_service_date,
-      reason: service_gap.reason}
+      reason: service_gap.reason,
+      delete: service_gap.delete
+    }
   end
 
   def get_updatable(id) do

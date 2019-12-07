@@ -164,5 +164,14 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       
       |> assert_unchanged([:in_service_date, :span])
     end
+
+    test "set action to `:delete` if `delete` field is set",
+      %{updatable: updatable, attrs: attrs} do
+
+      new_attrs = %{attrs | delete: true}
+      
+      ServiceGap.changeset(updatable, new_attrs)
+      |> assert_field(action: :delete)
+    end
   end
 end

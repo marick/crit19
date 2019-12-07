@@ -127,8 +127,7 @@ defmodule CritWeb.Usables.AnimalControllerTest do
       animal = AnimalApi.updatable!(animal_id, @institution)
       assert_field(animal, name: "new name")
 
-      IO.puts "Service gap deletion does not yet work."
-      [changed, _deleted, added] =
+      [changed, added] =
         animal.service_gaps |> Enum.sort_by(fn gap -> gap.id end)
 
       assert_field(changed,

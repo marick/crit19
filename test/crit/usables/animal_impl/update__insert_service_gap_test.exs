@@ -8,18 +8,11 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
+  import Crit.Setups
 
-  # Let's set the context: an animal with one service gap. It will be edited in
-  # various ways. 
-  defp an_updatable_animal_with_one_service_gap(_) do
-    %{id: animal_id} = Factory.sql_insert!(:animal, @institution)
-    Factory.sql_insert!(:service_gap, [animal_id: animal_id], @institution)
-    
-    [animal: AnimalApi.updatable!(animal_id, @institution)]
-  end
+  setup :an_updatable_animal_with_one_service_gap
   
   describe "adding a service gap" do
-    setup :an_updatable_animal_with_one_service_gap
 
     @addition_input %{
       in_service_date: @later_iso_date,

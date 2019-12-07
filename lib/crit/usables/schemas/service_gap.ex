@@ -15,7 +15,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   end
 
   @required_for_insertion [:reason, :in_service_date, :out_of_service_date]
-  @usable @required_for_insertion ++ [:animal_id]
+  @usable @required_for_insertion ++ [:animal_id, :delete]
   
   def changeset(gap, attrs) do
     gap
@@ -23,6 +23,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     |> validate_required(@required_for_insertion)
     |> validate_order
     |> put_span
+    |> mark_deletion
   end
 
   def put_updatable_fields(%__MODULE__{} = gap) do
@@ -50,7 +51,16 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   defp put_span(changeset) do
     {in_service, out_of_service} = dates(changeset)
     put_change(changeset, :span, span(in_service, out_of_service))
-  end 
+  end
+
+  defp mark_deletion(changeset) do
+    case fetch_field!(changeset, :delete) do
+      true ->
+        %{changeset | action: :delete}
+      _ ->
+        changeset
+    end
+  end
 
 
   defp dates(changeset),
