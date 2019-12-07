@@ -5,6 +5,7 @@ defmodule CritWeb.Usables.AnimalController do
 
   alias Crit.Usables.AnimalApi
   alias CritWeb.Audit
+  alias CritWeb.Controller.Common
   
   plug :must_be_able_to, :manage_animals
 
@@ -53,8 +54,10 @@ defmodule CritWeb.Usables.AnimalController do
   end
   
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
-    simplified_params = remove_empty_sub_forms(animal_params)
-    case AnimalApi.update(id, simplified_params, institution(conn)) do
+    params =
+      Common.process_upsert_subforms(animal_params, "service_gaps",
+        ["in_service_date", "out_of_service_date", "reason"])
+    case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,
           "_show_one_animal.html",
@@ -65,26 +68,5 @@ defmodule CritWeb.Usables.AnimalController do
           "_edit_one_animal.html",
           changeset: changeset)
     end
-  end
-
-  def remove_empty_sub_forms(animal_params) do
-    trimmed = fn string ->
-      string |> String.trim_leading |> String.trim_trailing
-    end
-
-    empty_form? = fn sg ->
-      fields = 
-        ["in_service_date", "out_of_service_date", "reason"]
-
-      Enum.all?(fields, &(trimmed.(sg[&1]) == ""))
-    end
-
-    simplified = 
-      animal_params
-      |> Map.get("service_gaps")
-      |> Map.values
-      |> Enum.reject(empty_form?)
-
-    Map.put(animal_params, "service_gaps", simplified)
   end
 end
