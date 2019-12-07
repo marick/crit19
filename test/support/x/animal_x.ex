@@ -44,7 +44,8 @@ defmodule Crit.X.AnimalX do
   # 1. map keys are strings, not atoms.
   # 2. The service gap array is returned as a map from (string) index to
   #    the map representing the service gap.
-  # This is likely overkill, since Ecto seems to treat both formats the same.
+  # The latter, especially, is overkill, since the current animal-controller
+  # flattens the map anyway.
   def params(%Animal{} = animal) do
     base = 
       %{"in_service_datestring" => animal.in_service_datestring,

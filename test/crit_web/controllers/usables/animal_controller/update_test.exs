@@ -55,6 +55,31 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
         span: ServiceGap.span(~D[2300-01-02], ~D[2300-01-03]))
     end
 
+    test "a *blank* service gap form is ignored",
+      %{conn: conn, animal_id: animal_id} do
+      # It's not treated as an attempt to create a new service gap
+      empty_service_gap = %{"in_service_date" => "",
+                            "out_of_service_date" => "",
+                            "reason" => ""
+                           }
+      
+      params =
+        animal_id
+        |> AnimalApi.updatable!(@institution)
+        |> AnimalX.params
+        # change a field in the animal itself so that we can see something happen
+        |> Map.put("name", "new name")
+        |> put_in(["service_gaps", "2"], empty_service_gap)
+
+      post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
+      # There was not a failure (which renders a different snippet)
+      |> assert_purpose(snippet_to_display_animal())
+      
+      # Check that the changes did actually happen
+      animal = AnimalApi.updatable!(animal_id, @institution)
+      assert_field(animal, name: "new name")
+    end
+
     test "update failures produce appropriate annotations", 
     %{conn: conn, animal_id: animal_id} do
 
