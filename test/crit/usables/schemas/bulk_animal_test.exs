@@ -12,7 +12,8 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
 
   describe "changeset" do
     test "required fields are checked" do
-      errors = %{} |> BulkAnimal.creation_changeset |> errors_on
+      errors =
+        %{} |> BulkAnimal.creation_changeset |> errors_on
       
       assert errors.names
       assert errors.species_id
@@ -29,6 +30,24 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
       assert changes.computed_names == ["a", "b", "c"]
       assert changes.in_service_date == @date
       assert changes.out_of_service_date == @later_date
+    end
+  end
+
+
+  describe "impossible errors are violently rejected" do
+
+    test "in_service_date" do
+      assert_raise RuntimeError, fn -> 
+        %{@correct | in_service_datestring: "yesterday..."}
+        |> BulkAnimal.creation_changeset
+      end
+    end
+
+    test "out_of_service_date" do
+      assert_raise RuntimeError, fn -> 
+        %{@correct | out_of_service_datestring: "2525-13-06"}
+        |> BulkAnimal.creation_changeset
+      end
     end
   end
 end
