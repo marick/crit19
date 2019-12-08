@@ -21,15 +21,17 @@
   <p>
     <strong>Gaps in the animal's availability:</strong>
   </p>
-  <%= inputs_for f, :service_gaps, [append: [%ServiceGap{}]], fn fgaps -> %>
+  <%= inputs_for f, :service_gaps, [append: [%ServiceGap{}]], fn gap_f -> %>
   <div>
     <hr/>
-    From: <%= text_input fgaps, :in_service_date, size: 10 %>
-          <%= error_tag fgaps, :in_service_date %>
-    back on: <%= text_input fgaps, :out_of_service_date, size: 10 %>
-             <%= error_tag fgaps, :out_of_service_date %><br/>
-    Because: <%= text_input fgaps, :reason, size: 40 %>
-             <%= error_tag fgaps, :reason %>
+    From: <%= text_input gap_f, :in_service_date, size: 10 %>
+          <%= error_tag gap_f, :in_service_date %>
+    back on: <%= text_input gap_f, :out_of_service_date, size: 10 %>
+             <%= error_tag gap_f, :out_of_service_date %><br/>
+    Because: <%= text_input gap_f, :reason, size: 40 %>
+             <%= error_tag gap_f, :reason %>
+             <br/>
+             <%= delete_if_exists gap_f %>
     </div>
   <% end %>
   <button class="button is-success is-small" >

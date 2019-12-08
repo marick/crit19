@@ -3,6 +3,7 @@ defmodule CritWeb.Usables.AnimalView do
   alias Crit.Usables.AnimalApi
   alias CritWeb.Usables.AnimalController
   alias Crit.Usables.Schemas.ServiceGap
+  alias Phoenix.HTML.Form
 
   def animal_id_attribute(animal) do
     "editing_animal#{animal.id}"
@@ -49,6 +50,13 @@ defmodule CritWeb.Usables.AnimalView do
        <div data-target="calendar.div" display="none"> </div>
     </div>
     """
+  end
+
+
+  def delete_if_exists(f) do
+    if Form.input_value(f, :id) do
+      compact_checkbox f, :delete
+    end
   end
 
 end
