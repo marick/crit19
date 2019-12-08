@@ -51,21 +51,6 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
                         out_of_service_date: @date,
                         reason: "reason")
     end
-
-    @tag :skip
-    test "the `today` marker is allowed in dates" do
-      given = %{in_service_date: "today",
-                out_of_service_date: @later_iso_date,
-                reason: "reason"}
-      
-      handle(given)
-      |> assert_valid
-      |> assert_changes(in_service_date: @date,
-                        out_of_service_date: @later_date,
-                        reason: "reason",
-                        # And the span is created
-                        span: span(@date, @later_date))
-    end
   end
 
   describe "direct manipulation of changesets: CREATE and READ" do
