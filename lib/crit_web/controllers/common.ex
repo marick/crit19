@@ -13,6 +13,19 @@ defmodule CritWeb.Controller.Common do
     |> render(renderable, opts)
   end
 
+  # This handles the case of a form for updating a top level structure (such as
+  # `Animal`) that allows the simultaneous updating *or* insertion of nested
+  # ("has_many") structures (like `ServiceGap`s). Insertion means filling in
+  # an initially blank subform. This function is used to remove subforms that
+  # were ignored by the user (nothing put in any of the fields).
+  #
+  # The example in the test probably makes this more clear.
+  #
+  # Note: when there's a list of subforms in the display, the POST params
+  # come as a map from (string) index to a map of subform name/entry pairs.
+  # The function flattens the result to just the values of the input map,
+  # just because it's easier. Changeset (`cast_assoc`) processing works with
+  # either form. 
 
   def process_upsert_subforms(params, subform_field, blank_indicators) do
     trimmed = fn string ->
