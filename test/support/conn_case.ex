@@ -24,6 +24,7 @@ defmodule CritWeb.ConnCase do
       import CritWeb.Templates.Purpose
       alias CritWeb.Controller.Common
       import CritWeb.ConnExtras
+      import CritWeb.Assertions.Conn
       alias Crit.Audit.ToMemory.Server, as: AuditServer
       import CritWeb.Plugs.Accessors
       use Crit.Global.Default

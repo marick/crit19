@@ -1,7 +1,6 @@
 defmodule CritWeb.PublicControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.CurrentUser.SessionController
-  import CritWeb.ConnExtras
   
 
   setup %{conn: conn} do

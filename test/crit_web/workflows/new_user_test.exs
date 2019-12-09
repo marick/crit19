@@ -3,7 +3,6 @@ defmodule CritWeb.Workflows.NewUserTest do
   # alias Crit.Users
   # alias Crit.Exemplars.{PasswordFocused}
   # alias Crit.Users.{UserHavingToken, Password}
-  # alias CritWeb.ConnExtras
   # alias CritWeb.{UserManagement.UserController}
 
   # setup :logged_in_as_user_manager

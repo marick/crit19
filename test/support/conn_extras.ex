@@ -10,58 +10,6 @@ defmodule CritWeb.ConnExtras do
   alias Phoenix.HTML
   alias Crit.Audit.ToMemory.Server, as: Audit
 
-  # ASSERTIONS
-
-  def assert_no_flash(conn) do 
-    refute(Plug.Conn.get_session(conn, :phoenix_flash))
-    conn
-  end
-
-  def assert_user_sees(conn, claims) when is_list(claims) do 
-    for claim <- claims, do: assert_user_sees(conn, claim)
-    conn
-  end
-
-  def assert_user_sees(conn, claim) do 
-    assert(html_response(conn, 200) =~ claim)
-    conn
-  end
-
-  def refute_user_sees(conn, claim)  do 
-    refute(html_response(conn, 200) =~ claim)
-    conn
-  end
-
-  def assert_purpose(conn, purpose) do 
-    assert(html_response(conn, 200) =~
-      ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/)
-    conn
-  end
-
-  def assert_redirected_to_authorization_failure_path(conn) do 
-    assert redirected_to(conn) == PublicController.path(:index)
-    conn
-  end
-  
-  def assert_failed_authorization(conn) do
-    assert_redirected_to_authorization_failure_path(conn)
-    assert flash_error(conn) =~ "not authorized"
-    conn
-  end
-
-  def assert_links_to(conn, path) do
-    href = "href=\"#{path}\""
-    assert_user_sees(conn, href)
-  end
-
-  def assert_authorization_failures(conn, actions) do
-    Enum.map(actions, fn action ->
-      assert_failed_authorization(action.(conn))
-    end)
-  end
-
-  
-
 
   # CONN GETTERS
 
