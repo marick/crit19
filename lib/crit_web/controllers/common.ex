@@ -27,7 +27,7 @@ defmodule CritWeb.Controller.Common do
   # just because it's easier. Changeset (`cast_assoc`) processing works with
   # either form. 
 
-  def process_upsert_subforms(params, subform_field, blank_indicators) do
+  def filter_out_unfilled_subforms(params, subform_field, blank_indicators) do
     trimmed = fn string ->
       string |> String.trim_leading |> String.trim_trailing
     end

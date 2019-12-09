@@ -55,7 +55,7 @@ defmodule CritWeb.Usables.AnimalController do
   
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
     params =
-      Common.process_upsert_subforms(animal_params, "service_gaps",
+      Common.filter_out_unfilled_subforms(animal_params, "service_gaps",
         ["in_service_date", "out_of_service_date", "reason"])
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->

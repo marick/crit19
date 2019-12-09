@@ -11,7 +11,7 @@ defmodule CritWeb.Controller.CommonTest do
                       "1" => blank}
     }
 
-    result = Common.process_upsert_subforms(enclosing_form, "subforms", ["subfield"])
+    result = Common.filter_out_unfilled_subforms(enclosing_form, "subforms", ["subfield"])
 
     assert result == %{"subforms" => [filled_in]}
   end
