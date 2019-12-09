@@ -1,9 +1,7 @@
 defmodule CritWeb.ConnExtras do
   use ExUnit.CaseTemplate
   use Phoenix.ConnTest
-  import ExUnit.Assertions
   alias Crit.Factory
-  alias CritWeb.PublicController
   alias Crit.Sql
   import CritWeb.Plugs.Accessors
   use Crit.Global.Default
