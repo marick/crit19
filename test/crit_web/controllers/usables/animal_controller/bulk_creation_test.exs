@@ -32,7 +32,7 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
     setup do
       # It's relatively easy to accidentally put persistent data into
       # the test database, so this checks for that
-      assert SqlX.all_ids(Animal) == []
+      assert SqlT.all_ids(Animal) == []
       []
     end
 
@@ -42,7 +42,7 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
       
       assert_purpose conn, displaying_animal_summaries()
 
-      assert length(SqlX.all_ids(Animal)) == length(names)
+      assert length(SqlT.all_ids(Animal)) == length(names)
       assert_user_sees(conn, Enum.at(names, 0))
       assert_user_sees(conn, Enum.at(names, -1))
     end
@@ -67,7 +67,7 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
 
       {:ok, audit} = latest_audit_record(conn)
 
-      ids = SqlX.all_ids(Animal)
+      ids = SqlT.all_ids(Animal)
       typical_animal = AnimalApi.updatable!(hd(ids), @institution)
 
       assert audit.event == Audit.events.created_animals

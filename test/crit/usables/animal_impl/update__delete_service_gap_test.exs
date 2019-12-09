@@ -3,7 +3,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateDeleteServiceGapTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias Crit.Sql
-  alias Crit.X.AnimalX
+  alias Crit.Extras.AnimalT
   import Crit.Assertions.Changeset
   import Crit.Setups
 
@@ -12,7 +12,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateDeleteServiceGapTest do
   setup %{animal: animal} do
     
     attrs =
-      AnimalX.attrs(animal)
+      AnimalT.attrs(animal)
       |> put_in([:service_gaps, Access.at(0), :delete], true) 
     
     [animal_attrs: attrs]

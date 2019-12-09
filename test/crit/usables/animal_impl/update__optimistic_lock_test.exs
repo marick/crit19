@@ -2,14 +2,14 @@ defmodule Crit.Usables.AnimalImpl.UpdateOptimisticLockTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
 
-  alias Crit.X.AnimalX
+  alias Crit.Extras.AnimalT
 
   describe "optimistic concurrency" do
     setup do
-      original = AnimalX.updatable_animal_named("Original Bossie")
+      original = AnimalT.updatable_animal_named("Original Bossie")
 
       update = fn animal, name ->
-        params = AnimalX.params_except(original, %{
+        params = AnimalT.params_except(original, %{
             "name" => name,
             "lock_version" => to_string(animal.lock_version)})
         AnimalApi.update(original.id, params, @institution)
@@ -44,7 +44,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateOptimisticLockTest do
     test "Unsuccessful name change DOES NOT update lock_version",
       %{original: original, update: update} do
 
-      AnimalX.updatable_animal_named("preexisting")
+      AnimalT.updatable_animal_named("preexisting")
 
       assert {:error, changeset} = update.(original, "preexisting")
 

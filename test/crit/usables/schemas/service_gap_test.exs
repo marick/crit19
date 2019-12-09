@@ -4,7 +4,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
   alias Crit.Usables.FieldConverters.ToDate
   alias Crit.Sql
 
-  alias Crit.X.ServiceGapX
+  alias Crit.Extras.ServiceGapT
   import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
@@ -55,8 +55,8 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
   describe "direct manipulation of changesets: CREATE and READ" do
     setup do
-      attrs = ServiceGapX.attrs(@iso_date, @later_iso_date, "reason")
-      insertion_result = ServiceGapX.insert(attrs)
+      attrs = ServiceGapT.attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = ServiceGapT.insert(attrs)
       retrieved_gap = Sql.get(ServiceGap, insertion_result.id, @institution)
       [attrs: attrs, insertion_result: insertion_result, retrieved_gap: retrieved_gap]
     end
@@ -103,9 +103,9 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     # processing of dates is independent of whether the dates are in the data
     # or in the attributes
     setup do
-      attrs = ServiceGapX.attrs(@iso_date, @later_iso_date, "reason")
-      insertion_result = ServiceGapX.insert(attrs)
-      updatable = ServiceGapX.get_updatable(insertion_result.id)
+      attrs = ServiceGapT.attrs(@iso_date, @later_iso_date, "reason")
+      insertion_result = ServiceGapT.insert(attrs)
+      updatable = ServiceGapT.get_updatable(insertion_result.id)
       
       [updatable: updatable, attrs: attrs]
     end

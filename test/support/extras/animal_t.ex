@@ -1,4 +1,4 @@
-defmodule Crit.X.AnimalX do
+defmodule Crit.Extras.AnimalT do
   @moduledoc """
   Shorthand functions for use in tests.
   """
@@ -9,7 +9,7 @@ defmodule Crit.X.AnimalX do
   alias Crit.Exemplars
   alias Crit.Usables.Schemas.Animal
   alias Crit.Usables.Schemas.ServiceGap
-  alias Crit.X.ServiceGapX
+  alias Crit.Extras.ServiceGapT
 
   def attrs(%Animal{} = animal) do
     out_string = if animal.out_of_service_date do
@@ -23,7 +23,7 @@ defmodule Crit.X.AnimalX do
       in_service_date: Date.to_iso8601(animal.in_service_date),
       out_of_service_date: out_string,
       lock_version: animal.lock_version,
-      service_gaps: Enum.map(animal.service_gaps, &ServiceGapX.attrs/1)
+      service_gaps: Enum.map(animal.service_gaps, &ServiceGapT.attrs/1)
     }
   end
     

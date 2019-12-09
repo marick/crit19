@@ -26,7 +26,7 @@ defmodule Crit.DataCase do
       use Crit.Global.Default
       use Crit.Global.Constants
       use Crit.Exemplars.Simple
-      alias Crit.X.SqlX
+      alias Crit.Extras.SqlT
       import Crit.Assertions.Map
       use Crit.Mock
     end

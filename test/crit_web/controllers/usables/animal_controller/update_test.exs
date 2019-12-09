@@ -5,7 +5,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Exemplars
-  alias Crit.X.AnimalX
+  alias Crit.Extras.AnimalT
 
   setup :logged_in_as_usables_manager
 
@@ -27,7 +27,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> AnimalX.params
+        |> AnimalT.params
         # change a field in the animal itself
         |> Map.put("name", "new name")
         # change a field in one of the service gaps
@@ -66,7 +66,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> AnimalX.params
+        |> AnimalT.params
         # change a field in the animal itself so that we can see something happen
         |> Map.put("name", "new name")
         |> put_in(["service_gaps", "2"], empty_service_gap)
@@ -88,7 +88,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> AnimalX.params
+        |> AnimalT.params
         # Dates are in wrong order
         |> put_in(["in_service_datestring"], @later_iso_date)
         |> put_in(["out_of_service_datestring"], @iso_date)

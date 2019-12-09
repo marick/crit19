@@ -3,7 +3,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Usables.FieldConverters.ToDate
-  alias Crit.X.AnimalX
+  alias Crit.Extras.AnimalT
 
   describe "updating service dates" do
     setup do
@@ -18,7 +18,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
         
       params = %{"in_service_datestring" => dates.iso_next_in_service,
                  "out_of_service_datestring" => "never"}
-      new_animal = AnimalX.update_for_success(original_animal.id, params)
+      new_animal = AnimalT.update_for_success(original_animal.id, params)
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_next_in_service,
                              in_service_date: dates.next_in_service,
@@ -33,7 +33,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = AnimalX.update_for_success(animal.id, params)
+      new_animal = AnimalT.update_for_success(animal.id, params)
 
       assert new_animal == %{animal | 
                              out_of_service_datestring: dates.iso_next_out_of_service,
@@ -49,7 +49,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
       )
       params = %{"in_service_datestring" => dates.iso_next_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = AnimalX.update_for_success(original_animal.id, params)
+      new_animal = AnimalT.update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_next_in_service,
@@ -67,7 +67,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => @never}
-      new_animal = AnimalX.update_for_success(original_animal.id, params)
+      new_animal = AnimalT.update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_in_service,
@@ -84,7 +84,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
       )
       params = %{"in_service_datestring" => dates.iso_in_service,
                  "out_of_service_datestring" => dates.iso_next_out_of_service}
-      new_animal = AnimalX.update_for_success(original_animal.id, params)
+      new_animal = AnimalT.update_for_success(original_animal.id, params)
 
       assert new_animal == %{original_animal | 
                              in_service_datestring: dates.iso_in_service,

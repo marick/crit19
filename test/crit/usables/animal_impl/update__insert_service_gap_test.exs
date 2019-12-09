@@ -4,7 +4,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   alias Crit.Usables.Schemas.Animal
   alias Crit.Sql
 
-  alias Crit.X.AnimalX
+  alias Crit.Extras.AnimalT
   import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
@@ -49,7 +49,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     @addition_retrieval_result @addition_update_result
     
     setup(%{animal: animal}) do
-      [animal_attrs: AnimalX.attrs_plus_service_gap(animal, @addition_input)]
+      [animal_attrs: AnimalT.attrs_plus_service_gap(animal, @addition_input)]
     end
     
     test "service gap CHANGESETS produced by `Animal.update_changeset`",
@@ -97,7 +97,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   end
 
 
-  defp original_gap(animal), do: AnimalX.service_gap_n(animal, 0)
+  defp original_gap(animal), do: AnimalT.service_gap_n(animal, 0)
 
   defp make_changesets(animal, attrs),
     do: Animal.update_changeset(animal, attrs).changes.service_gaps

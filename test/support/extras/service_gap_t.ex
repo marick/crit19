@@ -1,4 +1,4 @@
-defmodule Crit.X.ServiceGapX do
+defmodule Crit.Extras.ServiceGapT do
   @moduledoc """
   Shorthand functions for use in tests.
   """
