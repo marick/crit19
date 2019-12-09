@@ -1,7 +1,7 @@
 defmodule Crit.Users.Api.PasswordTest do
   use Crit.DataCase
+  import Crit.Assertions.User
   alias Crit.Users
-  # alias Crit.Users.User
   alias Crit.Users.Password
   alias Crit.Exemplars.{PasswordFocused, Minimal}
 
@@ -21,7 +21,7 @@ defmodule Crit.Users.Api.PasswordTest do
 
       assert :ok == set(user.auth_id, password)
       assert has_password?(user.auth_id)
-      assert_ok_unique_id(user.id, check(user.auth_id, password))
+      assert_same_user(user, check(user.auth_id, password))
     end
 
     test "successfully replacing the old one", %{user: user} do
@@ -32,7 +32,7 @@ defmodule Crit.Users.Api.PasswordTest do
       assert :ok == set(user.auth_id, password__NEW)
       
       assert has_password?(user.auth_id)
-      assert_ok_unique_id(user.id, check(user.auth_id, password__NEW))
+      assert_same_user(user, check(user.auth_id, password__NEW))
       assert :error == check(user.auth_id, password__old)
     end
 
@@ -44,7 +44,7 @@ defmodule Crit.Users.Api.PasswordTest do
       assert {:error, _} = set(user.auth_id, password__SHORT)
       
       assert has_password?(user.auth_id)
-      assert_ok_unique_id(user.id, check(user.auth_id, password__old))
+      assert_same_user(user, check(user.auth_id, password__old))
       assert :error == check(user.auth_id, password__SHORT)
     end
   end

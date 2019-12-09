@@ -1,5 +1,6 @@
 defmodule Crit.Users.Api.PasswordTokenTest do
   use Crit.DataCase
+  import Crit.Assertions.User
   alias Crit.Users
   alias Crit.Users.User
   alias Crit.Users.PasswordToken
@@ -61,7 +62,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
     test "the password is acceptable",
       %{valid_password: valid_password, user: user, token: token} do
       params = PasswordFocused.params(valid_password, valid_password)
-      assert_ok_unique_id(user.id, Users.redeem_password_token(token, params))
+      assert_same_user(user, Users.redeem_password_token(token, params))
       # Token has been deleted
       refute Repo.get_by(PasswordToken, user_id: user.id)
     end

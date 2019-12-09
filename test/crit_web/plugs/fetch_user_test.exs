@@ -1,7 +1,7 @@
 defmodule CritWeb.Plugs.FetchUserTest do
   use CritWeb.ConnCase
   alias CritWeb.Plugs.FetchUser
-  import Crit.DataExtras
+  import Crit.Assertions.User
   import Crit.PlugExtras
   alias Crit.Sql
 

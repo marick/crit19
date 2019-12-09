@@ -1,11 +1,11 @@
 defmodule CritWeb.CurrentUser.SettingsControllerTest do
   use CritWeb.ConnCase
+  import Crit.Assertions.User
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
   alias Crit.Users
   alias CritWeb.PublicController
-  import Crit.DataExtras
 
   describe "displaying a token to get a form" do
     setup do
@@ -55,8 +55,8 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       %{conn: conn, valid_password: valid_password, user: user, run: run} do
 
       conn = run.(conn, valid_password, valid_password)
-      assert_ok_unique_id(
-        user.id,
+      assert_same_user(
+        user,
         Users.check_password(user.auth_id, valid_password, @institution))
       assert user_id(conn) == user.id
       assert institution(conn) == @institution
