@@ -9,6 +9,9 @@ defmodule Crit.Assertions.Defchain do
     end
   end
 
+  # A `when...` clause in a def produces a rather peculiar syntax tree.
+  # Although it's textually within the `def`, in the tree structure, it's
+  # outside it.
   defp value_arg(head) do
     case head do
       {:when, _env, [true_head | _]} ->
