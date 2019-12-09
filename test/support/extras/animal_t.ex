@@ -5,6 +5,7 @@ defmodule Crit.Extras.AnimalT do
 
   use Crit.Global.Default
   use Crit.Global.Constants
+  import Crit.Extras.ChangesetT, only: [errors_on: 1]
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Usables.Schemas.Animal
@@ -97,16 +98,4 @@ defmodule Crit.Extras.AnimalT do
        }
     Map.merge(from_animal, overrides)
   end
-
-
-  IO.puts "Don't have two copies of `errors_on`."
-
-  defp errors_on(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
-      Regex.replace(~r"%{(\w+)}", message, fn _, key ->
-        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
-      end)
-    end)
-  end
-  
 end

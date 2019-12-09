@@ -1,9 +1,9 @@
 defmodule Crit.Assertions.Changeset do
   import Crit.Assertions.Defchain
   import ExUnit.Assertions
+  import Crit.Extras.ChangesetT, only: [errors_on: 1]
   import Crit.Assertions.Map
   alias Ecto.Changeset
-  import Crit.DataCase, only: [errors_on: 1]
 
   defchain assert_valid(%Changeset{} = changeset),
     do: assert changeset.valid?
