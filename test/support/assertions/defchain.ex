@@ -1,5 +1,20 @@
 defmodule Crit.Assertions.Defchain do
 
+  @doc """
+  Create an assertion that can be chained together with other
+  similar assertions, like this:
+
+      get(conn, ...)
+      |> assert_will_post_to(:set_fresh_password)
+      |> assert_user_sees(required_1)
+      |> assert_user_sees(required_2)
+     
+  Assertions are created by using `defchain` instead of `def`:
+
+      defchain assert_user_sees(conn, claim), do: ...
+      defchain assert_purpose(conn, purpose), do: ...
+  """
+
   defmacro defchain(head, do: body) do
     quote do
       def unquote(head) do

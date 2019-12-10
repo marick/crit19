@@ -11,9 +11,8 @@ defmodule Crit.Assertions.Changeset do
   defchain assert_invalid(%Changeset{} = changeset),
     do: refute changeset.valid?
 
-  defchain assert_changes(%Changeset{} = changeset, list) do
-    assert_fields(changeset.changes, list)
-  end
+  defchain assert_changes(%Changeset{} = changeset, list),
+    do: assert_fields(changeset.changes, list)
 
   defchain assert_change(cs, arg2) when is_list(arg2), do: assert_changes(cs, arg2)
 
