@@ -40,7 +40,7 @@ defmodule CritWeb.Workflows.NewUserTest do
 
   # # def user_has_valid_password(auth_id, password) do
   # #   # assert {:ok, _} =
-  # #   #   Users.check_password(auth_id, password, @institution)
+  # #   #   Users.attempt_login(auth_id, password, @institution)
   # # end
 
   # test "successful creation through activation", %{conn: conn} do

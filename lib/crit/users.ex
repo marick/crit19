@@ -46,7 +46,7 @@ defmodule Crit.Users do
     end
   end
 
-  def check_password(auth_id, proposed_password, institution) do
+  def attempt_login(auth_id, proposed_password, institution) do
     password =
       Password.Query.by_auth_id(auth_id)
       |> Password.Query.preloading_user

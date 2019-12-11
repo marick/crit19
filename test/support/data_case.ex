@@ -28,6 +28,7 @@ defmodule Crit.DataCase do
       use Crit.Exemplars.Simple
       alias Crit.Extras.SqlT
       import Crit.Assertions.Map
+      import Crit.Assertions.Misc
       use Crit.Mock
       import Crit.Extras.ChangesetT, only: [errors_on: 1]
     end

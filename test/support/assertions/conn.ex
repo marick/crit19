@@ -47,9 +47,23 @@ defmodule CritWeb.Assertions.Conn do
   end
 
   defchain assert_logged_in(conn, %User{} = user, institution) do
-    assert user_id(conn) == user.id
+    assert_logged_in(conn, user.id, institution)
+  end
+
+  defchain assert_logged_in(conn, user_id, institution) do
+    assert user_id(conn) == user_id
     assert institution(conn) == institution
   end
 
   defchain assert_token_deleted(conn), do: refute token(conn)
+
+  defchain assert_redirected_home(conn),
+    do: assert_redirected_to(conn, PublicController.path(:index))
+
+  defchain assert_redirected_to(conn, path),
+    do: assert redirected_to(conn) == path
+
+  defchain assert_info_flash(conn, string_or_regex),
+    do: assert flash_info(conn) =~ string_or_regex
+
 end

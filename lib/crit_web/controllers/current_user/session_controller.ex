@@ -26,7 +26,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     auth_id = params["auth_id"]
     password = params["password"]
     institution = params["institution"]
-    case Users.check_password(auth_id, password, institution) do
+    case Users.attempt_login(auth_id, password, institution) do
       {:ok, %UniqueId{} = unique_id} ->
         successful_login(conn, unique_id)
       :error ->

@@ -1,6 +1,5 @@
 defmodule CritWeb.CurrentUser.SettingsControllerTest do
   use CritWeb.ConnCase
-  import Crit.Assertions.User
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
@@ -40,13 +39,15 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
     @valid_password "something horse something something"
 
-    defp set_fresh_password_action(conn, new_password, given_confirmation) do
+    defp action__set_fresh_password(conn, new_password, given_confirmation) do
       post_to_action(conn, :set_fresh_password,
         under(:password, PasswordFocused.params(new_password, given_confirmation)))
     end
 
     setup %{conn: conn} do
-      {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@institution)
+      {:ok, %{user: user, token: token}} =
+        Factory.string_params_for(:user)
+        |> Users.create_unactivated_user(@institution)
 
       conn = Plug.Test.init_test_session(conn, token: token)
 
@@ -54,23 +55,21 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
     end
 
     test "the password is acceptable", %{conn: conn, user: user} do
+      action__set_fresh_password(conn, @valid_password, @valid_password)
+      |> assert_logged_in(user, @institution)
+      |> assert_token_deleted
 
-      conn = set_fresh_password_action(conn, @valid_password, @valid_password)
-      assert_same_user(
-        user,
-        Users.check_password(user.auth_id, @valid_password, @institution))
-      assert user_id(conn) == user.id
-      assert institution(conn) == @institution
-      refute token(conn)
+      |> assert_redirected_home
+      |> assert_info_flash("You have been logged in")
 
-      assert redirected_to(conn) == PublicController.path(:index)
-      assert flash_info(conn) =~ "You have been logged in"
+      Users.attempt_login(user.auth_id, @valid_password, @institution)
+      |> assert_ok
     end
 
     test "something is wrong with the password", %{conn: conn, user: user} do
-      conn = set_fresh_password_action(conn, @valid_password, "WRONG")
+      conn = action__set_fresh_password(conn, @valid_password, "WRONG")
       assert :error ==
-        Users.check_password(user.auth_id, @valid_password, @institution)
+        Users.attempt_login(user.auth_id, @valid_password, @institution)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       refute user_id(conn)

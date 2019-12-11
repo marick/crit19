@@ -79,6 +79,6 @@ defmodule Crit.Users.Api.PasswordTest do
   end
 
   def check(auth_id, password) do 
-    Users.check_password(auth_id, password, @institution)
+    Users.attempt_login(auth_id, password, @institution)
   end
 end
