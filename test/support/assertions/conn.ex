@@ -10,13 +10,14 @@ defmodule CritWeb.Assertions.Conn do
 
   defchain assert_no_flash(conn),
     do: refute(Plug.Conn.get_session(conn, :phoenix_flash))
-  
+
   defchain assert_user_sees(conn, claims) when is_list(claims) do
     for claim <- claims, do: assert_user_sees(conn, claim)
   end
 
-  defchain assert_user_sees(conn, claim), 
-    do: assert(html_response(conn, 200) =~ claim)
+  defchain assert_user_sees(conn, claim) do
+    assert(html_response(conn, 200) =~ claim)
+  end
 
   defchain refute_user_sees(conn, claim),
     do: refute(html_response(conn, 200) =~ claim)
@@ -55,7 +56,15 @@ defmodule CritWeb.Assertions.Conn do
     assert institution(conn) == institution
   end
 
-  defchain assert_token_deleted(conn), do: refute token(conn)
+  defchain refute_logged_in(conn) do
+    refute user_id(conn)
+    refute institution(conn)
+  end
+
+  defchain assert_no_token_in_session(conn), do: refute token(conn)
+
+  defchain assert_session_token(conn, token_text),
+    do: assert token(conn).text == token_text
 
   defchain assert_redirected_home(conn),
     do: assert_redirected_to(conn, PublicController.path(:index))
@@ -63,7 +72,10 @@ defmodule CritWeb.Assertions.Conn do
   defchain assert_redirected_to(conn, path),
     do: assert redirected_to(conn) == path
 
-  defchain assert_info_flash(conn, string_or_regex),
+  defchain assert_info_flash_has(conn, string_or_regex),
     do: assert flash_info(conn) =~ string_or_regex
+
+  defchain assert_error_flash_has(conn, string_or_regex),
+    do: assert flash_error(conn) =~ string_or_regex
 
 end

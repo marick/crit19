@@ -49,6 +49,14 @@ defmodule Crit.Users.Api.PasswordTokenTest do
       assert {:error, message} = Users.one_token("DIFFERENT TOKEN")
       assert message =~ "DIFFERENT TOKEN"
     end
+
+    @tag :skip
+    test "updates the expiration date" do
+      # Test this by mocking out PasswordToken.force_update and
+      # checking that it's called.
+      # Then test PasswordToken.force_update passing in something other
+      # than utc_now
+    end
   end
 
 

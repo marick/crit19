@@ -1,6 +1,7 @@
 defmodule CritWeb.ConnMacros do
   use Phoenix.ConnTest
   import ExUnit.Assertions
+  
 
   defmacro __using__(controller: controller) do
     quote do
@@ -30,6 +31,7 @@ defmodule CritWeb.ConnMacros do
         assert html_response(conn, 200) =~ "method=\"post\""
         post_to = unquote(controller).path(action)
         assert html_response(conn, 200) =~ "action=\"#{post_to}\""
+        conn
       end
     end
   end
