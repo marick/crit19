@@ -7,7 +7,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias Crit.Users
   alias CritWeb.PublicController
 
-  describe "displaying a token to get a form" do
+  describe "displaying a token to get a form /" do
     setup do
       {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@institution)
       [token_text: token.text, user: user]
@@ -36,28 +36,29 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
     end
   end
 
-  describe "setting the password for the first time" do
+  describe "setting the password for the first time /" do
+
+    @valid_password "something horse something something"
+
+    defp set_fresh_password_action(conn, new_password, given_confirmation) do
+      post_to_action(conn, :set_fresh_password,
+        under(:password, PasswordFocused.params(new_password, given_confirmation)))
+    end
+
     setup %{conn: conn} do
       {:ok, %{user: user, token: token}} = Factory.string_params_for(:user) |> Users.create_unactivated_user(@institution)
 
       conn = Plug.Test.init_test_session(conn, token: token)
 
-      run = fn conn, new_password, confirmation ->
-        post_to_action(conn, :set_fresh_password,
-          under(:password, PasswordFocused.params(new_password, confirmation)))
-      end
-      
-      [conn: conn, valid_password: "something horse something something",
-       user: user, run: run]
+      [conn: conn, user: user]
     end
 
-    test "the password is acceptable",
-      %{conn: conn, valid_password: valid_password, user: user, run: run} do
+    test "the password is acceptable", %{conn: conn, user: user} do
 
-      conn = run.(conn, valid_password, valid_password)
+      conn = set_fresh_password_action(conn, @valid_password, @valid_password)
       assert_same_user(
         user,
-        Users.check_password(user.auth_id, valid_password, @institution))
+        Users.check_password(user.auth_id, @valid_password, @institution))
       assert user_id(conn) == user.id
       assert institution(conn) == @institution
       refute token(conn)
@@ -66,12 +67,10 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       assert flash_info(conn) =~ "You have been logged in"
     end
 
-    test "something is wrong with the password", 
-      %{conn: conn, user: user, valid_password: valid_password, run: run} do
-
-      conn = run.(conn, valid_password, "WRONG")
+    test "something is wrong with the password", %{conn: conn, user: user} do
+      conn = set_fresh_password_action(conn, @valid_password, "WRONG")
       assert :error ==
-        Users.check_password(user.auth_id, valid_password, @institution)
+        Users.check_password(user.auth_id, @valid_password, @institution)
       assert_purpose conn, create_a_password_without_needing_an_existing_one()
       assert_will_post_to(conn, :set_fresh_password)
       refute user_id(conn)

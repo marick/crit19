@@ -5,6 +5,8 @@ defmodule CritWeb.Assertions.Conn do
   import ExUnit.Assertions
   import Crit.Assertions.Defchain
   alias CritWeb.PublicController
+  alias Crit.Users.User
+  import CritWeb.Plugs.Accessors
 
   defchain assert_no_flash(conn),
     do: refute(Plug.Conn.get_session(conn, :phoenix_flash))
@@ -43,4 +45,11 @@ defmodule CritWeb.Assertions.Conn do
       assert_failed_authorization(action.(conn))
     end)
   end
+
+  defchain assert_logged_in(conn, %User{} = user, institution) do
+    assert user_id(conn) == user.id
+    assert institution(conn) == institution
+  end
+
+  defchain assert_token_deleted(conn), do: refute token(conn)
 end
