@@ -11,10 +11,16 @@ defmodule Crit.Assertions.Changeset do
   defchain assert_invalid(%Changeset{} = changeset),
     do: refute changeset.valid?
 
+  @doc """
+  The elements of `list` must be present in 
+  """
   defchain assert_changes(%Changeset{} = changeset, list),
     do: assert_fields(changeset.changes, list)
 
-  defchain assert_change(cs, arg2) when is_list(arg2), do: assert_changes(cs, arg2)
+  def assert_change(cs, arg2) when not is_list(arg2),
+    do: assert_changes(cs, [arg2])
+  def assert_change(cs, arg2),
+    do: assert_changes(cs, arg2)
 
   defchain assert_unchanged(%Changeset{} = changeset),
     do: assert changeset.changes == %{}
@@ -27,15 +33,20 @@ defmodule Crit.Assertions.Changeset do
     do: Enum.map fields, &(assert_unchanged changeset, &1)
 
   defchain assert_errors(%Changeset{} = changeset, list) do
-    refute changeset.valid?
     errors = errors_on(changeset)
+
+    message_check = fn field, expected ->
+      assert Map.has_key?(errors, field)
+      assert expected in errors[field]
+    end
+    
     Enum.map(list, fn
       field when is_atom(field) ->
         assert is_list(errors[field])
       {field, expected} when is_binary(expected) ->
-        assert expected in errors[field]
+        message_check.(field, expected)
       {field, expecteds} when is_list(expecteds) ->
-        Enum.map expecteds, &(assert &1 in errors[field])
+        Enum.map expecteds, &(message_check.(field, &1))
     end)
   end
 
