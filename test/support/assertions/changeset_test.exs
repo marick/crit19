@@ -3,6 +3,7 @@ defmodule Crit.Assertions.ChangesetTest do
   import Crit.Assertions.Changeset
   use Ecto.Schema
   import Ecto.Changeset
+  import Crit.Assertions.Defchain
 
   embedded_schema do
     field :name, :string
@@ -41,33 +42,43 @@ defmodule Crit.Assertions.ChangesetTest do
     end
 
     test "failure cases", %{valid: valid} do 
-      exception = assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{name: valid.name})
-        |> assert_changes(name: valid.name)
-      end
+      assertion_fails_with_diagnostic(
+        "Field `:name` is missing",
+        fn -> 
+          changeset(valid, %{name: valid.name})
+          |> assert_changes(name: valid.name)
+        end)
       
-      assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{name: "wrong new name"})
-        |> assert_changes(name: "right new name")
-      end
-      
-      assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{name: valid.name})
-        |> assert_change(:name)
-      end
+      assertion_fails_with_diagnostic(
+        ["`:name` has the wrong value",
+         "wrong new name",
+         "right new name"],
+        fn -> 
+          changeset(valid, %{name: "wrong new name"})
+          |> assert_changes(name: "right new name")
+        end)
+
+      assertion_fails_with_diagnostic(
+        ["Field `:name` is missing"],
+        fn -> 
+          changeset(valid, %{name: valid.name})
+          |> assert_change(:name)
+        end)
     end
   end
 
   describe "lack of changes" do
-    test "assert no anywhere changes", %{valid: valid} do
+    test "assert no changes anywhere", %{valid: valid} do
       changeset(valid, %{tags: "wrong"})
       |> assert_invalid
       |> assert_unchanged
 
-      assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{tags: ["tag"]})
-        |> assert_unchanged
-      end
+      assertion_fails_with_diagnostic(
+        "Fields have changed: `[:tags]`",
+        fn -> 
+          changeset(valid, %{tags: ["tag"]})
+          |> assert_unchanged
+        end)
     end
 
     test "assert particular values are unchanged", %{valid: valid} do
@@ -76,10 +87,12 @@ defmodule Crit.Assertions.ChangesetTest do
       |> assert_unchanged([:tags])
       |> assert_unchanged(:tags)
 
-      assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{name: "new name"})
-        |> assert_unchanged(:name)
-      end
+      assertion_fails_with_diagnostic(
+        "Field `:name` has changed",
+        fn -> 
+          changeset(valid, %{name: "new name"})
+          |> assert_unchanged([:name])
+        end)
     end
   end
   
@@ -97,17 +110,21 @@ defmodule Crit.Assertions.ChangesetTest do
     end
       
     test "there is no error at all", %{valid: valid} do
-      assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{name: "new name"})
-        |> assert_error(:name)
-      end
+      assertion_fails_with_diagnostic(
+        "There are no errors for field `:name`", 
+        fn -> 
+          changeset(valid, %{name: "new name"})
+          |> assert_error(:name)
+        end)
     end
 
     test "that field doesn't have an error", %{valid: valid} do 
-      assert_raise ExUnit.AssertionError, fn -> 
-        changeset(valid, %{tags: "wrong"})
-        |> assert_error(:name)
-      end
+      assertion_fails_with_diagnostic(
+        "There are no errors for field `:name`", 
+        fn -> 
+          changeset(valid, %{tags: "wrong"})
+          |> assert_error(:name)
+        end)
     end
   end    
     
@@ -122,24 +139,24 @@ defmodule Crit.Assertions.ChangesetTest do
     end
       
     test "there is no error at all", %{valid: valid} do
-      assert_raise ExUnit.AssertionError, fn -> 
+      assert_raise(ExUnit.AssertionError, fn -> 
         changeset(valid, %{name: "new name"})
         |> assert_error(tags: "is invalid")
-      end
+      end)
     end
 
     test "that field doesn't have an error", %{valid: valid} do 
-      assert_raise ExUnit.AssertionError, fn -> 
+      assert_raise(ExUnit.AssertionError, fn -> 
         changeset(valid, %{tags: "wrong"})
         |> assert_error(name: "can't be blank")
-      end
+      end)
     end
 
     test "that field has a different error", %{valid: valid} do 
-      assert_raise ExUnit.AssertionError, fn -> 
+      assert_raise(ExUnit.AssertionError, fn -> 
         changeset(valid, %{tags: "wrong"})
         |> assert_error(tags: "this is not the actual error message")
-      end
+      end)
     end
 
     test "you can ask for all of a list of errors", %{valid: valid} do 
@@ -152,12 +169,25 @@ defmodule Crit.Assertions.ChangesetTest do
       |> assert_error(tags: "added error 1")
       |> assert_error(tags: ["is invalid", "added error 1"])
 
-      assert_raise ExUnit.AssertionError, fn ->
+      assert_raise(ExUnit.AssertionError, fn ->
         cs
         |> assert_error(tags: ["is invalid", "not present"])
-      end
+      end)
     end
   end
+
+  defchain assert_diagnostic(exception, message),
+    do: assert exception.message =~ message
+
+
+  def assertion_fails_with_diagnostic(messages, f) when is_list(messages) do 
+    exception = assert_raise(ExUnit.AssertionError, f)
+
+    Enum.map(messages, &(assert_diagnostic exception, &1))
+  end
+
+  def assertion_fails_with_diagnostic(message, f), 
+    do: assertion_fails_with_diagnostic([message], f)
 end
 
         

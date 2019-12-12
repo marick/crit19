@@ -22,11 +22,14 @@ defmodule Crit.Assertions.Changeset do
   def assert_change(cs, arg2),
     do: assert_changes(cs, arg2)
 
-  defchain assert_unchanged(%Changeset{} = changeset),
-    do: assert changeset.changes == %{}
+  defchain assert_unchanged(%Changeset{} = changeset) do
+    changes = changeset.changes
+    assert changes == %{}, "Fields have changed: `#{Map.keys(changes) |> inspect}`"
+  end
 
   defchain assert_unchanged(%Changeset{} = changeset, field) when is_atom(field) do
-    refute Map.has_key?(changeset.changes, field)
+    refute Map.has_key?(changeset.changes, field),
+      "Field `#{inspect field}` has changed"
   end
 
   defchain assert_unchanged(%Changeset{} = changeset, fields) when is_list(fields),
@@ -35,14 +38,19 @@ defmodule Crit.Assertions.Changeset do
   defchain assert_errors(%Changeset{} = changeset, list) do
     errors = errors_on(changeset)
 
+    any_error_check = fn field ->
+      assert Map.has_key?(errors, field),
+        "There are no errors for field `#{inspect field}`"
+    end
+
     message_check = fn field, expected ->
-      assert Map.has_key?(errors, field)
+      any_error_check.(field)
       assert expected in errors[field]
     end
     
     Enum.map(list, fn
       field when is_atom(field) ->
-        assert is_list(errors[field])
+        assert any_error_check.(field)
       {field, expected} when is_binary(expected) ->
         message_check.(field, expected)
       {field, expecteds} when is_list(expecteds) ->
