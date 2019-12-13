@@ -45,7 +45,14 @@ defmodule Crit.Assertions.Changeset do
 
     message_check = fn field, expected ->
       any_error_check.(field)
-      assert expected in errors[field]
+
+      msg = """
+      `#{inspect field}` is missing an error message.
+      expected: #{inspect expected}
+      actual:   #{inspect errors[field]}
+      """
+      
+      assert expected in errors[field], msg
     end
     
     Enum.map(list, fn

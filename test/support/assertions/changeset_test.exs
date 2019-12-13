@@ -139,24 +139,32 @@ defmodule Crit.Assertions.ChangesetTest do
     end
       
     test "there is no error at all", %{valid: valid} do
-      assert_raise(ExUnit.AssertionError, fn -> 
-        changeset(valid, %{name: "new name"})
-        |> assert_error(tags: "is invalid")
-      end)
+      assertion_fails_with_diagnostic(
+        "There are no errors for field `:tags`", 
+        fn -> 
+          changeset(valid, %{name: "new name"})
+          |> assert_error(tags: "is invalid")
+        end)
     end
 
-    test "that field doesn't have an error", %{valid: valid} do 
-      assert_raise(ExUnit.AssertionError, fn -> 
-        changeset(valid, %{tags: "wrong"})
-        |> assert_error(name: "can't be blank")
-      end)
+    test "that field doesn't have an error", %{valid: valid} do
+      assertion_fails_with_diagnostic(
+        "There are no errors for field `:name`",
+        fn -> 
+          changeset(valid, %{tags: "wrong"})
+          |> assert_error(name: "can't be blank")
+        end)
     end
 
-    test "that field has a different error", %{valid: valid} do 
-      assert_raise(ExUnit.AssertionError, fn -> 
-        changeset(valid, %{tags: "wrong"})
-        |> assert_error(tags: "this is not the actual error message")
-      end)
+    test "that field has a different error", %{valid: valid} do
+      assertion_fails_with_diagnostic(
+        ["`:tags` is missing an error message",
+         "this is not the actual error message",
+         "is invalid"],
+        fn -> 
+          changeset(valid, %{tags: "wrong"})
+          |> assert_error(tags: "this is not the actual error message")
+        end)
     end
 
     test "you can ask for all of a list of errors", %{valid: valid} do 
@@ -169,10 +177,15 @@ defmodule Crit.Assertions.ChangesetTest do
       |> assert_error(tags: "added error 1")
       |> assert_error(tags: ["is invalid", "added error 1"])
 
-      assert_raise(ExUnit.AssertionError, fn ->
-        cs
-        |> assert_error(tags: ["is invalid", "not present"])
-      end)
+      assertion_fails_with_diagnostic(
+        ["`:tags` is missing an error message",
+         "not present",
+         ~r[not checked.*added error 1.*is invalid"]
+        ],
+        fn ->
+          cs
+          |> assert_error(tags: ["is invalid", "not present"])
+        end)
     end
   end
 
