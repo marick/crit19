@@ -9,28 +9,24 @@ defmodule Crit.Sql.PrefixServerTest do
   @institution Global.Default.institution.short_name
   @prefix Global.Default.institution.prefix
 
-  test "use of the server" do
-    user = Minimal.user()
-    assert {:ok, direct} = Repo.insert(record_for(user), prefix: @prefix)
-    assert {:ok, indirect} = Sql.insert(record_for(user), @institution)
-
-    assert_inserted_the_same(direct, indirect)
-    assert_in_correct_postgres_schema(indirect)
-  end
-
-  def record_for(user) do 
+  setup do
+    user = Minimal.user
     params = %{event: "event", event_owner_id: user.id, data: %{"a" => 1}}
-    Record.changeset(%Record{}, params)
+    [changeset: Record.changeset(%Record{}, params)]
   end
 
-  def assert_inserted_the_same(one, other) do
-    assert one.event == other.event
-    assert one.event_owner_id == other.event_owner_id
-    assert one.data == other.data
+  test "Sql.insert acts like Repo.insert", %{changeset: changeset} do
+    assert_same_audit_content(
+      Sql.insert!( changeset, @institution),
+      Repo.insert!(changeset, prefix: @prefix))
   end
 
-  def assert_in_correct_postgres_schema(inserted) do
-    fetched = Repo.get(Record, inserted.id, prefix: @prefix)
-    assert_inserted_the_same(inserted, fetched)
+  test "Sql actually modifies the correct Postgres schema", %{changeset: changeset} do
+    written = Sql.insert!(changeset, @institution)
+    read = Repo.get(Record, written.id, prefix: @prefix)
+    assert_same_audit_content(written, read)
   end
+
+  def assert_same_audit_content(one, other),
+    do: assert_copy(one, other, except: [:id, :inserted_at])
 end
