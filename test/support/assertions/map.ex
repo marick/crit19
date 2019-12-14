@@ -23,9 +23,10 @@ defmodule Crit.Assertions.Map do
     
   """
 
-  # Credit: Steve Freeman inspired this and improved on my original notation.
+  # Credit: Steve Freeman inspired this.
   defchain assert_fields(kvs, list) do
     assert_present = fn key -> 
+      assert_no_typo_in_struct_key(kvs, key)
       assert Map.has_key?(kvs, key), "Field `#{inspect key}` is missing"
     end
     
@@ -91,5 +92,16 @@ defmodule Crit.Assertions.Map do
       expected: #{inspect expected}
       """
     assert(actual == expected, msg)
+  end
+
+
+  @doc """
+  Complain if given a key that doesn't exist in the argument (if it's a struct).
+  """
+  def assert_no_typo_in_struct_key(map, key) do
+    if Map.has_key?(map, :__struct__) do
+      assert Map.has_key?(map, key),
+        "Test error: there is no key `#{inspect key}` in #{inspect map.__struct__}"
+    end
   end
 end
