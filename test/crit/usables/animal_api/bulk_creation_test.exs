@@ -1,7 +1,6 @@
 defmodule Crit.Usables.AnimalApi.BulkCreationTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
-  import Ecto.ChangesetX
 
   @basic_params %{
     "species_id" => @bovine_id,
@@ -14,12 +13,12 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
     check_animal_properties_inserted = fn returned ->
-      fetched = AnimalApi.updatable!(returned.id, @institution)
-      assert fetched.id == returned.id
-      assert fetched.name == returned.name
-      assert fetched.in_service_datestring == @iso_date
-      assert fetched.out_of_service_datestring == @never
-      assert returned.species_name == @bovine
+      AnimalApi.updatable!(returned.id, @institution)
+      |> assert_fields(id: returned.id,
+                       name: returned.name,
+                       in_service_datestring: @iso_date,
+                       out_of_service_datestring: @never,
+                       species_name: @bovine)
     end
 
     check_animal_properties_inserted.(bossie)
@@ -34,11 +33,10 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
       |> Map.put("names", ",") # no name
 
     assert {:error, changeset} = AnimalApi.create_animals(params, @institution)
-    assert represents_form_errors?(changeset)
 
-    errors = errors_on(changeset)
-    assert length(errors.out_of_service_datestring) == 1
-    assert length(errors.names) == 1
+    changeset
+    |> assert_errors([:names, :out_of_service_datestring])
+    |> assert_error_free(:in_service_datestring)
   end
 
   test "constraint problems are detected last" do

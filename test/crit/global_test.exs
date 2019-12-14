@@ -4,17 +4,21 @@ defmodule Crit.GlobalTest do
   alias Crit.Global.Institution
   use Crit.Global.Default
 
-  test "the default user changeset contains permissions" do
-    assert [preloaded] = Repo.all(Institution)
-    assert [retrieved] = Global.all_institutions()
-    assert preloaded == retrieved
-    assert retrieved.short_name == @institution
-    assert retrieved.prefix == Global.Default.institution.prefix
-    assert retrieved.display_name == Global.Default.institution.display_name
+  test "the institutions are preloaded when app starts" do
+    assert Global.all_institutions() == Repo.all(Institution)
   end
 
+  test "during testing, there's a single institution" do
+    assert [_] = Global.all_institutions()
+  end
+  
+  test "the institution is labeled with a special shortname" do
+    [retrieved] = Global.all_institutions()
 
-  test "timezone retrieval" do
+    assert retrieved.short_name == @institution
+  end
+
+  test "an institution has a timezone" do
     actual = Global.timezone(@institution) 
     assert actual == Global.Default.institution.timezone
   end

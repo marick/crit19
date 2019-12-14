@@ -48,8 +48,9 @@
         {:error, :_step_key, failing_changeset, :_result_so_far},
         original_changeset, first_field: first_handler, second_field: second_handler)
 
-      assert "this will affect `:name`" in errors_on(result).name
-      assert "ignore message" in errors_on(result).second_field
+      assert_errors(result,
+        name: "this will affect `:name`",
+        second_field: "ignore message")
     end
   end
 end
