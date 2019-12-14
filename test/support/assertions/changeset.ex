@@ -57,6 +57,7 @@ defmodule Crit.Assertions.Changeset do
       assert_unchanged(changeset, [:name, :tags])
   """
   defchain assert_unchanged(%Changeset{} = changeset, field) when is_atom(field) do
+    assert_no_typo_in_struct_key(changeset.data, field)
     refute Map.has_key?(changeset.changes, field),
       "Field `#{inspect field}` has changed"
   end
@@ -133,4 +134,30 @@ defmodule Crit.Assertions.Changeset do
   
   defchain assert_error(cs, arg2) when is_atom(arg2), do: assert_errors(cs, [arg2])
   defchain assert_error(cs, arg2),                    do: assert_errors(cs,  arg2)
+
+
+
+  @doc """
+  Require that none of the named fields have an associated error:
+
+      assert_error_free(changes, [:in_service_datestring, :name])
+  
+  There can also be a singleton field:
+
+      assert_error_free(changes, :in_service_datestring)
+  """
+
+  defchain assert_error_free(changeset, field) when is_atom(field),
+    do: assert_error_free(changeset, [field])
+  defchain assert_error_free(changeset, fields) do
+    errors = errors_on(changeset)
+
+    check = fn(field) ->
+      assert_no_typo_in_struct_key(changeset.data, field)
+      refute Map.has_key?(errors, field),
+        "There is an error for field `#{inspect field}`"
+    end
+      
+    Enum.map(fields, check)
+  end
 end

@@ -1,9 +1,8 @@
 defmodule Crit.Assertions.ChangesetTest do
   use ExUnit.Case, async: true
-  import Crit.Assertions.Changeset
+  import Crit.Assertions.{Changeset, Assertion}
   use Ecto.Schema
   import Ecto.Changeset
-  import Crit.Assertions.Defchain
 
   embedded_schema do
     field :name, :string
@@ -94,6 +93,16 @@ defmodule Crit.Assertions.ChangesetTest do
           |> assert_unchanged([:name])
         end)
     end
+
+    test "will object to an impossible field", %{valid: valid} do
+      assertion_fails_with_diagnostic(
+        ["Test error: there is no key `:gorp` in Crit.Assertions.ChangesetTest"],
+        fn -> 
+          changeset(valid, %{})
+          |> assert_unchanged([:gorp, :foop])
+        end)
+    end
+    
   end
   
   describe "the existence of errors" do
@@ -189,18 +198,33 @@ defmodule Crit.Assertions.ChangesetTest do
     end
   end
 
-  defchain assert_diagnostic(exception, message),
-    do: assert exception.message =~ message
+  describe "asserting there is no error" do
+    test "success case", %{valid: valid} do
+      changeset(valid, %{})
+      |> assert_valid
+      |> assert_error_free([:tags, :name])
+      |> assert_error_free( :tags)
+    end
 
+    test "field does have an error", %{valid: valid} do
+      assertion_fails_with_diagnostic(
+        ["There is an error for field `:tags`"],
+        fn -> 
+          changeset(valid, %{tags: "bogus"})
+          |> assert_invalid
+          |> assert_error_free(:tags)
+        end)
+    end
 
-  def assertion_fails_with_diagnostic(messages, f) when is_list(messages) do 
-    exception = assert_raise(ExUnit.AssertionError, f)
-
-    Enum.map(messages, &(assert_diagnostic exception, &1))
+    test "will object to an impossible field", %{valid: valid} do
+      assertion_fails_with_diagnostic(
+        ["Test error: there is no key `:gorp` in Crit.Assertions.ChangesetTest"],
+        fn -> 
+          changeset(valid, %{tags: "bogus"})
+          |> assert_error_free(:gorp)
+        end)
+    end
   end
-
-  def assertion_fails_with_diagnostic(message, f), 
-    do: assertion_fails_with_diagnostic([message], f)
 end
 
         
