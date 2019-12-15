@@ -23,7 +23,8 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
       AnimalT.updatable_animal_named("already exists")
       params = AnimalT.params_except(original, %{"name" => "already exists"})
 
-      assert "has already been taken" in AnimalT.update_for_error(original.id, params).name
+      AnimalT.update_for_error_changeset(original.id, params)
+      |> assert_error(name: "has already been taken")
     end
   end
 end

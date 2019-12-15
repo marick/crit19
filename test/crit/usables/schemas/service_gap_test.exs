@@ -113,7 +113,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     test "Updating to all the same values", %{updatable: updatable, attrs: attrs} do
       ServiceGap.changeset(updatable, attrs)
       |> assert_valid
-      |> assert_unchanged
+      |> assert_no_changes
       # Implied by above, but let's be really explicit:
       |> assert_unchanged(:span)
     end

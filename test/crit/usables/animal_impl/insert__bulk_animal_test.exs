@@ -17,31 +17,40 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
       |> BulkAnimal.creation_changeset
       |> BulkCreationTransaction.changeset_to_changesets
     end
-    
-    test "has no out-of-service date" do 
-      [one_cs, two_cs] = make_changeset(@iso_date, @never)
-      
+
+    test "some changes are distributed to each of the created changesets" do
+      [one_cs, two_cs] = make_changeset(@iso_date, @later_iso_date)
+
+      one_cs
+      |> assert_changes(species_id: 1,
+                        in_service_date: @date,
+                        out_of_service_date: @later_date)
       assert one_cs.changes.name == "one"
-      assert one_cs.changes.species_id == 1
-      assert one_cs.changes.in_service_date == @date
-      refute one_cs.changes[:out_of_service_date]
       assert one_cs.data == %Animal{}
-      
-      assert two_cs.changes.name == "two"
-      # Rest is the same
-      assert two_cs.changes.species_id == 1
-      assert two_cs.changes.in_service_date == @date
-      refute two_cs.changes[:out_of_service_date]
-      assert two_cs.data == %Animal{}
+
+      assert_copy(one_cs.changes, two_cs.changes, except: [:name])
     end
 
-    test "has an out-of-service date" do 
-      [one_cs, _two_cs] = make_changeset(@iso_date, @later_iso_date)
-      
-      assert one_cs.changes.in_service_date == @date
-      assert one_cs.changes.out_of_service_date == @later_date
+    test "only the name changes" do
+      [one_cs, two_cs] = make_changeset(@iso_date, @later_iso_date)
+
+      assert_change(one_cs, name: "one")
+      assert_change(two_cs, name: "two")
+    end
+
+    test "the data part is an empty animal - causing creation" do
+      [one_cs, two_cs] = make_changeset(@iso_date, @later_iso_date)
+
+      assert one_cs.data == %Animal{}
+      assert two_cs.data == %Animal{}
     end
     
+    test "out_of_service_date can be left off" do 
+      [one_cs, two_cs] = make_changeset(@iso_date, @never)
+
+      assert_unchanged(one_cs, :out_of_service_date)
+      assert_unchanged(two_cs, :out_of_service_date)
+    end
   end
 end
   

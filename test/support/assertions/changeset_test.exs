@@ -70,13 +70,13 @@ defmodule Crit.Assertions.ChangesetTest do
     test "assert no changes anywhere", %{valid: valid} do
       changeset(valid, %{tags: "wrong"})
       |> assert_invalid
-      |> assert_unchanged
+      |> assert_no_changes
 
       assertion_fails_with_diagnostic(
         "Fields have changed: `[:tags]`",
         fn -> 
           changeset(valid, %{tags: ["tag"]})
-          |> assert_unchanged
+          |> assert_no_changes
         end)
     end
 
@@ -223,6 +223,13 @@ defmodule Crit.Assertions.ChangesetTest do
           changeset(valid, %{tags: "bogus"})
           |> assert_error_free(:gorp)
         end)
+    end
+  end
+
+  describe "testing the data part" do
+    test "equality comparison", %{valid: valid} do
+      changeset(valid, %{tags: "bogus"})
+      |> assert_original_data(valid)
     end
   end
 end

@@ -4,7 +4,8 @@ defmodule Crit.Extras.ServiceGapT do
   """
 
   use Crit.Global.Default
-  alias Crit.Usables.Schemas.ServiceGap
+  alias Crit.Usables.Schemas.{Animal,ServiceGap}
+  alias Crit.Extras.{AnimalT,ServiceGapT}
   alias Crit.Sql
   alias Crit.Exemplars.Available
 
@@ -12,6 +13,18 @@ defmodule Crit.Extras.ServiceGapT do
     %ServiceGap{}
     |> ServiceGap.changeset(attrs)
     |> Sql.insert!(@institution)
+  end
+
+  def make_changesets(animal, attrs) do
+    Animal.update_changeset(animal, attrs).changes.service_gaps
+  end
+
+  def update_animal_for_service_gaps(animal, attrs) do 
+    {:ok, %Animal{service_gaps: gaps}} = 
+      animal
+      |> Animal.update_changeset(attrs)
+      |> Sql.update(@institution)
+    gaps
   end
 
   def attrs(in_service_date, out_of_service_date, reason, opts \\ []) do

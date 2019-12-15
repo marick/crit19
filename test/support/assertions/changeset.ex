@@ -39,11 +39,10 @@ defmodule Crit.Assertions.Changeset do
     do: assert_changes(cs, arg2)
 
   @doc """
-  With no second argument, `assert_unchanged` requires that the changeset
-  contain no changes.
+  The changeset must contain no changes.
   """
   
-  defchain assert_unchanged(%Changeset{} = changeset) do
+  defchain assert_no_changes(%Changeset{} = changeset) do
     changes = changeset.changes
     assert changes == %{}, "Fields have changed: `#{Map.keys(changes) |> inspect}`"
   end
@@ -159,5 +158,13 @@ defmodule Crit.Assertions.Changeset do
     end
       
     Enum.map(fields, check)
+  end
+
+  defchain assert_original_data(changeset, keylist) when is_list(keylist) do
+    assert_fields(changeset.data, keylist)
+  end
+  
+  defchain assert_original_data(changeset, expected) do
+    assert changeset.data == expected
   end
 end

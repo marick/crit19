@@ -1,66 +1,86 @@
 defmodule Crit.Usables.AnimalImpl.UpdateOptimisticLockTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
-
   alias Crit.Extras.AnimalT
 
   describe "optimistic concurrency" do
     setup do
-      original = AnimalT.updatable_animal_named("Original Bossie")
-
-      update = fn animal, name ->
-        params = AnimalT.params_except(original, %{
-            "name" => name,
-            "lock_version" => to_string(animal.lock_version)})
-        AnimalApi.update(original.id, params, @institution)
-      end
-      [original: original, update: update]
+      old = AnimalT.updatable_animal_named("Original Bossie")
+      [old: old]
     end
 
-    test "optimistic concurrency failure produces changeset with new animal",
-      %{original: original, update: update} do
+    test "failure produces changeset that restarts with new version of animal",
+      %{old: old} do
 
-      assert {:ok, updated_first} = update.(original, "this version wins")
-      assert {:error, changeset} = update.(original, "this version loses")
-
-      assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
+      assert {:ok, new} = update_name(old, "this version wins")
+      assert {:error, changeset} = update_name(old, "this version loses")
+      
       # All changes have been wiped out.
       assert changeset.changes == %{}
 
-      # It is the updated version that is to fill in fields.
-      assert changeset.data == updated_first
+      # It is the new version that is to fill in fields.
+      assert changeset.data == new
       # Most interestingly...
-      assert changeset.data.name == updated_first.name
-      assert changeset.data.lock_version == updated_first.lock_version
+      assert changeset.data.name == "this version wins"
+      assert changeset.data.lock_version == old.lock_version + 1
+
+      # Template invents the error message
+      assert [{:optimistic_lock_error, _}] = changeset.errors
+    end
+
+    test "failure produces changeset that restarts with new version of animal NEW",
+      %{old: old} do
+
+      assert {:ok, new} = update_name(old, "this version wins")
+      assert {:error, retry_changeset} = update_name(old, "this version loses")
+
+      retry_changeset
+      |> assert_no_changes         # wipes out user entries
+      |> assert_original_data(new)
+      # Most interestingly...
+      |> assert_original_data(name: "this version wins",
+                              lock_version: old.lock_version + 1)
+
+      # The error is noted, but the message is the template's responsibility
+      |> assert_error(:optimistic_lock_error)
     end
 
     test "successful name change updates lock_version in displayed value",
-      %{original: original, update: update} do
+      %{old: old} do
 
-      assert {:ok, updated} = update.(original, "this is a new name")
-      assert updated.lock_version == 2
+      assert {:ok, updated} = update_name(old, "this is a new name")
+      assert updated.lock_version == old.lock_version + 1
     end
 
     test "Unsuccessful name change DOES NOT update lock_version",
-      %{original: original, update: update} do
+      %{old: old} do
 
       AnimalT.updatable_animal_named("preexisting")
 
-      assert {:error, changeset} = update.(original, "preexisting")
+      assert {:error, changeset} = update_name(old, "preexisting")
 
-      assert original.lock_version == 1
-      assert changeset.data.lock_version == original.lock_version
-      assert changeset.changes[:lock_version] == nil
+      changeset
+      |> assert_original_data(lock_version: old.lock_version)
+      |> assert_unchanged(:lock_version)
     end
 
-    test "optimistic lock failure wins", %{original: original, update: update} do
-      # Bump the lock version
-      {:ok, _} = update.(original, "this version wins")
+    test "optimistic lock failure takes precedence over other errors", %{old: old} do
+      # Let's make a name unavailable
+      AnimalT.updatable_animal_named("some other animal name")
 
-      assert {:error, changeset} = update.(original, "this version wins")
+      # Someone else edits an animal under edit
+      assert {:ok, _} = update_name(old, "old animal, new name")
+
+      # Two problems: lock error and name error
+      assert {:error, changeset} = update_name(old, "some other animal name")
 
       # Just the one error
       assert [{:optimistic_lock_error, _template_invents_msg}] = changeset.errors
     end
+  end
+
+  defp update_name(animal, name) do 
+    params = AnimalT.params_except(animal, %{"name" => name})
+    AnimalApi.update(animal.id, params, @institution)
   end
 end

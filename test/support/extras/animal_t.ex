@@ -79,9 +79,9 @@ defmodule Crit.Extras.AnimalT do
     new_animal
   end
 
-  def update_for_error(id, params) do
+  def update_for_error_changeset(id, params) do
     {:error, changeset} = AnimalApi.update(id, params, @institution)
-    errors_on(changeset)
+    changeset
   end
 
   def updatable_animal_named(name) do

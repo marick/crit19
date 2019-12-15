@@ -2,9 +2,8 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
-  alias Crit.Sql
 
-  alias Crit.Extras.AnimalT
+  alias Crit.Extras.{AnimalT,ServiceGapT}
   import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
@@ -55,7 +54,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     test "service gap CHANGESETS produced by `Animal.update_changeset`",
       %{animal: animal, animal_attrs: attrs} do
 
-      [_, new_changeset] = make_changesets(animal, attrs)
+      [_, new_changeset] = ServiceGapT.make_changesets(animal, attrs)
 
       # The new service gap, however, has a fleshed-out changeset
       new_changeset
@@ -68,7 +67,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     test "the results of the UPDATE, which can be used for a further update",
       %{animal: animal, animal_attrs: attrs} do
 
-      [_, added_gap] = perform_update(animal, attrs)
+      [_, added_gap] = ServiceGapT.update_animal_for_service_gaps(animal, attrs)
 
       assert_fields(added_gap, @addition_update_result)
     end
@@ -77,7 +76,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
       # We emphasize (by omitting others) those fields necessary for an update
       %{animal: animal, animal_attrs: attrs} do
 
-      perform_update(animal, attrs)
+      ServiceGapT.update_animal_for_service_gaps(animal, attrs)
       [_, added_gap] = retrieve_update(animal)
 
       assert_fields(added_gap, @addition_retrieval_result)
@@ -86,29 +85,18 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     test "P.S. adding a service gap doesn't change the existing one", 
       %{animal: animal, animal_attrs: attrs} do
 
-      [retained_changeset, _] = make_changesets(animal, attrs)
+      [retained_changeset, _] = ServiceGapT.make_changesets(animal, attrs)
       # No changes for the old service gap (therefore, it will not be UPDATEd)
-      retained_changeset |> assert_valid |> assert_unchanged
+      retained_changeset |> assert_valid |> assert_no_changes
 
       # See?
-      [retained_gap, _] = perform_update(animal, attrs)
+      [retained_gap, _] = ServiceGapT.update_animal_for_service_gaps(animal, attrs)
       assert retained_gap == original_gap(animal)
     end
   end
 
 
   defp original_gap(animal), do: AnimalT.service_gap_n(animal, 0)
-
-  defp make_changesets(animal, attrs),
-    do: Animal.update_changeset(animal, attrs).changes.service_gaps
-
-  defp perform_update(animal, attrs) do 
-    {:ok, %Animal{service_gaps: gaps}} = 
-      animal
-      |> Animal.update_changeset(attrs)
-      |> Sql.update(@institution)
-    gaps
-  end
 
   defp retrieve_update(animal) do 
     %Animal{service_gaps: gaps} = AnimalApi.updatable!(animal.id, @institution)
