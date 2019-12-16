@@ -1,9 +1,10 @@
 defmodule Crit.Usables.HiddenSchemas.Species do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Crit.Ecto.TrimmedString
 
   schema "species" do
-    field :name, :string
+    field :name, TrimmedString
   end
 
   def changeset(animal, attrs) do
