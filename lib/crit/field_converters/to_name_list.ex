@@ -1,4 +1,4 @@
-defmodule Crit.Usables.FieldConverters.ToNameList do
+defmodule Crit.FieldConverters.ToNameList do
   use Ecto.Schema
   import Ecto.Changeset
   import Crit.Errors

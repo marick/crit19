@@ -1,7 +1,7 @@
-defmodule Crit.Usables.FieldConverters.ToDateTest do
+defmodule Crit.FieldConverters.ToSpanTest do
   use Ecto.Schema
   use Crit.DataCase
-  alias Crit.Usables.FieldConverters.ToDate
+  alias Crit.FieldConverters.ToSpan
   alias Pile.TimeHelper
   alias Ecto.Changeset
   alias Crit.Usables.Schemas.Animal
@@ -61,7 +61,7 @@ defmodule Crit.Usables.FieldConverters.ToDateTest do
     test "error case: dates are misordered" do
       make_changeset(in_service_datestring: @later_iso_date,
                      out_of_service_datestring: @iso_date)
-      |> assert_error(out_of_service_datestring: ToDate.misorder_error_message)
+      |> assert_error(out_of_service_datestring: ToSpan.misorder_error_message)
     end
   end
 
@@ -106,11 +106,11 @@ defmodule Crit.Usables.FieldConverters.ToDateTest do
   defp make_changeset(animal, date_opts) do
     default = %{timezone: @timezone}
     Changeset.change(animal, Enum.into(date_opts, default))
-    |> ToDate.put_service_dates
+    |> ToSpan.put_span
   end
 
   defp assert_introduced_misorder(existing, date_opts) do
     make_changeset(existing, date_opts)
-    |> assert_error(out_of_service_datestring: ToDate.misorder_error_message)
+    |> assert_error(out_of_service_datestring: ToSpan.misorder_error_message)
   end
 end

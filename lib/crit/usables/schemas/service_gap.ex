@@ -2,7 +2,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Datespan
-  alias Crit.Usables.FieldConverters.ToDate
+  alias Crit.FieldConverters.ToSpan
 
   schema "service_gaps" do
     field :animal_id, :id
@@ -39,7 +39,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
       :lt ->
         changeset
       _ ->
-        ToDate.note_misorder(changeset, :out_of_service_date)
+        ToSpan.note_misorder(changeset, :out_of_service_date)
     end
   end
 

@@ -1,7 +1,7 @@
-defmodule Crit.Usables.FieldConverters.ToNameListTest do
+defmodule Crit.FieldConverters.ToNameListTest do
   use Ecto.Schema
   use Crit.DataCase
-  alias Crit.Usables.FieldConverters.ToNameList
+  alias Crit.FieldConverters.ToNameList
   alias Ecto.Changeset
 
   # This works on a schema with two fields with this structure:

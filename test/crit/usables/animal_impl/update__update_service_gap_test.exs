@@ -2,7 +2,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
-  alias Crit.Usables.FieldConverters.ToDate
+  alias Crit.FieldConverters.ToSpan
   alias Crit.Extras.AnimalT
 
   describe "updating service dates" do
@@ -105,7 +105,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
                  "out_of_service_datestring" => dates.iso_next_in_service}
       #           ^^^^^^                                       ^^
       assert {:error, changeset} = AnimalApi.update(original_animal.id, params, @institution)
-      assert ToDate.misorder_error_message in errors_on(changeset).out_of_service_datestring
+      assert ToSpan.misorder_error_message in errors_on(changeset).out_of_service_datestring
     end
   end
 

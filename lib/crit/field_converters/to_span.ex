@@ -1,4 +1,4 @@
-defmodule Crit.Usables.FieldConverters.ToDate do
+defmodule Crit.FieldConverters.ToSpan do
   use Ecto.Schema
   use Crit.Global.Constants
   import Ecto.Changeset
@@ -15,7 +15,7 @@ defmodule Crit.Usables.FieldConverters.ToDate do
   # field :in_service_date, :date
   # field :out_of_service_date, :date
 
-  def put_service_dates(changeset) do
+  def put_span(changeset) do
     changeset
     |> put_in_service
     |> put_out_of_service

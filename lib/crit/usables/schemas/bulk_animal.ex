@@ -2,7 +2,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
-  alias Crit.Usables.FieldConverters.{ToDate, ToNameList}
+  alias Crit.FieldConverters.{ToSpan, ToNameList}
 
 
   embedded_schema do
@@ -34,7 +34,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
       fn changeset ->
         changeset
         |> ToNameList.split_names(from: :names, to: :computed_names)
-        |> ToDate.put_service_dates
+        |> ToSpan.put_span
       end)
   end
 end

@@ -1,7 +1,7 @@
 defmodule Crit.Usables.Schemas.ServiceGapTest do
   use Crit.DataCase
   alias Crit.Usables.Schemas.ServiceGap
-  alias Crit.Usables.FieldConverters.ToDate
+  alias Crit.FieldConverters.ToSpan
   alias Crit.Sql
 
   alias Crit.Extras.ServiceGapT
@@ -43,7 +43,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
                 out_of_service_date: @iso_date,
                 reason: "reason"}
       handle(given)
-      |> assert_error(out_of_service_date: ToDate.misorder_error_message)
+      |> assert_error(out_of_service_date: ToSpan.misorder_error_message)
       |> assert_unchanged(:span)
 
       # Other fields are available to fill form fields
@@ -148,7 +148,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       
       ServiceGap.changeset(updatable, new_attrs)
       # Note that the error is always associated to the out-of-service error
-      |> assert_error(out_of_service_date: ToDate.misorder_error_message)
+      |> assert_error(out_of_service_date: ToSpan.misorder_error_message)
       |> assert_change(in_service_date: @later_date)
       
       |> assert_unchanged([:out_of_service_date, :span])
@@ -159,7 +159,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       new_attrs = %{attrs | out_of_service_date: @iso_date}
       
       ServiceGap.changeset(updatable, new_attrs)
-      |> assert_error(out_of_service_date: ToDate.misorder_error_message)
+      |> assert_error(out_of_service_date: ToSpan.misorder_error_message)
       |> assert_change(out_of_service_date: @date)
       
       |> assert_unchanged([:in_service_date, :span])

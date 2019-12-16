@@ -2,7 +2,7 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Usables.FieldConverters.ToNameList
+  alias Crit.FieldConverters.ToNameList
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias CritWeb.Audit
