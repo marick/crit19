@@ -28,9 +28,12 @@ defmodule Crit.Usables.Schemas.Animal do
 
     # Virtual fields used for displays or forms presented to a human
     field :timezone, :string, virtual: true
-    field :species_name, :string, virtual: true
     field :in_service_datestring, :string, virtual: true
     field :out_of_service_datestring, :string, virtual: true
+    # Since the species can't be changed, a form could be populated
+    # via species.name, but I have a slight preference for
+    # having a "flat" interface that the form uses.
+    field :species_name, :string, virtual: true
   end
 
   # This changeset comes from bulk creation with the datestrings
