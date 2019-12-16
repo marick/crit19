@@ -8,12 +8,14 @@ defmodule Crit.Usables.Schemas.Animal do
   alias Crit.Ecto.TrimmedString
   alias Crit.Usables.HiddenSchemas.Species
   alias Crit.Usables.Schemas.ServiceGap
+  alias Ecto.Datespan
   import Ecto.Changeset
   alias Crit.FieldConverters.ToSpan
 
   schema "animals" do
     # The fields below are the true fields in the table.
     field :name, TrimmedString
+    field :span, Datespan
     field :in_service_date, :date
     field :out_of_service_date, :date
     field :available, :boolean, default: true
