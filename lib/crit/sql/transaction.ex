@@ -1,7 +1,8 @@
 defmodule Crit.Sql.Transaction do
+  use Crit.Errors
+  alias Crit.Errors
   alias Ecto.Changeset
   alias Ecto.ChangesetX
-  import Crit.Errors
 
 
   defmodule State do 
@@ -72,7 +73,7 @@ defmodule Crit.Sql.Transaction do
     reducer = fn {failing_field, _}, acc ->
       case handler_map[failing_field] do
         nil ->
-          program_error("Unhandled error for field #{failing_field}.")
+          Errors.program_error("Unhandled error for field #{failing_field}.")
         handler -> 
           handler.(failing_changeset, acc)
       end

@@ -104,7 +104,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
                  "out_of_service_datestring" => dates.iso_next_in_service}
       #           ^^^^^^                                       ^^
       assert {:error, changeset} = AnimalApi.update(original_animal.id, params, @institution)
-      assert date_misorder_message() in errors_on(changeset).out_of_service_datestring
+      assert @date_misorder_message in errors_on(changeset).out_of_service_datestring
     end
   end
 

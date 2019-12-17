@@ -34,6 +34,7 @@ defmodule CritWeb.ConnCase do
       alias Crit.Extras.SqlT
       import Crit.Assertions.Map
       import Crit.Assertions.Misc
+      use Crit.Errors
 
       # The default endpoint for testing
       @endpoint CritWeb.Endpoint

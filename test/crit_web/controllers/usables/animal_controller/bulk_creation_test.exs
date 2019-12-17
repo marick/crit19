@@ -2,7 +2,6 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.FieldConverters.ToNameList
   alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias CritWeb.Audit
@@ -56,7 +55,7 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
       |> assert_purpose(form_for_creating_new_animal())
 
       # error messages
-      |> assert_user_sees(ToNameList.no_names_error_message())
+      |> assert_user_sees(@no_valid_names_message)
       # Fields retain their old values.
       |> assert_user_sees(bad_params["names"])
     end

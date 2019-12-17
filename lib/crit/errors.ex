@@ -1,5 +1,4 @@
 defmodule Crit.Errors do
-  import Ecto.Changeset
 
   @doc """
   Input that should be impossible. For example, because animals are never
@@ -20,5 +19,10 @@ defmodule Crit.Errors do
     raise "Program error: #{message}"
   end
 
-  def date_misorder_message, do: "should not be before the start date"
+  defmacro __using__(_) do
+    quote do 
+      @date_misorder_message "should not be before the start date"
+      @no_valid_names_message "must have at least one valid name"
+    end
+  end
 end

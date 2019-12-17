@@ -33,7 +33,7 @@ defmodule Crit.FieldConverters.ToNameListTest do
         |> split_names
         |> errors_on
 
-      assert errors.from_field == [ToNameList.no_names_error_message]
+      assert errors.from_field == [@no_valid_names_message]
     end
   end
 end  

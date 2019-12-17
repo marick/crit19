@@ -61,7 +61,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
     test "error case: dates are misordered" do
       make_changeset(in_service_datestring: @later_iso_date,
                      out_of_service_datestring: @iso_date)
-      |> assert_error(out_of_service_datestring: date_misorder_message())
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
     end
   end
 
@@ -111,6 +111,6 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
   defp assert_introduced_misorder(existing, date_opts) do
     make_changeset(existing, date_opts)
-    |> assert_error(out_of_service_datestring: date_misorder_message())
+    |> assert_error(out_of_service_datestring: @date_misorder_message)
   end
 end

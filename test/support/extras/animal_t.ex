@@ -5,7 +5,6 @@ defmodule Crit.Extras.AnimalT do
 
   use Crit.Global.Default
   use Crit.Global.Constants
-  import Crit.Extras.ChangesetT, only: [errors_on: 1]
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Usables.Schemas.Animal

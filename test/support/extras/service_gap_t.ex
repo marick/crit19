@@ -5,7 +5,6 @@ defmodule Crit.Extras.ServiceGapT do
 
   use Crit.Global.Default
   alias Crit.Usables.Schemas.{Animal,ServiceGap}
-  alias Crit.Extras.{AnimalT,ServiceGapT}
   alias Crit.Sql
   alias Crit.Exemplars.Available
 

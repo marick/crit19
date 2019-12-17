@@ -1,7 +1,8 @@
 defmodule Crit.FieldConverters.ToNameList do
   use Ecto.Schema
+  use Crit.Errors
+  alias Crit.Errors
   import Ecto.Changeset
-  import Crit.Errors
   alias Crit.Ecto.NameList
 
   # Assumes this partial schema
@@ -13,13 +14,11 @@ defmodule Crit.FieldConverters.ToNameList do
     names = changeset.changes[from_field]
     case NameList.cast(names) do
       {:ok, []} ->
-        add_error(changeset, from_field, no_names_error_message())
+        add_error(changeset, from_field, @no_valid_names_message)
       {:ok, namelist} -> 
         put_change(changeset, to_field, namelist)
       result -> 
-        program_error("Namelist cast for `#{names}` is `#{inspect result}`.")
+        Errors.program_error("Namelist cast for `#{names}` is `#{inspect result}`.")
     end
   end
-
-  def no_names_error_message, do: "must have at least one valid name"
 end  

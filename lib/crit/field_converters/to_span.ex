@@ -1,9 +1,10 @@
 defmodule Crit.FieldConverters.ToSpan do
   use Ecto.Schema
   use Crit.Global.Constants
+  use Crit.Errors
   import Ecto.Changeset
-  import Crit.Errors
   alias Pile.TimeHelper
+  alias Crit.Errors
 
   # Assumes this partial schema. Fields are constant because they come from
   # the domain.
@@ -30,7 +31,7 @@ defmodule Crit.FieldConverters.ToSpan do
         {:ok, date} ->
           put_change(changeset, to, date)
         {:error, _} -> 
-          impossible_input("invalid date `#{datestring}`")
+          Errors.impossible_input("invalid date `#{datestring}`")
       end
     end
   end
@@ -71,14 +72,11 @@ defmodule Crit.FieldConverters.ToSpan do
       Date.compare(should_be_earlier, should_be_later) == :lt ->
         changeset
       :else -> 
-        add_error(changeset, :out_of_service_datestring, date_misorder_message())
+        add_error(changeset, :out_of_service_datestring, @date_misorder_message)
     end      
   end
 
   def note_misorder(changeset, field) do
-    add_error(changeset, field, date_misorder_message())
+    add_error(changeset, field, @date_misorder_message)
   end
-    
-
-  def misorder_error_message, do: "should not be before the start date"
 end  
