@@ -71,12 +71,12 @@ defmodule Crit.FieldConverters.ToSpan do
       Date.compare(should_be_earlier, should_be_later) == :lt ->
         changeset
       :else -> 
-        add_error(changeset, :out_of_service_datestring, misorder_error_message())
+        add_error(changeset, :out_of_service_datestring, date_misorder_message())
     end      
   end
 
   def note_misorder(changeset, field) do
-    add_error(changeset, field, misorder_error_message())
+    add_error(changeset, field, date_misorder_message())
   end
     
 
