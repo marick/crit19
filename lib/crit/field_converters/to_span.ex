@@ -76,7 +76,4 @@ defmodule Crit.FieldConverters.ToSpan do
     end      
   end
 
-  def note_misorder(changeset, field) do
-    add_error(changeset, field, @date_misorder_message)
-  end
 end  

@@ -2,7 +2,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Datespan
-  alias Crit.FieldConverters.ToSpan
+  use Crit.Errors
 
   schema "service_gaps" do
     field :animal_id, :id
@@ -39,9 +39,14 @@ defmodule Crit.Usables.Schemas.ServiceGap do
       :lt ->
         changeset
       _ ->
-        ToSpan.note_misorder(changeset, :out_of_service_date)
+        note_misorder(changeset, :out_of_service_date)
     end
   end
+
+  defp note_misorder(changeset, field) do
+    add_error(changeset, field, @date_misorder_message)
+  end
+  
 
   # This insulates tests from knowing the data representation
   def span(in_service, out_of_service),
