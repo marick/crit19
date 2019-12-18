@@ -2,7 +2,8 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
-  alias Crit.FieldConverters.{ToSpan, ToNameList}
+  alias Crit.FieldConverters.{ToSpan2, ToSpan, ToNameList}
+  alias Ecto.Datespan
 
 
   embedded_schema do
@@ -17,10 +18,11 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
     # computed fields
     field :in_service_date, :date
     field :out_of_service_date, :date
+    field :span, Datespan
     field :computed_names, {:array, :string}
   end
 
-  @form_fields [:names, :species_id, :timezone,
+  @form_fields [:names, :species_id, :timezone, 
                 :in_service_datestring, :out_of_service_datestring]
 
   def changeset(bulk, attrs) do
@@ -35,6 +37,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
         changeset
         |> ToNameList.split_names(from: :names, to: :computed_names)
         |> ToSpan.synthesize
+        |> ToSpan2.synthesize
       end)
   end
 end
