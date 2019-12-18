@@ -2,7 +2,8 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
   use Crit.DataCase
   alias Crit.Usables.Schemas.{Animal, ServiceGap}
   alias Crit.Usables.HiddenSchemas.{Species}
-  alias Crit.Usables.AnimalImpl.Read 
+  alias Crit.Usables.AnimalImpl.Read
+  alias Ecto.Datespan
 
   describe "put_updatable_fields" do
     setup do
@@ -10,6 +11,7 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
         species: %Species{name: @bovine},
         in_service_date: @date,
         out_of_service_date: @later_date,
+        span: Datespan.customary(@date, @later_date),
         service_gaps: [%ServiceGap{
                           span: ServiceGap.span(@bumped_date, @later_bumped_date),
                           reason: "reason"}

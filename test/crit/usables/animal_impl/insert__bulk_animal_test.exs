@@ -2,7 +2,7 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.AnimalImpl.BulkCreationTransaction 
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
-  # alias Ecto.Datespan
+  alias Ecto.Datespan
 
   describe "breaking a valid changeset into changesets for insertion" do
     defp make_changeset(in_service_string, out_of_service_string) do
@@ -23,8 +23,7 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
 
       one_cs
       |> assert_changes(species_id: 1,
-                        in_service_date: @date,
-                        out_of_service_date: @later_date)
+                        span: Datespan.customary(@date, @later_date))
       assert one_cs.changes.name == "one"
       assert one_cs.data == %Animal{}
 
@@ -45,11 +44,12 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
       assert two_cs.data == %Animal{}
     end
     
-    test "out_of_service_date can be left off" do 
+    test "out_of_service_date can be never" do 
       [one_cs, two_cs] = make_changeset(@iso_date, @never)
 
-      assert_unchanged(one_cs, :out_of_service_date)
-      assert_unchanged(two_cs, :out_of_service_date)
+      span = Datespan.infinite_up(@date, :inclusive)
+      assert_change(one_cs, span: span)
+      assert_change(two_cs, span: span)
     end
   end
 end

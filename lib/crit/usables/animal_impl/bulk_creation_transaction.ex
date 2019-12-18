@@ -18,6 +18,7 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
 
   def changeset_to_changesets(%{changes: changes}) do
     base_attrs = %{species_id: changes.species_id,
+                   span: changes.span,
                    in_service_date: changes.in_service_date,
                    out_of_service_date: changes[:out_of_service_date]
                   }

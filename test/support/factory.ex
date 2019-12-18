@@ -4,6 +4,7 @@ defmodule Crit.Factory do
   alias Crit.Usables.Schemas.{Animal,ServiceGap}
   alias Crit.Sql
   alias Crit.Exemplars
+  alias Ecto.Datespan
   require Faker
 
   def sql_insert!(tag, opts \\ [], institution) do
@@ -30,11 +31,16 @@ defmodule Crit.Factory do
   end
 
   def animal_factory() do
+    in_service = Exemplars.Date.today_or_earlier
+    out_of_service = Exemplars.Date.later_than_today
+    span = Datespan.customary(in_service, out_of_service)
+                              
     %Animal{
       name: Faker.Cat.name(),
       species_id: some_species_id(),
-      in_service_date: Exemplars.Date.today_or_earlier,
-      out_of_service_date: Exemplars.Date.later_than_today,
+      span: span,
+      in_service_date: in_service,
+      out_of_service_date: out_of_service
      }
   end
 

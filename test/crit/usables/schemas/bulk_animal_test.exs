@@ -1,6 +1,7 @@
 defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
   use Crit.DataCase
   alias Crit.Usables.Schemas.BulkAnimal
+  alias Ecto.Datespan
 
   @correct %{
     names: "a, b, c",
@@ -22,32 +23,11 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
     end
 
     test "the construction of cast and derived values" do
-      changeset = BulkAnimal.creation_changeset(@correct)
-      assert changeset.valid?
-
-      changes = changeset.changes
-      assert changes.species_id == 1
-      assert changes.computed_names == ["a", "b", "c"]
-      assert changes.in_service_date == @date
-      assert changes.out_of_service_date == @later_date
-    end
-  end
-
-
-  describe "impossible errors are violently rejected" do
-
-    test "in_service_date" do
-      assert_raise RuntimeError, fn -> 
-        %{@correct | in_service_datestring: "yesterday..."}
-        |> BulkAnimal.creation_changeset
-      end
-    end
-
-    test "out_of_service_date" do
-      assert_raise RuntimeError, fn -> 
-        %{@correct | out_of_service_datestring: "2525-13-06"}
-        |> BulkAnimal.creation_changeset
-      end
+      BulkAnimal.creation_changeset(@correct)
+      |> assert_valid
+      |> assert_changes(species_id: 1,
+                        computed_names: ["a", "b", "c"],
+                        span: Datespan.customary(@date, @later_date))
     end
   end
 end

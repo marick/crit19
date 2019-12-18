@@ -87,6 +87,13 @@ defmodule Crit.Extras.AnimalT do
     id = Exemplars.Available.animal_id(name: name)
     AnimalApi.updatable!(id, @institution)
   end
+
+  def dated_animal(in_service, out_of_service) do
+    [in_service_datestring: in_service,
+     out_of_service_datestring: out_of_service]
+    |> Exemplars.Available.animal_id
+    |> AnimalApi.updatable!(@institution)
+  end
   
   def params_except(%Animal{} = animal, overrides) do
     from_animal =
