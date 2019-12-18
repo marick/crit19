@@ -8,16 +8,14 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
   describe "put_updatable_fields" do
     setup do
       [as_fetched: %Animal{
-        species: %Species{name: @bovine},
-        in_service_date: @date,
-        out_of_service_date: @later_date,
-        span: Datespan.customary(@date, @later_date),
-        service_gaps: [%ServiceGap{
-                          span: ServiceGap.span(@bumped_date, @later_bumped_date),
-                          reason: "reason"}
-                      ]
+          species: %Species{name: @bovine},
+          span: Datespan.customary(@date, @later_date),
+          service_gaps: [%ServiceGap{
+                            span: ServiceGap.span(@bumped_date, @later_bumped_date),
+                            reason: "reason"}
+                        ]
        },
-
+       
        new_animal_fields: %{
          species_name: @bovine,
          in_service_datestring: @iso_date,
@@ -32,7 +30,7 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
        },
       ]
     end
-    
+
     test "basic conversions",
       %{as_fetched: fetched, new_service_gap_fields: new_service_gap_fields,
         new_animal_fields: new_animal_fields}  do
@@ -43,11 +41,12 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
       assert_fields(updatable_gap, new_service_gap_fields)
     end
 
-    test "with only an in-service date", %{as_fetched: fetched} do
+    test "with an infinite-up span", %{as_fetched: fetched} do
       fetched
-      |> Map.put(:out_of_service_date, nil)
+      |> Map.put(:span, Datespan.infinite_up(@date, :inclusive))
       |> Read.put_updatable_fields
-      |> assert_field(out_of_service_datestring: @never)
+      |> assert_field(in_service_datestring: @iso_date,
+                      out_of_service_datestring: @never)
     end
     
     test "put_updatable_fields can take a list argument", %{as_fetched: fetched} do

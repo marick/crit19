@@ -10,7 +10,6 @@ defmodule Crit.Usables.Schemas.Animal do
   alias Crit.Usables.Schemas.ServiceGap
   alias Ecto.Datespan
   import Ecto.Changeset
-  alias Crit.FieldConverters.ToSpan
   alias Crit.FieldConverters.ToSpan2
 
   schema "animals" do
@@ -42,10 +41,9 @@ defmodule Crit.Usables.Schemas.Animal do
   # This changeset comes from bulk creation with the datestrings
   # already turned into dates. This is perilous - rethink?
   def from_bulk_creation_changeset(attrs) do
-    required = [:name, :species_id, :lock_version, :in_service_date]
-    relevant = required ++ [:out_of_service_date, :span]
+    required = [:name, :species_id, :lock_version, :span]
     %__MODULE__{}
-    |> cast(attrs, relevant)
+    |> cast(attrs, required)
     |> validate_required(required)
     |> constraint_on_name()
   end
@@ -61,7 +59,6 @@ defmodule Crit.Usables.Schemas.Animal do
     |> cast(attrs, required)
     |> validate_required(required)
     |> cast_assoc(:service_gaps)
-    |> ToSpan.synthesize
     |> ToSpan2.synthesize
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)

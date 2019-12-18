@@ -3,6 +3,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
   import Ecto.Query
   alias Crit.Sql
   alias Crit.Usables.Schemas.ServiceGap
+  alias Ecto.Datespan
 
   defmodule Query do
     import Ecto.Query
@@ -53,11 +54,12 @@ defmodule Crit.Usables.AnimalImpl.Read do
   end
 
   def put_updatable_fields(animal) do
-    in_service_datestring = Date.to_iso8601(animal.in_service_date)
+    span = animal.span
+    in_service_datestring = Date.to_iso8601(span.first)
     out_of_service_datestring = 
-      case animal.out_of_service_date do 
-        nil -> @never
-        date -> Date.to_iso8601(date)
+      case Datespan.is_customary?(span) do 
+        true -> Date.to_iso8601(span.last)
+        false -> @never
       end
     
     %{ animal |
