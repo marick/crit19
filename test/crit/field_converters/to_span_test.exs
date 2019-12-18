@@ -4,113 +4,146 @@ defmodule Crit.FieldConverters.ToSpanTest do
   alias Crit.FieldConverters.ToSpan
   alias Pile.TimeHelper
   alias Ecto.Changeset
-  alias Crit.Usables.Schemas.Animal
+  alias Ecto.Datespan
 
-  # Assumes this partial schema. Fields are constant because they come from
-  # the domain.
+  # Assumes this partial schema. 
+  # Various constants are reasonably stable, given the domain.
   
   embedded_schema do
     field :in_service_datestring, :string
     field :out_of_service_datestring, :string
     field :timezone, :string
     
-    field :in_service_date, :date
-    field :out_of_service_date, :date
+    field :span, Datespan
   end
 
   @timezone "America/Chicago"
 
-  describe "basic conversions of date parameters" do
-    test "explicit dates" do
-      make_changeset(in_service_datestring: @iso_date,
-                     out_of_service_datestring: @later_iso_date)
-      |> assert_valid
-      |> assert_changes(in_service_date: @date,
-                        out_of_service_date: @later_date)
-    end
-    
-    test "starting date is today" do
-      # Yes, this test will fail if it runs across a date boundary. So sue me.
-      today = TimeHelper.today_date(@timezone)
-      
-      make_changeset(in_service_datestring: @today,
-                     out_of_service_datestring: @later_iso_date)
-      |> assert_valid
-      |> assert_changes(in_service_date: today,
-                        out_of_service_date: @later_date)
-    end
-    
-    test "ending day is 'never'" do
+  describe "cases where there's no upper bound" do
+    test "a valid in-service date" do
       make_changeset(in_service_datestring: @iso_date,
                      out_of_service_datestring: @never)
       |> assert_valid
-      |> assert_changes(in_service_date: @date)
-         # Assumes the schema's default value means "never"
-      |> assert_unchanged(:out_of_service_date)
+      |> assert_change(span: Datespan.infinite_up(@date, :inclusive))
+    end
+
+    test "the special value `today`" do
+      today_date = TimeHelper.today_date(@timezone)
+
+      make_changeset(in_service_datestring: @today,
+                     out_of_service_datestring: @never)
+      |> assert_valid
+      |> assert_change(span: Datespan.infinite_up(today_date, :inclusive))
     end
     
-    test "a supposedly impossible ill-formed date" do
-      assert_raise RuntimeError, "Impossible input: invalid date `todays`", fn -> 
-        make_changeset(in_service_datestring: "todays",
-                       out_of_service_datestring: "Nev")
-      end
+    test "a invalid in-service date" do
+      make_changeset(in_service_datestring: "2013-13-13",
+                     out_of_service_datestring: @never)
+      |> assert_invalid
+      |> assert_error(in_service_datestring: "is invalid")
+      |> assert_error_free(:out_of_service_datestring)
+    end
+
+    test "it is invalid to use `never` as a start date" do
+      make_changeset(in_service_datestring: @never,
+                     out_of_service_datestring: @never)
+      |> assert_invalid
+      |> assert_error(in_service_datestring: ~S{"must be a date or "today"})
+      |> assert_error_free(:out_of_service_datestring)
     end
   end
 
-  describe "misordering without existing `data` values (creation)" do
-    test "error case: dates are misordered" do
+  describe "cases where there IS an upper bound" do
+    test "a valid in-service date" do
+      make_changeset(in_service_datestring: @iso_date,
+                     out_of_service_datestring: @later_iso_date)
+      |> assert_valid
+      |> assert_change(span: Datespan.customary(@date, @later_date))
+    end
+
+    test "both dates are invalid" do
+      make_changeset(in_service_datestring: "todaync",
+                     out_of_service_datestring: "nev")
+      |> assert_invalid
+      |> assert_error(in_service_datestring: "is invalid",
+                      out_of_service_datestring: "is invalid")
+    end
+
+    test "just the upper bound is invalid" do
+      make_changeset(in_service_datestring: "today",
+                     out_of_service_datestring: "nev")
+      |> assert_invalid
+      |> assert_error(out_of_service_datestring: "is invalid")
+      |> assert_error_free(:in_service_datestring)
+    end
+  end
+
+  describe "checking for misordering" do
+    # That checks are only made if there are no previous errors
+    # is implied by the fact that previous tests don't blow up.
+    test "both values are valid" do
       make_changeset(in_service_datestring: @later_iso_date,
                      out_of_service_datestring: @iso_date)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_error_free(:in_service_datestring)
+    end
+
+    test "the bounds of equality" do
+      make_changeset(in_service_datestring: @iso_date,
+                     out_of_service_datestring: @iso_date)
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_error_free(:in_service_datestring)
     end
   end
 
-  describe "misordering with existing `data` values (updating)" do
-    test "new in-service date is AFTER existing out-of-service date" do
-      assert_introduced_misorder({"2002-02-02", "2003-03-03"},
-        in_service_datestring:                  "3333-01-01")
-    end
+  describe "workings when some of the data is not from a change" do
+    test "there is backing data, and one field differs" do
+      original = %__MODULE__{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: @never,
+        span: Datespan.infinite_up(@date, :inclusive)
+      }
 
-    test "new out-of-service date is BEFORE existing in-service date" do
-      assert_introduced_misorder( {"2002-02-02", "2003-03-03"},
-        out_of_service_datestring: "1900-01-01")
-    end
-
-    test "there is no out-of-service date, so no possibility of misorder" do
-      make_changeset({    @later_iso_date, @never},
-         in_service_datestring: @iso_date)
+      make_changeset(original, in_service_datestring: @iso_date,
+                               out_of_service_datestring: @later_iso_date)
       |> assert_valid
-      |> assert_change(in_service_date: @date)
-      |> assert_unchanged(:out_of_service_date)
+      |> assert_change(span: Datespan.customary(@date, @later_date))
+    end
+
+    test "error case for backing data" do
+      original = %__MODULE__{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: @later_iso_date,
+        span: Datespan.customary(@date, @later_date)
+      }
+
+      make_changeset(original, in_service_datestring: @iso_date,
+                               out_of_service_datestring: @iso_date)
+      |> assert_invalid
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+    end
+
+    test "if there is no change, the span will not be redundantly written" do
+      original = %__MODULE__{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: @later_iso_date,
+        span: Datespan.customary(@date, @later_date)
+      }
+
+      make_changeset(original, in_service_datestring: @iso_date,
+                               out_of_service_datestring: @later_iso_date)
+      |> assert_valid
+      |> assert_unchanged([:in_service_datestring, :out_of_service_datestring,
+                           :span])
     end
   end
 
-  defp make_changeset(date_opts), do: make_changeset(%Animal{}, date_opts)
+  defp make_changeset(date_opts),
+    do: make_changeset(%__MODULE__{}, date_opts)
 
-  defp make_changeset({iso_in_service, iso_out_of_service}, date_opts) do
-    out_of_service = if iso_out_of_service == @never do
-      nil
-    else
-      Date.from_iso8601!(iso_out_of_service)
-    end
-    
-    animal = %Animal{
-        in_service_datestring: iso_in_service,
-        in_service_date: Date.from_iso8601!(iso_in_service),
-        out_of_service_datestring: iso_out_of_service,
-        out_of_service_date: out_of_service
-    }
-    make_changeset(animal, date_opts)
-  end
-
-  defp make_changeset(animal, date_opts) do
+  defp make_changeset(previous, date_opts) do 
     default = %{timezone: @timezone}
-    Changeset.change(animal, Enum.into(date_opts, default))
+    Changeset.change(previous, Enum.into(date_opts, default))
     |> ToSpan.synthesize
-  end
-
-  defp assert_introduced_misorder(existing, date_opts) do
-    make_changeset(existing, date_opts)
-    |> assert_error(out_of_service_datestring: @date_misorder_message)
   end
 end

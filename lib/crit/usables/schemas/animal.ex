@@ -10,7 +10,7 @@ defmodule Crit.Usables.Schemas.Animal do
   alias Crit.Usables.Schemas.ServiceGap
   alias Ecto.Datespan
   import Ecto.Changeset
-  alias Crit.FieldConverters.ToSpan2
+  alias Crit.FieldConverters.ToSpan
 
   schema "animals" do
     # The fields below are the true fields in the table.
@@ -59,7 +59,7 @@ defmodule Crit.Usables.Schemas.Animal do
     |> cast(attrs, required)
     |> validate_required(required)
     |> cast_assoc(:service_gaps)
-    |> ToSpan2.synthesize
+    |> ToSpan.synthesize
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
   end
