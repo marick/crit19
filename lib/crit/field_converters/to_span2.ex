@@ -51,16 +51,27 @@ defmodule Crit.FieldConverters.ToSpan2 do
     end
   end
 
-  defp check_date_compatibility(%{valid?: false} = changeset), do: changeset
+  # This is somewhat complicated. You might think that you could guard this 
+  # function with:
+  #  
+  #     defp check_date_compatibility(%{valid?: false} = changeset), do: changeset
+  #
+  # That doesn't work if nested changesets are validated before this
+  # changeset's `:span` is calculated. If any of those prove invalid,
+  # this changeset is marked as also invalid, which leads to no date
+  # misorder message until the user fixes the error in the nested form
+  # and resubmits. That would be rude, so...
   defp check_date_compatibility(changeset) do
     span = fetch_field!(changeset, :span)
-    if Datespan.is_customary?(span) do
-      case Date.compare(span.first, span.last) do
-        :lt -> changeset
-        _ -> add_error(changeset, :out_of_service_datestring, @date_misorder_message)
-      end
-    else
-      changeset
+    cond do
+      span == nil ->
+        changeset
+      not Datespan.is_customary?(span) ->
+        changeset
+      Date.compare(span.first, span.last) == :lt ->
+        changeset
+      :else ->
+        add_error(changeset, :out_of_service_datestring, @date_misorder_message)
     end
   end
 
