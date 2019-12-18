@@ -106,7 +106,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
   defp make_changeset(animal, date_opts) do
     default = %{timezone: @timezone}
     Changeset.change(animal, Enum.into(date_opts, default))
-    |> ToSpan.put_span
+    |> ToSpan.synthesize
   end
 
   defp assert_introduced_misorder(existing, date_opts) do

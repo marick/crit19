@@ -60,7 +60,7 @@ defmodule Crit.Usables.Schemas.Animal do
     |> cast(attrs, required)
     |> validate_required(required)
     |> cast_assoc(:service_gaps)
-    |> ToSpan.put_span
+    |> ToSpan.synthesize
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
   end

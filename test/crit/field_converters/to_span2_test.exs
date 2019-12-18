@@ -96,12 +96,54 @@ defmodule Crit.FieldConverters.ToSpan2Test do
     end
   end
 
+  describe "workings when some of the data is not from a change" do
+    test "there is backing data, and one field differs" do
+      original = %__MODULE__{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: @never,
+        span: Datespan.infinite_up(@date, :inclusive)
+      }
 
-  defp make_changeset(date_opts), do: make_changeset(%__MODULE__{}, date_opts)
+      make_changeset(original, in_service_datestring: @iso_date,
+                               out_of_service_datestring: @later_iso_date)
+      |> assert_valid
+      |> assert_change(span: Datespan.customary(@date, @later_date))
+    end
 
-  defp make_changeset(animal, date_opts) do
+    test "error case for backing data" do
+      original = %__MODULE__{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: @later_iso_date,
+        span: Datespan.customary(@date, @later_date)
+      }
+
+      make_changeset(original, in_service_datestring: @iso_date,
+                               out_of_service_datestring: @iso_date)
+      |> assert_invalid
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+    end
+
+    test "if there is no change, the span will not be redundantly written" do
+      original = %__MODULE__{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: @later_iso_date,
+        span: Datespan.customary(@date, @later_date)
+      }
+
+      make_changeset(original, in_service_datestring: @iso_date,
+                               out_of_service_datestring: @later_iso_date)
+      |> assert_valid
+      |> assert_unchanged([:in_service_datestring, :out_of_service_datestring,
+                           :span])
+    end
+  end
+
+  defp make_changeset(date_opts),
+    do: make_changeset(%__MODULE__{}, date_opts)
+
+  defp make_changeset(previous, date_opts) do 
     default = %{timezone: @timezone}
-    Changeset.change(animal, Enum.into(date_opts, default))
-    |> ToSpan.put_span
+    Changeset.change(previous, Enum.into(date_opts, default))
+    |> ToSpan.synthesize
   end
 end

@@ -34,7 +34,7 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
       fn changeset ->
         changeset
         |> ToNameList.split_names(from: :names, to: :computed_names)
-        |> ToSpan.put_span
+        |> ToSpan.synthesize
       end)
   end
 end

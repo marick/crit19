@@ -16,7 +16,7 @@ defmodule Crit.FieldConverters.ToSpan do
   # field :in_service_date, :date
   # field :out_of_service_date, :date
 
-  def put_span(changeset) do
+  def synthesize(changeset) do
     changeset
     |> put_in_service
     |> put_out_of_service

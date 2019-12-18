@@ -15,13 +15,17 @@ defmodule Crit.FieldConverters.ToSpan2 do
   
   # field :span, Datespan
 
-  def put_span(changeset) do
+  # Note: it's an assumed precondition that the first three fields
+  # exist in either the changeset's `data` or its `changes`. That is,
+  # they have already been `cast` and `validate_required`. 
+
+  def synthesize(changeset) do
     assume_infinite_up(changeset)
     |> apply_out_of_service_date
     |> check_date_compatibility
   end
 
-  def assume_infinite_up(changeset) do
+  defp assume_infinite_up(changeset) do
     case parse_date(changeset, :in_service_datestring) do
       {:ok, @never} ->
         msg = ~S{"must be a date or "today"}
@@ -33,12 +37,12 @@ defmodule Crit.FieldConverters.ToSpan2 do
     end
   end
 
-  def apply_out_of_service_date(changeset) do
+  defp apply_out_of_service_date(changeset) do
     case parse_date(changeset, :out_of_service_datestring) do
       {:ok, @never} ->
         changeset # this is what the first step assumed
       {:ok, out_of_service} ->
-        tentative_span = fetch_change!(changeset, :span)
+        tentative_span = fetch_field!(changeset, :span)
         put_span(
           changeset,
           Datespan.convert_to_customary(tentative_span, out_of_service))
@@ -47,9 +51,9 @@ defmodule Crit.FieldConverters.ToSpan2 do
     end
   end
 
-  def check_date_compatibility(%{valid?: false} = changeset), do: changeset
-  def check_date_compatibility(changeset) do
-    span = fetch_change!(changeset, :span)
+  defp check_date_compatibility(%{valid?: false} = changeset), do: changeset
+  defp check_date_compatibility(changeset) do
+    span = fetch_field!(changeset, :span)
     if Datespan.is_customary?(span) do
       case Date.compare(span.first, span.last) do
         :lt -> changeset
@@ -62,9 +66,9 @@ defmodule Crit.FieldConverters.ToSpan2 do
 
   defp put_span(changeset, span), do: put_change(changeset, :span, span)
 
-  def parse_date(changeset, field) do
-    datestring = fetch_change!(changeset, field)
-    timezone = fetch_change!(changeset, :timezone)
+  defp parse_date(changeset, field) do
+    datestring = fetch_field!(changeset, field)
+    timezone = fetch_field!(changeset, :timezone)
     
     case datestring do
       @never ->
