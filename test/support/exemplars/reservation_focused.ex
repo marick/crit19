@@ -24,7 +24,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   def inserted_animal_ids(names, species_id) do
     inserted_named_ids names, %Animal{
       species_id: species_id,
-      span: Datespan.infinite_up(~D[1990-01-01], :inclusive)
+      span: Datespan.inclusive_up(~D[1990-01-01])
     }
   end
 

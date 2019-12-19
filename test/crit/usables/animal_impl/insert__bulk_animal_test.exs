@@ -47,7 +47,7 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
     test "out_of_service_date can be never" do 
       [one_cs, two_cs] = make_changeset(@iso_date, @never)
 
-      span = Datespan.infinite_up(@date, :inclusive)
+      span = Datespan.inclusive_up(@date)
       assert_change(one_cs, span: span)
       assert_change(two_cs, span: span)
     end

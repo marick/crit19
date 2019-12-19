@@ -44,7 +44,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
       AnimalT.update_for_success(original_animal.id, params)
       |> assert_fields(
              in_service_datestring: dates.iso_next_in_service,
-             span: Datespan.infinite_up(dates.next_in_service, :inclusive),
+             span: Datespan.inclusive_up(dates.next_in_service),
              lock_version: 2)
       |> assert_copy(original_animal,
            except: [:in_service_datestring, :span, :lock_version, :in_service_date])

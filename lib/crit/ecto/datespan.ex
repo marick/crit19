@@ -11,6 +11,7 @@ defmodule Ecto.Datespan do
     do: datespan.first != :unbound && datespan.last != :unbound &&
           datespan.lower_inclusive == true && datespan.upper_inclusive == false 
 
+  def inclusive_up(date), do: infinite_up(date, :inclusive)
 
   # Note that this blows up for an infinite-down span.
   def first_to_string(%__MODULE__{first: %Date{} = first}),
@@ -20,4 +21,5 @@ defmodule Ecto.Datespan do
     do: Date.to_iso8601(last)
   def last_to_string(%__MODULE__{last: :unbound}),
       do: @never
+
 end

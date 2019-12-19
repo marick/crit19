@@ -31,7 +31,7 @@ defmodule Crit.FieldConverters.ToSpan do
         msg = ~S{"must be a date or "today"}
         add_error(changeset, :in_service_datestring, msg)
       {:ok, in_service} ->
-        put_span(changeset, Datespan.infinite_up(in_service, :inclusive))
+        put_span(changeset, Datespan.inclusive_up(in_service))
       {:error, _tag} ->
         add_error(changeset, :in_service_datestring, "is invalid")
     end

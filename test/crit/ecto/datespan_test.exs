@@ -5,7 +5,7 @@ defmodule Crit.Ecto.DateSpanTest do
   describe "put_last" do 
     test "infinite up" do
       actual =
-        infinite_up(@date, :inclusive)
+        inclusive_up(@date)
         |> put_last(@later_date)
       assert actual == customary(@date, @later_date)
     end
@@ -49,6 +49,10 @@ defmodule Crit.Ecto.DateSpanTest do
   test "last_to_string" do
     assert last_to_string(customary(@date, @later_date)) == @later_iso_date
     assert last_to_string(infinite_up(@date, :exclusive)) == @never
+  end
+
+  test "inclusive_up" do
+    assert inclusive_up(@date) == infinite_up(@date, :inclusive)
   end
   
 end

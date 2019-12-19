@@ -43,7 +43,7 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
 
     test "with an infinite-up span", %{as_fetched: fetched} do
       fetched
-      |> Map.put(:span, Datespan.infinite_up(@date, :inclusive))
+      |> Map.put(:span, Datespan.inclusive_up(@date))
       |> Read.put_updatable_fields
       |> assert_field(in_service_datestring: @iso_date,
                       out_of_service_datestring: @never)

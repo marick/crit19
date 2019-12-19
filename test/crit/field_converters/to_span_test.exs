@@ -24,7 +24,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       make_changeset(in_service_datestring: @iso_date,
                      out_of_service_datestring: @never)
       |> assert_valid
-      |> assert_change(span: Datespan.infinite_up(@date, :inclusive))
+      |> assert_change(span: Datespan.inclusive_up(@date))
     end
 
     test "the special value `today`" do
@@ -33,7 +33,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       make_changeset(in_service_datestring: @today,
                      out_of_service_datestring: @never)
       |> assert_valid
-      |> assert_change(span: Datespan.infinite_up(today_date, :inclusive))
+      |> assert_change(span: Datespan.inclusive_up(today_date))
     end
     
     test "a invalid in-service date" do
@@ -101,7 +101,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       original = %__MODULE__{
         in_service_datestring: @iso_date,
         out_of_service_datestring: @never,
-        span: Datespan.infinite_up(@date, :inclusive)
+        span: Datespan.inclusive_up(@date)
       }
 
       make_changeset(original, in_service_datestring: @iso_date,
