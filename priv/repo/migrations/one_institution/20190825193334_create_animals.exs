@@ -8,8 +8,6 @@ defmodule Crit.Repo.Migrations.CreateAnimals do
     
     create table(:animals) do
       add :name, :citext, null: false
-      add :in_service_date, :date, null: true
-      add :out_of_service_date, :date,              null: true
       add :span, :daterange, null: true
       # Species cannot be deleted, for the sake of consistency.
       # Instead, all animals of that species should become unavailable.

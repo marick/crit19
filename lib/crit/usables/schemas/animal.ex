@@ -16,8 +16,6 @@ defmodule Crit.Usables.Schemas.Animal do
     # The fields below are the true fields in the table.
     field :name, TrimmedString
     field :span, Datespan
-    field :in_service_date, :date
-    field :out_of_service_date, :date
     field :available, :boolean, default: true
     field :lock_version, :integer, default: 1
     
