@@ -25,8 +25,8 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
        # Note: it's valid for fields to be Date structures rather than
        # strings because EEX knows how to render them.
        new_service_gap_fields: %{
-         in_service_date: @bumped_date,
-         out_of_service_date: @later_bumped_date,
+         in_service_datestring: @bumped_date,
+         out_of_service_datestring: @later_bumped_date,
        },
       ]
     end

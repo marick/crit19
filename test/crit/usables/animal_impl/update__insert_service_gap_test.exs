@@ -14,8 +14,8 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   describe "adding a service gap" do
 
     @addition_input %{
-      in_service_date: @later_iso_date,
-      out_of_service_date: @later_iso_bumped_date,
+      in_service_datestring: @later_iso_date,
+      out_of_service_datestring: @later_iso_bumped_date,
       reason: "addition",
       delete: false
     }
@@ -33,8 +33,8 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     # in a further update.
     @addition_update_result %{
       id: &is_integer/1,
-      in_service_date: @later_date,
-      out_of_service_date: @later_bumped_date,
+      in_service_datestring: @later_date,
+      out_of_service_datestring: @later_bumped_date,
       reason: "addition",
       delete: false,
 
@@ -43,7 +43,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
 
     # This is an "updatable" version of an animal. That is, it
     # contains all the values needed for a later update
-    # (`in_service_date` and `out_of_service_date`). It also contains
+    # (`in_service_datestring` and `out_of_service_datestring`). It also contains
     # the actual database values for further use (`id` and `span`).
     @addition_retrieval_result @addition_update_result
     

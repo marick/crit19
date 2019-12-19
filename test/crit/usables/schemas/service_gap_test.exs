@@ -12,14 +12,14 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     defp handle(attrs), do: ServiceGap.changeset(%ServiceGap{}, attrs)
     
     test "all three values are valid" do
-      given = %{in_service_date: @iso_date,
-                out_of_service_date: @later_iso_date,
+      given = %{in_service_datestring: @iso_date,
+                out_of_service_datestring: @later_iso_date,
                 reason: "reason"}
       
       handle(given)
       |> assert_valid
-      |> assert_changes(in_service_date: @date,
-                        out_of_service_date: @later_date,
+      |> assert_changes(in_service_datestring: @date,
+                        out_of_service_datestring: @later_date,
                         reason: "reason",
                         # And the span is created
                         span: span(@date, @later_date))
@@ -33,21 +33,21 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       # manipulating service gaps via the animal they belong to.
 
       handle(%{})
-      |> assert_errors([:in_service_date, :out_of_service_date, :reason])
+      |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
       |> assert_unchanged(:span)
     end
 
     test "dates must be in the right order" do
-      given = %{in_service_date: @iso_date,
-                out_of_service_date: @iso_date,
+      given = %{in_service_datestring: @iso_date,
+                out_of_service_datestring: @iso_date,
                 reason: "reason"}
       handle(given)
-      |> assert_error(out_of_service_date: @date_misorder_message)
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_unchanged(:span)
 
       # Other fields are available to fill form fields
-      |> assert_changes(in_service_date: @date,
-                        out_of_service_date: @date,
+      |> assert_changes(in_service_datestring: @date,
+                        out_of_service_datestring: @date,
                         reason: "reason")
     end
   end
@@ -67,8 +67,8 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       # We also get the virtual fields.
       # The date fields are converted, which is OK because EEX knows
       # how to convert them to ISO8601 strings for the HTML.
-      assert result.in_service_date == @date
-      assert result.out_of_service_date == @later_date
+      assert result.in_service_datestring == @date
+      assert result.out_of_service_datestring == @later_date
     end
 
     test "`Sql.get` does not fill in virtual fields...",
@@ -80,16 +80,16 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       assert retrieved.reason == attrs.reason
 
       # but not the virtual ones
-      refute retrieved.in_service_date
-      refute retrieved.out_of_service_date
+      refute retrieved.in_service_datestring
+      refute retrieved.out_of_service_datestring
     end
 
     test "... so there's a function for that",
       %{retrieved_gap: retrieved, attrs: attrs} do
       updatable = ServiceGap.put_updatable_fields(retrieved)
 
-      assert updatable.in_service_date == @date
-      assert updatable.out_of_service_date == @later_date
+      assert updatable.in_service_datestring == @date
+      assert updatable.out_of_service_datestring == @later_date
 
       # And other fields are still there
       assert updatable.animal_id == attrs.animal_id
@@ -118,50 +118,50 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     end
 
     test "the in-service date is new", %{updatable: updatable, attrs: attrs} do
-      new_attrs = %{attrs | in_service_date: @iso_bumped_date}
+      new_attrs = %{attrs | in_service_datestring: @iso_bumped_date}
 
       ServiceGap.changeset(updatable, new_attrs)
       |> assert_valid
-      |> assert_changes(in_service_date: @bumped_date,
+      |> assert_changes(in_service_datestring: @bumped_date,
                         span: span(@bumped_date, @later_date))
 
-      |> assert_unchanged(:out_of_service_date)
+      |> assert_unchanged(:out_of_service_datestring)
     end
 
 
     test "out-of-service date is new", %{updatable: updatable, attrs: attrs} do
-      new_attrs = %{attrs | out_of_service_date: @later_iso_bumped_date}
+      new_attrs = %{attrs | out_of_service_datestring: @later_iso_bumped_date}
 
       
       ServiceGap.changeset(updatable, new_attrs)
       |> assert_valid
-      |> assert_changes(out_of_service_date: @later_bumped_date,
+      |> assert_changes(out_of_service_datestring: @later_bumped_date,
                         span: span(@date, @later_bumped_date))
-      |> assert_unchanged(:in_service_date)
+      |> assert_unchanged(:in_service_datestring)
     end
 
 
     test "date mismatches are checked when just in_service date changes",
       %{updatable: updatable, attrs: attrs} do
-      new_attrs = %{attrs | in_service_date: @later_iso_date}
+      new_attrs = %{attrs | in_service_datestring: @later_iso_date}
       
       ServiceGap.changeset(updatable, new_attrs)
       # Note that the error is always associated to the out-of-service error
-      |> assert_error(out_of_service_date: @date_misorder_message)
-      |> assert_change(in_service_date: @later_date)
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_change(in_service_datestring: @later_date)
       
-      |> assert_unchanged([:out_of_service_date, :span])
+      |> assert_unchanged([:out_of_service_datestring, :span])
     end
 
     test "date mismatches are checked when only out_of_service date changes",
       %{updatable: updatable, attrs: attrs} do
-      new_attrs = %{attrs | out_of_service_date: @iso_date}
+      new_attrs = %{attrs | out_of_service_datestring: @iso_date}
       
       ServiceGap.changeset(updatable, new_attrs)
-      |> assert_error(out_of_service_date: @date_misorder_message)
-      |> assert_change(out_of_service_date: @date)
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_change(out_of_service_datestring: @date)
       
-      |> assert_unchanged([:in_service_date, :span])
+      |> assert_unchanged([:in_service_datestring, :span])
     end
 
     test "set action to `:delete` if `delete` field is set",

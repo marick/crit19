@@ -57,7 +57,7 @@ defmodule CritWeb.Usables.AnimalController do
   def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
     params =
       Common.filter_out_unfilled_subforms(animal_params, "service_gaps",
-        ["in_service_date", "out_of_service_date", "reason"])
+        ["in_service_datestring", "out_of_service_datestring", "reason"])
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,

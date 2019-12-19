@@ -24,10 +24,10 @@
   <%= inputs_for f, :service_gaps, [append: [%ServiceGap{}]], fn gap_f -> %>
   <div>
     <hr/>
-    From: <%= text_input gap_f, :in_service_date, size: 10 %>
-          <%= error_tag gap_f, :in_service_date %>
-    back on: <%= text_input gap_f, :out_of_service_date, size: 10 %>
-             <%= error_tag gap_f, :out_of_service_date %><br/>
+    From: <%= text_input gap_f, :in_service_datestring, size: 10 %>
+          <%= error_tag gap_f, :in_service_datestring %>
+    back on: <%= text_input gap_f, :out_of_service_datestring, size: 10 %>
+             <%= error_tag gap_f, :out_of_service_datestring %><br/>
     Because: <%= text_input gap_f, :reason, size: 40 %>
              <%= error_tag gap_f, :reason %>
              <br/>

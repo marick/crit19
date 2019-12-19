@@ -19,8 +19,8 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
     end
     
     test "success", %{conn: conn, animal_id: animal_id} do
-      new_service_gap = %{"in_service_date" => "2300-01-02",
-                          "out_of_service_date" => "2300-01-03",
+      new_service_gap = %{"in_service_datestring" => "2300-01-02",
+                          "out_of_service_datestring" => "2300-01-03",
                           "reason" => "newly added"
                          }
       
@@ -58,8 +58,8 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
     test "a *blank* service gap form is ignored",
       %{conn: conn, animal_id: animal_id} do
       # It's not treated as an attempt to create a new service gap
-      empty_service_gap = %{"in_service_date" => "",
-                            "out_of_service_date" => "",
+      empty_service_gap = %{"in_service_datestring" => "",
+                            "out_of_service_datestring" => "",
                             "reason" => ""
                            }
       
@@ -93,7 +93,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
         |> put_in(["in_service_datestring"], @later_iso_date)
         |> put_in(["out_of_service_datestring"], @iso_date)
         # ... and there's an error in a service gap change.
-        |> put_in(["service_gaps", "0", "out_of_service_date"], "nver")
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"], "nver")
 
       post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
       |> assert_purpose(form_for_editing_animal())

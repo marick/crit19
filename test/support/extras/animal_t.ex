@@ -53,8 +53,8 @@ defmodule Crit.Extras.AnimalT do
         Map.put(acc,
           to_string(i),
           %{"id" => to_string(sg.id),
-            "in_service_date" => Datespan.first_to_string(sg.span),
-            "out_of_service_date" => Datespan.last_to_string(sg.span),
+            "in_service_datestring" => Datespan.first_to_string(sg.span),
+            "out_of_service_datestring" => Datespan.last_to_string(sg.span),
             "reason" => sg.reason,
             "delete" => "false"
           })

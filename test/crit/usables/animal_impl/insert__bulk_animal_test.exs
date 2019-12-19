@@ -44,7 +44,7 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
       assert two_cs.data == %Animal{}
     end
     
-    test "out_of_service_date can be never" do 
+    test "out_of_service_datestring can be never" do 
       [one_cs, two_cs] = make_changeset(@iso_date, @never)
 
       span = Datespan.inclusive_up(@date)

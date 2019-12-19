@@ -9,12 +9,12 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     field :span, Datespan
     field :reason, :string
 
-    field :in_service_date, :date, virtual: true
-    field :out_of_service_date, :date, virtual: true
+    field :in_service_datestring, :date, virtual: true
+    field :out_of_service_datestring, :date, virtual: true
     field :delete, :boolean, default: false, virtual: true
   end
 
-  @required_for_insertion [:reason, :in_service_date, :out_of_service_date]
+  @required_for_insertion [:reason, :in_service_datestring, :out_of_service_datestring]
   @usable @required_for_insertion ++ [:animal_id, :delete]
   
   def changeset(gap, attrs) do
@@ -28,8 +28,8 @@ defmodule Crit.Usables.Schemas.ServiceGap do
 
   def put_updatable_fields(%__MODULE__{} = gap) do
     %{gap |
-      in_service_date: gap.span.first,
-      out_of_service_date: gap.span.last}
+      in_service_datestring: gap.span.first,
+      out_of_service_datestring: gap.span.last}
   end
 
   defp validate_order(%{valid?: false} = changeset), do: changeset
@@ -39,7 +39,7 @@ defmodule Crit.Usables.Schemas.ServiceGap do
       :lt ->
         changeset
       _ ->
-        note_misorder(changeset, :out_of_service_date)
+        note_misorder(changeset, :out_of_service_datestring)
     end
   end
 
@@ -69,9 +69,9 @@ defmodule Crit.Usables.Schemas.ServiceGap do
 
 
   defp dates(changeset),
-    do: {in_service_date(changeset), out_of_service_date(changeset)}
-  defp in_service_date(changeset),
-    do: fetch_field!(changeset, :in_service_date)
-  defp out_of_service_date(changeset),
-    do: fetch_field!(changeset, :out_of_service_date)
+    do: {in_service_datestring(changeset), out_of_service_datestring(changeset)}
+  defp in_service_datestring(changeset),
+    do: fetch_field!(changeset, :in_service_datestring)
+  defp out_of_service_datestring(changeset),
+    do: fetch_field!(changeset, :out_of_service_datestring)
 end
