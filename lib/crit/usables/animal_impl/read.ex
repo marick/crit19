@@ -3,7 +3,7 @@ defmodule Crit.Usables.AnimalImpl.Read do
   import Ecto.Query
   alias Crit.Sql
   alias Crit.Usables.Schemas.ServiceGap
-  alias Ecto.Datespan
+  alias Crit.FieldConverters.FromSpan
 
   defmodule Query do
     import Ecto.Query
@@ -54,10 +54,14 @@ defmodule Crit.Usables.AnimalImpl.Read do
   end
 
   def put_updatable_fields(animal) do
+    animal
+    |> FromSpan.expand
+    |> specific_expansions
+  end
+
+  defp specific_expansions(animal) do
     %{ animal |
        species_name: animal.species.name, 
-       in_service_datestring: Datespan.first_to_string(animal.span),
-       out_of_service_datestring: Datespan.last_to_string(animal.span),
        service_gaps: Enum.map(animal.service_gaps, &ServiceGap.put_updatable_fields/1)
     }
   end
