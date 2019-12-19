@@ -2,7 +2,6 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
   use CritWeb.ConnCase
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Usables.AnimalApi
   alias Crit.Usables.Schemas.Animal
   alias CritWeb.Audit
   alias Crit.Exemplars
@@ -67,12 +66,17 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
       {:ok, audit} = latest_audit_record(conn)
 
       ids = SqlT.all_ids(Animal)
-      typical_animal = AnimalApi.updatable!(hd(ids), @institution)
 
-      assert audit.event == Audit.events.created_animals
-      assert audit.event_owner_id == user_id(conn)
-      assert audit.data.ids == ids
-      assert audit.data.span == typical_animal.span
+      assert_fields(audit,
+        event: Audit.events.created_animals,
+        event_owner_id: user_id(conn))
+
+      assert_fields(audit.data,
+        ids: ids,
+        names: params["names"],
+        put_in_service: params["in_service_datestring"],
+        leaves_service: params["out_of_service_datestring"]
+      )        
     end
   end
 

@@ -27,7 +27,7 @@ defmodule CritWeb.Usables.AnimalController do
     case AnimalApi.create_animals(animal_params, institution(conn)) do
       {:ok, animals} ->
         conn
-        |> bulk_create_audit(animals)
+        |> bulk_create_audit(animals, animal_params)
         |> put_flash(:info, "Success!")
         |> render("index.html",
                   animals: animals)
@@ -36,9 +36,11 @@ defmodule CritWeb.Usables.AnimalController do
     end
   end
 
-  defp bulk_create_audit(conn, [one_animal | _rest] = animals) do
+  defp bulk_create_audit(conn, animals, params) do
     audit_data = %{ids: EnumX.ids(animals),
-                   span: one_animal.span,
+                   names: Map.fetch!(params, "names"),
+                   put_in_service: Map.fetch!(params, "in_service_datestring"),
+                   leaves_service: Map.fetch!(params, "out_of_service_datestring"),
                   }
     Audit.created_animals(conn, audit_data)
   end
