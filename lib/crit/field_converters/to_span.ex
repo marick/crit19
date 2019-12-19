@@ -45,7 +45,7 @@ defmodule Crit.FieldConverters.ToSpan do
         tentative_span = fetch_field!(changeset, :span)
         put_span(
           changeset,
-          Datespan.convert_to_customary(tentative_span, out_of_service))
+          Datespan.put_last(tentative_span, out_of_service))
       {:error, _tag} ->
         add_error(changeset, :out_of_service_datestring, "is invalid")
     end

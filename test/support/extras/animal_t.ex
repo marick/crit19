@@ -13,16 +13,10 @@ defmodule Crit.Extras.AnimalT do
   alias Ecto.Datespan
 
   def attrs(%Animal{} = animal) do
-    out_string = if Datespan.is_customary?(animal.span) do
-      Date.to_iso8601(animal.span.last)
-    else
-      @never
-    end
-    
     %{id: animal.id,
       name: animal.name,
-      in_service_datestring: Date.to_iso8601(animal.span.first),
-      out_of_service_datestring: out_string,
+      in_service_datestring: Datespan.first_to_string(animal.span),
+      out_of_service_datestring: Datespan.last_to_string(animal.span),
       lock_version: animal.lock_version,
       service_gaps: Enum.map(animal.service_gaps, &ServiceGapT.attrs/1)
     }
@@ -59,8 +53,8 @@ defmodule Crit.Extras.AnimalT do
         Map.put(acc,
           to_string(i),
           %{"id" => to_string(sg.id),
-            "in_service_date" => Date.to_iso8601(sg.span.first),
-            "out_of_service_date" => Date.to_iso8601(sg.span.last),
+            "in_service_date" => Datespan.first_to_string(sg.span),
+            "out_of_service_date" => Datespan.last_to_string(sg.span),
             "reason" => sg.reason,
             "delete" => "false"
           })

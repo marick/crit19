@@ -54,18 +54,10 @@ defmodule Crit.Usables.AnimalImpl.Read do
   end
 
   def put_updatable_fields(animal) do
-    span = animal.span
-    in_service_datestring = Date.to_iso8601(span.first)
-    out_of_service_datestring = 
-      case Datespan.is_customary?(span) do 
-        true -> Date.to_iso8601(span.last)
-        false -> @never
-      end
-    
     %{ animal |
        species_name: animal.species.name, 
-       in_service_datestring: in_service_datestring,
-       out_of_service_datestring: out_of_service_datestring,
+       in_service_datestring: Datespan.first_to_string(animal.span),
+       out_of_service_datestring: Datespan.last_to_string(animal.span),
        service_gaps: Enum.map(animal.service_gaps, &ServiceGap.put_updatable_fields/1)
     }
   end
