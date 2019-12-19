@@ -14,7 +14,7 @@ defmodule Crit.Extras.AnimalT do
 
   def attrs(%Animal{} = animal) do
     out_string = if Datespan.is_customary?(animal.span) do
-      Date.to_iso8601(animal.out_of_service_date)
+      Date.to_iso8601(animal.span.last)
     else
       @never
     end

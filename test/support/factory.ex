@@ -39,8 +39,6 @@ defmodule Crit.Factory do
       name: Faker.Cat.name(),
       species_id: some_species_id(),
       span: span,
-      in_service_date: in_service,
-      out_of_service_date: out_of_service
      }
   end
 
