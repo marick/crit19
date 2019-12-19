@@ -16,8 +16,6 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
                                # not by a user or browser.
 
     # computed fields
-    field :in_service_date, :date
-    field :out_of_service_date, :date
     field :span, Datespan
     field :computed_names, {:array, :string}
   end

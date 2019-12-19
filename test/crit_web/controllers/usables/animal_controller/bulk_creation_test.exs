@@ -72,8 +72,7 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
       assert audit.event == Audit.events.created_animals
       assert audit.event_owner_id == user_id(conn)
       assert audit.data.ids == ids
-      assert audit.data.in_service_date == typical_animal.in_service_date
-      assert audit.data.out_of_service_date == typical_animal.out_of_service_date
+      assert audit.data.span == typical_animal.span
     end
   end
 

@@ -3,6 +3,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   use Crit.Global.Default
   alias Crit.Usables.Schemas.{Animal, Procedure}
   alias Crit.Sql
+  alias Ecto.Datespan
 
 
   defp named_thing_inserter(template) do 
@@ -23,7 +24,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   def inserted_animal_ids(names, species_id) do
     inserted_named_ids names, %Animal{
       species_id: species_id,
-      in_service_date: ~D[1990-01-01],
+      span: Datespan.infinite_up(~D[1990-01-01], :inclusive)
     }
   end
 
