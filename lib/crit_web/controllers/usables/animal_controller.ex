@@ -9,6 +9,24 @@ defmodule CritWeb.Usables.AnimalController do
   
   plug :must_be_able_to, :manage_animals
 
+  defmodule Testable do
+    def put_institution(params, institution) do
+      add = fn kws ->
+        Map.put(kws, "institution", institution)
+      end
+
+      top = add.(params)
+
+      case Map.get(top, "service_gaps") do
+        nil ->
+          top
+        gaps ->
+          lower = Enum.map(gaps, add)
+          Map.put(top, "service_gaps", lower)
+      end
+    end
+  end
+
   def index(conn, _params) do
     animals = AnimalApi.all(institution(conn))
     render(conn, "index.html", animals: animals)
@@ -24,7 +42,7 @@ defmodule CritWeb.Usables.AnimalController do
   end
 
   def bulk_create(conn, %{"bulk_animal" => raw_params}) do
-    params = Map.put(raw_params, "institution", institution(conn))
+    params = Testable.put_institution(raw_params, institution(conn))
     case AnimalApi.create_animals(params, institution(conn)) do
       {:ok, animals} ->
         conn
@@ -58,9 +76,10 @@ defmodule CritWeb.Usables.AnimalController do
   def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
     params =
       raw_params
-      |> Map.put("institution", institution(conn))    
       |> Common.filter_out_unfilled_subforms("service_gaps",
-            ["in_service_datestring", "out_of_service_datestring", "reason"])
+           ["in_service_datestring", "out_of_service_datestring", "reason"])
+      |> Testable.put_institution(institution(conn))
+
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,
