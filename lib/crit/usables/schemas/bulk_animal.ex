@@ -12,20 +12,20 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
     field :species_id, :integer
     field :in_service_datestring, :string
     field :out_of_service_datestring, :string
-    field :timezone, :string   # strictly, this is filled in by calling code,
-                               # not by a user or browser.
+    field :timezone, :string
+    field :institution, :string
 
     # computed fields
     field :span, Datespan
     field :computed_names, {:array, :string}
   end
 
-  @form_fields [:names, :species_id, :timezone, 
+  @form_fields [:names, :species_id,
                 :in_service_datestring, :out_of_service_datestring]
 
   def changeset(bulk, attrs) do
     bulk
-    |> cast(attrs, @form_fields)
+    |> cast(attrs, @form_fields ++ [:institution, :timezone])
     |> validate_required(@form_fields)
   end
 

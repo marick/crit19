@@ -3,10 +3,8 @@ defmodule Crit.Usables.AnimalImpl.BulkCreationTransaction do
   import Crit.Sql.Transaction, only: [make_creation_validation_step: 1]
   alias Crit.Usables.Schemas.{Animal,BulkAnimal}
   alias Crit.Ecto.BulkInsert
-  alias Crit.Global
 
-  def run(supplied_attrs, institution) do
-    attrs = Map.put(supplied_attrs, "timezone", Global.timezone(institution))
+  def run(attrs, institution) do
     steps = [
       make_creation_validation_step(&BulkAnimal.creation_changeset/1),
       &split_changeset_step/1,

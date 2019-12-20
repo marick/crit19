@@ -23,11 +23,12 @@ defmodule CritWeb.Usables.AnimalController do
       options: AnimalApi.available_species(institution(conn)))
   end
 
-  def bulk_create(conn, %{"bulk_animal" => animal_params}) do
-    case AnimalApi.create_animals(animal_params, institution(conn)) do
+  def bulk_create(conn, %{"bulk_animal" => raw_params}) do
+    params = Map.put(raw_params, "institution", institution(conn))
+    case AnimalApi.create_animals(params, institution(conn)) do
       {:ok, animals} ->
         conn
-        |> bulk_create_audit(animals, animal_params)
+        |> bulk_create_audit(animals, params)
         |> put_flash(:info, "Success!")
         |> render("index.html",
                   animals: animals)
@@ -54,10 +55,12 @@ defmodule CritWeb.Usables.AnimalController do
         changeset: AnimalApi.form_changeset(animal))
   end
   
-  def update(conn, %{"animal_id" => id, "animal" => animal_params}) do
+  def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
     params =
-      Common.filter_out_unfilled_subforms(animal_params, "service_gaps",
-        ["in_service_datestring", "out_of_service_datestring", "reason"])
+      raw_params
+      |> Map.put("institution", institution(conn))    
+      |> Common.filter_out_unfilled_subforms("service_gaps",
+            ["in_service_datestring", "out_of_service_datestring", "reason"])
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,

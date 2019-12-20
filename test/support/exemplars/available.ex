@@ -19,6 +19,7 @@ defmodule Crit.Exemplars.Available do
         species_id: to_string(Factory.some_species_id()),
         in_service_datestring: Exemplars.Date.iso_today_or_earlier(), 
         out_of_service_datestring: Exemplars.Date.iso_later_than_today(),
+        institution: @institution,
       })
     {:ok, animals} =
       params

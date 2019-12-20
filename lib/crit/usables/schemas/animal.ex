@@ -27,6 +27,7 @@ defmodule Crit.Usables.Schemas.Animal do
     has_many :service_gaps, ServiceGap
 
     # Virtual fields used for displays or forms presented to a human
+    field :institution, :string, virtual: true
     field :timezone, :string, virtual: true
     field :in_service_datestring, :string, virtual: true
     field :out_of_service_datestring, :string, virtual: true

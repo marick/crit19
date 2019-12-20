@@ -6,7 +6,8 @@ defmodule Crit.Usables.AnimalApi.BulkCreationTest do
     "species_id" => @bovine_id,
     "names" => "Bossie, Jake",
     "in_service_datestring" => @iso_date,
-    "out_of_service_datestring" => @never
+    "out_of_service_datestring" => @never,
+    "institution" => @institution
   }
 
   test "creates multiple animals at once" do

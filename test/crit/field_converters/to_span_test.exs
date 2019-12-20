@@ -5,6 +5,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
   alias Pile.TimeHelper
   alias Ecto.Changeset
   alias Ecto.Datespan
+  alias Crit.Global
 
   # Assumes this partial schema. 
   # Various constants are reasonably stable, given the domain.
@@ -12,33 +13,39 @@ defmodule Crit.FieldConverters.ToSpanTest do
   embedded_schema do
     field :in_service_datestring, :string
     field :out_of_service_datestring, :string
-    field :timezone, :string
+    field :institution, :string
     
     field :span, Datespan
   end
 
   @timezone "America/Chicago"
 
+
   describe "cases where there's no upper bound" do
     test "a valid in-service date" do
       make_changeset(in_service_datestring: @iso_date,
-                     out_of_service_datestring: @never)
+                     out_of_service_datestring: @never,
+                     institution: "--irrelevant--")
       |> assert_valid
       |> assert_change(span: Datespan.inclusive_up(@date))
     end
 
     test "the special value `today`" do
+      given Global.timezone, [@institution], do: @timezone
       today_date = TimeHelper.today_date(@timezone)
 
       make_changeset(in_service_datestring: @today,
-                     out_of_service_datestring: @never)
+                     out_of_service_datestring: @never,
+                     institution: @institution)
+
       |> assert_valid
       |> assert_change(span: Datespan.inclusive_up(today_date))
     end
     
     test "a invalid in-service date" do
       make_changeset(in_service_datestring: "2013-13-13",
-                     out_of_service_datestring: @never)
+                     out_of_service_datestring: @never,
+                     institution: "--irrelevant--")
       |> assert_invalid
       |> assert_error(in_service_datestring: "is invalid")
       |> assert_error_free(:out_of_service_datestring)
@@ -46,7 +53,9 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
     test "it is invalid to use `never` as a start date" do
       make_changeset(in_service_datestring: @never,
-                     out_of_service_datestring: @never)
+                     out_of_service_datestring: @never,
+                     institution: "--irrelevant--")
+
       |> assert_invalid
       |> assert_error(in_service_datestring: ~S{"must be a date or "today"})
       |> assert_error_free(:out_of_service_datestring)
@@ -56,14 +65,17 @@ defmodule Crit.FieldConverters.ToSpanTest do
   describe "cases where there IS an upper bound" do
     test "a valid in-service date" do
       make_changeset(in_service_datestring: @iso_date,
-                     out_of_service_datestring: @later_iso_date)
+                     out_of_service_datestring: @later_iso_date,
+                     institution: "--irrelevant--")
+
       |> assert_valid
       |> assert_change(span: Datespan.customary(@date, @later_date))
     end
 
     test "both dates are invalid" do
       make_changeset(in_service_datestring: "todaync",
-                     out_of_service_datestring: "nev")
+                     out_of_service_datestring: "nev",
+                     institution: "--irrelevant--")
       |> assert_invalid
       |> assert_error(in_service_datestring: "is invalid",
                       out_of_service_datestring: "is invalid")
@@ -71,7 +83,8 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
     test "just the upper bound is invalid" do
       make_changeset(in_service_datestring: "today",
-                     out_of_service_datestring: "nev")
+                     out_of_service_datestring: "nev",
+                     institution: @institution)
       |> assert_invalid
       |> assert_error(out_of_service_datestring: "is invalid")
       |> assert_error_free(:in_service_datestring)
@@ -83,14 +96,18 @@ defmodule Crit.FieldConverters.ToSpanTest do
     # is implied by the fact that previous tests don't blow up.
     test "both values are valid" do
       make_changeset(in_service_datestring: @later_iso_date,
-                     out_of_service_datestring: @iso_date)
+                     out_of_service_datestring: @iso_date,
+                     institution: "--irrelevant--")
+
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_error_free(:in_service_datestring)
     end
 
     test "the bounds of equality" do
       make_changeset(in_service_datestring: @iso_date,
-                     out_of_service_datestring: @iso_date)
+                     out_of_service_datestring: @iso_date,
+                     institution: "--irrelevant--")
+
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_error_free(:in_service_datestring)
     end
@@ -101,11 +118,13 @@ defmodule Crit.FieldConverters.ToSpanTest do
       original = %__MODULE__{
         in_service_datestring: @iso_date,
         out_of_service_datestring: @never,
+        institution: "--irrelevant--",
         span: Datespan.inclusive_up(@date)
       }
 
       make_changeset(original, in_service_datestring: @iso_date,
-                               out_of_service_datestring: @later_iso_date)
+                               out_of_service_datestring: @later_iso_date,
+                               institution: "--irrelevant--")
       |> assert_valid
       |> assert_change(span: Datespan.customary(@date, @later_date))
     end
@@ -114,11 +133,13 @@ defmodule Crit.FieldConverters.ToSpanTest do
       original = %__MODULE__{
         in_service_datestring: @iso_date,
         out_of_service_datestring: @later_iso_date,
+        institution: "--irrelevant--",
         span: Datespan.customary(@date, @later_date)
       }
 
       make_changeset(original, in_service_datestring: @iso_date,
-                               out_of_service_datestring: @iso_date)
+                               out_of_service_datestring: @iso_date,
+                               institution: "--irrelevant--")
       |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
     end
@@ -127,11 +148,15 @@ defmodule Crit.FieldConverters.ToSpanTest do
       original = %__MODULE__{
         in_service_datestring: @iso_date,
         out_of_service_datestring: @later_iso_date,
+        institution: "--irrelevant--",
+        
         span: Datespan.customary(@date, @later_date)
       }
 
       make_changeset(original, in_service_datestring: @iso_date,
-                               out_of_service_datestring: @later_iso_date)
+                               out_of_service_datestring: @later_iso_date,
+                               institution: "--irrelevant--")
+
       |> assert_valid
       |> assert_unchanged([:in_service_datestring, :out_of_service_datestring,
                            :span])
@@ -142,8 +167,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
     do: make_changeset(%__MODULE__{}, date_opts)
 
   defp make_changeset(previous, date_opts) do 
-    default = %{timezone: @timezone}
-    Changeset.change(previous, Enum.into(date_opts, default))
+    Changeset.change(previous, Enum.into(date_opts, %{}))
     |> ToSpan.synthesize
   end
 end

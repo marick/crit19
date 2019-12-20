@@ -87,7 +87,8 @@ defmodule CritWeb.Usables.AnimalController.BulkCreationTest do
     params = %{"names" => Factory.names_to_input_string(namelist),
                "species_id" => Factory.some_species_id,
                "in_service_datestring" => in_service_datestring,
-               "out_of_service_datestring" => out_of_service_datestring
+               "out_of_service_datestring" => out_of_service_datestring,
+               "institution" => @institution
               }
 
     {namelist, params}
