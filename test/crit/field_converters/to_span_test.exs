@@ -20,7 +20,6 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
   @timezone "America/Chicago"
 
-
   describe "cases where there's no upper bound" do
     test "a valid in-service date" do
       make_changeset(in_service_datestring: @iso_date,

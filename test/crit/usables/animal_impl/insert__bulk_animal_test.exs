@@ -9,7 +9,7 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
       base = %{
         names: "one, two",
         species_id: "1",
-        timezone: "America/Chicago",
+        institution: @institution
       }
       base
       |> Map.put(:in_service_datestring,  in_service_string)

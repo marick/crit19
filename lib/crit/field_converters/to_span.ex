@@ -86,11 +86,8 @@ defmodule Crit.FieldConverters.ToSpan do
       @never ->
         {:ok, @never}
       @today ->
-        timezone = 
-          case fetch_field!(changeset, :institution) do
-            nil -> fetch_field!(changeset, :timezone)
-            institution -> some(Global).timezone(institution)
-          end
+        institution = fetch_field!(changeset, :institution)
+        timezone = some(Global).timezone(institution)
         {:ok, TimeHelper.today_date(timezone)}
       _ -> 
         Date.from_iso8601(datestring)

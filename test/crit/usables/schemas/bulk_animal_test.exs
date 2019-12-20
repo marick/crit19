@@ -8,7 +8,7 @@ defmodule Crit.Usables.Animal.Schemas.BulkAnimalTest do
     species_id: "1",
     in_service_datestring: @iso_date,
     out_of_service_datestring: @later_iso_date,
-    timezone: "America/Chicago",
+    institution: @institution
   }
 
   describe "changeset" do
