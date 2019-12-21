@@ -167,6 +167,25 @@ defmodule Crit.FieldConverters.ToSpanTest do
       |> assert_unchanged([:in_service_datestring, :out_of_service_datestring,
                            :span])
     end
+
+    test "a blank field cannot lead to a crash" do
+      # If a field is blank, `validate_required` will delete it from `changes`.
+      # That used to lead to trying to parse `nil` as a date.
+      # Note that the user will get two messages, but they're clear enough.
+      # Also the user is supposed to be using a date-picker.
+      date_opts = %{
+        in_service_datestring: @iso_date,
+        out_of_service_datestring: " ",
+        institution: "--irrelevant--"
+      }
+
+      Changeset.change(%__MODULE__{}, Enum.into(date_opts, %{}))
+      |> ToSpan.validate_required
+      |> ToSpan.synthesize
+      |> assert_invalid
+      |> assert_errors(out_of_service_datestring:
+           ["is invalid", "can't be blank"])
+    end
   end
 
   defp make_changeset(date_opts),

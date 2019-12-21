@@ -2,7 +2,7 @@ defmodule Crit.FieldConverters.ToSpan do
   use Ecto.Schema
   use Crit.Global.Constants
   use Crit.Errors
-  import Ecto.Changeset
+  alias Ecto.Changeset
   alias Pile.TimeHelper
   alias Ecto.Datespan
   alias Crit.Global
@@ -19,10 +19,13 @@ defmodule Crit.FieldConverters.ToSpan do
 
   # Note: it's an assumed precondition that the first three fields
   # exist in either the changeset's `data` or its `changes`. That is,
-  # they have already been `cast` and `validate_required`. 
+  # they have already been `cast` and `validate_required`.
+
+  @required [:in_service_datestring, :out_of_service_datestring]
 
   def synthesize(changeset) do
-    assume_infinite_up(changeset)
+    changeset
+    |> assume_infinite_up
     |> apply_out_of_service_date
     |> check_date_compatibility
   end
@@ -44,7 +47,7 @@ defmodule Crit.FieldConverters.ToSpan do
       {:ok, @never} ->
         changeset # this is what the first step assumed
       {:ok, out_of_service} ->
-        tentative_span = fetch_field!(changeset, :span)
+        tentative_span = Changeset.fetch_field!(changeset, :span)
         put_span(
           changeset,
           Datespan.put_last(tentative_span, out_of_service))
@@ -62,9 +65,10 @@ defmodule Crit.FieldConverters.ToSpan do
   # changeset's `:span` is calculated. If any of those prove invalid,
   # this changeset is marked as also invalid, which leads to no date
   # misorder message until the user fixes the error in the nested form
-  # and resubmits. That would be rude, so...
+  # and resubmits. That would be rude, so we check if there's any `span`
+  # *to* check.
   defp check_date_compatibility(changeset) do
-    span = fetch_field!(changeset, :span)
+    span = Changeset.fetch_field!(changeset, :span)
     cond do
       span == nil ->
         changeset
@@ -77,23 +81,39 @@ defmodule Crit.FieldConverters.ToSpan do
     end
   end
 
-  defp put_span(changeset, span), do: put_change(changeset, :span, span)
+
+  @doc"""
+    Clients can use this in their validation pipeline.
+  """ 
+  def cast(struct_or_changeset, attrs),
+    do: Changeset.cast(struct_or_changeset, attrs, @required)
+
+  @doc"""
+    Clients can use this in their validation pipeline.
+  """ 
+  def validate_required(changeset),
+    do: Changeset.validate_required(changeset, @required)
+
+  defp put_span(changeset, span),
+    do: Changeset.put_change(changeset, :span, span)
 
   # Delete span so as to prevent invalid value from being visible outside the module.
   defp safely_add_error(changeset, field, message) do
     changeset
-    |> add_error(field, message)
-    |> delete_change(:span)
+    |> Changeset.add_error(field, message)
+    |> Changeset.delete_change(:span)
   end
 
   defp parse_date(changeset, field) do
-    datestring = fetch_field!(changeset, field)
+    datestring = Changeset.fetch_field!(changeset, field)
     
     case datestring do
+      nil ->
+        {:error, :irrelevant}
       @never ->
         {:ok, @never}
       @today ->
-        institution = fetch_field!(changeset, :institution)
+        institution = Changeset.fetch_field!(changeset, :institution)
         timezone = some(Global).timezone(institution)
         {:ok, TimeHelper.today_date(timezone)}
       _ -> 
