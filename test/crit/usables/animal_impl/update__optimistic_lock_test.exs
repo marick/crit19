@@ -14,18 +14,13 @@ defmodule Crit.Usables.AnimalImpl.UpdateOptimisticLockTest do
 
       assert {:ok, new} = update_name(old, "this version wins")
       assert {:error, changeset} = update_name(old, "this version loses")
-      
-      # All changes have been wiped out.
-      assert changeset.changes == %{}
 
-      # It is the new version that is to fill in fields.
-      assert changeset.data == new
-      # Most interestingly...
-      assert changeset.data.name == "this version wins"
-      assert changeset.data.lock_version == old.lock_version + 1
-
+      changeset
+      |> assert_no_changes # All changes have been wiped out.
+      |> assert_original_data(name: "this version wins",
+                              lock_version: old.lock_version + 1)
       # Template invents the error message
-      assert [{:optimistic_lock_error, _}] = changeset.errors
+      |> assert_error(:optimistic_lock_error)
     end
 
     test "failure produces changeset that restarts with new version of animal NEW",
@@ -36,8 +31,6 @@ defmodule Crit.Usables.AnimalImpl.UpdateOptimisticLockTest do
 
       retry_changeset
       |> assert_no_changes         # wipes out user entries
-      |> assert_original_data(new)
-      # Most interestingly...
       |> assert_original_data(name: "this version wins",
                               lock_version: old.lock_version + 1)
 

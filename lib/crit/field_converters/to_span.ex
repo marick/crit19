@@ -21,7 +21,7 @@ defmodule Crit.FieldConverters.ToSpan do
   # exist in either the changeset's `data` or its `changes`. That is,
   # they have already been `cast` and `validate_required`.
 
-  @required [:in_service_datestring, :out_of_service_datestring]
+  @required [:in_service_datestring, :out_of_service_datestring, :institution]
 
   # Having two versions of the function is clearer for testing.
   # Non-testing clients will use this one.
