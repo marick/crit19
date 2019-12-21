@@ -48,6 +48,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       |> assert_invalid
       |> assert_error(in_service_datestring: "is invalid")
       |> assert_error_free(:out_of_service_datestring)
+      |> assert_unchanged(:span)
     end
 
     test "it is invalid to use `never` as a start date" do
@@ -58,6 +59,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       |> assert_invalid
       |> assert_error(in_service_datestring: ~S{"must be a date or "today"})
       |> assert_error_free(:out_of_service_datestring)
+      |> assert_unchanged(:span)
     end
   end
 
@@ -78,6 +80,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       |> assert_invalid
       |> assert_error(in_service_datestring: "is invalid",
                       out_of_service_datestring: "is invalid")
+      |> assert_unchanged(:span)
     end
 
     test "just the upper bound is invalid" do
@@ -87,6 +90,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       |> assert_invalid
       |> assert_error(out_of_service_datestring: "is invalid")
       |> assert_error_free(:in_service_datestring)
+      |> assert_unchanged(:span)
     end
   end
 
@@ -100,6 +104,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_error_free(:in_service_datestring)
+      |> assert_unchanged(:span)
     end
 
     test "the bounds of equality" do
@@ -109,6 +114,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_error_free(:in_service_datestring)
+      |> assert_unchanged(:span)
     end
   end
 
@@ -141,6 +147,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
                                institution: "--irrelevant--")
       |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_unchanged(:span)
     end
 
     test "if there is no change, the span will not be redundantly written" do

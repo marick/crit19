@@ -31,11 +31,11 @@ defmodule Crit.FieldConverters.ToSpan do
     case parse_date(changeset, :in_service_datestring) do
       {:ok, @never} ->
         msg = ~S{"must be a date or "today"}
-        add_error(changeset, :in_service_datestring, msg)
+        safely_add_error(changeset, :in_service_datestring, msg)
       {:ok, in_service} ->
         put_span(changeset, Datespan.inclusive_up(in_service))
       {:error, _tag} ->
-        add_error(changeset, :in_service_datestring, "is invalid")
+        safely_add_error(changeset, :in_service_datestring, "is invalid")
     end
   end
 
@@ -49,7 +49,7 @@ defmodule Crit.FieldConverters.ToSpan do
           changeset,
           Datespan.put_last(tentative_span, out_of_service))
       {:error, _tag} ->
-        add_error(changeset, :out_of_service_datestring, "is invalid")
+        safely_add_error(changeset, :out_of_service_datestring, "is invalid")
     end
   end
 
@@ -73,11 +73,18 @@ defmodule Crit.FieldConverters.ToSpan do
       Date.compare(span.first, span.last) == :lt ->
         changeset
       :else ->
-        add_error(changeset, :out_of_service_datestring, @date_misorder_message)
+        safely_add_error(changeset, :out_of_service_datestring, @date_misorder_message)
     end
   end
 
   defp put_span(changeset, span), do: put_change(changeset, :span, span)
+
+  # Delete span so as to prevent invalid value from being visible outside the module.
+  defp safely_add_error(changeset, field, message) do
+    changeset
+    |> add_error(field, message)
+    |> delete_change(:span)
+  end
 
   defp parse_date(changeset, field) do
     datestring = fetch_field!(changeset, field)
