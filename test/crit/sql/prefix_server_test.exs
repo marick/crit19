@@ -28,5 +28,5 @@ defmodule Crit.Sql.PrefixServerTest do
   end
 
   def assert_same_audit_content(one, other),
-    do: assert_copy(one, other, except: [:id, :inserted_at])
+    do: assert_copy(one, other, ignoring: [:id, :inserted_at])
 end

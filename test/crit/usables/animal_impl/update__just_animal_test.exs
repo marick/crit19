@@ -13,11 +13,11 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
       params = AnimalT.params_except(original, %{"name" => "New Bossie"})
 
       AnimalT.update_for_success(original.id, params)
-      |> assert_fields(name: "New Bossie", lock_version: 2)
       |> assert_copy(original,
-                     except: [:name, :lock_version, :updated_at, :institution])
+                     except: [name: "New Bossie", lock_version: 2],
+                     ignoring: [:lock_version, :updated_at, :institution])
       |> assert_copy(AnimalApi.updatable!(original.id, @institution),
-                     except: [:updated_at, :institution])
+                     ignoring: [:updated_at, :institution])
     end
 
     test "unique name constraint violation produces changeset" do
@@ -48,7 +48,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
              span: Datespan.inclusive_up(dates.next_in_service),
              lock_version: 2)
       |> assert_copy(original_animal,
-           except: [:in_service_datestring, :span, :lock_version, :institution])
+           ignoring: [:in_service_datestring, :span, :lock_version, :institution])
     end
   end
 end

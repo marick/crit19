@@ -93,7 +93,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
 
       # See?
       [retained_gap, _] = ServiceGapT.update_animal_for_service_gaps(animal, attrs)
-      assert_copy(retained_gap, original_gap(animal), except: [:institution])
+      assert_copy(retained_gap, original_gap(animal), ignoring: [:institution])
     end
   end
 

@@ -58,25 +58,39 @@ defmodule Crit.Assertions.Map do
     assert_fields(kvs, [singleton])
   end
 
-
   @doc """
-    An equality comparison of two maps, except leaving out some keys.
+    An equality comparison of two maps that gives control over
+    which fields should not be compared, or should be compared differently.
 
-        assert_copy(old, new, except: [:name, :lock_version, :updated_at])
+    To exclude some fields from the comparison:
 
-    Convenient when you want to tersely state that some values *didn't*
-    change:
+        new
+        |> assert_copy(old, ignoring: [:lock_version, :updated_at])
 
-        update_for_success(original.id, params)
-        |> assert_field(name: "New Name")
-        |> assert_copy(original,
-                       except: [:name, :lock_version, :updated_at])
-        |> assert_copy(AnimalApi.get(original.id),
-                       except: [:updated_at])
+    To assert different values for particular fields (as in `assert_fields`):
+
+        new
+        |> assert_copy(old
+           except: [lock_version: old.lock_version + 1,
+                    people: &Enum.empty/1])
+
+    Combine both for concise assertions:
+
+      AnimalT.update_for_success(original_animal.id, params)
+      |> assert_copy(original_animal,
+           except: [
+             in_service_datestring: dates.iso_next_in_service,
+             span: Datespan.inclusive_up(dates.next_in_service),
+             lock_version: 2]
+           ignoring: [:updated_at]
   """
-  defchain assert_copy(left, right, opts \\ []) do
-    keys = Keyword.get(opts, :except, [])
-    assert Map.drop(left, keys) == Map.drop(right, keys)
+  defchain assert_copy(new, old, opts \\ []) do
+    except = Keyword.get(opts, :except, [])
+    ignoring_keys =
+      Keyword.get(opts, :ignoring, []) ++ Keyword.keys(except)
+
+    assert_fields(new, except)
+    assert Map.drop(new, ignoring_keys) == Map.drop(old, ignoring_keys)
   end
 
   defp assert_extended_equality(actual, predicate, key) when is_function(predicate) do

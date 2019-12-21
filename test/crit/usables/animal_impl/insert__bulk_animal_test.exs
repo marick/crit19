@@ -27,7 +27,7 @@ defmodule Crit.Usables.AnimalImpl.InsertBulkAnimalTest do
       assert one_cs.changes.name == "one"
       assert one_cs.data == %Animal{}
 
-      assert_copy(one_cs.changes, two_cs.changes, except: [:name])
+      assert_copy(one_cs.changes, two_cs.changes, ignoring: [:name])
     end
 
     test "only the name changes" do

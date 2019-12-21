@@ -124,28 +124,64 @@ defmodule Crit.Assertions.MapTest do
 
   describe "`assert_copy`" do
     test "can ignore fields" do
-      left =  %{field1: 1, field2: 2}
-      right = %{field1: 1, field2: 22222}
+      old = %{stable: 1, field2: 22222}
+      new =  %{stable: 1, field2: 2}
 
       # Here, for reference is what plain equality does:
       assert_raise(ExUnit.AssertionError, fn -> 
-        assert left == right
+        assert new == old
       end)
-      |> assert_fields(left: left,
-                       right: right,
+      |> assert_fields(left: new,
+                       right: old,
                        message: "Assertion with == failed")
 
       # No error
-      assert_copy(left, right, except: [:field2])
+      assert_copy(new, old, ignoring: [:field2])
 
-      # Assert_copy fails the same way `assert ==` does
-      # except note that it doesn't mention `except` fields
+      # assert_copy fails the same way `assert ==` does
+      # except note that it doesn't mention `ignoring` fields
       assert_raise(ExUnit.AssertionError, fn -> 
-        assert_copy(left, right, except: [:field1])
+        assert_copy(new, old, ignoring: [:stable])
       end)
       |> assert_fields(left: %{field2: 2},
                        right: %{field2: 22222},
                        message: "Assertion with == failed")
+    end
+
+    test "can do `assert_fields` comparisons" do
+      old = %{stable: 1, important_change: 22222}
+      new =  %{stable: 1, important_change: 2}
+
+      assert_copy(new, old, except: [important_change: 2])
+
+      assert_raise(ExUnit.AssertionError, fn -> 
+        assert_copy(new, old, except: [important_change: 33])
+      end)
+      |> assert_field(
+           message: "`:important_change` has the wrong value.\nactual:   2\nexpected: 33\n")
+    end
+    
+    test "`:except` assertions can include predicates" do
+      old = %{stable: 1, important_change: [1]}
+      new =  %{stable: 1, important_change: []}
+
+      assert_copy(new, old, except: [important_change: &Enum.empty?/1])
+
+      assert_raise(ExUnit.AssertionError, fn -> 
+        assert_copy(old, old, except: [important_change: &Enum.empty?/1])
+      end)
+      |> assert_field(
+          message:  ":important_change => [1] fails predicate &Enum.empty?/1"
+      )
+    end
+
+    test "combinations of arguments" do
+      old = %{stable: 1, important_change: [1], who_cares: 1}
+      new =  %{stable: 1, important_change: [], who_cares: 2}
+
+      assert_copy(new, old,
+        except: [important_change: &Enum.empty?/1],
+        ignoring: [:who_cares])
     end
   end
 end
