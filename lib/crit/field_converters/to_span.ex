@@ -23,6 +23,15 @@ defmodule Crit.FieldConverters.ToSpan do
 
   @required [:in_service_datestring, :out_of_service_datestring]
 
+  # Having two versions of the function is clearer for testing.
+  # Non-testing clients will use this one.
+  def synthesize(struct_or_changeset, attrs) do
+    struct_or_changeset
+    |> Changeset.cast(attrs, @required)
+    |> Changeset.validate_required(@required)
+    |> synthesize
+  end
+
   def synthesize(changeset) do
     changeset
     |> assume_infinite_up
@@ -80,19 +89,6 @@ defmodule Crit.FieldConverters.ToSpan do
         safely_add_error(changeset, :out_of_service_datestring, @date_misorder_message)
     end
   end
-
-
-  @doc"""
-    Clients can use this in their validation pipeline.
-  """ 
-  def cast(struct_or_changeset, attrs),
-    do: Changeset.cast(struct_or_changeset, attrs, @required)
-
-  @doc"""
-    Clients can use this in their validation pipeline.
-  """ 
-  def validate_required(changeset),
-    do: Changeset.validate_required(changeset, @required)
 
   defp put_span(changeset, span),
     do: Changeset.put_change(changeset, :span, span)

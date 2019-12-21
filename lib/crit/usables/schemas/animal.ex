@@ -55,12 +55,10 @@ defmodule Crit.Usables.Schemas.Animal do
     struct
     |> cast(attrs, required)
     |> validate_required(required)
+    |> ToSpan.synthesize(attrs)
     |> cast_assoc(:service_gaps)
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
-    |> ToSpan.cast(attrs)
-    |> ToSpan.validate_required
-    |> ToSpan.synthesize
   end
   
   defp constraint_on_name(changeset),

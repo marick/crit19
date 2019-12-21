@@ -179,9 +179,8 @@ defmodule Crit.FieldConverters.ToSpanTest do
         institution: "--irrelevant--"
       }
 
-      Changeset.change(%__MODULE__{}, Enum.into(date_opts, %{}))
-      |> ToSpan.validate_required
-      |> ToSpan.synthesize
+      %__MODULE__{}
+      |> ToSpan.synthesize(date_opts)
       |> assert_invalid
       |> assert_errors(out_of_service_datestring:
            ["is invalid", "can't be blank"])
