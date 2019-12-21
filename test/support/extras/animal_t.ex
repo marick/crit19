@@ -18,7 +18,8 @@ defmodule Crit.Extras.AnimalT do
       in_service_datestring: Datespan.first_to_string(animal.span),
       out_of_service_datestring: Datespan.last_to_string(animal.span),
       lock_version: animal.lock_version,
-      service_gaps: Enum.map(animal.service_gaps, &ServiceGapT.attrs/1)
+      service_gaps: Enum.map(animal.service_gaps, &ServiceGapT.attrs/1),
+      institution: @institution
     }
   end
     

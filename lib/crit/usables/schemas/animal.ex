@@ -37,7 +37,7 @@ defmodule Crit.Usables.Schemas.Animal do
   end
 
   # This changeset comes from bulk creation with the datestrings
-  # already turned into dates. This is perilous - rethink?
+  # already turned into a span. This is perilous - rethink?
   def from_bulk_creation_changeset(attrs) do
     required = [:name, :species_id, :lock_version, :span]
     %__MODULE__{}
@@ -51,15 +51,16 @@ defmodule Crit.Usables.Schemas.Animal do
   end
 
   def update_changeset(struct, attrs) do
-    required = [:name, :lock_version,
-                :in_service_datestring, :out_of_service_datestring]
+    required = [:name, :lock_version]
     struct
     |> cast(attrs, required)
     |> validate_required(required)
     |> cast_assoc(:service_gaps)
-    |> ToSpan.synthesize
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
+    |> ToSpan.cast(attrs)
+    |> ToSpan.validate_required
+    |> ToSpan.synthesize
   end
   
   defp constraint_on_name(changeset),

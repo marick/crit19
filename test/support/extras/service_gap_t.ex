@@ -33,7 +33,8 @@ defmodule Crit.Extras.ServiceGapT do
       in_service_datestring: in_service_datestring,
       out_of_service_datestring: out_of_service_datestring,
       reason: reason,
-      delete: false
+      delete: false,
+      institution: @institution
     }
   end
 
@@ -42,7 +43,8 @@ defmodule Crit.Extras.ServiceGapT do
       in_service_datestring: service_gap.in_service_datestring,
       out_of_service_datestring: service_gap.out_of_service_datestring,
       reason: service_gap.reason,
-      delete: service_gap.delete
+      delete: service_gap.delete,
+      institution: @institution
     }
   end
 

@@ -3,34 +3,33 @@ defmodule Crit.Usables.Schemas.ServiceGap do
   import Ecto.Changeset
   alias Ecto.Datespan
   use Crit.Errors
+  alias Crit.FieldConverters.ToSpan
+  alias Crit.FieldConverters.FromSpan
 
   schema "service_gaps" do
     field :animal_id, :id
     field :span, Datespan
     field :reason, :string
 
-    field :in_service_datestring, :date, virtual: true
-    field :out_of_service_datestring, :date, virtual: true
+    field :institution, :string, virtual: true 
+    field :in_service_datestring, :string, virtual: true
+    field :out_of_service_datestring, :string, virtual: true
     field :delete, :boolean, default: false, virtual: true
   end
 
-  @required_for_insertion [:reason, :in_service_datestring, :out_of_service_datestring]
+  @required_for_insertion [:reason, :in_service_datestring, :out_of_service_datestring, :institution]
   @usable @required_for_insertion ++ [:animal_id, :delete]
   
   def changeset(gap, attrs) do
     gap
     |> cast(attrs, @usable)
     |> validate_required(@required_for_insertion)
-    |> validate_order
-    |> put_span
+    |> ToSpan.synthesize
     |> mark_deletion
   end
 
-  def put_updatable_fields(%__MODULE__{} = gap) do
-    %{gap |
-      in_service_datestring: gap.span.first,
-      out_of_service_datestring: gap.span.last}
-  end
+  def put_updatable_fields(%__MODULE__{} = gap),
+    do: FromSpan.expand(gap)
 
   defp validate_order(%{valid?: false} = changeset), do: changeset
   defp validate_order(changeset) do

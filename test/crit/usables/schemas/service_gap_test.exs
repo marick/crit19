@@ -3,6 +3,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
   alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Sql
 
+  alias Ecto.Datespan
   alias Crit.Extras.ServiceGapT
   import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
@@ -14,12 +15,13 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     test "all three values are valid" do
       given = %{in_service_datestring: @iso_date,
                 out_of_service_datestring: @later_iso_date,
+                institution: @institution,
                 reason: "reason"}
       
       handle(given)
       |> assert_valid
-      |> assert_changes(in_service_datestring: @date,
-                        out_of_service_datestring: @later_date,
+      |> assert_changes(in_service_datestring: @iso_date,
+                        out_of_service_datestring: @later_iso_date,
                         reason: "reason",
                         # And the span is created
                         span: span(@date, @later_date))
@@ -28,7 +30,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
     # Error checking
 
-    test "required fields are checked" do
+    test "required fields are must be present" do
       # Note that animal_id does not have to be present if we're always
       # manipulating service gaps via the animal they belong to.
 
@@ -40,14 +42,15 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     test "dates must be in the right order" do
       given = %{in_service_datestring: @iso_date,
                 out_of_service_datestring: @iso_date,
+                institution: @institution,
                 reason: "reason"}
       handle(given)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_unchanged(:span)
 
       # Other fields are available to fill form fields
-      |> assert_changes(in_service_datestring: @date,
-                        out_of_service_datestring: @date,
+      |> assert_changes(in_service_datestring: @iso_date,
+                        out_of_service_datestring: @iso_date,
                         reason: "reason")
     end
   end
@@ -63,12 +66,13 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     test "insertion", %{insertion_result: result, attrs: attrs} do
       assert result.animal_id == attrs.animal_id
       assert result.span == span(@date, @later_date)
+
       assert result.reason == attrs.reason
       # We also get the virtual fields.
       # The date fields are converted, which is OK because EEX knows
       # how to convert them to ISO8601 strings for the HTML.
-      assert result.in_service_datestring == @date
-      assert result.out_of_service_datestring == @later_date
+      assert result.in_service_datestring == @iso_date
+      assert result.out_of_service_datestring == @later_iso_date
     end
 
     test "`Sql.get` does not fill in virtual fields...",
@@ -88,8 +92,8 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       %{retrieved_gap: retrieved, attrs: attrs} do
       updatable = ServiceGap.put_updatable_fields(retrieved)
 
-      assert updatable.in_service_datestring == @date
-      assert updatable.out_of_service_datestring == @later_date
+      assert updatable.in_service_datestring == @iso_date
+      assert updatable.out_of_service_datestring == @later_iso_date
 
       # And other fields are still there
       assert updatable.animal_id == attrs.animal_id
@@ -112,9 +116,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
     test "Updating to all the same values", %{updatable: updatable, attrs: attrs} do
       ServiceGap.changeset(updatable, attrs)
       |> assert_valid
-      |> assert_no_changes
-      # Implied by above, but let's be really explicit:
-      |> assert_unchanged(:span)
+      |> assert_unchanged([:span, :in_service_datestring, :out_of_service_datestring])
     end
 
     test "the in-service date is new", %{updatable: updatable, attrs: attrs} do
@@ -122,8 +124,8 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
       ServiceGap.changeset(updatable, new_attrs)
       |> assert_valid
-      |> assert_changes(in_service_datestring: @bumped_date,
-                        span: span(@bumped_date, @later_date))
+      |> assert_changes(in_service_datestring: @iso_bumped_date,
+                        span: Datespan.customary(@bumped_date, @later_date))
 
       |> assert_unchanged(:out_of_service_datestring)
     end
@@ -135,8 +137,8 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       
       ServiceGap.changeset(updatable, new_attrs)
       |> assert_valid
-      |> assert_changes(out_of_service_datestring: @later_bumped_date,
-                        span: span(@date, @later_bumped_date))
+      |> assert_changes(out_of_service_datestring: @later_iso_bumped_date,
+                        span: Datespan.customary(@date, @later_bumped_date))
       |> assert_unchanged(:in_service_datestring)
     end
 
@@ -148,7 +150,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       ServiceGap.changeset(updatable, new_attrs)
       # Note that the error is always associated to the out-of-service error
       |> assert_error(out_of_service_datestring: @date_misorder_message)
-      |> assert_change(in_service_datestring: @later_date)
+      |> assert_change(in_service_datestring: @later_iso_date)
       
       |> assert_unchanged([:out_of_service_datestring, :span])
     end
@@ -159,7 +161,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       
       ServiceGap.changeset(updatable, new_attrs)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
-      |> assert_change(out_of_service_datestring: @date)
+      |> assert_change(out_of_service_datestring: @iso_date)
       
       |> assert_unchanged([:in_service_datestring, :span])
     end

@@ -4,10 +4,10 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
   alias Crit.Usables.Schemas.Animal
 
   alias Crit.Extras.{AnimalT,ServiceGapT}
-  import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
   import Crit.Setups
+  alias Ecto.Datespan
 
   setup :an_updatable_animal_with_one_service_gap
   
@@ -23,7 +23,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     # These are the *non-virtual* fields that must be present in the CHANGESET
     @addition_changeset %{
       reason: "addition", 
-      span: span(@later_date, @later_bumped_date)
+      span: Datespan.customary(@later_date, @later_bumped_date)
    }
 
     # These are the fields returned from a successful SQL.update. 
@@ -33,12 +33,12 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
     # in a further update.
     @addition_update_result %{
       id: &is_integer/1,
-      in_service_datestring: @later_date,
-      out_of_service_datestring: @later_bumped_date,
+      in_service_datestring: @later_iso_date,
+      out_of_service_datestring: @later_iso_bumped_date,
       reason: "addition",
       delete: false,
 
-      span: span(@later_date, @later_bumped_date)
+      span: Datespan.customary(@later_date, @later_bumped_date)
     }
 
     # This is an "updatable" version of an animal. That is, it
@@ -77,6 +77,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
       %{animal: animal, animal_attrs: attrs} do
 
       ServiceGapT.update_animal_for_service_gaps(animal, attrs)
+      
       [_, added_gap] = retrieve_update(animal)
 
       assert_fields(added_gap, @addition_retrieval_result)
@@ -87,11 +88,12 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
 
       [retained_changeset, _] = ServiceGapT.make_changesets(animal, attrs)
       # No changes for the old service gap (therefore, it will not be UPDATEd)
-      retained_changeset |> assert_valid |> assert_no_changes
+      assert_valid(retained_changeset)
+      assert retained_changeset.changes == %{institution: @institution}
 
       # See?
       [retained_gap, _] = ServiceGapT.update_animal_for_service_gaps(animal, attrs)
-      assert retained_gap == original_gap(animal)
+      assert_copy(retained_gap, original_gap(animal), except: [:institution])
     end
   end
 
