@@ -11,7 +11,7 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
           species: %Species{name: @bovine},
           span: Datespan.customary(@date, @later_date),
           service_gaps: [%ServiceGap{
-                            span: ServiceGap.span(@bumped_date, @later_bumped_date),
+                            span: Datespan.customary(@bumped_date, @later_bumped_date),
                             reason: "reason"}
                         ]
        },

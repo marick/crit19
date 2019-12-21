@@ -43,7 +43,7 @@ defmodule Crit.Factory do
   end
 
   def service_gap_factory() do
-    span = ServiceGap.span(
+    span = Datespan.customary(
       Exemplars.Date.today_or_earlier,
       Exemplars.Date.later_than_today)
 

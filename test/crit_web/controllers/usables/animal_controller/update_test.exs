@@ -3,9 +3,9 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
   alias CritWeb.Usables.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables.AnimalApi
-  alias Crit.Usables.Schemas.ServiceGap
   alias Crit.Exemplars
   alias Crit.Extras.AnimalT
+  alias Ecto.Datespan
 
   setup :logged_in_as_usables_manager
 
@@ -52,7 +52,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
         reason: "fixored reason")
       assert_fields(added,
         reason: "newly added",
-        span: ServiceGap.span(~D[2300-01-02], ~D[2300-01-03]))
+        span: Datespan.customary(~D[2300-01-02], ~D[2300-01-03]))
     end
 
     test "a *blank* service gap form is ignored",

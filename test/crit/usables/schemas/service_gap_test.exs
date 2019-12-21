@@ -5,7 +5,6 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
   alias Ecto.Datespan
   alias Crit.Extras.ServiceGapT
-  import Crit.Usables.Schemas.ServiceGap, only: [span: 2]
 
   import Crit.Assertions.Changeset
 
@@ -24,7 +23,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
                         out_of_service_datestring: @later_iso_date,
                         reason: "reason",
                         # And the span is created
-                        span: span(@date, @later_date))
+                        span: Datespan.customary(@date, @later_date))
     end
     
 
@@ -65,7 +64,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
       
     test "insertion", %{insertion_result: result, attrs: attrs} do
       assert result.animal_id == attrs.animal_id
-      assert result.span == span(@date, @later_date)
+      assert result.span == Datespan.customary(@date, @later_date)
 
       assert result.reason == attrs.reason
       # We also get the virtual fields.
@@ -80,7 +79,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
       # We get the non-virtual fields
       assert retrieved.animal_id == attrs.animal_id
-      assert retrieved.span == span(@date, @later_date)
+      assert retrieved.span == Datespan.customary(@date, @later_date)
       assert retrieved.reason == attrs.reason
 
       # but not the virtual ones
@@ -97,7 +96,7 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
       # And other fields are still there
       assert updatable.animal_id == attrs.animal_id
-      assert updatable.span == span(@date, @later_date)
+      assert updatable.span == Datespan.customary(@date, @later_date)
       assert updatable.reason == attrs.reason
     end
   end
