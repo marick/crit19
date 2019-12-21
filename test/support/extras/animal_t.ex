@@ -48,6 +48,7 @@ defmodule Crit.Extras.AnimalT do
         "lock_version" => to_string(animal.lock_version),
         "name" => animal.name,
         "out_of_service_datestring" => animal.out_of_service_datestring,
+        "institution" => @institution
        }
     service_gaps =
       Enum.reduce(Enum.with_index(animal.service_gaps), %{}, fn {sg, i}, acc ->
@@ -96,7 +97,8 @@ defmodule Crit.Extras.AnimalT do
       %{"name" => animal.name,
         "lock_version" => animal.lock_version,
         "in_service_datestring" => animal.in_service_datestring,
-        "out_of_service_datestring" => animal.out_of_service_datestring
+        "out_of_service_datestring" => animal.out_of_service_datestring,
+        "institution" => @institution
        }
     Map.merge(from_animal, overrides)
   end
