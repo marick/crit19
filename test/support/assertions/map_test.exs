@@ -183,6 +183,25 @@ defmodule Crit.Assertions.MapTest do
         except: [important_change: &Enum.empty?/1],
         ignoring: [:who_cares])
     end
+
+    test "'ignored' fields must be present in new *struct*" do
+      new = old = %__MODULE__{name: 1}
+      assertion_fails_with_diagnostic(
+        "Test error: there is no key `:extra` in Crit.Assertions.MapTest",
+        fn -> 
+          assert_copy(new, old, ignoring: [:extra])
+        end)
+    end
+    
+    test "'except' fields must be present" do
+      new = old = %__MODULE__{name: 1}
+      assertion_fails_with_diagnostic(
+        "Test error: there is no key `:extra` in Crit.Assertions.MapTest",
+        fn -> 
+          assert_copy(new, old, except: [extra: 33])
+        end)
+    end
+    
   end
 end
 
