@@ -5,6 +5,7 @@ defmodule Crit.Sql.Servers do
 
   def start_link(_) do
     institutions = Global.all_institutions()
+    IO.inspect institutions
     servers = Map.new(institutions, &start_one/1)
     Agent.start_link(fn -> servers end, name: __MODULE__)
   end
@@ -20,7 +21,9 @@ defmodule Crit.Sql.Servers do
   end
 
   def start_one %{short_name: short_name, prefix: prefix} do
-    {:ok, pid} = PrefixServer.start_link(prefix)
+    {:ok, pid} = DynamicSupervisor.start_child(Crit.Sql.ServerSupervisor, {PrefixServer, prefix})
+    
+#    {:ok, pid} = PrefixServer.start_link(prefix)
     {short_name, pid}
   end
 end
