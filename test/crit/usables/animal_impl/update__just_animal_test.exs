@@ -15,7 +15,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
       AnimalT.update_for_success(original.id, params)
       |> assert_copy(original,
                      except: [name: "New Bossie", lock_version: 2],
-                     ignoring: [:lock_version, :updated_at, :institution])
+                     ignoring: [:updated_at, :institution])
       |> assert_copy(AnimalApi.updatable!(original.id, @institution),
                      ignoring: [:updated_at, :institution])
     end

@@ -64,25 +64,23 @@ defmodule Crit.Assertions.Map do
 
     To exclude some fields from the comparison:
 
-        new
-        |> assert_copy(old, ignoring: [:lock_version, :updated_at])
+        assert_copy(new, old, ignoring: [:lock_version, :updated_at])
 
     To assert different values for particular fields (as in `assert_fields`):
 
-        new
-        |> assert_copy(old
-           except: [lock_version: old.lock_version + 1,
-                    people: &Enum.empty/1])
+        assert_copy(new, old,
+          except: [lock_version: old.lock_version + 1,
+                   people: &Enum.empty/1])
 
     Combine both for concise assertions:
 
       AnimalT.update_for_success(original_animal.id, params)
       |> assert_copy(original_animal,
-           except: [
+           except:[
              in_service_datestring: dates.iso_next_in_service,
              span: Datespan.inclusive_up(dates.next_in_service),
              lock_version: 2]
-           ignoring: [:updated_at]
+           ignoring: [:updated_at])
   """
   defchain assert_copy(new, old, opts \\ []) do
     except = Keyword.get(opts, :except, [])
