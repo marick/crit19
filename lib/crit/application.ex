@@ -15,7 +15,7 @@ defmodule Crit.Application do
       CritWeb.Endpoint,
       # Starts a worker by calling: Crit.Worker.start_link(arg)
       Crit.Audit.ToEcto.Server,
-      Crit.Sql.Supervisor
+      {Crit.Sql.Servers, name: Crit.Sql.Servers}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
