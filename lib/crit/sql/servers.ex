@@ -2,6 +2,7 @@ defmodule Crit.Sql.Servers do
   use GenServer
   alias Crit.Sql.PrefixServer
   alias Crit.Global
+  require Logger
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, :ok, opts)
@@ -20,6 +21,7 @@ defmodule Crit.Sql.Servers do
   end
 
   defp start_one %{short_name: short_name, prefix: prefix} do
+    Logger.info "Starting prefix server: #{inspect [short_name, prefix]}"
     {:ok, pid} = PrefixServer.start_link(prefix)
     {short_name, pid}
   end
