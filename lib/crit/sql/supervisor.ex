@@ -12,7 +12,6 @@ defmodule Crit.Sql.Supervisor do
       {Servers, name: Servers}
     ]
 
-    IO.inspect children
     Supervisor.init(children, strategy: :one_for_one)
   end
 end

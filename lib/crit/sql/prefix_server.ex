@@ -9,7 +9,6 @@ defmodule Crit.Sql.PrefixServer do
 
   @impl GenServer
   def init(prefix) do
-    IO.inspect "started with #{prefix}"
     {:ok, prefix}
   end
 
