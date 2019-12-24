@@ -91,13 +91,13 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
     end
 
     test "when using `all`" do
-      # This won't always fail, since the animals could happen to be generated
+      # This might not fail on a bug, since the animals could happen to be generated
       # in sorted order. But note that the names are different for each run of
       # the test.
 
-      Factory.sql_insert!(:animal, @institution)
-      Factory.sql_insert!(:animal, @institution)
-      Factory.sql_insert!(:animal, @institution)
+      for name <- Factory.unique_names() do
+        Factory.sql_insert!(:animal, [name: name], @institution)
+      end
 
       as_read = Read.all(@institution) |> Enum.map(&(&1.name))
       sorted = Enum.sort(as_read)
