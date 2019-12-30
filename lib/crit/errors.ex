@@ -23,6 +23,7 @@ defmodule Crit.Errors do
     quote do 
       @date_misorder_message "should not be before the start date"
       @no_valid_names_message "must have at least one valid name"
+      @login_failed "Login failed"
     end
   end
 end

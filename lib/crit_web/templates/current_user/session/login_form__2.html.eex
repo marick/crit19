@@ -1,0 +1,68 @@
+<!-- Purpose: <%= Purpose.show_login_form %> -->
+
+<style type="text/css">
+    body {
+      background-color: #DADADA;
+    }
+    body > .grid {
+      height: 100%;
+    }
+
+    .main {
+        margin-top: 20px;
+    }
+        
+    .column {
+      max-width: 350px;
+    }
+</style>
+
+<%= start_centered_form__2() %>
+
+<div class="ui main center aligned container">
+<img src="/images/dawn-penlight.png">
+</div>
+
+<div data-controller="password">
+    <%= form_for :login, @path, [class: "ui large form"], fn f -> %>
+    <div class="ui segment">
+
+      <%= label f, :institution, "Institution" %>
+      <%= select f, :institution, @options, selected: @selected, class: "ui fluid dropdown", id: "select"%>
+<script language="javascript">
+  $('#select').dropdown();
+</script>
+      
+      <%= label f, :auth_id, "Login Id" %>
+      <div class="field">
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <%= text_input f, :auth_id, required: true, value: @auth_id %>
+            <%= error_tag f, :auth_id %>
+          </div>
+        </div>
+
+      <%= label f, :password, "Password" %>
+      <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <%= text_input f, :password, placeholder: "Password", required: true, type: "password", data_target: "password.field"%>
+            <%= error_tag f, :password %>
+          </div>
+
+      </div>
+      <div class="ui checkbox">
+        <%= checkbox(f, :show_password, data_action: "password#toggle_visibility") %>
+        <label>Show password</label>
+      </div>          
+      
+    </div>
+
+    <%= submit "Login", class: "ui fluid large teal submit button" %>
+    <%= form_error_flash(@conn) %>
+
+    
+    <% end %>
+</div>
+<%= end_centered_form__2() %>
+

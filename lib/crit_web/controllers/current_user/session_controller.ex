@@ -7,6 +7,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   alias Crit.Global
   alias CritWeb.PublicController
   use Crit.Global.Default
+  use Crit.Errors
   
 
   plug :must_be_logged_in when action in [:logout]
@@ -31,7 +32,7 @@ defmodule CritWeb.CurrentUser.SessionController do
         successful_login(conn, unique_id)
       :error ->
         conn
-        |> Common.form_error_flash
+        |> put_flash(:error, @login_failed)
         |> render_login(params, institution_options(institution))
     end
   end
@@ -55,7 +56,8 @@ defmodule CritWeb.CurrentUser.SessionController do
 
   defp render_login(conn, params, {options, selected}) do
     conn
-    |> render("login_form.html",
+    |> put_layout("blank.html")
+    |> render("login_form__2.html",
          auth_id: params["auth_id"],
          path: path(:try_login),
          options: options,

@@ -6,24 +6,28 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   alias CritWeb.PublicController
   alias Crit.Global
   alias Crit.Global.{Institution}
+  use Crit.Errors
 
   describe "handling login fields" do
     test "first time has empty fields", %{conn: conn} do
-      conn = get_via_action(conn, :get_login_form)
-      assert_will_post_to(conn, :try_login)
-      assert_purpose conn, show_login_form()
-      assert_no_flash(conn)
+      get_via_action(conn, :get_login_form)
+      |> assert_will_post_to(:try_login)
+      |> assert_purpose(show_login_form())
+      |> assert_no_flash
     end
 
     test "login failure leaves auth id visible but zeroes password field",
       %{conn: conn} do
       auth_id = "bogus auth id"
       password = "this is a bogus password"
-      conn = post_to_action(conn, :try_login,
-        under(:login, auth_id: auth_id, password: password, institution: @institution))
+      params = under(:login,
+        auth_id: auth_id,
+        password: password,
+        institution: @institution)
 
+      conn = post_to_action(conn, :try_login, params)
       assert_purpose conn, show_login_form()
-      assert_user_sees(conn, [Common.form_error_message, auth_id])
+      assert_user_sees(conn, [@login_failed, auth_id])
       refute_user_sees(conn, password)
       refute unique_id(conn)
     end
