@@ -39,6 +39,7 @@ IO.puts(
     get "/create_password/:token_text", SettingsController, :fresh_password_form
     post "/fresh_password", SettingsController, :set_fresh_password
 
+    get "/home", SessionController, :home
     get "/login", SessionController, :get_login_form
     post "/login", SessionController, :try_login 
     delete "/logout", SessionController, :logout

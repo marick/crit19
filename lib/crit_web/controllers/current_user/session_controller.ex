@@ -10,9 +10,13 @@ defmodule CritWeb.CurrentUser.SessionController do
   use Crit.Errors
   
 
-  plug :must_be_logged_in when action in [:logout]
-  plug :must_be_logged_out when action not in [:logout]
+  plug :must_be_logged_in when action not in [:try_login, :get_login_form]
 
+  def home(conn, _params) do
+    render(conn, "home.html")
+  end
+  
+  
   def get_login_form(conn, _params) do
     starting_institution = @institution
     render_login(conn, %{}, institution_options(starting_institution))
@@ -41,7 +45,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     conn
     |> put_flash(:info, "You have been logged in.")
     |> put_unique_id(unique_id)
-    |> redirect(to: PublicController.path(:index))
+    |> redirect(to: path(:home))
   end 
 
   # Note: the `clear_session` isn't actually needed. It's enough to

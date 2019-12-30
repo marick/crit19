@@ -4,10 +4,12 @@ defmodule CritWeb.PublicController do
   alias CritWeb.CurrentUser.SessionController
 
   def index(conn, _params) do
-    if has_user?(conn) do 
-      render(conn, "index.html")
+    if has_user?(conn) do
+      redirect(conn, to: SessionController.path(:home))
     else
-      redirect(conn, to: SessionController.path(:get_login_form))
+      conn
+      |> put_layout("public.html")
+      |> render("index.html")
     end
   end
 end

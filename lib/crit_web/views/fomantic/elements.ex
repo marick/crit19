@@ -12,6 +12,16 @@ defmodule CritWeb.Fomantic.Elements do
     end
   end
 
+  def error_flash(conn) do
+    if get_flash(conn, :error) do
+      ~E"""
+      <div class="ui negative bottom attached message">
+        <%= get_flash(conn, :error) %>
+      </div>
+      """
+    end
+  end
+
 
   def start_centered_form__2 do
     ~E"""

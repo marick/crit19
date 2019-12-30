@@ -1,7 +1,29 @@
-<!-- Purpose: <%= Purpose.home_page_for_logged_in_user %> -->
+<style type="text/css">
+  body {
+    background-color: #FFFFFF;
+  }
+  .ui.menu .item img.logo {
+    margin-right: 1.5em;
+  }
+  .main.container {
+    margin-top: 7em;
+  }
+  .wireframe {
+    margin-top: 2em;
+  }
+  .ui.footer.segment {
+    margin: 5em 0em 0em;
+    padding: 5em 0em;
+  }
+  </style>
 
+<!-- Purpose: <%= Purpose.public_facing_page %> -->
 
-<section>
-
-</section>
-
+<div class="ui main center aligned text container">
+  <%= error_flash(@conn) %>
+  <h1 class="ui header">Animal Reservation System</h1>
+  <p>There is explanatory text here.</p>
+  <div class="ui center aligned container">
+    <img "ui medium rounded image" src="/images/dawn-penlight.png">
+  </div>
+</div>

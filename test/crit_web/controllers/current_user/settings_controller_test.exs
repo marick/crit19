@@ -24,7 +24,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
 
     test "no matching token", %{conn: conn} do
       action__fresh_password_form(conn, "bogus token")
-      |> assert_redirected_home()
+      |> assert_redirected_to_authorization_failure_path()
       |> assert_error_flash_has("does not exist")
       |> assert_error_flash_has("has probably expired")
     end

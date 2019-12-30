@@ -31,4 +31,7 @@ defmodule CritWeb.Templates.Purpose do
   def snippet_to_display_animal, 
     do: "snippet to display animal"
 
+  def public_facing_page, 
+    do: "public facing page"
+
 end

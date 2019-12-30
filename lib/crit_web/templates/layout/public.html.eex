@@ -24,30 +24,16 @@
           </a>
           <div class="right menu">
             <div class="item">
-              <%= link "Log out", to: SessionController.path(:logout),
-                  method: "delete", class: "ui button" %>
+              <%= link "Log in", to: SessionController.path(:get_login_form),
+                  class: "ui button" %>
             </div>
           </div>
         </div>
       </div>
       
-
-      
-      <!-- <nav id="navbar" class="ui container"> -->
-      <!--      -->
-      <!-- </nav> -->
     </header>
-    <!-- <main role="main" class="section"> -->
-      <!-- <%= flash(@conn, "is-info", :info) %> -->
-      <!-- <%= flash(@conn, "is-warning", :error) %> -->
-      <%= render @view_module, @view_template, assigns %>
-    <!-- </main> -->
-  <footer class="ui inverted vertical footer segment">
-    <div class="ui center aligned container">
-    </div>
-  </footer>
+    <%= render @view_module, @view_template, assigns %>
 
-    
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

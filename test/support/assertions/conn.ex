@@ -7,17 +7,21 @@ defmodule CritWeb.Assertions.Conn do
   alias CritWeb.PublicController
   alias Crit.Users.User
   import CritWeb.Plugs.Accessors
+  alias CritWeb.CurrentUser.SessionController
 
   ### Redirection
 
   defchain assert_redirected_to(conn, path),
     do: assert redirected_to(conn) == path
 
+  defchain assert_redirected_to(conn, module, action),
+    do: assert_redirected_to(conn, apply(module, :path, [action]))
+
   defchain assert_redirected_home(conn),
-    do: assert_redirected_to(conn, PublicController.path(:index))
+    do: assert_redirected_to(conn, SessionController, :home)
 
   defchain assert_redirected_to_authorization_failure_path(conn),
-    do: assert redirected_to(conn) == PublicController.path(:index)
+    do: assert_redirected_to(conn, PublicController, :index)
 
   defchain assert_failed_authorization(conn) do
     assert_redirected_to_authorization_failure_path(conn)
