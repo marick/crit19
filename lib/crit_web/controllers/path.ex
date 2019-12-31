@@ -8,6 +8,6 @@ defmodule CritWeb.Controller.Path do
         do: apply(Routes, unquote(function_atom), [Endpoint, action])
       def path(action, param),
         do: apply(Routes, unquote(function_atom), [Endpoint, action, param])
-   end
+    end
   end
 end

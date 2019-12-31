@@ -1,53 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Critter4Us</title>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.3/dist/semantic.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.3/dist/semantic.min.js"></script>
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
-  </head>
-  <body>
+<%= start_page(@conn) %>
 
 
+<%= header(
+    right: [
+      link_as_header_button("Log out", SessionController, :logout, method: "delete")
+    ]) %>
 
+<%= render @view_module, @view_template, assigns %>
 
     
-    <header>
-      <div class="ui fixed inverted menu">
-        <div class="ui container">
-          <a href="#" class="header item">
-            Critter4Us
-          </a>
-          <div class="right menu">
-            <div class="item">
-              <%= link "Log out", to: SessionController.path(:logout),
-                  method: "delete", class: "ui button" %>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-
-      
-      <!-- <nav id="navbar" class="ui container"> -->
-      <!--      -->
-      <!-- </nav> -->
-    </header>
-    <!-- <main role="main" class="section"> -->
-      <!-- <%= flash(@conn, "is-info", :info) %> -->
-      <!-- <%= flash(@conn, "is-warning", :error) %> -->
-      <%= render @view_module, @view_template, assigns %>
-    <!-- </main> -->
-  <footer class="ui inverted vertical footer segment">
-    <div class="ui center aligned container">
-    </div>
-  </footer>
-
-    
-    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
-  </body>
-</html>
+<%= end_page(@conn) %>

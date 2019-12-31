@@ -1,2 +1,15 @@
 /* This file is for your main application css. */
 
+body {
+    background-color: #FFFFFF;
+}
+.ui.menu .item img.logo {
+    margin-right: 1.5em;
+}
+.main.container {
+    margin-top: 7em;
+}
+.ui.footer.segment {
+    margin: 5em 0em 0em;
+    padding: 5em 0em;
+}

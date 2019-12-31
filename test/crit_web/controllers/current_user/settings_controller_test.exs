@@ -58,6 +58,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_ok
     end
 
+    @tag :skip
     test "something is wrong with the password",
       %{conn: conn, user: user, token_text: token_text} do
 

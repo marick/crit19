@@ -1,17 +1,16 @@
 <!-- Purpose: <%= Purpose.show_login_form %> -->
+<script language="javascript">
+  $(document)
+    .ready(function() { 
+        $('#select').dropdown();
+        $('.message').transition('swing down in');
+    });
+</script>
 
 <style type="text/css">
     body {
       background-color: #DADADA;
     }
-    body > .grid {
-      height: 100%;
-    }
-
-    .main {
-        margin-top: 20px;
-    }
-        
     .column {
       max-width: 350px;
     }
@@ -19,9 +18,8 @@
 
 <%= start_centered_form__2() %>
 
-<div class="ui main center aligned container">
-<img src="/images/dawn-penlight.png">
-</div>
+
+<%= centered_image "/images/dawn-penlight.png"%> 
 
 <div data-controller="password">
     <%= form_for :login, @path, [class: "ui large form"], fn f -> %>
@@ -29,9 +27,6 @@
 
       <%= label f, :institution, "Institution" %>
       <%= select f, :institution, @options, selected: @selected, class: "ui fluid dropdown", id: "select"%>
-<script language="javascript">
-  $('#select').dropdown();
-</script>
       
       <%= label f, :auth_id, "Login Id" %>
       <div class="field">
