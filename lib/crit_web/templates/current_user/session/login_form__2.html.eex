@@ -7,15 +7,7 @@
     });
 </script>
 
-<style type="text/css">
-    body {
-      background-color: #DADADA;
-    }
-    .column {
-      max-width: 350px;
-    }
-</style>
-
+<%= login_form_style() %>
 <%= start_centered_form__2() %>
 
 
@@ -27,37 +19,27 @@
 
       <%= label f, :institution, "Institution" %>
       <%= select f, :institution, @options, selected: @selected, class: "ui fluid dropdown", id: "select"%>
-      
-      <%= label f, :auth_id, "Login Id" %>
-      <div class="field">
-          <div class="ui left icon input">
-            <i class="user icon"></i>
-            <%= text_input f, :auth_id, required: true, value: @auth_id %>
-            <%= error_tag f, :auth_id %>
-          </div>
-        </div>
 
-      <%= label f, :password, "Password" %>
-      <div class="field">
-          <div class="ui left icon input">
-            <i class="lock icon"></i>
-            <%= text_input f, :password, placeholder: "Password", required: true, type: "password", data_target: "password.field"%>
-            <%= error_tag f, :password %>
-          </div>
+      <%= labeled_icon_field(f, "Login Id", :auth_id, "user icon",
+                             required: true,
+                             value: @auth_id) %>
 
-      </div>
-      <div class="ui checkbox">
-        <%= checkbox(f, :show_password, data_action: "password#toggle_visibility") %>
-        <label>Show password</label>
-      </div>          
+      <%= labeled_icon_field(f, "Password", :password, "lock icon",
+                             placeholder: "Password",
+                             required: true,
+                             type: "password",
+                             data_target: "password.field") %>
+
+      <%= labeled_checkbox(f, "Show password", :show_password,
+                           data_action: "password#toggle_visibility") %>
       
     </div>
 
-    <%= submit "Login", class: "ui fluid large teal submit button" %>
+    <%= big_submit_button "Login" %>
     <%= form_error_flash(@conn) %>
-
-    
     <% end %>
 </div>
+
+
 <%= end_centered_form__2() %>
 

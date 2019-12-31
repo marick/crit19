@@ -1,0 +1,25 @@
+<%= login_form_style() %>
+<%= start_centered_form__2() %>
+
+<div class="ui main container">
+  <h1 class="ui center aligned header">Create a User</h1>
+<%= form_for @changeset, @action, [class: "ui large form"], fn f -> %>
+<div class="ui segment">
+
+  <%= labeled_text_field f, :display_name, "Name",
+        placeholder: "Like \"Dr. Dawn Marick\" (without quotes)",
+        required: true %>
+
+  <%= labeled_text_field f, :email, "Email",
+        type: "email",
+        placeholder: "This address will receive email about setting a password",
+        required: true %>
+
+  <%= labeled_text_field f, :auth_id, "Login Id",
+        placeholder: "May be the same as the email address",
+        required: true %>
+</div>
+<% end %>
+</div>
+<%= end_centered_form__2() %>
+
