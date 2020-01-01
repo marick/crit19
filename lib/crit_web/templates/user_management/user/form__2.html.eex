@@ -1,9 +1,3 @@
-<script language="javascript">
-  $(document)
-    .ready(function() { 
-        $('.message').transition('swing down in');
-    });
-</script>
 
 
 <%= login_form_style() %>
@@ -11,6 +5,8 @@
 
 <div class="ui main container">
   <h1 class="ui center aligned header">Create a User</h1>
+<%= success_flash_above(@conn) %>
+<%= note_changeset_errors(@changeset) %>
 <%= form_for @changeset, @action, [class: "ui large form"], fn f -> %>
 <div class="ui segment">
 
@@ -37,7 +33,6 @@
 </div>
 
 <%= big_submit_button "Create the account and send email" %>
-<%= note_changeset_errors(@changeset) %>
 
 
 <% end %>

@@ -3,21 +3,21 @@ defmodule CritWeb.Fomantic.Elements do
   import Phoenix.Controller, only: [get_flash: 2]
   import CritWeb.ErrorHelpers, only: [error_tag: 2]
 
-  def form_error_flash(conn) do
+  def error_flash_above(conn) do
     if get_flash(conn, :error) do
       ~E"""
-      <div class="ui negative bottom attached message">
+      <div class="ui negative attached message">
         <%= get_flash(conn, :error) %>
       </div>
       """
     end
   end
 
-  def error_flash(conn) do
-    if get_flash(conn, :error) do
+  def success_flash_above(conn) do
+    if get_flash(conn, :info) do
       ~E"""
-      <div class="ui negative bottom attached message">
-        <%= get_flash(conn, :error) %>
+      <div class="ui positive attached message">
+        <%= get_flash(conn, :info) %>
       </div>
       """
     end
@@ -26,8 +26,8 @@ defmodule CritWeb.Fomantic.Elements do
   def note_changeset_errors(changeset) do
     if changeset.action do
       ~E"""
-      <div class="ui negative bottom attached message">
-        Please fix the errors shown above.
+      <div class="ui negative attached message">
+        Please fix the errors shown below.
       </div>
       """
     end
