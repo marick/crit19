@@ -35,8 +35,10 @@ defmodule CritWeb.CurrentUser.SettingsController do
   end
 
   defp render_password_creation_form(conn, changeset) do
-    render(conn, "fresh_password.html",
-      path: path(:set_fresh_password),
-      changeset: changeset)
+    conn
+    |> put_layout("blank.html")
+    |> render("fresh_password.html",
+              path: path(:set_fresh_password),
+              changeset: changeset)
   end
 end

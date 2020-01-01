@@ -104,8 +104,8 @@ defmodule CritWeb.Fomantic.Elements do
           <div class="ui left icon input">
             <i class="<%=icon%>"></i>
             <%= text_input f, field, input_opts %>
-            <%= error_tag f, field %>
           </div>
+          <%= error_tag f, field %>
       </div>
     """
   end
