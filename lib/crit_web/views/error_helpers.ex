@@ -10,7 +10,11 @@ defmodule CritWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      content_tag(:span, translate_error(error), class: "has-text-danger")
+      ~E"""
+         <span class="ui pointing red basic label">
+           <%= translate_error(error) %>
+         </span>
+      """
     end)
   end
 

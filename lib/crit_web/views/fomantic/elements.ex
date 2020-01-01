@@ -23,6 +23,16 @@ defmodule CritWeb.Fomantic.Elements do
     end
   end
 
+  def note_changeset_errors(changeset) do
+    if changeset.action do
+      ~E"""
+      <div class="ui negative bottom attached message">
+        Please fix the errors shown above.
+      </div>
+      """
+    end
+  end
+
   def centered_image(src) do
     classes = "ui center aligned container main" 
     
@@ -87,7 +97,7 @@ defmodule CritWeb.Fomantic.Elements do
   end
 
 
-  def labeled_icon_field(f, label, field, icon, input_opts) do
+  def labeled_icon_field(f, label, field, icon, input_opts \\ []) do
     ~E"""
       <%= label f, field, label %>
       <div class="field">
@@ -100,13 +110,19 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
-  def labeled_checkbox(f, label, field, input_opts) do
+  def labeled_checkbox(f, label, field, input_opts \\ []) do
     ~E"""
+    <div class="field">
     <div class="ui checkbox">
-      <%= checkbox(f, field, input_opts) %>
-      <label><%=label%></label>
+        <%= checkbox(f, field, input_opts) %>
+        <label><%=label%></label>
+    </div>
     </div>
     """
+  end
+
+  def self_labeled_checkbox(f, field, input_opts \\ []) do
+    labeled_checkbox(f, humanize(field), field, input_opts)
   end
 
   def big_submit_button(label) do
