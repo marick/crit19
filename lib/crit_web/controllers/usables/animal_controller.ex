@@ -69,7 +69,7 @@ defmodule CritWeb.Usables.AnimalController do
     
     conn
     |> put_layout(false)
-    |> render("_edit_one_animal.html",
+    |> render("_edit_one_animal__2.html",
         changeset: AnimalApi.form_changeset(animal))
   end
   
@@ -88,7 +88,7 @@ defmodule CritWeb.Usables.AnimalController do
           highlight: "has-background-grey-lighter")
       {:error, changeset} ->
         Common.render_for_replacement(conn,
-          "_edit_one_animal.html",
+          "_edit_one_animal__2.html",
           changeset: changeset)
     end
   end

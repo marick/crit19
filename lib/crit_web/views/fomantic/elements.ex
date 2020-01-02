@@ -96,6 +96,27 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
+  def small_calendar(f, label, field, input_opts \\ []) do
+    ~E"""
+      <div class="field">
+          <%= label f, field, label %>
+          <%= text_input f, field, input_opts %>
+          <%= error_tag f, field %>
+      </div>
+    """
+  end
+
+  #### I think the label belongs inside the field.
+
+  def labeled_field(f, label, field, input_opts \\ []) do
+    ~E"""
+      <div class="field">
+          <%= label f, field, label %>
+          <%= text_input f, field, input_opts %>
+          <%= error_tag f, field %>
+      </div>
+    """
+  end
 
   def labeled_icon_field(f, label, field, icon, input_opts \\ []) do
     ~E"""

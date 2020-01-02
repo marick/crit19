@@ -4,6 +4,7 @@ defmodule CritWeb.Usables.AnimalView do
   alias CritWeb.Usables.AnimalController
   alias Crit.Usables.Schemas.ServiceGap
   alias Phoenix.HTML.Form
+  alias Ecto.Changeset
 
   def animal_id_attribute(animal) do
     "editing_animal#{animal.id}"
@@ -55,7 +56,7 @@ defmodule CritWeb.Usables.AnimalView do
 
   def delete_if_exists(f) do
     if Form.input_value(f, :id) do
-      compact_checkbox f, :delete
+      labeled_checkbox f, "Delete this animal", :delete
     end
   end
 

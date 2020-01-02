@@ -1,0 +1,49 @@
+<!-- Purpose: <%= Purpose.form_for_editing_animal %> -->
+<td colspan="3">
+<%= form_for @changeset, "/not-used",
+    [class: "ui fluid form",
+     id: animal_id_attribute(@changeset.data),
+    data_action: "single-animal#update"], fn f -> %>
+
+
+<div class="ui segment">
+  <h3 class="ui center aligned header">Change <%= @changeset.data.species_name %> <%= Changeset.get_field(@changeset, :name) %> </h3>
+
+  <%= error_tag f, :optimistic_lock_error %>
+  <%= hidden_input(f, :lock_version) %>
+  
+  <div class="fields">
+    <%= labeled_field(f, "Name", :name) %>
+    <%= small_calendar(f, "In service: ", :in_service_datestring) %>
+    <%= small_calendar(f, "Out of service beginning: ", :out_of_service_datestring)  %>  
+  </div>
+</div>
+
+<div class="ui segment">
+
+  <h4 class="ui center aligned dividing header">Update gaps in the animal's availability</h4>
+
+  
+  <%= inputs_for f, :service_gaps, [append: [%ServiceGap{}]], fn gap_f -> %>
+  <div>
+    <hr/>
+    <div class="fields">
+      <%= small_calendar(gap_f, "From:", :in_service_datestring) %>
+      <%= small_calendar(gap_f, "Back on:", :out_of_service_datestring) %>
+    </div>
+
+    <div class="five wide field">
+      <%= labeled_field(gap_f, "Because: ", :reason) %>
+    </div>
+
+    <%= delete_if_exists gap_f %>
+  </div>
+  <% end %>
+</div>
+
+<div class="ui segment">
+  <%= big_submit_button "Change" %>
+</div>
+
+<% end %>
+</td>
