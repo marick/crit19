@@ -30,13 +30,11 @@
     <div class="fields">
       <%= small_calendar(gap_f, "From:", :in_service_datestring) %>
       <%= small_calendar(gap_f, "Back on:", :out_of_service_datestring) %>
-    </div>
-
-    <div class="five wide field">
       <%= labeled_field(gap_f, "Because: ", :reason) %>
+      <%= delete_if_exists gap_f %>
     </div>
 
-    <%= delete_if_exists gap_f %>
+
   </div>
   <% end %>
 </div>

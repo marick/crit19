@@ -56,7 +56,7 @@ defmodule CritWeb.Usables.AnimalView do
 
   def delete_if_exists(f) do
     if Form.input_value(f, :id) do
-      labeled_checkbox f, "Delete this animal", :delete
+      labeled_checkbox f, "Delete", :delete
     end
   end
 
