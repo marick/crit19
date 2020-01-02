@@ -1,0 +1,15 @@
+<!-- Purpose: <%= Purpose.snippet_to_display_animal %> -->
+
+  <td>
+    <strong><%= @changeset.data.name %></strong> 
+  </td>
+
+  <td>
+    <%= @changeset.data.species_name %>
+  </td>
+  
+  <td>
+    <button class="ui button" data-action="single-animal#form">
+      Edit
+    </button>
+  </td>

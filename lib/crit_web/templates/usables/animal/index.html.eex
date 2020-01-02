@@ -1,30 +1,29 @@
 <!-- Purpose: <%= Purpose.displaying_animal_summaries %> -->
 
+<div class="ui main center aligned text container">
 
-<%= start_centered_form() %>
+  <table class="ui striped sortable table">
+    <th>
+      <tr>
+        <th class="sorted ascending">Name</th>
+        <th class="sorted ascending">Species</th>
+        <th></th>
+      </tr>
+    </th>
+          
+      <%= for animal <- @animals do %>
+          <tr data-controller="single-animal"
+              data-single-animal-id="<%=animal_id_attribute(animal)%>"
+              data-single-animal-form-path="<%=AnimalController.path(:update_form, animal)%>"
+              data-single-animal-update-path="<%=AnimalController.path(:update, animal)%>">
+      
+            <%= render "_show_one_animal__2.html",
+                Map.put(assigns, :changeset, AnimalApi.form_changeset(animal)) %>
+         </tr>
+      <% end %>
+  </table>
 
-<table class="table is-fullwidth">
-  <tbody>
 
-    
-<%= for animal <- @animals do %>
-    <tr>
-      <td>
-        <div data-controller="single-animal"
-             data-single-animal-id="<%=animal_id_attribute(animal)%>"
-             data-single-animal-form-path="<%=AnimalController.path(:update_form, animal)%>"
-             data-single-animal-update-path="<%=AnimalController.path(:update, animal)%>">
-          <%= render "_show_one_animal.html",
-              assigns
-              |> Map.put(:changeset, AnimalApi.form_changeset(animal))
-              |> Map.put(:highlight, "")
-              %>
-        </div>
-        </columns>
-      </td>
-    </tr>
-<% end %>
-  </tbody>
-</table>
+</div>
 
-<%= end_centered_form() %>
+
