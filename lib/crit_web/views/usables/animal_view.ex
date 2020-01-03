@@ -1,6 +1,5 @@
 defmodule CritWeb.Usables.AnimalView do
   use CritWeb, :view
-  alias Crit.Usables.AnimalApi
   alias CritWeb.Usables.AnimalController
   alias Crit.Usables.Schemas.ServiceGap
   alias Phoenix.HTML.Form

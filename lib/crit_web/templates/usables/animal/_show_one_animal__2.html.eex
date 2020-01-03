@@ -1,11 +1,11 @@
 <!-- Purpose: <%= Purpose.snippet_to_display_animal %> -->
 
   <td>
-    <strong><%= @changeset.data.name %></strong> 
+    <strong><%= @animal.name %></strong> 
   </td>
 
   <td>
-    <%= @changeset.data.species_name %>
+    <%= @animal.species_name %>
   </td>
   
   <td>

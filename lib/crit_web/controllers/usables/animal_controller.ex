@@ -63,14 +63,13 @@ defmodule CritWeb.Usables.AnimalController do
                   }
     Audit.created_animals(conn, audit_data)
   end
-  
+
   def update_form(conn, %{"animal_id" => id}) do
     animal = AnimalApi.updatable!(id, institution(conn))
     
-    conn
-    |> put_layout(false)
-    |> render("_edit_one_animal__2.html",
-        changeset: AnimalApi.form_changeset(animal))
+    Common.render_for_replacement(conn,
+      "_edit_one_animal__2.html",
+      changeset: AnimalApi.form_changeset(animal))
   end
   
   def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
@@ -84,8 +83,7 @@ defmodule CritWeb.Usables.AnimalController do
       {:ok, animal} ->
         Common.render_for_replacement(conn,
           "_show_one_animal__2.html",
-          changeset: AnimalApi.form_changeset(animal),
-          highlight: "has-background-grey-lighter")
+          animal: animal)
       {:error, changeset} ->
         Common.render_for_replacement(conn,
           "_edit_one_animal__2.html",
