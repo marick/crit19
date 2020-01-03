@@ -7,7 +7,7 @@ export default class extends Controller {
 
 
     form() {
-        var path = this.data.get("form-path")
+        var path = this.data.get("form-path");
         
         fetch(path)
             .then(response => response.text())
@@ -16,10 +16,21 @@ export default class extends Controller {
             })
     }
 
+    cancel(event) {
+        event.preventDefault();
+        var path = this.data.get("cancel-path");
+        
+        var result = fetch(path)
+            .then(response => response.text())
+            .then(html => {
+                this.element.innerHTML = html;
+            });
+    }
+
     update(event) {
-        event.preventDefault()
-        var path = this.data.get("update-path")
-        var id = this.data.get("id")
+        event.preventDefault();
+        var path = this.data.get("update-path");
+        var id = this.data.get("id");
         // console.log("update path")
         // console.log(id)
         // console.log(path);

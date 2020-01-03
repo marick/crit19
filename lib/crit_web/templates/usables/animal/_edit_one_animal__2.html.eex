@@ -11,8 +11,10 @@
 
   <div class="ui center aligned grid">
     <div class="middle aligned row">
-    <div class="two wide column">
-      <%= submit "Cancel", class: "ui negative submit button" %>
+      <div class="two wide column">
+        <button class="ui negative button" data-action="single-animal#cancel">
+          Cancel
+        </button>
     </div>
     <header class="ten wide text column">
     <h3>

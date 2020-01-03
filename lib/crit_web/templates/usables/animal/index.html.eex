@@ -15,6 +15,7 @@
           <tr data-controller="single-animal"
               data-single-animal-id="<%=animal_id_attribute(animal)%>"
               data-single-animal-form-path="<%=AnimalController.path(:update_form, animal)%>"
+              data-single-animal-cancel-path="<%=AnimalController.path(:_show, animal)%>"
               data-single-animal-update-path="<%=AnimalController.path(:update, animal)%>">
       
             <%= render "_show_one_animal__2.html",
