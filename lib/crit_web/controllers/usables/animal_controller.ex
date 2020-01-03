@@ -83,7 +83,7 @@ defmodule CritWeb.Usables.AnimalController do
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,
-          "_show_one_animal.html",
+          "_show_one_animal__2.html",
           changeset: AnimalApi.form_changeset(animal),
           highlight: "has-background-grey-lighter")
       {:error, changeset} ->
