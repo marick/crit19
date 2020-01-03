@@ -56,6 +56,7 @@ IO.puts(
       put "/update/:animal_id", AnimalController, :update
       post "/update/:animal_id", AnimalController, :update
       get "/", AnimalController, :index
+      get "/:animal_id", AnimalController, :_show
     end
   end
   

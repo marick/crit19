@@ -71,6 +71,14 @@ defmodule CritWeb.Usables.AnimalController do
       "_edit_one_animal__2.html",
       changeset: AnimalApi.form_changeset(animal))
   end
+
+  def _show(conn, %{"animal_id" => id}) do
+    animal = AnimalApi.updatable!(id, institution(conn))
+
+    Common.render_for_replacement(conn,
+      "_show_one_animal__2.html",
+      animal: animal)
+  end
   
   def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
     params =

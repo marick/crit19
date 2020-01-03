@@ -6,6 +6,7 @@ defmodule CritWeb.Usables.BlockingAuthorizationTest do
   test "how an unlogged-in user is blocked", %{conn: conn} do
     assert_authorization_failures(conn,
       [&(get &1, AnimalController.path(:index)),
+       &(get &1, AnimalController.path(:_show, 1)), 
        &(get &1, AnimalController.path(:bulk_create_form)), 
        &(post &1, AnimalController.path(:bulk_create)),
        &(post &1, AnimalController.path(:update, 1)),
