@@ -1,13 +1,30 @@
 <!-- Purpose: <%= Purpose.form_for_editing_animal %> -->
 <td colspan="3">
+
 <%= form_for @changeset, "/not-used",
     [class: "ui fluid form",
      id: animal_id_attribute(@changeset.data),
     data_action: "single-animal#update"], fn f -> %>
 
 
-<div class="ui segment">
-  <h3 class="ui center aligned header">Change <%= @changeset.data.species_name %> <%= Changeset.get_field(@changeset, :name) %> </h3>
+<div class="ui blue segment">
+
+  <div class="ui center aligned grid">
+    <div class="middle aligned row">
+    <div class="two wide column">
+      <%= submit "Cancel", class: "ui negative submit button" %>
+    </div>
+    <header class="ten wide text column">
+    <h3>
+      Change <%= @changeset.data.species_name %> <%= Changeset.get_field(@changeset, :name) %>
+    </h3>
+    </header>
+    <div class="two wide column">
+      <%= submit "Save", class: "ui positive submit button" %>
+    </div>
+  </div>
+  </div>
+  <hr/>
 
   <%= error_tag f, :optimistic_lock_error %>
   <%= hidden_input(f, :lock_version) %>
@@ -43,10 +60,6 @@
   <% end %>
   
   <% end %>
-</div>
-
-<div class="ui segment">
-  <%= big_submit_button "Change" %>
 </div>
 
 <% end %>
