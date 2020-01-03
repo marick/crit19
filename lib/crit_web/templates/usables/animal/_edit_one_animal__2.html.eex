@@ -17,18 +17,17 @@
     <%= small_calendar(f, "In service: ", :in_service_datestring) %>
     <%= small_calendar(f, "Out of service beginning: ", :out_of_service_datestring)  %>  
   </div>
-</div>
-
-<div class="ui segment">
-
-  <h4 class="ui center aligned dividing header">Update gaps in the animal's availability</h4>
-
   
-  <%= inputs_for f, :service_gaps, [append: [%ServiceGap{}]], fn gap_f -> %>
+  <%= inputs_for f, :service_gaps, [prepend: [%ServiceGap{}]], fn gap_f -> %>
+  <%= if Form.input_value(gap_f, :id) == nil do %>
+    <h4 class="ui center aligned header">
+      Add a gap during which the animal cannot be reserved
+    </h4>
+  <% end %>
+  
   <div>
-    <hr/>
     <div class="fields">
-      <%= small_calendar(gap_f, "From:", :in_service_datestring) %>
+      <%= small_calendar(gap_f, "Unavailable starting:", :in_service_datestring) %>
       <%= small_calendar(gap_f, "Back on:", :out_of_service_datestring) %>
       <%= labeled_field(gap_f, "Because: ", :reason) %>
       <%= delete_if_exists gap_f %>
@@ -36,6 +35,13 @@
 
 
   </div>
+
+  <%= if Form.input_value(gap_f, :id) == nil do %>
+    <h4 class="ui center aligned header">
+      Edit or delete earlier gaps
+    </h4>
+  <% end %>
+  
   <% end %>
 </div>
 
