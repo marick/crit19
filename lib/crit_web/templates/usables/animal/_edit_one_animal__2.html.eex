@@ -4,7 +4,7 @@
 <%= form_for @changeset, "/not-used",
     [class: "ui fluid form",
      id: animal_id_attribute(@changeset.data),
-    data_action: "single-animal#update"], fn f -> %>
+     data_action: "single-animal#update"], fn f -> %>
 
 
 <div class="ui blue segment">
@@ -33,7 +33,15 @@
   
   <div class="fields">
     <%= labeled_field(f, "Name", :name) %>
-    <%= small_calendar(f, "In service: ", :in_service_datestring) %>
+    <div class="ui calendar" id="<%="cal1_#{animal_id_attribute(@changeset.data)}"%>">
+      <div class="ui input left icon">
+        <i class="calendar icon"></i>
+        <input type="text" placeholder="Date/Time">
+      </div>
+    </div>
+    
+    <%= small_calendar(f, "In service: ", :in_service_datestring,
+        id: "cal1_#{animal_id_attribute(@changeset.data)}") %>
     <%= small_calendar(f, "Out of service beginning: ", :out_of_service_datestring)  %>  
   </div>
   
