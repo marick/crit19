@@ -5,6 +5,10 @@ export default class extends Controller {
     connect() {
     }
 
+    animal_calendar_id(id, field) {
+        return "#calendar_for_animal_" + id + "_" + field
+    }
+
 
     form() {
         var path = this.data.get("form-path");
@@ -15,7 +19,9 @@ export default class extends Controller {
             .then(response => response.text())
             .then(html => {
                 this.element.innerHTML = html
-                console.log(jQuery("#cal1_" + id).calendar());
+                var in_service_id = this.animal_calendar_id(id, "in_service_datestring");
+                console.log(in_service_id);
+                jQuery(in_service_id).calendar();
             })
     }
 

@@ -9,6 +9,10 @@ defmodule CritWeb.Usables.AnimalView do
     "animal_#{animal.id}"
   end
 
+  def animal_calendar_id(animal, field) do
+    IO.inspect "calendar_for_animal_#{animal.id}_#{to_string field}"
+  end
+
   def big_calendar_widget(f, opts) do
     special_defaults = [advice: ""]
     arg = Keyword.merge(special_defaults, opts) |> Enum.into(%{})

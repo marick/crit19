@@ -33,14 +33,9 @@
   
   <div class="fields">
     <%= labeled_field(f, "Name", :name) %>
-    <div class="ui calendar" id="<%="cal1_#{@changeset.data.id}"%>">
-      <div class="ui input left icon">
-        <i class="calendar icon"></i>
-        <input type="text" placeholder="Date/Time">
-      </div>
-    </div>
     
-    <%= small_calendar(f, "In service: ", :in_service_datestring) %>
+    <%= small_calendar__2(f, "In service: ", :in_service_datestring,
+        id: animal_calendar_id(@changeset.data, :in_service_datestring)) %>
     <%= small_calendar(f, "Out of service beginning: ", :out_of_service_datestring)  %>  
   </div>
   
