@@ -20,8 +20,7 @@ export default class extends Controller {
             .then(html => {
                 this.element.innerHTML = html
                 var in_service_id = this.animal_calendar_id(id, "in_service_datestring");
-                console.log(in_service_id);
-                jQuery(in_service_id).calendar();
+                jQuery(in_service_id).calendar({type: 'date'});
             })
     }
 
