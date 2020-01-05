@@ -9,9 +9,11 @@ defmodule CritWeb.Usables.AnimalView do
     "animal_#{animal.id}"
   end
 
-  def animal_calendar_id(animal, field) do
-    IO.inspect "calendar_for_animal_#{animal.id}_#{to_string field}"
-  end
+  def animal_calendar_id(%Changeset{} = changeset, field),
+    do: animal_calendar_id(changeset.data, field)
+
+  def animal_calendar_id(animal, field),
+    do: "calendar_for_animal_#{animal.id}_#{to_string field}"
 
   def big_calendar_widget(f, opts) do
     special_defaults = [advice: ""]

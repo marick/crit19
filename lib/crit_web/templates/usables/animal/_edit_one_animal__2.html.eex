@@ -35,8 +35,9 @@
     <%= labeled_field(f, "Name", :name) %>
     
     <%= small_calendar__2(f, "In service: ", :in_service_datestring,
-        id: animal_calendar_id(@changeset.data, :in_service_datestring)) %>
-    <%= small_calendar(f, "Out of service beginning: ", :out_of_service_datestring)  %>  
+        id: animal_calendar_id(@changeset, :in_service_datestring)) %>
+    <%= small_calendar__2(f, "Out of service beginning: ", :out_of_service_datestring,
+        id: animal_calendar_id(@changeset, :out_of_service_datestring)) %>  
   </div>
   
   <%= inputs_for f, :service_gaps, [prepend: [%ServiceGap{}]], fn gap_f -> %>

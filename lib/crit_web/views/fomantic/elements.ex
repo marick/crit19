@@ -108,7 +108,6 @@ defmodule CritWeb.Fomantic.Elements do
 
   def small_calendar__2(f, label, field, input_opts \\ []) do
     opts = Enum.into(input_opts, %{})
-    IO.inspect opts.id
     ~E"""
       <div class="field" id="<%=opts.id%>">
           <%= label f, field, label %>
