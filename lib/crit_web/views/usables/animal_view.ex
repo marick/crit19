@@ -5,8 +5,8 @@ defmodule CritWeb.Usables.AnimalView do
   alias Phoenix.HTML.Form
   alias Ecto.Changeset
 
-  def animal_id_attribute(animal) do
-    "editing_animal#{animal.id}"
+  def animal_form_id(animal) do
+    "animal_#{animal.id}"
   end
 
   def big_calendar_widget(f, opts) do

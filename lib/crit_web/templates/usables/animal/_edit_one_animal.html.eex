@@ -1,7 +1,7 @@
 <!-- Purpose: <%= Purpose.form_for_editing_animal %> -->
 <%= form_for @changeset, "/not-used",
     [class: "box has-background-warning",
-     id: animal_id_attribute(@changeset.data),
+     id: animal_form_id(@changeset.data),
      data_action: "single-animal#update"], fn f -> %>
 
   id <%= @changeset.data.id %>: 

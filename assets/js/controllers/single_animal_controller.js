@@ -8,13 +8,13 @@ export default class extends Controller {
 
     form() {
         var path = this.data.get("form-path");
+        var form_id = this.data.get("form-id");
         var id = this.data.get("id");
 
         fetch(path)
             .then(response => response.text())
             .then(html => {
                 this.element.innerHTML = html
-                console.log(jQuery("#standard_calendar").calendar());
                 console.log(jQuery("#cal1_" + id).calendar());
             })
     }
@@ -33,12 +33,12 @@ export default class extends Controller {
     update(event) {
         event.preventDefault();
         var path = this.data.get("update-path");
-        var id = this.data.get("id");
+        var form_id = this.data.get("form-id");
         // console.log("update path")
         // console.log(id)
         // console.log(path);
 
-        const form = new FormData(document.getElementById(id));
+        const form = new FormData(document.getElementById(form_id));
 
         var data = {
             method: 'POST',
