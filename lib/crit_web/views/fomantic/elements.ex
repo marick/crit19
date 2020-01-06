@@ -117,12 +117,21 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
-  #### I think the label belongs inside the field.
-
   def labeled_field(f, label, field, input_opts \\ []) do
     ~E"""
       <div class="field">
           <%= label f, field, label %>
+          <%= text_input f, field, input_opts %>
+          <%= error_tag f, field %>
+      </div>
+    """
+  end
+
+  def labeled_field_with_advice(f, label, field, advice, input_opts \\ []) do
+    ~E"""
+      <div class="field">
+          <%= label f, field, label %>
+          <%= advice %>
           <%= text_input f, field, input_opts %>
           <%= error_tag f, field %>
       </div>
@@ -160,6 +169,5 @@ defmodule CritWeb.Fomantic.Elements do
   def big_submit_button(label) do
     submit label, class: "ui fluid large teal submit button"
   end
-
 
 end

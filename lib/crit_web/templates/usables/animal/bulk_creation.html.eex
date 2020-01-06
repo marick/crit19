@@ -1,13 +1,28 @@
-<h1>Add One Or More Animals</h1>
-
 <!-- Purpose: <%= Purpose.form_for_creating_new_animal %> -->
 
-<%= start_centered_form() %>
 
-<%= form_for @changeset, @path, [class: "box"], fn f -> %>
-  <%= note_existence_of_any_form_errors @changeset %>
+<script language="javascript">
+  $(document)
+    .ready(function() { 
+        $('#species_select').dropdown();
+    });
+</script>
 
-  <%= labeled_select(f, :species_id, "Species", @options) %>
+<div class="ui main center aligned text container">
+
+  <h1 class="ui center aligned header">Create Animals</h1>
+
+<%= start_centered_form__2() %>
+
+<%= success_flash_above(@conn) %>
+<%= note_changeset_errors @changeset %>
+
+<%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
+
+<div class="ui segment">
+
+  <%= label f, :species_id, "Species" %>
+  <%= select f, :species_id, @options, class: "ui fluid dropdown", id: "species_select"%>
 
   <%= big_calendar_widget f,
         tag: :in_service_datestring,
@@ -22,13 +37,16 @@
         advice: "The animal can no longer be reserved starting at the selected date."
       %>
 
-  <%= labeled_text_field f, :names, "Animal names", %{
-    advice: "Add animal names to the input field below, separating each with a comma. 
-             When finished, click the Save button or press Return.",
-      input_extras: [required: true]
-    } %>
+  <%= labeled_field_with_advice f, "Animal names", :names,
+      """
+      Add animal names to the input field below, separating each with a comma. 
+      When finished, click the Save button or press Return.
+      """,
+      required: true
+      %>
 
-  <%= submit "Save" %>
+</div>
+<%= big_submit_button "Create" %>
 <% end %>
-
-<%= end_centered_form() %>
+</div>
+<%= end_centered_form__2() %>
