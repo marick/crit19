@@ -35,7 +35,7 @@ defmodule CritWeb.Usables.AnimalController do
   def bulk_create_form(conn, _params,
     changeset \\ AnimalApi.bulk_animal_creation_changeset()
   ) do 
-    render(conn, "bulk_creation.html",
+    render(conn, "bulk_creation__2.html",
       changeset: changeset,
       path: path(:bulk_create),
       options: AnimalApi.available_species(institution(conn)))

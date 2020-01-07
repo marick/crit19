@@ -138,6 +138,17 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
+  def labeled_textarea_with_advice(f, label, field, advice, input_opts \\ []) do
+    ~E"""
+      <div class="field">
+          <%= label f, field, label %>
+          <%= advice %>
+          <%= textarea f, field, input_opts %>
+          <%= error_tag f, field %>
+      </div>
+    """
+  end
+
   def labeled_icon_field(f, label, field, icon, input_opts \\ []) do
     ~E"""
       <%= label f, field, label %>

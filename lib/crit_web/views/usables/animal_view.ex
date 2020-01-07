@@ -65,4 +65,36 @@ defmodule CritWeb.Usables.AnimalView do
     end
   end
 
+  def calendar_with_alternative(f, large_label, field, kvs) do
+    opts = Enum.into(kvs, %{advice: ""})
+    text_field_string = to_string(field)
+    radio_string = text_field_string <> "_radio"
+    ~E"""
+    <div class="field">
+      <%= label f, field, large_label %>
+      <%= opts.advice %>
+    </div>
+    
+    <div class="inline fields">
+      <div class="field">
+        <div class="ui calendar" id="<%=text_field_string%>">
+          <div class="ui input left icon">
+            <i class="calendar icon"></i>
+            <%= text_input f, field,
+                   readonly: true,
+                   value: "",
+                   placeholder: "Click for a calendar"%>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="ui radio checkbox">
+          <input type="radio" name="<%= radio_string%>" checked="checked">
+          <label><%=opts.alternative%></label>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
 end

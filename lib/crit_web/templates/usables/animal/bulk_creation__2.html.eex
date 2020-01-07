@@ -1,0 +1,55 @@
+<!-- Purpose: <%= Purpose.form_for_creating_new_animal %> -->
+
+
+<script language="javascript">
+  $(document)
+    .ready(function() { 
+        $('#species_select').dropdown();
+        $('#in_service_datestring').calendar({type: "date"});
+    });
+</script>
+
+<div class="ui main center aligned text container">
+
+  <h1 class="ui center aligned header">Create Animals</h1>
+
+<%= start_centered_form__2() %>
+
+<%= success_flash_above(@conn) %>
+<%= note_changeset_errors @changeset %>
+
+<%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
+
+<div class="ui segment">
+  <div class="fields">
+    <div class="field">
+      <%= label f, :species_id, "Species" %>
+      
+      <%= select f, :species_id, @options, class: "ui fluid dropdown", id: "species_select"%>
+    </div>
+  </div>
+
+  <%= calendar_with_alternative f, "Date put into service", :in_service_datestring,
+      alternative: "Today",
+      advice: "The animal can be reserved on the morning of the selected date."
+      %>
+
+  <%= calendar_with_alternative f, "Date removed from service", :out_of_service_datestring,
+      alternative: "Never",
+      advice: "The animal can no longer be reserved starting at the selected date."
+      %>
+
+  <%= labeled_textarea_with_advice f, "Animal names", :names,
+      """
+      Separate animal names with a comma.  
+      """,
+      required: true,
+      rows: 2
+      %>
+
+  
+</div>
+<%= big_submit_button "Create" %>
+<% end %>
+</div>
+<%= end_centered_form__2() %>
