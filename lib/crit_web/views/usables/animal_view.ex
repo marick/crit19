@@ -65,46 +65,55 @@ defmodule CritWeb.Usables.AnimalView do
     end
   end
 
-  def bulk_creation_calendar(f, large_label, field, kvs) do
-    opts = Enum.into(kvs, %{advice: ""})
-    text_field_string = to_string(field)
-    radio_string = text_field_string <> "_radio"
+  def bulk_creation_calendar(f, large_label, target, opts) do
+
+    advice = Keyword.get(opts, :advice, "")
+    radio_label = Keyword.fetch!(opts, :alternative)
+    radio_value = String.downcase(radio_label)
+
+    calendar = to_string(target) <> "_calendar"
+    date = to_string(target) <> "_date"
+    radio = to_string(target) <> "_radio"
+    
     ~E"""
     <div data-controller="bulk-creation-calendar"
-         data-bulk-creation-calendar-calendar-id="#<%=text_field_string%>">
+         data-bulk-creation-calendar-calendar-id="#<%=calendar%>"
+         data-bulk-creation-calendar-radio-value="<%=radio_value%>"
+         >
 
-    <div class="field">
-      <%= label f, field, large_label %>
-      <%= opts.advice %>
-    </div>
-    
-    <div class="inline fields">
       <div class="field">
-        <div class="ui calendar" id="<%=text_field_string%>">
-          <div class="ui input left icon">
-            <i class="calendar icon"></i>
-            <%= text_input f, field,
-                   readonly: true,
-                   value: "",
-                   placeholder: "Click for a calendar",
-                   data_action: "click->bulk-creation-calendar#reveal",
-                   data_target: "bulk-creation-calendar.date"
-                   %>
+        <%= label f, target, large_label %>
+        <%= advice %>
+      </div>
+      
+      <%= hidden_input f, target,
+            data_target: "bulk-creation-calendar.hidden" %>
+    
+      <div class="inline fields">
+        <div class="field">
+          <div class="ui calendar" id="<%=calendar%>">
+            <div class="ui input left icon">
+              <i class="calendar icon"></i>
+              <input type="text" name="<%=date%>" id="<%=date%>"
+                     readonly="true"
+                     value=""
+                     placeholder="Click for a calendar"
+                     data-target="bulk-creation-calendar.date"/>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui radio checkbox">
+            <input type="radio" name="<%=radio%>" id="<%=radio%>"
+                   checked="checked"
+                   data-action="click->bulk-creation-calendar#propagate_from_radio_button",
+                   data-target="bulk-creation-calendar.radio">
+            <label for="<%=radio%>"><%=radio_label%></label>
           </div>
         </div>
       </div>
-      <div class="field">
-        <div class="ui radio checkbox">
-          <input type="radio" name="<%= radio_string%>"
-                 checked="checked"
-                 data-action="click->bulk-creation-calendar#pick_default",
-                 data-target="bulk-creation-calendar.radio">
-          <label><%=opts.alternative%></label>
-        </div>
-      </div>
-    </div>
+      <%= error_tag f, target %>
     </div>
     """
   end
-
 end
