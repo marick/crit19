@@ -65,11 +65,14 @@ defmodule CritWeb.Usables.AnimalView do
     end
   end
 
-  def calendar_with_alternative(f, large_label, field, kvs) do
+  def bulk_creation_calendar(f, large_label, field, kvs) do
     opts = Enum.into(kvs, %{advice: ""})
     text_field_string = to_string(field)
     radio_string = text_field_string <> "_radio"
     ~E"""
+    <div data-controller="bulk-creation-calendar"
+         data-bulk-creation-calendar-calendar-id="#<%=text_field_string%>">
+
     <div class="field">
       <%= label f, field, large_label %>
       <%= opts.advice %>
@@ -83,16 +86,23 @@ defmodule CritWeb.Usables.AnimalView do
             <%= text_input f, field,
                    readonly: true,
                    value: "",
-                   placeholder: "Click for a calendar"%>
+                   placeholder: "Click for a calendar",
+                   data_action: "click->bulk-creation-calendar#reveal",
+                   data_target: "bulk-creation-calendar.date"
+                   %>
           </div>
         </div>
       </div>
       <div class="field">
         <div class="ui radio checkbox">
-          <input type="radio" name="<%= radio_string%>" checked="checked">
+          <input type="radio" name="<%= radio_string%>"
+                 checked="checked"
+                 data-action="click->bulk-creation-calendar#pick_default",
+                 data-target="bulk-creation-calendar.radio">
           <label><%=opts.alternative%></label>
         </div>
       </div>
+    </div>
     </div>
     """
   end

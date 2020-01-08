@@ -5,7 +5,6 @@
   $(document)
     .ready(function() { 
         $('#species_select').dropdown();
-        $('#in_service_datestring').calendar({type: "date"});
     });
 </script>
 
@@ -29,14 +28,14 @@
     </div>
   </div>
 
-  <%= calendar_with_alternative f, "Date put into service", :in_service_datestring,
+  <%= bulk_creation_calendar f, "Date put into service", :in_service_datestring,
       alternative: "Today",
       advice: "The animal can be reserved on the morning of the selected date."
       %>
 
-  <%= calendar_with_alternative f, "Date removed from service", :out_of_service_datestring,
+  <%= bulk_creation_calendar f, "Date removed from service", :out_of_service_datestring,
       alternative: "Never",
-      advice: "The animal can no longer be reserved starting at the selected date."
+      advice: "The animal can no longer be reserved starting on the selected date."
       %>
 
   <%= labeled_textarea_with_advice f, "Animal names", :names,
