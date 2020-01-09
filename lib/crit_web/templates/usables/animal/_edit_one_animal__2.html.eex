@@ -35,10 +35,10 @@
     <%= labeled_field(f, "Name", :name) %>
   </div>
 
-  <%= bulk_creation_calendar f, "In service", :in_service_datestring,
+  <%= calendar_with_alternatives f, "In service", :in_service_datestring,
       alternative: "Today",
       unique: unique_snippet(@changeset) %>
-  <%= bulk_creation_calendar f, "Out of service beginning", :out_of_service_datestring,
+  <%= calendar_with_alternatives f, "Out of service beginning", :out_of_service_datestring,
       alternative: "Never",
       unique: unique_snippet(@changeset) %>
   

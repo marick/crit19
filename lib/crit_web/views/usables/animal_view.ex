@@ -9,13 +9,6 @@ defmodule CritWeb.Usables.AnimalView do
     "animal_#{animal.id}"
   end
 
-  def animal_calendar_id(%Changeset{} = changeset, field),
-    do: animal_calendar_id(changeset.data, field)
-
-  def animal_calendar_id(animal, field),
-    do: "calendar_for_animal_#{animal.id}_#{to_string field}"
-
-
   def unique_snippet(%Changeset{} = changeset), do: unique_snippet(changeset.data)
   def unique_snippet(%{id: id}), do: "_#{id}"
 
@@ -25,7 +18,7 @@ defmodule CritWeb.Usables.AnimalView do
     end
   end
 
-  def bulk_creation_calendar(f, large_label, target, opts) do
+  def calendar_with_alternatives(f, large_label, target, opts) do
     advice = Keyword.get(opts, :advice, "")
     radio_label = Keyword.fetch!(opts, :alternative)
     radio_value = String.downcase(radio_label)
@@ -40,9 +33,9 @@ defmodule CritWeb.Usables.AnimalView do
     radio = to_string(target) <> "_radio" <> unique
     
     ~E"""
-    <div data-controller="bulk-creation-calendar"
-         data-bulk-creation-calendar-calendar-id="#<%=calendar%>"
-         data-bulk-creation-calendar-radio-value="<%=radio_value%>"
+    <div data-controller="calendar-with-alternatives"
+         data-calendar-with-alternatives-jquery-arg="#<%=calendar%>"
+         data-calendar-with-alternatives-radio-value="<%=radio_value%>"
          >
 
       <div class="field">
@@ -51,7 +44,7 @@ defmodule CritWeb.Usables.AnimalView do
       </div>
       
       <%= hidden_input f, target,
-            data_target: "bulk-creation-calendar.hidden" %>
+            data_target: "calendar-with-alternatives.hidden" %>
     
       <div class="inline fields">
         <div class="field">
@@ -62,7 +55,7 @@ defmodule CritWeb.Usables.AnimalView do
                      readonly="true"
                      value=""
                      placeholder="Click for a calendar"
-                     data-target="bulk-creation-calendar.date"/>
+                     data-target="calendar-with-alternatives.date"/>
             </div>
           </div>
         </div>
@@ -70,8 +63,8 @@ defmodule CritWeb.Usables.AnimalView do
           <div class="ui radio checkbox">
             <input type="radio" name="<%=radio%>" id="<%=radio%>"
                    checked="checked"
-                   data-action="click->bulk-creation-calendar#propagate_from_radio_button"
-                   data-target="bulk-creation-calendar.radio"/>
+                   data-action="click->calendar-with-alternatives#propagate_from_radio_button"
+                   data-target="calendar-with-alternatives.radio"/>
             <label for="<%=radio%>"><%=radio_label%></label>
           </div>
         </div>

@@ -6,13 +6,13 @@ defmodule CritWeb.Usables.AnimalViewTest do
   alias Crit.Usables.Schemas.BulkAnimal
 
   # Since JavaScript does much of the work, this isn't much of a test.
-  test "bulk_creation_calendar" do
+  test "calendar_with_alternatives" do
     path = "--some--path--"
     label = "--some--longish-label-for-the-whole-collection--"
     advice = "--some--advice--"
     
     calendar = form_for(BulkAnimal.changeset(%BulkAnimal{}, %{}), path, (fn f ->
-      bulk_creation_calendar(f, label, :in_service_gap,
+      calendar_with_alternatives(f, label, :in_service_gap,
           advice: advice,
           alternative: "Today")
         end)) |> safe_to_string
@@ -23,7 +23,7 @@ defmodule CritWeb.Usables.AnimalViewTest do
     assert calendar =~ advice
 
     # Certain values provided to Stimulus
-    assert calendar =~ ~S|calendar-id="#in_service_gap_calendar"|
+    assert calendar =~ ~S|jquery-arg="#in_service_gap_calendar"|
     # Note that it's downcased from the `alternate` text, which is used as a
     # `<label>`. What we see below is a value for the controller to stuff
     # into the all-important `hidden` field.

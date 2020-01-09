@@ -7,11 +7,11 @@ export default class extends Controller {
 
     connect() {
         console.log("connected");
-        this.calendar_id = this.data.get("calendar-id");
+        this.jquery_arg = this.data.get("jquery-arg");
         this.radio_value = this.data.get("radio-value");
 
         this.calendar =
-            jQuery(this.calendar_id).calendar(
+            jQuery(this.jquery_arg).calendar(
                 {type: 'date',
                  formatInput: false,
                  onChange: () => { this.propagate_from_calendar() }
@@ -45,7 +45,7 @@ export default class extends Controller {
     }
 
     date_chosen() {
-        const date = jQuery(this.calendar_id).calendar('get date');
+        const date = jQuery(this.jquery_arg).calendar('get date');
         return formatISO(date, {representation: 'date'});
     }
 }
