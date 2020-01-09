@@ -5,54 +5,74 @@ defmodule CritWeb.Usables.AnimalViewTest do
   import CritWeb.Usables.AnimalView
   alias Crit.Usables.Schemas.BulkAnimal
 
-  test "full example" do
+  # Since JavaScript does much of the work, this isn't much of a test.
+  test "bulk_creation_calendar" do
     path = "--some--path--"
-    tag = :"--some--tag--"
-    label_text = "--some--label--"
+    label = "--some--longish-label-for-the-whole-collection--"
     advice = "--some--advice--"
-    controller = "--some-controller--"
     
     calendar = form_for(BulkAnimal.changeset(%BulkAnimal{}, %{}), path, (fn f ->
-      big_calendar_widget f,
-      tag: tag,
-      label: label_text,
-      advice: advice,
-      controller: controller
-    end)) |> safe_to_string
+      bulk_creation_calendar(f, label, :in_service_gap,
+          advice: advice,
+          alternative: "Today")
+        end)) |> safe_to_string
+
+
+    # Boilerplate text
+    assert calendar =~ label
+    assert calendar =~ advice
+
+    # Certain values provided to Stimulus
+    assert calendar =~ ~S|calendar-id="#in_service_gap_calendar"|
+    # Note that it's downcased from the `alternate` text, which is used as a
+    # `<label>`. What we see below is a value for the controller to stuff
+    # into the all-important `hidden` field.
+    assert calendar =~ ~S|radio-value="today"|
+
+    assert calendar =~ ~S|<label for="in_service_gap_radio">Today</label>|
 
     
-    # It's a form
-    assert calendar =~ ~r|action="#{path}"|
 
-    # Positioning of helpful text
-    assert calendar =~ ~r|<label .*? for="bulk_animal_#{tag}" .*? > [[:space:]]*
-                             #{label_text} [[:space:]]*
-                          </label>  [[:space:]]*
-                          #{advice}
-                          |sx
 
-    # The text input                          
-    assert calendar =~ ~r|<input [[:space:]]
-                              class="input"  .*?
-                              id="bulk_animal_#{tag} .*?
-                          >
-                         |sx
+    # I'm leaving behind detailed regexes for old versions, should I ever
+    # be made enough to want to use such. (I did this because I wanted to
+    # see how it would look with space-ignoring regexes.)
+    #
+    # Note that this:
+    #        calendar |> :binary.bin_to_list |> :xmerl_scan.string
+    # ... doesn't work because `form_for` generates two `input` fields that
+    # aren't properly closed, as far as XML is concerned. 
+    
+    
+    # # Positioning of helpful text
+    # assert calendar =~ ~r|<label .*? for="bulk_animal_#{tag}" .*? > [[:space:]]*
+    #                          #{label_text} [[:space:]]*
+    #                       </label>  [[:space:]]*
+    #                       #{advice}
+    #                       |sx
 
-    # Where the controllers go
-    assert calendar =~ ~r|<div                                          [[:space:]]
-                               data-controller="calendar"              .*?>.*?
-                            <div                                        [[:space:]]
-                                 class="field"                          [[:space:]]+
-                                 data-target="calendar.wrapper"        .*?>.*?
-                              <input                                   .*?
-                                  data-action="click.*?#calendar.reveal .*?
-                                  data-target="calendar.inp ut"        .*?>.*?
-                            </div>                                      [[:space:]]*
-                            <div                                        [[:space:]]
-                                 data-target="calendar.div"             [[:space:]]
-                                 display="none"                         >[[:space:]]
-                                 # This is where the calendar goes.
-                            </div>
-                         |sx
+    # # The text input                          
+    # assert calendar =~ ~r|<input [[:space:]]
+    #                           class="input"  .*?
+    #                           id="bulk_animal_#{tag} .*?
+    #                       >
+    #                      |sx
+
+    # # Where the controllers go
+    # assert calendar =~ ~r|<div                                          [[:space:]]
+    #                            data-controller="calendar"              .*?>.*?
+    #                         <div                                        [[:space:]]
+    #                              class="field"                          [[:space:]]+
+    #                              data-target="calendar.wrapper"        .*?>.*?
+    #                           <input                                   .*?
+    #                               data-action="click.*?#calendar.reveal .*?
+    #                               data-target="calendar.inp ut"        .*?>.*?
+    #                         </div>                                      [[:space:]]*
+    #                         <div                                        [[:space:]]
+    #                              data-target="calendar.div"             [[:space:]]
+    #                              display="none"                         >[[:space:]]
+    #                              # This is where the calendar goes.
+    #                         </div>
+    #                      |sx
   end
 end
