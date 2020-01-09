@@ -15,6 +15,10 @@ defmodule CritWeb.Usables.AnimalView do
   def animal_calendar_id(animal, field),
     do: "calendar_for_animal_#{animal.id}_#{to_string field}"
 
+
+  def unique_snippet(%Changeset{} = changeset), do: unique_snippet(changeset.data)
+  def unique_snippet(%{id: id}), do: "_#{id}"
+
   def delete_if_exists(f) do
     if Form.input_value(f, :id) do
       labeled_checkbox f, "Delete", :delete
@@ -22,17 +26,18 @@ defmodule CritWeb.Usables.AnimalView do
   end
 
   def bulk_creation_calendar(f, large_label, target, opts) do
-    advice = Keyword.fetch!(opts, :advice)
+    advice = Keyword.get(opts, :advice, "")
     radio_label = Keyword.fetch!(opts, :alternative)
     radio_value = String.downcase(radio_label)
+    unique=Keyword.get(opts, :unique, "")
 
     # Used with JQuery to control the calendar.
-    calendar = to_string(target) <> "_calendar"
+    calendar = to_string(target) <> "_calendar_" <> unique
 
     # id and name of the text field that shows the date.
-    date = to_string(target) <> "_date"
+    date = to_string(target) <> "_date" <> unique
     # id and name of the radio button
-    radio = to_string(target) <> "_radio"
+    radio = to_string(target) <> "_radio" <> unique
     
     ~E"""
     <div data-controller="bulk-creation-calendar"

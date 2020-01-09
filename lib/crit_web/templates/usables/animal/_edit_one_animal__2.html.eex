@@ -30,15 +30,17 @@
 
   <%= error_tag f, :optimistic_lock_error %>
   <%= hidden_input(f, :lock_version) %>
-  
+
   <div class="fields">
     <%= labeled_field(f, "Name", :name) %>
-    
-    <%= small_calendar__2(f, "In service: ", :in_service_datestring,
-        id: animal_calendar_id(@changeset, :in_service_datestring)) %>
-    <%= small_calendar__2(f, "Out of service beginning: ", :out_of_service_datestring,
-        id: animal_calendar_id(@changeset, :out_of_service_datestring)) %>  
   </div>
+
+  <%= bulk_creation_calendar f, "In service", :in_service_datestring,
+      alternative: "Today",
+      unique: unique_snippet(@changeset) %>
+  <%= bulk_creation_calendar f, "Out of service beginning", :out_of_service_datestring,
+      alternative: "Never",
+      unique: unique_snippet(@changeset) %>
   
   <%= inputs_for f, :service_gaps, [prepend: [%ServiceGap{}]], fn gap_f -> %>
   <%= if Form.input_value(gap_f, :id) == nil do %>
