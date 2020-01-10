@@ -12,7 +12,10 @@ defmodule Crit.Usables.Schemas.BulkAnimal do
     field :species_id, :integer
     field :in_service_datestring, :string
     field :out_of_service_datestring, :string
+    # The institition is needed to determine the timezone to see
+    # way day "today" is.
     field :institution, :string
+
 
     # computed fields
     field :span, Datespan
