@@ -10,16 +10,16 @@
 <%= form_for @changeset, @action, [class: "ui large form"], fn f -> %>
 <div class="ui segment">
 
-  <%= labeled_field f, "Name", :display_name,
+  <%= labeled_text_field f, "Name", :display_name,
         placeholder: "Like \"Dr. Dawn Marick\" (without quotes)",
         required: true %>
 
-  <%= labeled_field f, "Email", :email, 
+  <%= labeled_text_field f, "Email", :email, 
         type: "email",
         placeholder: "This address will receive email about setting a password",
         required: true %>
 
-  <%= labeled_field f, "Login Id", :auth_id,
+  <%= labeled_text_field f, "Login Id", :auth_id,
         placeholder: "May be the same as the email address",
         required: true %>
 

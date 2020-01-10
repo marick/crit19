@@ -32,7 +32,7 @@
   <%= hidden_input(f, :lock_version) %>
 
   <div class="fields">
-    <%= labeled_field(f, "Name", :name) %>
+    <%= labeled_text_field(f, "Name", :name) %>
   </div>
 
   <%= calendar_with_alternatives f, "In service", :in_service_datestring,
@@ -55,7 +55,7 @@
           unique: unique_snippet(@changeset, gap_f)) %>
       <%= small_calendar(gap_f, "Back on:", :out_of_service_datestring,
           unique: unique_snippet(@changeset, gap_f)) %>
-      <%= labeled_field(gap_f, "Because: ", :reason) %>
+      <%= labeled_text_field(gap_f, "Because: ", :reason) %>
       <%= delete_if_exists gap_f %>
     </div>
 
