@@ -46,6 +46,7 @@ defmodule CritWeb do
       import CritWeb.Gettext
       alias CritWeb.Router.Helpers, as: Routes
       alias CritWeb.Templates.Purpose
+      import CritWeb.View.Support.Id
       import CritWeb.Fomantic.Elements
       import CritWeb.Plugs.Accessors
     end
