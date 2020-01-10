@@ -5,22 +5,13 @@ export default class extends Controller {
     connect() {
     }
 
-    animal_calendar_id(id, field) {
-        return "#calendar_for_animal_" + id + "_" + field
-    }
-
-
     form() {
         var path = this.data.get("form-path");
-        var form_id = this.data.get("form-id");
-        var id = this.data.get("id");
 
         fetch(path)
             .then(response => response.text())
             .then(html => {
                 this.element.innerHTML = html
-                var in_service_id = this.animal_calendar_id(id, "in_service_datestring");
-                jQuery(in_service_id).calendar({type: 'date'});
             })
     }
 
