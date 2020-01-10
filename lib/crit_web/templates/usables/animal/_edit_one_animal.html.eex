@@ -4,7 +4,7 @@
 <%= form_for @changeset, "/not-used",
     [class: "ui fluid form",
      id: animal_form_id(@changeset.data),
-     data_action: "single-animal#update"], fn f -> %>
+     data_action: "single-animal-edit#update"], fn f -> %>
 
 
 <div class="ui blue segment">
@@ -12,7 +12,7 @@
   <div class="ui center aligned grid">
     <div class="middle aligned row">
       <div class="two wide column">
-        <button class="ui negative button" data-action="single-animal#cancel">
+        <button class="ui negative button" data-action="single-animal-edit#cancel">
           Cancel
         </button>
     </div>

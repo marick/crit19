@@ -9,7 +9,7 @@
   </td>
   
   <td>
-    <button class="ui button" data-action="single-animal#form">
+    <button class="ui button" data-action="single-animal-edit#form">
       Edit
     </button>
   </td>
