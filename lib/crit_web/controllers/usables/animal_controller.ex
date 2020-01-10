@@ -35,7 +35,7 @@ defmodule CritWeb.Usables.AnimalController do
   def bulk_create_form(conn, _params,
     changeset \\ AnimalApi.bulk_animal_creation_changeset()
   ) do 
-    render(conn, "bulk_creation__2.html",
+    render(conn, "bulk_creation.html",
       changeset: changeset,
       path: path(:bulk_create),
       options: AnimalApi.available_species(institution(conn)))
@@ -68,7 +68,7 @@ defmodule CritWeb.Usables.AnimalController do
     animal = AnimalApi.updatable!(id, institution(conn))
     
     Common.render_for_replacement(conn,
-      "_edit_one_animal__2.html",
+      "_edit_one_animal.html",
       changeset: AnimalApi.form_changeset(animal))
   end
 
@@ -76,7 +76,7 @@ defmodule CritWeb.Usables.AnimalController do
     animal = AnimalApi.updatable!(id, institution(conn))
 
     Common.render_for_replacement(conn,
-      "_show_one_animal__2.html",
+      "_show_one_animal.html",
       animal: animal)
   end
   
@@ -90,11 +90,11 @@ defmodule CritWeb.Usables.AnimalController do
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
         Common.render_for_replacement(conn,
-          "_show_one_animal__2.html",
+          "_show_one_animal.html",
           animal: animal)
       {:error, changeset} ->
         Common.render_for_replacement(conn,
-          "_edit_one_animal__2.html",
+          "_edit_one_animal.html",
           changeset: changeset)
     end
   end

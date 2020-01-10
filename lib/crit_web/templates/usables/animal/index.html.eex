@@ -19,7 +19,7 @@
               data-single-animal-cancel-path="<%=AnimalController.path(:_show, animal)%>"
               data-single-animal-update-path="<%=AnimalController.path(:update, animal)%>">
       
-            <%= render "_show_one_animal__2.html",
+            <%= render "_show_one_animal.html",
                 Map.put(assigns, :animal, animal) %>
          </tr>
       <% end %>

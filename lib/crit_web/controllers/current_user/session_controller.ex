@@ -61,7 +61,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   defp render_login(conn, params, {options, selected}) do
     conn
     |> put_layout("blank.html")
-    |> render("login_form__2.html",
+    |> render("login_form.html",
          auth_id: params["auth_id"],
          path: path(:try_login),
          options: options,

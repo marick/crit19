@@ -12,7 +12,7 @@
 
   <h1 class="ui center aligned header">Create Animals</h1>
 
-<%= start_centered_form__2() %>
+<%= start_centered_form() %>
 
 <%= success_flash_above(@conn) %>
 <%= note_changeset_errors @changeset %>
@@ -51,4 +51,4 @@
 <%= big_submit_button "Create" %>
 <% end %>
 </div>
-<%= end_centered_form__2() %>
+<%= end_centered_form() %>

@@ -44,14 +44,14 @@ defmodule CritWeb.Fomantic.Elements do
   end
 
 
-  def start_centered_form__2 do
+  def start_centered_form do
     ~E"""
     <div class="ui middle aligned center aligned grid">
       <div class="left aligned column">
     """
   end
 
-  def end_centered_form__2 do
+  def end_centered_form do
     ~E"""
     </div>
     </div>
@@ -96,17 +96,7 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
-  def small_calendar(f, label, field, input_opts \\ []) do
-    ~E"""
-      <div class="field">
-          <%= label f, field, label %>
-          <%= text_input f, field, input_opts %>
-          <%= error_tag f, field %>
-      </div>
-    """
-  end
-
-  def small_calendar__2(f, label, target, opts) do
+  def small_calendar(f, label, target, opts) do
     unique_in_this_form = Keyword.fetch!(opts, :unique)
     # Used with JQuery to control the calendar.
     calendar = unique_ref(target, "calendar", unique_in_this_form)

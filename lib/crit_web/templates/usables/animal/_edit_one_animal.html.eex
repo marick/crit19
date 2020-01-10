@@ -51,9 +51,9 @@
   
   <div>
     <div class="fields">
-      <%= small_calendar__2(gap_f, "Unavailable starting:", :in_service_datestring,
-          unique: unique_snippet(@changeset, gap_f)) |> IO.inspect%>
-      <%= small_calendar__2(gap_f, "Back on:", :out_of_service_datestring,
+      <%= small_calendar(gap_f, "Unavailable starting:", :in_service_datestring,
+          unique: unique_snippet(@changeset, gap_f)) %>
+      <%= small_calendar(gap_f, "Back on:", :out_of_service_datestring,
           unique: unique_snippet(@changeset, gap_f)) %>
       <%= labeled_field(gap_f, "Because: ", :reason) %>
       <%= delete_if_exists gap_f %>

@@ -1,32 +1,41 @@
+
+
+<%= login_form_style() %>
 <%= start_centered_form() %>
 
-<%= form_for @changeset, @action, [class: "box"], fn f -> %>
-  <%= note_existence_of_any_form_errors @changeset %>
+<div class="ui main container">
+  <h1 class="ui center aligned header">Create a User</h1>
+<%= success_flash_above(@conn) %>
+<%= note_changeset_errors(@changeset) %>
+<%= form_for @changeset, @action, [class: "ui large form"], fn f -> %>
+<div class="ui segment">
 
-  <%= labeled_text_field f, :display_name, "Name",
+  <%= labeled_field f, "Name", :display_name,
         placeholder: "Like \"Dr. Dawn Marick\" (without quotes)",
         required: true %>
 
-  <%= labeled_text_field f, :email, "Email",
+  <%= labeled_field f, "Email", :email, 
         type: "email",
         placeholder: "This address will receive email about setting a password",
         required: true %>
 
-  <%= labeled_text_field f, :auth_id, "Login Id",
+  <%= labeled_field f, "Login Id", :auth_id,
         placeholder: "May be the same as the email address",
         required: true %>
 
-  <div class="field">
   <%= inputs_for f, :permission_list, fn p -> %>
-    <%= compact_checkbox p, :view_reservations %>
-    <%= compact_checkbox p, :make_reservations %>
-    <%= compact_checkbox p, :manage_animals %>
-    <%= compact_checkbox p, :manage_and_create_users %> 
+    <%= self_labeled_checkbox p, :view_reservations %>
+    <%= self_labeled_checkbox p, :make_reservations %>
+    <%= self_labeled_checkbox p, :manage_animals %>
+    <%= self_labeled_checkbox p, :manage_and_create_users %> 
   <% end %>
-  </div>
+  
+</div>
 
-  <%= form_button "Create the account and send email" %>
+<%= big_submit_button "Create the account and send email" %>
+
 
 <% end %>
-
+</div>
 <%= end_centered_form() %>
+
