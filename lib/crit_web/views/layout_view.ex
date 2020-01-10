@@ -49,7 +49,7 @@ defmodule CritWeb.LayoutView do
       <header>
         <div class="ui fixed inverted menu">
           <div class="ui container">
-            <a href="#" class="header item">
+            <a href="/" class="header item">
               Critter4Us
             </a>
             <div class="right menu">
