@@ -57,7 +57,8 @@ equine_id = Constants.equine_id
 {:ok, [hank]} = AnimalApi.create_animals(%{"names" => "Hank",
                                     "species_id" => equine_id,
                                     "in_service_datestring" => "today",
-                                    "out_of_service_datestring" => "never"
+                                    "out_of_service_datestring" => "never",
+                                    "institution" => institution
                                     }, institution)
 Sql.insert!(%ServiceGap{
       animal_id: hank.id,
