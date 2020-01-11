@@ -7,7 +7,7 @@ export default class extends Controller {
 
     connect() {
         this.jquery_arg = this.data.get("jquery-arg");
-        console.log("connected " + this.jquery_arg);
+        // console.log("connected " + this.jquery_arg); 
 
         this.calendar =
             jQuery(this.jquery_arg).calendar(
@@ -16,23 +16,23 @@ export default class extends Controller {
                  onChange: () => { this.propagate_from_calendar() }
                 });
 
-        console.log("preparing to propagate from hidden");
+        // console.log("preparing to propagate from hidden");
         this.propagate_from_hidden();
     }
 
     propagate_from_calendar() {
         this.hiddenTarget.value = this.date_chosen();
-        console.log(this.hiddenTarget);
-        console.log(this.hiddenTarget.value);
+        // console.log(this.hiddenTarget);
+        // console.log(this.hiddenTarget.value);
     }
 
     propagate_from_hidden() { 
-        console.log("hidden value starts as '" + this.hiddenTarget.value + "'");
+        // console.log("hidden value starts as '" + this.hiddenTarget.value + "'");
         var hidden = this.hiddenTarget.value;
         if (hidden != "") {
             const date = parseISO(hidden);
             this.calendar.calendar('set date', date);
-            console.log("date chosen is now " + this.date_chosen());
+            // console.log("date chosen is now " + this.date_chosen());
         }
     }
 
