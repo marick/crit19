@@ -35,14 +35,29 @@
     <%= labeled_text_field(f, "Name", :name) %>
   </div>
 
-  <%= calendar_with_alternatives f, "In service", :in_service_datestring,
-      alternative: "Today",
-      unique: unique_snippet(@changeset) %>
-  <%= calendar_with_alternatives f, "Out of service beginning", :out_of_service_datestring,
-      alternative: "Never",
-      unique: unique_snippet(@changeset) %>
+  <div class="ui accordion" id="accordion">
+       
+    <div class="title">
+      <i class="dropdown icon"></i>
+      Dates the animal is in service
+    </div>
+    <div class="content">
+      <%= calendar_with_alternatives f, "In service", :in_service_datestring,
+          alternative: "Today",
+          unique: unique_snippet(@changeset) %>
+      <%= calendar_with_alternatives f, "Out of service beginning", :out_of_service_datestring,
+          alternative: "Never",
+          unique: unique_snippet(@changeset) %>
+    </div>
 
-  <%= nested_service_gap_forms(f, @changeset) %>
+    <div class="title">
+      <i class="dropdown icon"></i>
+      Gaps in the animal's availability
+    </div>
+    <div class="content">
+      <%= nested_service_gap_forms(f, @changeset) %>
+    </div>
+  </div>
 </div>
 
 <% end %>

@@ -18,4 +18,9 @@ defmodule CritWeb.View.Support.Id do
       []
     end
   end
+
+  def accordion_div_id(%Changeset{} = changeset),
+    do: accordion_div_id(changeset.data)
+  def accordion_div_id(id_holder), 
+    do: "accordion" <> unique_snippet(id_holder) |> IO.inspect
 end
