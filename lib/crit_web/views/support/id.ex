@@ -14,7 +14,8 @@ defmodule CritWeb.View.Support.Id do
   def delete_if_exists(f) do
     if Form.input_value(f, :id) do
       labeled_checkbox f, "Delete", :delete
+    else
+      []
     end
   end
-
 end

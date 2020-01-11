@@ -41,34 +41,8 @@
   <%= calendar_with_alternatives f, "Out of service beginning", :out_of_service_datestring,
       alternative: "Never",
       unique: unique_snippet(@changeset) %>
-  
-  <%= inputs_for f, :service_gaps, [prepend: [%ServiceGap{}]], fn gap_f -> %>
-  <%= if Form.input_value(gap_f, :id) == nil do %>
-    <h4 class="ui center aligned header">
-      Add a gap during which the animal cannot be reserved
-    </h4>
-  <% end %>
-  
-  <div>
-    <div class="fields">
-      <%= small_calendar(gap_f, "Unavailable starting:", :in_service_datestring,
-          unique: unique_snippet(@changeset, gap_f)) %>
-      <%= small_calendar(gap_f, "Back on:", :out_of_service_datestring,
-          unique: unique_snippet(@changeset, gap_f)) %>
-      <%= labeled_text_field(gap_f, "Because: ", :reason) %>
-      <%= delete_if_exists gap_f %>
-    </div>
 
-
-  </div>
-
-  <%= if Form.input_value(gap_f, :id) == nil do %>
-    <h4 class="ui center aligned header">
-      Edit or delete earlier gaps
-    </h4>
-  <% end %>
-  
-  <% end %>
+  <%= nested_service_gap_forms(f, @changeset) %>
 </div>
 
 <% end %>
