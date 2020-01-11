@@ -35,7 +35,7 @@
     <%= labeled_text_field(f, "Name", :name) %>
   </div>
 
-  <div class="ui accordion" id="accordion">
+  <div class="ui accordion" id="<%=accordion_div_id @changeset%>">
        
     <div class="title">
       <i class="dropdown icon"></i>

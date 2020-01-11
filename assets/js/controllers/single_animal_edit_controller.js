@@ -6,13 +6,14 @@ export default class extends Controller {
     }
 
     form() {
-        var path = this.data.get("form-path");
+        const path = this.data.get("form-path");
+        const accordion_id = "#accordion_" + this.data.get("id")
 
         fetch(path)
             .then(response => response.text())
             .then(html => {
                 this.element.innerHTML = html
-                jQuery('#accordion').accordion();
+                jQuery(accordion_id).accordion();
             })
     }
 
