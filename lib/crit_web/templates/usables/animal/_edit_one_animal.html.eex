@@ -12,9 +12,7 @@
   <div class="ui center aligned grid">
     <div class="middle aligned row">
       <div class="two wide column">
-        <button class="ui negative button" data-action="single-animal-edit#cancel">
-          Cancel
-        </button>
+        <%= negative_action_button "Cancel", "single-animal-edit#cancel" %>
     </div>
     <header class="ten wide text column">
     <h3>

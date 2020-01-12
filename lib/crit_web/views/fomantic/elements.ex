@@ -251,4 +251,22 @@ defmodule CritWeb.Fomantic.Elements do
     submit label, class: "ui fluid large teal submit button"
   end
 
+  @doc """
+  This is a button that is *not* a Submit button (that is, it is
+  not selected by Return/Enter, no matter where it is in the form). 
+  It operates by calling a Javascript action
+  """
+
+  # The `type="button"` prevents it from becoming a `submit` button inside
+  # a form.
+  def negative_action_button(content, action) do
+    ~E"""
+      <button class="ui negative button"
+              data-action="<%=action%>"
+              type="button">
+        <%= content %>
+      </button>
+    """
+  end
+
 end
