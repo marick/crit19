@@ -6,7 +6,7 @@ export default class extends Controller {
     static targets = [ "hidden", "date", "radio" ];
 
     connect() {
-        console.log("connected");
+        // console.log("connected");
         this.jquery_arg = this.data.get("jquery-arg");
         this.radio_value = this.data.get("radio-value");
 
@@ -23,17 +23,17 @@ export default class extends Controller {
     propagate_from_radio_button() {
         this.dateTarget.value = "";
         this.hiddenTarget.value = this.radio_value
-        console.log(this.hiddenTarget.value);
+        // console.log(this.hiddenTarget.value);
     }        
 
     propagate_from_calendar() {
         this.radioTarget.checked = false;
         this.hiddenTarget.value = this.date_chosen();
-        console.log(this.hiddenTarget.value);
+        // console.log(this.hiddenTarget.value);
     }
 
     propagate_from_hidden() { 
-        console.log("hidden value starts as " + this.hiddenTarget.value);
+        // console.log("hidden value starts as " + this.hiddenTarget.value);
         var hidden = this.hiddenTarget.value
         if (hidden == this.radio_value) {
             this.propagate_from_radio_button();
