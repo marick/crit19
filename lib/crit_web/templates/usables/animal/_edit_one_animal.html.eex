@@ -23,7 +23,7 @@
   </div>
   </div>
 
-  <%= error_flash_above @conn %>
+  <%= dropdown_error_notification @errors %>
   <hr/>
 
   <%= error_tag f, :optimistic_lock_error %>

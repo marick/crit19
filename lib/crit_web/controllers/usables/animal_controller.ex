@@ -69,7 +69,8 @@ defmodule CritWeb.Usables.AnimalController do
     
     Common.render_for_replacement(conn,
       "_edit_one_animal.html",
-      changeset: AnimalApi.form_changeset(animal))
+      changeset: AnimalApi.form_changeset(animal),
+      errors: false)
       
   end
 
@@ -80,7 +81,8 @@ defmodule CritWeb.Usables.AnimalController do
       "_show_one_animal.html",
       animal: animal)
   end
-  
+
+
   def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
     params =
       raw_params
@@ -95,9 +97,9 @@ defmodule CritWeb.Usables.AnimalController do
           animal: animal)
       {:error, changeset} ->
         conn
-        |> put_flash(:error, "There were errors. (You may need to click the sideways-facing arrows to see them.)")
         |> Common.render_for_replacement("_edit_one_animal.html",
-             changeset: changeset)
+             changeset: changeset,
+             errors: true)
     end
   end
 end

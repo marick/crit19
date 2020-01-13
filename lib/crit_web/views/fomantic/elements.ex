@@ -269,4 +269,19 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
+  def dropdown_error_notification(has_errors) do
+    if has_errors do 
+      ~E"""
+      <div class="ui negative attached message">
+      <span>
+        There were errors.
+        (You may need to click the <i class="caret right icon"></i> arrows to see them.)
+      </span>
+      </div>
+      """
+    else
+      []
+    end
+  end
+
 end
