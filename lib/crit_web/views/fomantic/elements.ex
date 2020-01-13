@@ -104,22 +104,23 @@ defmodule CritWeb.Fomantic.Elements do
     date = unique_ref(target, "date", unique_in_this_form)
     
     ~E"""
-      <div class="ui calendar" id="<%=calendar%>"
-           data-controller="small-calendar"
+      <div data-controller="small-calendar"
            data-small-calendar-jquery-arg="#<%=calendar%>">
-
         <%= hidden_input f, target, data_target: "small-calendar.hidden" %>
-        <div class="field">
-          <%= label f, target, label %>
-          <div class="ui input left icon">
-            <i class="calendar icon"></i>
-            <input type="text" name="<%=date%>" id="<%=date%>"
-                   readonly="true"
-                   required="true"
-                   value=""
-                   placeholder="Click for a calendar"
-                   data-target="small-calendar.date"/>
-            <%= error_tag f, target %>
+        
+        <div class="ui calendar" id="<%=calendar%>">
+          <div class="field">
+            <%= label f, target, label %>
+            <div class="ui input left icon">
+              <i class="calendar icon"></i>
+              <input type="text" name="<%=date%>" id="<%=date%>"
+                     readonly="true"
+                     required="true"
+                     value=""
+                     placeholder="Click for a calendar"
+                     data-target="small-calendar.date"/>
+              <%= error_tag f, target %>
+            </div>
           </div>
         </div>
       </div>
