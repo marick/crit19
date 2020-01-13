@@ -6,9 +6,7 @@
      id: animal_form_id(@changeset.data),
      data_action: "single-animal-edit#update"], fn f -> %>
 
-
 <div class="ui blue segment">
-
   <div class="ui center aligned grid">
     <div class="middle aligned row">
       <div class="two wide column">
@@ -24,6 +22,8 @@
     </div>
   </div>
   </div>
+
+  <%= error_flash_above @conn %>
   <hr/>
 
   <%= error_tag f, :optimistic_lock_error %>
