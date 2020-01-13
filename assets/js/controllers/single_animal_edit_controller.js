@@ -3,17 +3,17 @@ import { Controller } from "stimulus"
 
 export default class extends Controller {
     connect() {
+        this.accordion_id = "#accordion_" + this.data.get("id");
     }
 
     form() {
         const path = this.data.get("form-path");
-        const accordion_id = "#accordion_" + this.data.get("id")
 
         fetch(path)
             .then(response => response.text())
             .then(html => {
                 this.element.innerHTML = html
-                jQuery(accordion_id).accordion();
+                jQuery(this.accordion_id).accordion();
             })
     }
 
@@ -48,7 +48,8 @@ export default class extends Controller {
         var result = fetch(path, data)
             .then(response => response.text())
             .then(html => {
-                this.element.innerHTML = html
+                this.element.innerHTML = html;
+                jQuery(this.accordion_id).accordion("refresh");
             })
     }
 }
