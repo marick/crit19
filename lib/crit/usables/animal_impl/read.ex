@@ -49,20 +49,24 @@ defmodule Crit.Usables.AnimalImpl.Read do
     |> Sql.all(institution)
   end
 
-  def put_updatable_fields(animals) when is_list(animals) do
-    Enum.map(animals, &put_updatable_fields/1)
+  def put_updatable_fields(animals, institution) when is_list(animals) do
+    Enum.map(animals, &(put_updatable_fields &1, institution))
   end
 
-  def put_updatable_fields(animal) do
+  def put_updatable_fields(animal, institution) do
     animal
     |> FromSpan.expand
-    |> specific_expansions
+    |> specific_expansions(institution)
   end
 
-  defp specific_expansions(animal) do
+  defp specific_expansions(animal, institution) do
+    updatable_service_gaps = 
+      Enum.map(animal.service_gaps,
+        &(ServiceGap.put_updatable_fields &1, institution))
     %{ animal |
        species_name: animal.species.name, 
-       service_gaps: Enum.map(animal.service_gaps, &ServiceGap.put_updatable_fields/1)
+       service_gaps: updatable_service_gaps,
+       institution: institution
     }
   end
 end

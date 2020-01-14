@@ -89,10 +89,11 @@ defmodule Crit.Usables.Schemas.ServiceGapTest do
 
     test "... so there's a function for that",
       %{retrieved_gap: retrieved, attrs: attrs} do
-      updatable = ServiceGap.put_updatable_fields(retrieved)
+      updatable = ServiceGap.put_updatable_fields(retrieved, @institution)
 
       assert updatable.in_service_datestring == @iso_date
       assert updatable.out_of_service_datestring == @later_iso_date
+      assert updatable.institution == @institution
 
       # And other fields are still there
       assert updatable.animal_id == attrs.animal_id

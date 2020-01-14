@@ -28,8 +28,11 @@ defmodule Crit.Usables.Schemas.ServiceGap do
     |> mark_deletion
   end
 
-  def put_updatable_fields(%__MODULE__{} = gap),
-    do: FromSpan.expand(gap)
+  def put_updatable_fields(%__MODULE__{} = gap, institution) do
+    gap
+    |> FromSpan.expand
+    |> Map.put(:institution, institution)
+  end
 
 
   defp mark_deletion(changeset) do

@@ -89,11 +89,11 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
       [retained_changeset, _] = ServiceGapT.make_changesets(animal, attrs)
       # No changes for the old service gap (therefore, it will not be UPDATEd)
       assert_valid(retained_changeset)
-      assert retained_changeset.changes == %{institution: @institution}
+      assert retained_changeset.changes == %{}
 
       # See?
       [retained_gap, _] = ServiceGapT.update_animal_for_service_gaps(animal, attrs)
-      assert_copy(retained_gap, original_gap(animal), ignoring: [:institution])
+      assert_copy(retained_gap, original_gap(animal))
     end
   end
 

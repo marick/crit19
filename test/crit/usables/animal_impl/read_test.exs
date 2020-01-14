@@ -20,6 +20,7 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
          species_name: @bovine,
          in_service_datestring: @iso_date,
          out_of_service_datestring: @later_iso_date,
+         institution: @institution
        },
 
        # Note: it's valid for fields to be Date structures rather than
@@ -35,7 +36,7 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
       %{as_fetched: fetched, new_service_gap_fields: new_service_gap_fields,
         new_animal_fields: new_animal_fields}  do
       %Animal{service_gaps: [updatable_gap]} = updatable =
-        Read.put_updatable_fields(fetched)
+        Read.put_updatable_fields(fetched, @institution)
 
       assert_fields(updatable, new_animal_fields)
       assert_fields(updatable_gap, new_service_gap_fields)
@@ -44,13 +45,13 @@ defmodule Crit.Usables.AnimalImpl.ReadTest do
     test "with an infinite-up span", %{as_fetched: fetched} do
       fetched
       |> Map.put(:span, Datespan.inclusive_up(@date))
-      |> Read.put_updatable_fields
+      |> Read.put_updatable_fields(@institution)
       |> assert_field(in_service_datestring: @iso_date,
                       out_of_service_datestring: @never)
     end
     
     test "put_updatable_fields can take a list argument", %{as_fetched: fetched} do
-      [updatable] = Read.put_updatable_fields([fetched])
+      [updatable] = Read.put_updatable_fields([fetched], @institution)
       # It's enough to confirm a single conversion.
       assert_field(updatable, species_name: @bovine)
     end

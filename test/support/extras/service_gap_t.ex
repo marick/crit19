@@ -51,6 +51,6 @@ defmodule Crit.Extras.ServiceGapT do
   def get_updatable(id) do
     ServiceGap
     |> Sql.get(id, @institution)
-    |> ServiceGap.put_updatable_fields
+    |> ServiceGap.put_updatable_fields(@institution)
   end
 end
