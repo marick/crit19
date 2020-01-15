@@ -56,8 +56,6 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
     end
 
     test "failing to update both animal and service gap", %{animal: animal} do
-      
-      Factory.sql_insert!(:animal, [name: "conflicting name"], @institution)
 
       params =
         AnimalT.params(animal)
@@ -83,5 +81,55 @@ defmodule Crit.Usables.AnimalImpl.UpdateUpdateServiceGapTest do
     end
 
 
+    test "what happens when ONLY an animal update fails", %{animal: animal} do
+      Factory.sql_insert!(:animal, [name: "conflicting name"], @institution)
+
+      params =
+        AnimalT.params(animal)
+        |> Map.put("name", "conflicting name")
+        # This is a valid change
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"],
+                  @later_iso_date)
+
+      error_changeset = AnimalT.update_for_error_changeset(animal.id, params)
+
+      # Check that that the animal will be displayed the same way.
+      form_changeset = Animal.form_changeset(animal)
+      assert_copy(form_changeset.data, error_changeset.data)
+      assert Ecto.assoc_loaded?(error_changeset.data.service_gaps)
+
+      assert_change(error_changeset, name: "conflicting name")
+
+      # Note that both error changesets appear, even the unchanged one.
+      # That's because Ecto upsert requires either nothing or a complete
+      # description of the updated association.
+
+      [changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
+      assert_change(changed_sg, out_of_service_datestring: @later_iso_date)
+      assert_no_changes(unchanged_sg)
+    end
+
+    test "what happens when ONLY a changeset update fails", %{animal: animal} do
+      params =
+        AnimalT.params(animal)
+        |> Map.put("name", "non-conflicting name")
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"],
+                  @iso_date)
+
+      error_changeset = AnimalT.update_for_error_changeset(animal.id, params)
+
+      # Check that that the animal will be displayed the same way.
+      form_changeset = Animal.form_changeset(animal)
+      assert_copy(form_changeset.data, error_changeset.data)
+      assert Ecto.assoc_loaded?(error_changeset.data.service_gaps)
+
+      # Note that both error changesets appear, even the unchanged one.
+      # That's because Ecto upsert requires either nothing or a complete
+      # description of the updated association.
+
+      [changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
+      assert_change(changed_sg, out_of_service_datestring: @iso_date)
+      assert_no_changes(unchanged_sg)
+    end
   end
 end
