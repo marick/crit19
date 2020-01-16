@@ -37,7 +37,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
     
     test "update in-service date", %{dates: dates} do
 
-      original_animal = AnimalT.dated_animal(dates.iso_in_service, "never")
+      original_animal = AnimalT.dated(dates.iso_in_service, "never")
         
       params = AnimalT.params_except(original_animal,
         %{"in_service_datestring" => dates.iso_next_in_service,

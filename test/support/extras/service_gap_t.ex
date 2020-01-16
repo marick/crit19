@@ -7,6 +7,7 @@ defmodule Crit.Extras.ServiceGapT do
   alias Crit.Usables.Schemas.{Animal,ServiceGap}
   alias Crit.Sql
   alias Crit.Exemplars.Available
+  alias Crit.Factory
 
   def insert(attrs) do
     %ServiceGap{}
@@ -53,4 +54,13 @@ defmodule Crit.Extras.ServiceGapT do
     |> Sql.get(id, @institution)
     |> ServiceGap.put_updatable_fields(@institution)
   end
+
+  def dated(animal_id, in_service, out_of_service) do
+    Factory.sql_insert!(:service_gap,
+      [animal_id: animal_id,
+       in_service_datestring: in_service,
+       out_of_service_datestring: out_of_service], 
+      @institution)
+  end
+  
 end

@@ -70,7 +70,7 @@ defmodule Crit.Extras.AnimalT do
     AnimalApi.updatable!(id, @institution)
   end
 
-  def dated_animal(in_service, out_of_service) do
+  def dated(in_service, out_of_service) do
     [in_service_datestring: in_service,
      out_of_service_datestring: out_of_service]
     |> Exemplars.Available.animal_id
