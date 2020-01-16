@@ -1,6 +1,6 @@
-defmodule CritWeb.Controller.CommonTest do 
+defmodule Crit.CommonTest do 
   use Crit.DataCase, async: true
-  alias CritWeb.Controller.Common
+  alias Crit.Common
 
   test "standard processing for nested forms" do
     filled_in = %{"subfield" => "some value"}

@@ -11,10 +11,10 @@ defmodule CritWeb.Usables.AnimalController.UtilityTest do
     end
 
     test "an animal with service gaps" do
-      input = %{"service_gaps" => [%{}]}
+      input = %{"service_gaps" => %{"0" => %{}}}
       actual = Testable.put_institution(input, @institution)
       expected = %{"institution" => @institution,
-                  "service_gaps" => [%{"institution" => @institution}]}
+                  "service_gaps" => %{"0" => %{"institution" => @institution}}}
       assert actual == expected
     end
     

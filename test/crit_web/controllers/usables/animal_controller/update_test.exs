@@ -17,7 +17,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       
       [animal_id: id]
     end
-    
+
     test "success", %{conn: conn, animal_id: animal_id} do
       new_service_gap = %{"in_service_datestring" => "2300-01-02",
                           "out_of_service_datestring" => "2300-01-03",
@@ -27,14 +27,15 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> AnimalT.params
+        |> AnimalT.unchanged_params
         # change a field in the animal itself
         |> Map.put("name", "new name")
+        # add a service gap
+        |> put_in(["service_gaps", "0"], new_service_gap     )
         # change a field in one of the service gaps
-        |> put_in(["service_gaps", "0", "reason"], "fixored reason")
+        |> put_in(["service_gaps", "1", "reason"], "fixored reason")
         # delete the other 
-        |> put_in(["service_gaps", "1", "delete"], "true")
-        |> put_in(["service_gaps", "2"], new_service_gap)
+        |> put_in(["service_gaps", "2", "delete"], "true")
 
       post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
       |> assert_purpose(snippet_to_display_animal())
@@ -58,18 +59,12 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
     test "a *blank* service gap form is ignored",
       %{conn: conn, animal_id: animal_id} do
       # It's not treated as an attempt to create a new service gap
-      empty_service_gap = %{"in_service_datestring" => "",
-                            "out_of_service_datestring" => "",
-                            "reason" => ""
-                           }
-      
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> AnimalT.params
+        |> AnimalT.unchanged_params
         # change a field in the animal itself so that we can see something happen
         |> Map.put("name", "new name")
-        |> put_in(["service_gaps", "2"], empty_service_gap)
 
       post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
       # There was not a failure (which renders a different snippet)
@@ -78,6 +73,10 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       # Check that the changes did actually happen
       animal = AnimalApi.updatable!(animal_id, @institution)
       assert_field(animal, name: "new name")
+
+      # The blank service gap parameter does not appear in result.
+      assert map_size(params["service_gaps"]) == 3
+      assert length(animal.service_gaps) == 2
     end
 
     test "update failures produce appropriate annotations", 
@@ -88,7 +87,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       params =
         animal_id
         |> AnimalApi.updatable!(@institution)
-        |> AnimalT.params
+        |> AnimalT.unchanged_params
         # Dates are in wrong order
         |> put_in(["in_service_datestring"], @later_iso_date)
         |> put_in(["out_of_service_datestring"], @iso_date)

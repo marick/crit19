@@ -11,6 +11,7 @@ defmodule Crit.Usables.Schemas.Animal do
   alias Ecto.Datespan
   import Ecto.Changeset
   alias Crit.FieldConverters.ToSpan
+  alias Crit.Common
 
   schema "animals" do
     # The fields below are the true fields in the table.
@@ -47,10 +48,15 @@ defmodule Crit.Usables.Schemas.Animal do
   end
 
   def form_changeset(animal) do
-    change(animal)
+    animal
+    |> Map.put(:service_gaps, [%ServiceGap{} | animal.service_gaps])
+    |> change
   end
 
-  def update_changeset(struct, attrs) do
+  def update_changeset(struct, given_attrs) do
+    attrs =
+      Common.filter_out_unfilled_subforms(given_attrs, "service_gaps",
+        ServiceGap.empty_sentinels)
     required = [:name, :lock_version]
     struct
     |> cast(attrs, required)
@@ -60,7 +66,7 @@ defmodule Crit.Usables.Schemas.Animal do
     |> constraint_on_name()
     |> optimistic_lock(:lock_version)
   end
-  
+
   defp constraint_on_name(changeset),
     do: unique_constraint(changeset, :name, name: "unique_available_names")
 end

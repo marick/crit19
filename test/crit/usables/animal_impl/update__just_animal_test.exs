@@ -30,7 +30,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
     end
   end
 
-  describe "updating the service span" do
+  describe "updating the beginning and ending service dates" do
     setup do
       [dates: Exemplars.Date.service_dates()]
     end
@@ -39,9 +39,10 @@ defmodule Crit.Usables.AnimalImpl.UpdateJustAnimalTest do
 
       original_animal = AnimalT.dated_animal(dates.iso_in_service, "never")
         
-      params = %{"in_service_datestring" => dates.iso_next_in_service,
-                 "out_of_service_datestring" => "never",
-                 "institution" => @institution}
+      params = AnimalT.params_except(original_animal,
+        %{"in_service_datestring" => dates.iso_next_in_service,
+          "out_of_service_datestring" => "never",
+          "institution" => @institution})
       AnimalT.update_for_success(original_animal.id, params)
       |> assert_fields(
              in_service_datestring: dates.iso_next_in_service,

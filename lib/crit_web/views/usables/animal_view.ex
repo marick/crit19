@@ -1,7 +1,6 @@
 defmodule CritWeb.Usables.AnimalView do
   use CritWeb, :view
   alias CritWeb.Usables.AnimalController
-  alias Crit.Usables.Schemas.ServiceGap
   alias Ecto.Changeset
 
   def animal_form_id(animal) do
@@ -22,7 +21,7 @@ defmodule CritWeb.Usables.AnimalView do
 
   def nested_service_gap_forms(f, animal_changeset) do
     {:safe, [empty_form | forms]} = 
-      inputs_for(f, :service_gaps, [prepend: [%ServiceGap{}]], fn gap_f ->
+      inputs_for(f, :service_gaps, fn gap_f ->
         one_service_gap(gap_f, unique_snippet(animal_changeset, gap_f))
       end)
 

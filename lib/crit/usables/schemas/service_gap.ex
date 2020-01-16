@@ -19,6 +19,9 @@ defmodule Crit.Usables.Schemas.ServiceGap do
 
   @required_for_insertion [:reason]
   @usable @required_for_insertion ++ [:animal_id, :delete]
+
+  def empty_sentinels,
+    do: ["in_service_datestring", "out_of_service_datestring", "reason"]
   
   def changeset(gap, attrs) do
     gap

@@ -21,7 +21,10 @@ defmodule CritWeb.Usables.AnimalController do
         nil ->
           top
         gaps ->
-          lower = Enum.map(gaps, add)
+          lower = 
+            gaps
+            |> Enum.map(fn {key, gap} -> { key, add.(gap) } end)
+            |> Map.new
           Map.put(top, "service_gaps", lower)
       end
     end
@@ -84,11 +87,8 @@ defmodule CritWeb.Usables.AnimalController do
 
 
   def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
-    params =
-      raw_params
-      |> Common.filter_out_unfilled_subforms("service_gaps",
-           ["in_service_datestring", "out_of_service_datestring", "reason"])
-      |> Testable.put_institution(institution(conn))
+    params = 
+      Testable.put_institution(raw_params, institution(conn))
 
     case AnimalApi.update(id, params, institution(conn)) do
       {:ok, animal} ->
