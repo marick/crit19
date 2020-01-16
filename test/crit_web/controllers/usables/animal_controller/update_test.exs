@@ -4,7 +4,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
-  alias Crit.Extras.AnimalT
+  alias Crit.Extras.{AnimalT, ServiceGapT}
   alias Ecto.Datespan
 
   setup :logged_in_as_usables_manager
@@ -99,5 +99,40 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       |> assert_user_sees("should not be before the start date")
       |> assert_user_sees("is invalid")
     end
+  end
+
+  describe "handling of the 'add a new service gap' field when there are form errors" do
+    
+
+    # This is tested here because it's easier to check that the right form
+    # is displayed than that the more-complex changeset structure is filled out
+    # correctly.
+    setup do
+      %{id: animal_id} = AnimalT.dated(@iso_date_1, @never)
+      old_gap = ServiceGapT.dated(animal_id, @iso_date_2, @iso_date_3)
+
+      animal = AnimalApi.updatable!(animal_id, @institution)
+      params = AnimalT.unchanged_params(animal)
+
+      [animal: animal, params: params, old_gap: old_gap]
+    end
+
+    @tag :skip
+    test "only an error in the animal part",
+      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+
+      params =
+        unchanged_params
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees("should not be before the start date")
+      |> assert_new_service_gap_form(animal)
+      |> assert_existing_service_gap_form(animal, old_gap)
+    end
+  end
+
+  def inspect_html(conn) do
+    IO.puts(conn.resp_body)
   end
 end
