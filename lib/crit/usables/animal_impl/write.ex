@@ -35,12 +35,18 @@ defmodule Crit.Usables.AnimalImpl.Write do
   end
 
   defp changeset_for_other_error(changeset) do
-    with_new_sg =
-      [Changeset.change(%ServiceGap{}) | Changeset.get_change(changeset, :service_gaps)]
+    IO.inspect changeset
+    service_gap_changesets =
+      case Changeset.get_change(changeset, :service_gaps) do
+        [ %{action: :insert} | _rest ] = with_erroneous_insertion ->
+          with_erroneous_insertion
+
+        all_updates ->
+          [Changeset.change(%ServiceGap{}) | all_updates]
+      end
     
     changeset
     |> ChangesetX.flush_lock_version
-    |> Changeset.put_change(:service_gaps, with_new_sg)
-    # |> IO.inspect
+    |> Changeset.put_change(:service_gaps, service_gap_changesets)
   end
 end

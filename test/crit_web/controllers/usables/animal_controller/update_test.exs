@@ -96,7 +96,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
 
       post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
       |> assert_purpose(form_for_editing_animal())
-      |> assert_user_sees("should not be before the start date")
+      |> assert_user_sees(@date_misorder_message)
       |> assert_user_sees("is invalid")
     end
   end
@@ -126,13 +126,58 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
         |> put_in(["out_of_service_datestring"], @iso_date_1)
 
       post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
-      |> assert_user_sees("should not be before the start date")
+      |> assert_user_sees(@date_misorder_message)
       |> assert_new_service_gap_form(animal)
       |> assert_existing_service_gap_form(animal, old_gap)
     end
+
+    test "an error only in the old service gaps",
+      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+
+      params =
+        unchanged_params
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
+        |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@date_misorder_message)
+      |> assert_new_service_gap_form(animal)
+      |> assert_existing_service_gap_form(animal, old_gap)
+    end
+
+    test "an error only in the new service gap",
+      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+
+      params =
+        unchanged_params
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+      |> assert_existing_service_gap_form(animal, old_gap)
+    end
+      
+    @tag :skip
+    test "errors in the new and old service gaps"
+    @tag :skip
+    test "an error in the new service gap and animal"
+    @tag :skip
+    test "an error in the old service gap and animal"
+
+  end
+
+  describe "the common case where there is no existing service gap" do 
+    @tag :skip
+    test "an error in the new service gap and animal"
+    @tag :skip
+    test "an error in just the new service gap"
+    @tag :skip
+    test "an error in just the animal"
   end
 
   def inspect_html(conn) do
     IO.puts(conn.resp_body)
+    conn
   end
 end

@@ -7,6 +7,7 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
 
   import Crit.Setups
   alias Ecto.Datespan
+  alias Ecto.Changeset
 
   setup :an_updatable_animal_with_one_service_gap
   
@@ -84,8 +85,32 @@ defmodule Crit.Usables.AnimalImpl.UpdateInsertServiceGapTest do
       [fetched_retained, _] = retrieve_update(animal)
       assert fetched_retained == original_retained
     end
-  end
 
+    test "the insertion fails", %{animal: animal, params: initial_params} do
+      params =
+        initial_params
+        |> put_in(["service_gaps", "0"],
+             %{"in_service_datestring" => @iso_date_2,
+               "out_of_service_datestring" => @iso_date_1,
+               "reason" => "",
+               "delete" => false,
+               "institution" => @institution})
+
+      animal_changeset = AnimalT.update_for_error_changeset(animal.id, params)
+      assert [in_error, unchanged] = Changeset.get_change(animal_changeset, :service_gaps)
+
+      in_error
+      |> assert_errors(out_of_service_datestring: @date_misorder_message,
+                       reason: @blank_message)
+      |> assert_changes(in_service_datestring: @iso_date_2,
+                        out_of_service_datestring: @iso_date_1)
+      |> assert_unchanged([:reason, :delete])
+
+      unchanged
+      |> assert_valid
+      |> assert_no_changes
+    end
+  end
 
   defp retrieve_update(animal) do 
     %Animal{service_gaps: gaps} = AnimalApi.updatable!(animal.id, @institution)

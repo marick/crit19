@@ -24,6 +24,8 @@ defmodule Crit.Errors do
       @date_misorder_message "should not be before the start date"
       @no_valid_names_message "must have at least one valid name"
       @login_failed "Login failed"
+      @blank_message "can't be blank"
+      @blank_message_in_html "can&#39;t be blank"
     end
   end
 end
