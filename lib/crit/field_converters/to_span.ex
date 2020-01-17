@@ -56,10 +56,12 @@ defmodule Crit.FieldConverters.ToSpan do
       {:ok, @never} ->
         changeset # this is what the first step assumed
       {:ok, out_of_service} ->
-        tentative_span = Changeset.fetch_field!(changeset, :span)
-        put_span(
-          changeset,
-          Datespan.put_last(tentative_span, out_of_service))
+        case Changeset.fetch_field!(changeset, :span) do
+          nil ->
+            changeset  # This means first step failed.
+          tentative_span -> 
+            put_span(changeset, Datespan.put_last(tentative_span, out_of_service))
+        end
       {:error, _tag} ->
         safely_add_error(changeset, :out_of_service_datestring, "is invalid")
     end

@@ -168,7 +168,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
                            :span])
     end
 
-    test "a blank field cannot lead to a crash" do
+    test "a blank out_of_service field cannot lead to a crash" do
       # If a field is blank, `validate_required` will delete it from `changes`.
       # That used to lead to trying to parse `nil` as a date.
       # Note that the user will get two messages, but they're clear enough.
@@ -184,7 +184,26 @@ defmodule Crit.FieldConverters.ToSpanTest do
       |> assert_invalid
       |> assert_errors(out_of_service_datestring:
            ["is invalid", "can't be blank"])
+      |> assert_error_free(:in_service_datestring)
+      |> assert_unchanged(:span)
     end
+
+
+    test "a blank in_service field cannot lead to a crash" do
+      date_opts = %{
+        in_service_datestring: " ",
+        out_of_service_datestring: @iso_date,
+        institution: "--irrelevant--"
+      }
+
+      %__MODULE__{}
+      |> ToSpan.synthesize(date_opts)
+      |> assert_invalid
+      |> assert_errors(in_service_datestring: "can't be blank")
+      |> assert_error_free(:out_of_service_datestring)
+      |> assert_unchanged(:span)
+    end
+    
   end
 
   defp make_changeset(date_opts),
