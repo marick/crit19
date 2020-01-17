@@ -5,6 +5,7 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
   alias Crit.Usables.AnimalApi
   alias Crit.Exemplars
   alias Crit.Extras.{AnimalT, ServiceGapT}
+  # alias Crit.Usables.Schemas.ServiceGap
   alias Ecto.Datespan
 
   setup :logged_in_as_usables_manager
@@ -102,22 +103,18 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
   end
 
   describe "handling of the 'add a new service gap' field when there are form errors" do
-    
-
     # This is tested here because it's easier to check that the right form
     # is displayed than that the more-complex changeset structure is filled out
     # correctly.
     setup do
       %{id: animal_id} = AnimalT.dated(@iso_date_1, @never)
       old_gap = ServiceGapT.dated(animal_id, @iso_date_2, @iso_date_3)
-
       animal = AnimalApi.updatable!(animal_id, @institution)
       params = AnimalT.unchanged_params(animal)
 
       [animal: animal, params: params, old_gap: old_gap]
     end
 
-    @tag :skip
     test "only an error in the animal part",
       %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
 
@@ -158,26 +155,93 @@ defmodule CritWeb.Usables.AnimalController.UpdateTest do
       |> assert_existing_service_gap_form(animal, old_gap)
     end
       
-    @tag :skip
-    test "errors in the new and old service gaps"
-    @tag :skip
-    test "an error in the new service gap and animal"
-    @tag :skip
-    test "an error in the old service gap and animal"
+    test "errors in the new and old service gaps",
+      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+      params =
+        unchanged_params
+        |> put_in(["service_gaps", "0", "reason"], @iso_date_2)
+        |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
 
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@date_misorder_message)
+      |> assert_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+      |> assert_existing_service_gap_form(animal, old_gap)
+    end
+
+    test "an error in the new service gap and animal",
+      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+      params =
+        unchanged_params
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@date_misorder_message)
+      |> assert_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+      |> assert_existing_service_gap_form(animal, old_gap)
+    end
+
+    test "an error in the old service gap and animal",
+      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+      params =
+        unchanged_params
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
+        |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@date_misorder_message)
+      |> refute_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+      |> assert_existing_service_gap_form(animal, old_gap)
+    end
   end
 
   describe "the common case where there is no existing service gap" do 
-    @tag :skip
-    test "an error in the new service gap and animal"
-    @tag :skip
-    test "an error in just the new service gap"
-    @tag :skip
-    test "an error in just the animal"
-  end
+    setup do
+      %{id: animal_id} = AnimalT.dated(@iso_date_1, @never)
+      animal = AnimalApi.updatable!(animal_id, @institution)
+      params = AnimalT.unchanged_params(animal)
 
-  def inspect_html(conn) do
-    IO.puts(conn.resp_body)
-    conn
+      [animal: animal, params: params]
+    end
+    
+    test "an error in the new service gap and animal",
+      %{animal: animal, params: unchanged_params, conn: conn} do
+      params =
+        unchanged_params
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@date_misorder_message)
+      |> assert_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+    end
+          
+    test "an error in just the new service gap",
+      %{animal: animal, params: unchanged_params, conn: conn} do
+      params =
+        unchanged_params
+        |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+    end
+    
+    test "an error in just the animal",
+      %{animal: animal, params: unchanged_params, conn: conn} do
+      params =
+        unchanged_params
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
+
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      |> assert_user_sees(@date_misorder_message)
+      |> refute_user_sees(@blank_message_in_html)
+      |> assert_new_service_gap_form(animal)
+    end
+          
   end
 end

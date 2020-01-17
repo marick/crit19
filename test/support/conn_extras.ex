@@ -57,5 +57,10 @@ defmodule CritWeb.ConnExtras do
   """
   def html_version(string),
     do: string |> HTML.html_escape |> HTML.safe_to_string
-  
+
+
+  def inspect_html(conn) do
+    IO.puts(conn.resp_body)
+    conn
+  end
 end

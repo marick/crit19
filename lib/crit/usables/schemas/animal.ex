@@ -49,9 +49,14 @@ defmodule Crit.Usables.Schemas.Animal do
 
   def form_changeset(animal) do
     animal
-    |> Map.put(:service_gaps, [%ServiceGap{} | animal.service_gaps])
+    |> prepend_empty_service_gap
     |> change
   end
+
+  def prepend_empty_service_gap(animal) do
+    Map.put(animal, :service_gaps, [%ServiceGap{} | animal.service_gaps])
+  end
+    
 
   def update_changeset(struct, given_attrs) do
     attrs =

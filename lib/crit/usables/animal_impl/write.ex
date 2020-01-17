@@ -10,8 +10,12 @@ defmodule Crit.Usables.AnimalImpl.Write do
       {:error, %{errors: [{:optimistic_lock_error, _}]}} ->
         {:error, changeset_for_lock_error(animal.id, institution)}
 
-      {:error, changeset} ->
-        {:error, changeset_for_other_error(changeset)}
+      {:error, partial_changeset} ->
+        changeset =
+          partial_changeset
+          |> ChangesetX.flush_lock_version
+          |> changeset_for_other_error
+        {:error, changeset}
 
       {:ok, result} ->
         {:ok, result}
@@ -35,18 +39,16 @@ defmodule Crit.Usables.AnimalImpl.Write do
   end
 
   defp changeset_for_other_error(changeset) do
-    IO.inspect changeset
-    service_gap_changesets =
-      case Changeset.get_change(changeset, :service_gaps) do
-        [ %{action: :insert} | _rest ] = with_erroneous_insertion ->
-          with_erroneous_insertion
+    case Changeset.fetch_change(changeset, :service_gaps) do
+      :error -> 
+        %{changeset | data: Animal.prepend_empty_service_gap(changeset.data)}
+            
+      {:ok, [ %{action: :insert} | _rest ]} = _has_bad_new_service_gap ->
+        changeset
 
-        all_updates ->
-          [Changeset.change(%ServiceGap{}) | all_updates]
-      end
-    
-    changeset
-    |> ChangesetX.flush_lock_version
-    |> Changeset.put_change(:service_gaps, service_gap_changesets)
+      {:ok, only_has_service_gap_updates} ->
+        Changeset.put_change(changeset, :service_gaps,
+          [Changeset.change(%ServiceGap{}) | only_has_service_gap_updates])
+    end
   end
 end

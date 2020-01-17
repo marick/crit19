@@ -8,6 +8,7 @@ defmodule Crit.Extras.ServiceGapT do
   alias Crit.Sql
   alias Crit.Exemplars.Available
   alias Crit.Factory
+  alias Ecto.Datespan
 
   def insert(attrs) do
     %ServiceGap{}
@@ -56,10 +57,12 @@ defmodule Crit.Extras.ServiceGapT do
   end
 
   def dated(animal_id, in_service, out_of_service) do
+    span =
+      Datespan.customary(
+        Date.from_iso8601!(in_service), Date.from_iso8601!(out_of_service))
+      
     Factory.sql_insert!(:service_gap,
-      [animal_id: animal_id,
-       in_service_datestring: in_service,
-       out_of_service_datestring: out_of_service], 
+      [animal_id: animal_id, span: span],
       @institution)
   end
   
