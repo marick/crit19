@@ -1,7 +1,7 @@
 defmodule Crit.Exemplars.ReservationFocused do
   use ExUnit.CaseTemplate
   use Crit.Global.Default
-  alias Crit.Usables.Schemas.{Animal, Procedure}
+  alias Crit.Setup.Schemas.{Animal, Procedure}
   alias Crit.Sql
   alias Ecto.Datespan
 

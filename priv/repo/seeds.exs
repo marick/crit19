@@ -13,9 +13,9 @@
 alias Crit.Users
 alias Crit.Users.{User,PermissionList}
 alias Crit.Sql
-alias Crit.Usables.HiddenSchemas.Species
-alias Crit.Usables.AnimalApi
-alias Crit.Usables.Schemas.ServiceGap
+alias Crit.Setup.HiddenSchemas.Species
+alias Crit.Setup.AnimalApi
+alias Crit.Setup.Schemas.ServiceGap
 alias Crit.Global.Constants
 alias Crit.Global.Default
 alias Ecto.Datespan

@@ -4,7 +4,7 @@ useful to have this in the module header:
 
 ```elixir
 defmodule Crit.Something.SomethingTest do
-  alias Crit.Usables.Schemas.Animal
+  alias Crit.Setup.Schemas.Animal
   alias Crit.Extras.AnimalT
 ```
 

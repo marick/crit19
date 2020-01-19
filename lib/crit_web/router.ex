@@ -46,7 +46,7 @@ IO.puts(
   end
 
 
-  scope "/usables", CritWeb.Usables, as: :usables do
+  scope "/setup", CritWeb.Setup, as: :setup do
     pipe_through :browser
 
     scope "/animals" do 

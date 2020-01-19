@@ -1,6 +1,6 @@
 defmodule Crit.Setups do
   use Crit.Global.Default
-  alias Crit.Usables.AnimalApi
+  alias Crit.Setup.AnimalApi
   alias Crit.Factory
 
 

@@ -1,5 +1,0 @@
-<h1>Edit Animal</h1>
-
-<%= render "form.html", Map.put(assigns, :action, Routes.usables_animal_path(@conn, :update, @animal)) %>
-
-<span><%= link "Back", to: Routes.usables_animal_path(@conn, :index) %></span>

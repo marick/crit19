@@ -1,5 +1,5 @@
 alias Crit.Sql
-alias Crit.Usables.HiddenSchemas.Species
+alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Global.Constants
 alias Crit.Global.Default
 

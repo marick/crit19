@@ -1,8 +1,8 @@
  defmodule Crit.Sql.TransactionTest do
   use Crit.DataCase
   alias Crit.Sql.Transaction
-  alias Crit.Usables.Schemas.BulkAnimal
-  alias Crit.Usables.HiddenSchemas.Species
+  alias Crit.Setup.Schemas.BulkAnimal
+  alias Crit.Setup.HiddenSchemas.Species
   alias Ecto.Changeset
 
   describe "handling transaction results" do

@@ -1,6 +1,6 @@
 defmodule Crit.Ecto.BulkInsertTest do
   use Crit.DataCase
-  alias Crit.Usables.Schemas.Procedure
+  alias Crit.Setup.Schemas.Procedure
   alias Crit.Ecto.BulkInsert
   alias Crit.Ecto.BulkInsert.Testable
   alias Crit.Sql

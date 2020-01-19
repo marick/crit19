@@ -43,7 +43,7 @@ defmodule CritWeb.ConnExtras do
   
   def logged_in_as_user_manager(context),
     do: setup_logged_in(context, manage_and_create_users: true)
-  def logged_in_as_usables_manager(context),
+  def logged_in_as_setup_manager(context),
     do: setup_logged_in(context, manage_animals: true)
 
   def under(payload_key, params), do: %{payload_key => params}

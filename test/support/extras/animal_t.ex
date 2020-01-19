@@ -5,10 +5,10 @@ defmodule Crit.Extras.AnimalT do
 
   use Crit.Global.Default
   use Crit.Global.Constants
-  alias Crit.Usables.AnimalApi
+  alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
-  alias Crit.Usables.Schemas.Animal
-  alias Crit.Usables.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
 
 

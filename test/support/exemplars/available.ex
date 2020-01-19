@@ -9,7 +9,7 @@ defmodule Crit.Exemplars.Available do
   use Crit.Global.Default
   use Crit.Global.Constants
   alias Crit.Factory
-  alias Crit.Usables.AnimalApi
+  alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
   alias Crit.Factory
 
