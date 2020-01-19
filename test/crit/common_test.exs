@@ -11,7 +11,7 @@ defmodule Crit.CommonTest do
                       "1" => blank}
     }
 
-    result = Common.filter_out_unfilled_subforms(enclosing_form, "subforms", ["subfield"])
+    result = Common.filter_out_unstarted_subforms(enclosing_form, "subforms", ["subfield"])
 
     assert result == %{"subforms" => [filled_in]}
   end

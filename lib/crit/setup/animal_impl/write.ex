@@ -16,7 +16,6 @@ defmodule Crit.Setup.AnimalImpl.Write do
           |> ChangesetX.flush_lock_version
           |> changeset_for_other_error
         {:error, changeset}
-
       {:ok, result} ->
         {:ok, result}
     end
@@ -40,15 +39,15 @@ defmodule Crit.Setup.AnimalImpl.Write do
 
   defp changeset_for_other_error(changeset) do
     case Changeset.fetch_change(changeset, :service_gaps) do
-      :error -> 
-        %{changeset | data: Animal.prepend_empty_service_gap(changeset.data)}
-            
       {:ok, [ %{action: :insert} | _rest ]} = _has_bad_new_service_gap ->
         changeset
 
       {:ok, only_has_service_gap_updates} ->
         Changeset.put_change(changeset, :service_gaps,
           [Changeset.change(%ServiceGap{}) | only_has_service_gap_updates])
+
+      :error -> 
+        %{changeset | data: Animal.prepend_empty_service_gap(changeset.data)}
     end
   end
 end

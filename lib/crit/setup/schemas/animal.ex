@@ -60,8 +60,10 @@ defmodule Crit.Setup.Schemas.Animal do
 
   def update_changeset(struct, given_attrs) do
     attrs =
-      Common.filter_out_unfilled_subforms(given_attrs, "service_gaps",
-        ServiceGap.empty_sentinels)
+      Common.filter_out_unstarted_subforms(
+        given_attrs,
+        "service_gaps",
+        ServiceGap.unstarted_form_sentinels)
     required = [:name, :lock_version]
     struct
     |> cast(attrs, required)
