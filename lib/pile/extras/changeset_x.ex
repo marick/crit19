@@ -54,6 +54,14 @@ defmodule Ecto.ChangesetX do
       get_in(changeset, path_to(field)) == @hidden_string
   end
 
-  defp path_to(field), do: [Access.key(:data), Access.key(field)]
+  def fetch_original!(changeset, field) do
+    source = changeset.data
+    if Map.has_key?(source, field) do 
+      Map.get(source, field)
+    else
+      raise KeyError, "key #{inspect field} not found in: #{inspect source}"
+    end
+  end
 
+  defp path_to(field), do: [Access.key(:data), Access.key(field)]
 end

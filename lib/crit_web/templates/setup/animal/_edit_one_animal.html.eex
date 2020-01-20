@@ -14,7 +14,8 @@
     </div>
     <header class="ten wide text column">
     <h3>
-      Change <%= @changeset.data.species_name %> <%= @changeset.data.name %>
+      Change <%= ChangesetX.fetch_original!(@changeset, :species_name) %>
+      <%= ChangesetX.fetch_original!(@changeset, :name) %>
     </h3>
     </header>
     <div class="two wide column">

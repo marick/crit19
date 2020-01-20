@@ -1,7 +1,6 @@
 defmodule CritWeb.Setup.AnimalView do
   use CritWeb, :view
   alias CritWeb.Setup.AnimalController
-  alias Ecto.Changeset
 
   def animal_form_id(animal) do
     "animal_#{animal.id}"
