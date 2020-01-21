@@ -4,13 +4,15 @@
   <%= error_flash_above(@conn) %>
   <h1 class="ui header">Dashboard</h1>
   <div class="ui center aligned cards">
-    <%= dashboard_card "Manage Users",
-        [ list_link("Add new users", UserController, :new),
-          list_link("Manage users (not yet)", UserController, :index)
+    <%= dashboard_card "Reservations",
+        [ list_link("Record a session that was not pre-reserved", ReservationController, :backdated_form),
         ] %>
     <%= dashboard_card "Animals and Procedures",
         [ list_link("Add animals", AnimalController, :bulk_create_form),
           list_link("See or edit animals", AnimalController, :index)
+        ] %>
+    <%= dashboard_card "Manage Users",
+        [ list_link("Add new users", UserController, :new),
         ] %>
   </div>
 </div>

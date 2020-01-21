@@ -59,6 +59,12 @@ IO.puts(
       get "/:animal_id", AnimalController, :_show
     end
   end
+
+  scope "/reservation", CritWeb.Reservations do
+    pipe_through :browser
+
+    get "/record", ReservationController, :backdated_form
+  end
   
   # Other scopes may use custom stacks.
   # scope "/api", CritWeb do

@@ -45,6 +45,8 @@ defmodule CritWeb.ConnExtras do
     do: setup_logged_in(context, manage_and_create_users: true)
   def logged_in_as_setup_manager(context),
     do: setup_logged_in(context, manage_animals: true)
+  def logged_in_as_reservation_manager(context),
+    do: setup_logged_in(context, make_reservations: true)
 
   def under(payload_key, params), do: %{payload_key => params}
 

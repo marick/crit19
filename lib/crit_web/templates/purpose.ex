@@ -34,4 +34,7 @@ defmodule CritWeb.Templates.Purpose do
   def public_facing_page, 
     do: "public facing page"
 
+  def record_a_use_that_was_not_prereserved, 
+    do: "record a use that was not prereserved"
+
 end
