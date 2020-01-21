@@ -285,4 +285,16 @@ defmodule CritWeb.Fomantic.Elements do
     end
   end
 
+  def dropdown(f, label, form_field, opts) do
+    dropdown_id = Keyword.fetch!(opts, :dropdown_id)
+    options = Keyword.fetch!(opts, :options)
+    
+    ~E"""
+    <div class="field">
+      <%= label f, form_field, label %>
+      <%= select f, form_field, options, id: dropdown_id,
+          class: "ui fluid dropdown" %>
+    </div>
+    """
+  end
 end

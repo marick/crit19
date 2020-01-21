@@ -64,6 +64,7 @@ IO.puts(
     pipe_through :browser
 
     get "/record", ReservationController, :backdated_form
+    post "/record_step_1", ReservationController, :record_step_1
   end
   
   # Other scopes may use custom stacks.

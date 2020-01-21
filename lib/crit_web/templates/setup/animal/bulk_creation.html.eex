@@ -21,11 +21,10 @@
 
 <div class="ui segment">
   <div class="fields">
-    <div class="field">
-      <%= label f, :species_id, "Species" %>
-      
-      <%= select f, :species_id, @options, class: "ui fluid dropdown", id: "species_select"%>
-    </div>
+    <%= dropdown f, "Species", :species_id,
+          options: @options,
+          dropdown_id: "species_select" %>
+
   </div>
 
   <%= calendar_with_alternatives f, "Date put into service", :in_service_datestring,

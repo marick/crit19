@@ -1,9 +1,40 @@
 <!-- Purpose: <%= Purpose.record_a_use_that_was_not_prereserved %> -->
 
+<script language="javascript">
+  $(document)
+    .ready(function() { 
+        $('#species_select').dropdown();
+        $('#part_of_day_select').dropdown();
+    });
+</script>
+
+
+
 <div class="ui main center aligned text container">
 
   <h1 class="ui center aligned header">Record a Previous Use of Some Animals</h1>
 
   <%= start_centered_form() %>
+
+<%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
+
+<div class="ui segment">
+  <div class="fields">
+    <%= dropdown f, "Species", :species_id,
+          options: @options,
+          dropdown_id: "species_select" %>
+
+    <%= small_calendar(f, "Date", :date, unique: "only") %>
+
+    <%= dropdown f, "Time", :part_of_day,
+          options: ["morning", "afternoon", "all day", "evening"],
+          dropdown_id: "part_of_day_select" %>
+  </div>
+
+</div>
+<%= big_submit_button "Choose animals" %>
+<% end %>
+</div>
+  
   <%= end_centered_form() %>
 </div>
