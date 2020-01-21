@@ -1,4 +1,4 @@
-defmodule Crit.Setup.HiddenSchemas.Use do
+defmodule Crit.Reservations.HiddenSchemas.Use do
   use Ecto.Schema
   import Ecto.Changeset
 

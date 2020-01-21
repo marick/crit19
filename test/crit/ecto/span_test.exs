@@ -6,7 +6,7 @@ defmodule Crit.Ecto.SpanTest do
   use Crit.DataCase
   alias Ecto.{Timespan,Datespan}
   import Ecto.Timespan  # This has to be imported for query construction.
-  alias Crit.Setup.Schema.Reservation
+  alias Crit.Reservations.Schemas.Reservation
   alias Crit.Sql
 
   @moment      ~N[2000-01-01 01:02:03]

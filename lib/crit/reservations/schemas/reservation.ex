@@ -1,9 +1,9 @@
-defmodule Crit.Setup.Schema.Reservation do
+defmodule Crit.Reservations.Schemas.Reservation do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Timespan
   alias Crit.Sql
-  alias Crit.Setup.HiddenSchemas.Use
+  alias Crit.Reservations.HiddenSchemas.Use
 
   schema "reservations" do
     field :timespan, Timespan

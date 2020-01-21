@@ -1,7 +1,7 @@
-defmodule Crit.Setup.Schemas.ReservationTest do
+defmodule Crit.Reservations.Schemas.ReservationTest do
   use Crit.DataCase
-  alias Crit.Setup.Schema.Reservation
-  alias Crit.Setup.HiddenSchemas.Use
+  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Reservations.HiddenSchemas.Use
   alias Crit.Sql
   alias Ecto.Timespan
   alias Crit.Exemplars.ReservationFocused
