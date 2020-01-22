@@ -1,6 +1,6 @@
-defmodule Crit.Global.TimeSlot do
+defmodule Crit.Setup.Schemas.TimeSlot do
   use Ecto.Schema
-  alias Crit.Global.Institution
+  alias Crit.Setup.Schemas.Institution
 
   @schema_prefix "global"
   

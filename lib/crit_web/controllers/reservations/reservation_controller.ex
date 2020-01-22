@@ -8,7 +8,7 @@ defmodule CritWeb.Reservations.ReservationController do
   plug :must_be_able_to, :make_reservations
 
   def backdated_form(conn, _params) do
-    changeset = ReservationForm.initial
+    _changeset = ReservationForm.initial
     render(conn, "backdated.html",
       changeset: ReservationForm.initial,
       path: path(:record_step_1),

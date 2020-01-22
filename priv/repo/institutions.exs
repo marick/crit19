@@ -1,4 +1,4 @@
-alias Crit.Global.{Institution,TimeSlot}
+alias Crit.Setup.Schemas.{Institution,TimeSlot}
 alias Crit.Global
 alias Crit.Repo
 

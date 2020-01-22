@@ -1,5 +1,5 @@
 defmodule Crit.Global.Default do
-  alias Crit.Global.{Institution,TimeSlot}
+  alias Crit.Setup.Schemas.{Institution,TimeSlot}
 
 
   @doc """

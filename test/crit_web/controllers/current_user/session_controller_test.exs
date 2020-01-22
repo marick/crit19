@@ -5,7 +5,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   alias Crit.Exemplars.PasswordFocused
   alias CritWeb.PublicController
   alias Crit.Global
-  alias Crit.Global.{Institution}
+  alias Crit.Setup.Schemas.{Institution}
   use Crit.Errors
 
   describe "handling login fields" do

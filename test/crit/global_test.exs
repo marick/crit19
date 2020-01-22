@@ -1,7 +1,7 @@
 defmodule Crit.GlobalTest do
   use Crit.DataCase
   alias Crit.Global
-  alias Crit.Global.Institution
+  alias Crit.Setup.Schemas.Institution
   use Crit.Global.Default
 
   test "the institutions are preloaded when app starts" do
