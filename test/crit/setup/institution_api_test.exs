@@ -21,6 +21,6 @@ defmodule Crit.Setup.InstitutionApiTest do
 
   test "an institution has a timezone" do
     actual = Global.timezone(@institution) 
-    assert actual == Global.Default.institution.timezone
+    assert actual == InstitutionApi.default.timezone
   end
 end

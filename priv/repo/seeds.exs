@@ -14,7 +14,7 @@ alias Crit.Users
 alias Crit.Users.{User,PermissionList}
 alias Crit.Sql
 alias Crit.Setup.HiddenSchemas.Species
-alias Crit.Setup.AnimalApi
+alias Crit.Setup.{AnimalApi,InstitutionApi}
 alias Crit.Setup.Schemas.ServiceGap
 alias Crit.Global.Constants
 alias Crit.Global.Default
@@ -22,7 +22,7 @@ alias Ecto.Datespan
 
 Application.ensure_all_started(:crit)
 
-institution = Default.institution.short_name
+institution = InstitutionApi.default.short_name
 
 
 {:ok, _} = Sql.insert %User{

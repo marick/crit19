@@ -1,7 +1,6 @@
 defmodule Crit.Sql.Servers do
   use GenServer
   alias Crit.Sql.PrefixServer
-  alias Crit.Global
   alias Crit.Setup.InstitutionApi
   require Logger
 

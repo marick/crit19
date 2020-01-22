@@ -4,8 +4,8 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
   alias CritWeb.PublicController
-  alias Crit.Global
   alias Crit.Setup.Schemas.{Institution}
+  alias Crit.Setup.InstitutionApi
   use Crit.Errors
 
   describe "handling login fields" do
@@ -67,7 +67,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
 
   describe "turning a list of institutions into a simpler structure" do
     setup do
-      [default: Global.Default.institution]
+      [default: InstitutionApi.default]
     end
 
     test "`selected` argument is just returned", %{default: default} do

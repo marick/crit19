@@ -2,10 +2,11 @@ alias Crit.Sql
 alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Global.Constants
 alias Crit.Global.Default
+alias Crit.Setup.InstitutionApi
 
 Application.ensure_all_started(:crit)
 
-institution = Default.institution.short_name
+institution = InstitutionApi.default.short_name
 
 # This is needless wankery to make sure that ids used in tests
 # actually correspond to what's in the database.

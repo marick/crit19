@@ -3,11 +3,11 @@ defmodule Crit.Sql.PrefixServerTest do
   alias Crit.Repo
   alias Crit.Sql
   alias Crit.Audit.ToEcto.Record  # It's one of the simplest table types.
-  alias Crit.Global
   alias Crit.Exemplars.Minimal
+  alias Crit.Setup.InstitutionApi
 
-  @institution Global.Default.institution.short_name
-  @prefix Global.Default.institution.prefix
+  @institution InstitutionApi.default.short_name
+  @prefix InstitutionApi.default.prefix
 
   setup do
     user = Minimal.user
