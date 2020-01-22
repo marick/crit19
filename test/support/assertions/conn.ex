@@ -1,6 +1,6 @@
 defmodule CritWeb.Assertions.Conn do
   use Phoenix.ConnTest
-  use Crit.Global.Default
+  use Crit.Global.Constants
   import CritWeb.ConnExtras
   import ExUnit.Assertions
   import Crit.Assertions.Defchain

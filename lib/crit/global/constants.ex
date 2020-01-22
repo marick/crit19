@@ -20,6 +20,8 @@ defmodule Crit.Global.Constants do
       
       @equine_id Crit.Global.Constants.equine_id()
       @equine Crit.Global.Constants.equine()
+
+      @institution Crit.Setup.InstitutionApi.default.short_name
     end
   end
 end

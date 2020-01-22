@@ -6,7 +6,6 @@ defmodule CritWeb.CurrentUser.SessionController do
   alias Crit.Users.UniqueId
   alias Crit.Setup.InstitutionApi
   alias CritWeb.PublicController
-  use Crit.Global.Default
   use Crit.Errors
   
 

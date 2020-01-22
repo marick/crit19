@@ -20,6 +20,7 @@ defmodule CritWeb do
   def controller do
     quote do
       use Phoenix.Controller, namespace: CritWeb
+      use Crit.Global.Constants
 
       import Plug.Conn
       import CritWeb.Gettext

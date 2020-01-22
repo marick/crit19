@@ -2,7 +2,7 @@ defmodule Crit.Exemplars.PasswordFocused do
   use ExUnit.CaseTemplate
   alias Crit.Users.{Password}
   alias Crit.Users
-  use Crit.Global.Default
+  use Crit.Global.Constants
   alias Crit.Exemplars.Minimal
 
   def params(password),

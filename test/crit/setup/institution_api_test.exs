@@ -3,7 +3,6 @@ defmodule Crit.Setup.InstitutionApiTest do
   alias Crit.Global
   alias Crit.Setup.Schemas.Institution
   alias Crit.Setup.InstitutionApi
-  use Crit.Global.Default
 
   test "the institutions are preloaded when app starts" do
     assert InstitutionApi.all == Repo.all(Institution)

@@ -4,7 +4,7 @@ defmodule CritWeb.ConnExtras do
   alias Crit.Factory
   alias Crit.Sql
   import CritWeb.Plugs.Accessors
-  use Crit.Global.Default
+  use Crit.Global.Constants
   alias Phoenix.HTML
   alias Crit.Audit.ToMemory.Server, as: Audit
 

@@ -3,7 +3,7 @@ defmodule Crit.Extras.SqlT do
   Shorthand Sql functions for use in tests.
   """
 
-  use Crit.Global.Default
+  use Crit.Global.Constants
   alias Crit.Sql
 
   def all_ids(schema) do

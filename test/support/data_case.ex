@@ -23,7 +23,6 @@ defmodule Crit.DataCase do
       import Ecto.Query
       import Crit.DataCase
       alias Crit.Factory
-      use Crit.Global.Default
       use Crit.Global.Constants
       use Crit.Exemplars.Simple
       alias Crit.Extras.SqlT

@@ -1,7 +1,6 @@
 alias Crit.Sql
 alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Global.Constants
-alias Crit.Global.Default
 alias Crit.Setup.InstitutionApi
 
 Application.ensure_all_started(:crit)

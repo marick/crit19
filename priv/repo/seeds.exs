@@ -17,7 +17,6 @@ alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Setup.{AnimalApi,InstitutionApi}
 alias Crit.Setup.Schemas.ServiceGap
 alias Crit.Global.Constants
-alias Crit.Global.Default
 alias Ecto.Datespan
 
 Application.ensure_all_started(:crit)

@@ -6,7 +6,6 @@ defmodule Crit.Exemplars.Available do
   """ 
   
   use ExUnit.CaseTemplate
-  use Crit.Global.Default
   use Crit.Global.Constants
   alias Crit.Factory
   alias Crit.Setup.AnimalApi
