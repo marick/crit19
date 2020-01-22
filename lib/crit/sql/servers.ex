@@ -2,6 +2,7 @@ defmodule Crit.Sql.Servers do
   use GenServer
   alias Crit.Sql.PrefixServer
   alias Crit.Global
+  alias Crit.Setup.InstitutionApi
   require Logger
 
   def start_link(opts) do
@@ -15,7 +16,7 @@ defmodule Crit.Sql.Servers do
 
   @impl GenServer
   def init(_) do
-    institutions = Global.all_institutions()
+    institutions = InstitutionApi.all
     servers = Map.new(institutions, &start_one/1)
     {:ok, servers}
   end

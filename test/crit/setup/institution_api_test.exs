@@ -1,19 +1,20 @@
-defmodule Crit.GlobalTest do
+defmodule Crit.Setup.InstitutionApiTest do
   use Crit.DataCase
   alias Crit.Global
   alias Crit.Setup.Schemas.Institution
+  alias Crit.Setup.InstitutionApi
   use Crit.Global.Default
 
   test "the institutions are preloaded when app starts" do
-    assert Global.all_institutions() == Repo.all(Institution)
+    assert InstitutionApi.all == Repo.all(Institution)
   end
 
   test "during testing, there's a single institution" do
-    assert [_] = Global.all_institutions()
+    assert [_] = InstitutionApi.all
   end
   
   test "the institution is labeled with a special shortname" do
-    [retrieved] = Global.all_institutions()
+    [retrieved] = InstitutionApi.all
 
     assert retrieved.short_name == @institution
   end

@@ -4,7 +4,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   import CritWeb.Plugs.Authorize
   alias Crit.Users
   alias Crit.Users.UniqueId
-  alias Crit.Global
+  alias Crit.Setup.InstitutionApi
   alias CritWeb.PublicController
   use Crit.Global.Default
   use Crit.Errors
@@ -69,7 +69,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     )
   end
 
-  def institution_options(selected, institutions \\ Global.all_institutions()) do
+  def institution_options(selected, institutions \\ InstitutionApi.all()) do
     winnow = fn institution ->
       {institution.display_name, institution.short_name}
     end
