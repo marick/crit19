@@ -6,6 +6,11 @@ defmodule Crit.Setup.InstitutionApi do
     Repo.all(Institution)
   end
 
+  def timezone(institution) do
+    institution = Repo.get_by!(Institution, short_name: institution)
+    institution.timezone
+  end
+
   @doc """
   This institution must be in the database(s) for all environments: dev, prod, test. 
   It is also "default" in the sense that a dropdown list of institutions should

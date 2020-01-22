@@ -5,7 +5,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
   alias Pile.TimeHelper
   alias Ecto.Changeset
   alias Ecto.Datespan
-  alias Crit.Global
+  alias Crit.Setup.InstitutionApi
 
   # Assumes this partial schema. 
   # Various constants are reasonably stable, given the domain.
@@ -30,7 +30,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
     end
 
     test "the special value `today`" do
-      given Global.timezone, [@institution], do: @timezone
+      given InstitutionApi.timezone, [@institution], do: @timezone
       today_date = TimeHelper.today_date(@timezone)
 
       make_changeset(in_service_datestring: @today,

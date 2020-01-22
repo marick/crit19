@@ -1,6 +1,5 @@
 alias Crit.Setup.Schemas.{Institution,TimeSlot}
 alias Crit.Setup.InstitutionApi
-alias Crit.Global
 alias Crit.Repo
 
 {:ok, _} = Repo.insert(InstitutionApi.default)

@@ -5,8 +5,8 @@ defmodule Crit.FieldConverters.ToSpan do
   alias Ecto.Changeset
   alias Pile.TimeHelper
   alias Ecto.Datespan
-  alias Crit.Global
   import Pile.Interface
+  alias Crit.Setup.InstitutionApi
 
   # Assumes this partial schema. Fields are constant because they come from
   # the domain.
@@ -112,7 +112,7 @@ defmodule Crit.FieldConverters.ToSpan do
         {:ok, @never}
       @today ->
         institution = Changeset.fetch_field!(changeset, :institution)
-        timezone = some(Global).timezone(institution)
+        timezone = some(InstitutionApi).timezone(institution)
         {:ok, TimeHelper.today_date(timezone)}
       _ -> 
         Date.from_iso8601(datestring)

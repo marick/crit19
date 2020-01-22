@@ -1,6 +1,5 @@
 defmodule Crit.Setup.InstitutionApiTest do
   use Crit.DataCase
-  alias Crit.Global
   alias Crit.Setup.Schemas.Institution
   alias Crit.Setup.InstitutionApi
 
@@ -19,7 +18,7 @@ defmodule Crit.Setup.InstitutionApiTest do
   end
 
   test "an institution has a timezone" do
-    actual = Global.timezone(@institution) 
+    actual = InstitutionApi.timezone(@institution) 
     assert actual == InstitutionApi.default.timezone
   end
 end
