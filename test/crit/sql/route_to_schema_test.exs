@@ -1,4 +1,4 @@
-defmodule Crit.Sql.PrefixServerTest do
+defmodule Crit.Sql.RouteToSchemaTest do
   use Crit.DataCase
   alias Crit.Repo
   alias Crit.Sql

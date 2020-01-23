@@ -10,7 +10,10 @@ defmodule Crit.Setup.InstitutionSupervisor do
   @impl true
   def init(:ok) do
     InstitutionApi.all
-    |> Enum.map(&({InstitutionServer, &1}))
+    |> Enum.map(fn institution ->
+         Supervisor.child_spec({InstitutionServer, institution},
+           id: institution.short_name)
+       end)
     |> Supervisor.init(strategy: :one_for_one)
   end
 end
