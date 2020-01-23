@@ -12,6 +12,7 @@ defmodule CritWeb.Reservations.ReservationController do
     render(conn, "backdated.html",
       changeset: ReservationForm.initial,
       path: path(:record_step_1),
-      options: InstitutionApi.available_species(institution(conn)))
+      species_options: InstitutionApi.available_species(institution(conn)),
+      time_slot_options: InstitutionApi.time_slot_tuples(institution(conn)))
   end
 end

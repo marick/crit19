@@ -13,7 +13,7 @@ defmodule Crit.Setup.InstitutionSupervisor do
     |> Enum.map(fn institution ->
          Supervisor.child_spec({InstitutionServer, institution},
            id: institution.short_name)
-       end)
+    end)
     |> Supervisor.init(strategy: :one_for_one)
   end
 end

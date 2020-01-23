@@ -21,13 +21,13 @@
 <div class="ui segment">
   <div class="fields">
     <%= dropdown f, "Species", :species_id,
-          options: @options,
+          options: @species_options,
           dropdown_id: "species_select" %>
 
     <%= small_calendar(f, "Date", :date, unique: "only") %>
 
     <%= dropdown f, "Time", :part_of_day,
-          options: ["morning", "afternoon", "all day", "evening"],
+          options: @time_slot_options,
           dropdown_id: "part_of_day_select" %>
   </div>
 
