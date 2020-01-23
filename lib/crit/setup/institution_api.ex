@@ -1,15 +1,14 @@
 defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
   alias Crit.Setup.Schemas.{Institution,TimeSlot}
+  import Crit.Setup.InstitutionServer, only: [server: 1]
 
   def all do
     Repo.all(Institution)
   end
 
-  defp pid(institution), do: String.to_atom(institution)
-
   def timezone(institution) do
-    institution = GenServer.call(pid(institution), :raw)
+    institution = GenServer.call(server(institution), :raw)
     institution.timezone
   end
 

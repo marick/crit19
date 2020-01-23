@@ -2,8 +2,11 @@ defmodule Crit.Setup.InstitutionServer do
   use GenServer
   alias Crit.Setup.Schemas.Institution
 
+  def server(short_name), do: String.to_atom(short_name)
+
   def start_link(institution),
-    do: GenServer.start_link(__MODULE__, institution, name: String.to_atom(institution.short_name))
+    do: GenServer.start_link(__MODULE__, institution,
+          name: server(institution.short_name))
 
   # Server part
 
