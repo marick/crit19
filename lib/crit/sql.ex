@@ -1,10 +1,11 @@
 defmodule Crit.Sql do
   alias Crit.Sql.Servers
   alias Crit.Repo
+  import Crit.Setup.InstitutionServer, only: [server: 1]
 
-  def all(queryable, opts \\ [], key) do
-    server = Servers.server_for(key)
-    GenServer.call(server, {:all, [queryable], opts})
+  def all(queryable, opts \\ [], institution) do
+    GenServer.call(server(institution),
+      {:sql, :all, [queryable], opts})
   end
 
   def delete_all(queryable, opts \\ [], key) do
