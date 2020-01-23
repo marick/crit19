@@ -2,8 +2,6 @@ defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
   alias Crit.Setup.Schemas.{Institution,TimeSlot}
   import Crit.Setup.InstitutionServer, only: [server: 1]
-  alias Crit.Setup.HiddenSchemas
-  alias Crit.Sql
 
   def all do
     Repo.all(Institution)
@@ -15,9 +13,7 @@ defmodule Crit.Setup.InstitutionApi do
   end
 
   def available_species(institution) do
-    HiddenSchemas.Species.Query.ordered()
-    |> Sql.all(institution)
-    |> Enum.map(fn %HiddenSchemas.Species{name: name, id: id} -> {name, id} end)
+    GenServer.call(server(institution), :available_species)
   end
   
 

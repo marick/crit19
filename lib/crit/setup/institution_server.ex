@@ -2,8 +2,9 @@ defmodule Crit.Setup.InstitutionServer do
   use GenServer
   alias Crit.Setup.Schemas.Institution
   alias Crit.Sql.RouteToSchema
+  alias Crit.Setup.HiddenSchemas.Species
 
-  defstruct institution: nil, router: nil
+  defstruct institution: nil, router: nil, species: []
   
 
   def server(short_name), do: String.to_atom(short_name)
@@ -22,6 +23,11 @@ defmodule Crit.Setup.InstitutionServer do
   @impl true
   def handle_call(:raw, _from, state) do
     {:reply, state.institution, state}
+  end
+
+  @impl true
+  def handle_call(:available_species, _from, state) do
+    {:reply, state.species, state}
   end
 
   @impl true
@@ -49,7 +55,11 @@ defmodule Crit.Setup.InstitutionServer do
   # Util
   defp new_state(institution) do
     router = if institution.prefix, do: RouteToSchema, else: RouteToRepo
-    %__MODULE__{institution: institution, router: router}
+    species =
+      router.forward(:all, [Species.Query.ordered()], [], institution)
+      |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
+
+    %__MODULE__{institution: institution, router: router, species: species}
   end
 
   
