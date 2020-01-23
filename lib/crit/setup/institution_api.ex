@@ -2,14 +2,19 @@ defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
   alias Crit.Setup.Schemas.{Institution,TimeSlot}
   import Crit.Setup.InstitutionServer, only: [server: 1]
+  import Ecto.Query
 
   def all do
-    Repo.all(Institution)
+    Repo.all(from i in Institution, preload: :time_slots)
   end
 
   def timezone(institution) do
     institution = GenServer.call(server(institution), :raw)
     institution.timezone
+  end
+
+  def time_slot_tuples(institution) do
+    GenServer.call(server(institution), :time_slots)
   end
 
   def available_species(institution) do

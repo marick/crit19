@@ -26,6 +26,14 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
+  def handle_call(:time_slots, _from, state) do
+    tuples = 
+      state.institution.time_slots
+      |> Enum.map(fn %{name: name, id: id} -> {name, id} end)
+    {:reply, tuples, state}
+  end
+
+  @impl true
   def handle_call(:available_species, _from, state) do
     {:reply, state.species, state}
   end
