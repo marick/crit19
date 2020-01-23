@@ -6,8 +6,10 @@ defmodule Crit.Setup.InstitutionApi do
     Repo.all(Institution)
   end
 
+  defp pid(institution), do: String.to_atom(institution)
+
   def timezone(institution) do
-    institution = Repo.get_by!(Institution, short_name: institution)
+    institution = GenServer.call(pid(institution), :raw)
     institution.timezone
   end
 
@@ -38,6 +40,4 @@ defmodule Crit.Setup.InstitutionApi do
                   ]
       }
   end
-
-  
 end
