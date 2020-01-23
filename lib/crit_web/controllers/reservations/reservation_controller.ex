@@ -3,7 +3,7 @@ defmodule CritWeb.Reservations.ReservationController do
   use CritWeb.Controller.Path, :reservation_path
   import CritWeb.Plugs.Authorize
   alias CritWeb.Reservations.ReservationForm
-  alias Crit.Setup.AnimalApi
+  alias Crit.Setup.InstitutionApi
 
   plug :must_be_able_to, :make_reservations
 
@@ -12,6 +12,6 @@ defmodule CritWeb.Reservations.ReservationController do
     render(conn, "backdated.html",
       changeset: ReservationForm.initial,
       path: path(:record_step_1),
-      options: AnimalApi.available_species(institution(conn)))
+      options: InstitutionApi.available_species(institution(conn)))
   end
 end

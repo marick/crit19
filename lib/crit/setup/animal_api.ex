@@ -2,8 +2,6 @@ defmodule Crit.Setup.AnimalApi do
   use Crit.Global.Constants
   import Pile.Interface
   alias Crit.Setup.AnimalImpl.{Read,BulkCreationTransaction,Write}
-  alias Crit.Sql
-  alias Crit.Setup.HiddenSchemas
   alias Crit.Setup.Schemas.{Animal,BulkAnimal}
   alias Ecto.ChangesetX
 
@@ -63,9 +61,4 @@ defmodule Crit.Setup.AnimalApi do
      |> BulkAnimal.changeset(%{})
   end
 
-  def available_species(institution) do
-    HiddenSchemas.Species.Query.ordered()
-    |> Sql.all(institution)
-    |> Enum.map(fn %HiddenSchemas.Species{name: name, id: id} -> {name, id} end)
-  end
 end

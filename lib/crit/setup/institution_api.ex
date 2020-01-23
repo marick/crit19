@@ -2,6 +2,8 @@ defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
   alias Crit.Setup.Schemas.{Institution,TimeSlot}
   import Crit.Setup.InstitutionServer, only: [server: 1]
+  alias Crit.Setup.HiddenSchemas
+  alias Crit.Sql
 
   def all do
     Repo.all(Institution)
@@ -11,6 +13,13 @@ defmodule Crit.Setup.InstitutionApi do
     institution = GenServer.call(server(institution), :raw)
     institution.timezone
   end
+
+  def available_species(institution) do
+    HiddenSchemas.Species.Query.ordered()
+    |> Sql.all(institution)
+    |> Enum.map(fn %HiddenSchemas.Species{name: name, id: id} -> {name, id} end)
+  end
+  
 
   @doc """
   This institution must be in the database(s) for all environments: dev, prod, test. 

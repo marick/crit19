@@ -21,4 +21,10 @@ defmodule Crit.Setup.InstitutionApiTest do
     actual = InstitutionApi.timezone(@institution) 
     assert actual == InstitutionApi.default.timezone
   end
+
+  test "an institution has tuples of species" do
+    actual = InstitutionApi.available_species(@institution)
+    expected = [{@bovine, @bovine_id}, {@equine, @equine_id}]
+    assert actual == expected
+  end
 end

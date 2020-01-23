@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.AnimalController do
   use CritWeb.Controller.Path, :setup_animal_path
   import CritWeb.Plugs.Authorize
 
-  alias Crit.Setup.AnimalApi
+  alias Crit.Setup.{AnimalApi,InstitutionApi}
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
   
@@ -41,7 +41,7 @@ defmodule CritWeb.Setup.AnimalController do
     render(conn, "bulk_creation.html",
       changeset: changeset,
       path: path(:bulk_create),
-      options: AnimalApi.available_species(institution(conn)))
+      options: InstitutionApi.available_species(institution(conn)))
   end
 
   def bulk_create(conn, %{"bulk_animal" => raw_params}) do
