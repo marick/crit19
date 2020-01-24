@@ -5,7 +5,7 @@
   <h1 class="ui header">Dashboard</h1>
   <div class="ui center aligned cards">
     <%= dashboard_card "Reservations",
-        [ list_link("Record a session that was not pre-reserved", ReservationController, :backdated_form),
+        [ list_link("Record a session after it happened", ReservationController, :after_the_fact_form_1),
         ] %>
     <%= dashboard_card "Animals and Procedures",
         [ list_link("Add animals", AnimalController, :bulk_create_form),

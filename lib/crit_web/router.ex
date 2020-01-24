@@ -63,7 +63,7 @@ IO.puts(
   scope "/reservation", CritWeb.Reservations do
     pipe_through :browser
 
-    get "/record", ReservationController, :backdated_form
+    get "/after_the_fact", ReservationController, :after_the_fact_form_1
     post "/record_step_1", ReservationController, :record_step_1
   end
   

@@ -1,4 +1,4 @@
-<!-- Purpose: <%= Purpose.record_a_use_that_was_not_prereserved %> -->
+<!-- Purpose: <%= Purpose.after_the_fact_pick_species_and_time %> -->
 
 <script language="javascript">
   $(document)

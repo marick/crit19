@@ -1,4 +1,4 @@
-defmodule CritWeb.Reservations.ReservationController.ReadTest do
+defmodule CritWeb.Reservations.ReservationController.AfterTheFactTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.ReservationController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
@@ -7,8 +7,8 @@ defmodule CritWeb.Reservations.ReservationController.ReadTest do
 
   describe "recording an earlier use" do
     test "the first form", %{conn: conn} do
-      get_via_action(conn, :backdated_form)
-      |> assert_purpose(record_a_use_that_was_not_prereserved())
+      get_via_action(conn, :after_the_fact_form_1)
+      |> assert_purpose(after_the_fact_pick_species_and_time())
     end
   end
 end

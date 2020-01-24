@@ -5,7 +5,7 @@ defmodule CritWeb.Reservations.BlockingAuthorizationTest do
 
   test "how an unlogged-in user is blocked", %{conn: conn} do
     assert_authorization_failures(conn,
-      [&(get &1, ReservationController.path(:backdated_form)),
+      [&(get &1, ReservationController.path(:after_the_fact_form_1)),
       ])
   end
 
@@ -17,7 +17,7 @@ defmodule CritWeb.Reservations.BlockingAuthorizationTest do
 
     test "blocked", %{conn: conn} do
       assert_authorization_failures(conn,
-        [&(get &1, ReservationController.path(:backdated_form)),
+        [&(get &1, ReservationController.path(:after_the_fact_form_1)),
         ])
     end
   end

@@ -34,7 +34,7 @@ defmodule CritWeb.Templates.Purpose do
   def public_facing_page, 
     do: "public facing page"
 
-  def record_a_use_that_was_not_prereserved, 
-    do: "record a use that was not prereserved"
+  def after_the_fact_pick_species_and_time, 
+    do: "after the fact pick species and time"
 
 end
