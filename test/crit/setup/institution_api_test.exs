@@ -17,6 +17,11 @@ defmodule Crit.Setup.InstitutionApiTest do
     assert retrieved.short_name == @institution
   end
 
+  test "A single institution can be retrieved" do
+    retrieved = InstitutionApi.one!(short_name: @institution)
+    assert retrieved.short_name == @institution
+  end
+
   test "an institution has a timezone" do
     actual = InstitutionApi.timezone(@institution) 
     assert actual == InstitutionApi.default.timezone

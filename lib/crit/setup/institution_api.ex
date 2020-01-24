@@ -5,7 +5,11 @@ defmodule Crit.Setup.InstitutionApi do
   import Ecto.Query
 
   def all do
-    Repo.all(from i in Institution, preload: :time_slots)
+    Repo.all(from Institution, preload: :time_slots)
+  end
+
+  def one!(kws) do
+    Repo.one(from Institution, where: ^kws, preload: :time_slots)
   end
 
   def timezone(institution) do

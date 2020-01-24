@@ -1,8 +1,8 @@
 defmodule Crit.Setup.InstitutionServer do
   use GenServer
-  alias Crit.Setup.Schemas.Institution
   alias Crit.Sql.RouteToSchema
   alias Crit.Setup.HiddenSchemas.Species
+  alias Crit.Setup.InstitutionApi
 
   defstruct institution: nil, router: nil, species: []
   
@@ -41,7 +41,7 @@ defmodule Crit.Setup.InstitutionServer do
   @impl true
   def handle_call(:reload, _from, state) do
     short_name = state.institution.short_name
-    new_institution = Crit.Repo.get_by!(Institution, short_name: short_name)
+    new_institution = InstitutionApi.one!(short_name: short_name)
     {:reply, :ok, new_state(new_institution)}
   end
 
