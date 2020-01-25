@@ -18,6 +18,9 @@ defmodule Crit.Setup.InstitutionApi do
     institution.timezone
   end
 
+  # This could just be a list of names, but the names are arbitrary
+  # strings, and I worry about things like smart quotes not making
+  # the round trip correctly.
   def time_slot_tuples(institution) do
     GenServer.call(server(institution), :time_slots)
   end

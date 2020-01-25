@@ -16,7 +16,7 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactTest do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
                  date_showable_date: "January 1, 2019",
-                 part_of_day_id: "1"}
+                 time_slot_id: "1"}
     
       post_to_action(conn, :after_the_fact_record_1, nested(params))
       |> assert_purpose(after_the_fact_pick_animals())

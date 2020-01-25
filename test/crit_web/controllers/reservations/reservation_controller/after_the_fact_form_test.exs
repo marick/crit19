@@ -8,7 +8,7 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
                  date_showable_date: "January 1, 2019",
-                 part_of_day_id: "1",
+                 time_slot_id: "1",
                  institution: @institution}
 
       AfterTheFactForm.form_1_changeset(params)

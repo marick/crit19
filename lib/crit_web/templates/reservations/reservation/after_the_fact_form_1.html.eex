@@ -4,7 +4,7 @@
   $(document)
     .ready(function() { 
         $('#species_select').dropdown();
-        $('#part_of_day_select').dropdown();
+        $('#time_slot_select').dropdown();
     });
 </script>
 
@@ -26,9 +26,9 @@
 
     <%= small_calendar(f, "Date", :date, unique: "showable") %>
 
-    <%= dropdown f, "Time", :part_of_day_id,
+    <%= dropdown f, "Time", :time_slot_id,
           options: @time_slot_options,
-          dropdown_id: "part_of_day_select" %>
+          dropdown_id: "time_slott_select" %>
   </div>
 
 </div>

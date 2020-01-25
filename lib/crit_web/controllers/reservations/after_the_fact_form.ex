@@ -11,7 +11,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     field :species_id, :integer
     field :date, :date
     field :date_showable_date, :string
-    field :part_of_day_id, :integer
+    field :time_slot_id, :integer
     field :institution, :string
     
     field :species_name, :string
@@ -19,7 +19,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
   end
 
   @form_1_fields [:species_id, :date, :date_showable_date,
-                  :part_of_day_id, :institution]
+                  :time_slot_id, :institution]
 
   def empty do
     change(%__MODULE__{})
@@ -42,7 +42,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
 
   def synthesize_span(changeset) do
     args =
-      [:date, :part_of_day_id, :institution]
+      [:date, :time_slot_id, :institution]
       |> Enum.map(&(get_change changeset, &1))
     
     result = apply(InstitutionApi, :timespan, args)
