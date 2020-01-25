@@ -3,7 +3,7 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
   alias CritWeb.Reservations.AfterTheFactForm
   alias Ecto.Timespan
 
-  describe "form_1_changeset" do
+  describe "form_1_changeset synthesizes some values" do
     test "success" do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",

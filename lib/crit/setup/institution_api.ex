@@ -25,14 +25,17 @@ defmodule Crit.Setup.InstitutionApi do
     GenServer.call(server(institution), :time_slots)
   end
 
+  def time_slot_name(id, institution) do
+    time_slot = time_slot_by_id(id, institution)
+    time_slot.name
+  end
+
   def timespan(%Date{} = date, time_slot_id, institution) do
-    {:ok, time_slot} =
-      GenServer.call(server(institution), {:time_slot_by_id, time_slot_id})
+    time_slot = time_slot_by_id(time_slot_id, institution)
     time_tuple = Time.to_erl(time_slot.start)
     date_tuple = Date.to_erl(date)
     datetime = NaiveDateTime.from_erl!({date_tuple, time_tuple})
     Timespan.plus(datetime, time_slot.duration, :minute)
-    
   end
 
   def available_species(institution) do
@@ -73,4 +76,13 @@ defmodule Crit.Setup.InstitutionApi do
                   ]
       }
   end
+
+  
+
+  defp time_slot_by_id(id, institution) do 
+    {:ok, time_slot} =
+      GenServer.call(server(institution), {:time_slot_by_id, id})
+    time_slot
+  end
+
 end
