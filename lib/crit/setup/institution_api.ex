@@ -3,6 +3,7 @@ defmodule Crit.Setup.InstitutionApi do
   alias Crit.Setup.Schemas.{Institution,TimeSlot}
   import Crit.Setup.InstitutionServer, only: [server: 1]
   import Ecto.Query
+  alias Ecto.Timespan
 
   def all do
     Repo.all(from Institution, preload: :time_slots)
@@ -19,6 +20,16 @@ defmodule Crit.Setup.InstitutionApi do
 
   def time_slot_tuples(institution) do
     GenServer.call(server(institution), :time_slots)
+  end
+
+  def timespan(%Date{} = date, time_slot_id, institution) do
+    {:ok, time_slot} =
+      GenServer.call(server(institution), {:time_slot_by_id, time_slot_id})
+    time_tuple = Time.to_erl(time_slot.start)
+    date_tuple = Date.to_erl(date)
+    datetime = NaiveDateTime.from_erl!({date_tuple, time_tuple})
+    Timespan.plus(datetime, time_slot.duration, :minute)
+    
   end
 
   def available_species(institution) do

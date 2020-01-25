@@ -37,12 +37,9 @@ defmodule Crit.Setup.InstitutionServer do
   def handle_call({:time_slot_by_id, slot_id}, _from, state) do
     result = 
       state.institution.time_slots
-      |> IO.inspect
       |> Enum.find(fn slot -> slot.id == slot_id end)
     {:reply, {:ok, result}, state}
   end
-
-  
 
   @impl true
   def handle_call(:available_species, _from, state) do

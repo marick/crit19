@@ -1,6 +1,7 @@
 defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
   use Crit.DataCase, async: true
   alias CritWeb.Reservations.AfterTheFactForm
+  alias Ecto.Timespan
 
   describe "form_1_changeset" do
     test "success" do
@@ -15,7 +16,8 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
            species_id: @bovine_id,
            species_name: @bovine,
            date: ~D[2019-01-01],
-           date_showable_date: "January 1, 2019"
+           date_showable_date: "January 1, 2019",
+           span: Timespan.plus(~N[2019-01-01 08:00:00], 4 * 60, :minute)
          )
     end
   end

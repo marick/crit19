@@ -11,7 +11,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     field :species_id, :integer
     field :date, :date
     field :date_showable_date, :string
-    field :part_of_day_id, :string
+    field :part_of_day_id, :integer
     field :institution, :string
     
     field :species_name, :string
@@ -29,14 +29,23 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     empty()
     |> cast(attrs, @form_1_fields)
     |> validate_required(@form_1_fields)
-    |> synthesize_species
+    |> synthesize_species_name
+    |> synthesize_span
   end
 
-
-  def synthesize_species(changeset) do
+  def synthesize_species_name(changeset) do
     id = get_change(changeset, :species_id)
     institution = get_change(changeset, :institution)
     name = InstitutionApi.species_name(id, institution)
     put_change(changeset, :species_name, name)
+  end
+
+  def synthesize_span(changeset) do
+    args =
+      [:date, :part_of_day_id, :institution]
+      |> Enum.map(&(get_change changeset, &1))
+    
+    result = apply(InstitutionApi, :timespan, args)
+    put_change(changeset, :span, result)
   end
 end
