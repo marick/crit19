@@ -30,23 +30,43 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     empty()
     |> cast(attrs, @form_1_fields)
     |> validate_required(@form_1_fields)
-    |> synthesize_species_name
-    |> synthesize_span
+    |> add_species_name
+    |> add_span
+    |> add_time_slot_name
   end
 
-  def synthesize_species_name(changeset) do
-    id = get_change(changeset, :species_id)
-    institution = get_change(changeset, :institution)
-    name = InstitutionApi.species_name(id, institution)
-    put_change(changeset, :species_name, name)
+  def add_species_name(changeset) do
+    put_change(changeset, :species_name, species_name_from(changeset))
   end
 
-  def synthesize_span(changeset) do
+  def add_span(changeset) do
     args =
       [:date, :time_slot_id, :institution]
       |> Enum.map(&(get_change changeset, &1))
     
     result = apply(InstitutionApi, :timespan, args)
     put_change(changeset, :span, result)
+  end
+
+  def add_time_slot_name(changeset) do
+    put_change(changeset, :time_slot_name, time_slot_name_from(changeset))
+  end
+
+
+  defp institution(changeset),
+    do: get_change(changeset, :institution)
+
+  defp species_id(changeset),
+    do: get_change(changeset, :species_id)
+
+  defp time_slot_id(changeset),
+    do: get_change(changeset, :time_slot_id)
+
+  defp species_name_from(changeset) do
+    InstitutionApi.species_name(species_id(changeset), institution(changeset))
+  end
+
+  def time_slot_name_from(changeset) do
+    InstitutionApi.time_slot_name(time_slot_id(changeset), institution(changeset))
   end
 end
