@@ -9,14 +9,19 @@ defmodule CritWeb.Reservations.ReservationController do
 
   def after_the_fact_form_1(conn, _params) do
     render(conn, "after_the_fact_form_1.html",
-      changeset: AfterTheFactForm.changeset_1,
+      changeset: AfterTheFactForm.empty,
       path: path(:after_the_fact_record_1),
       species_options: InstitutionApi.available_species(institution(conn)),
       time_slot_options: InstitutionApi.time_slot_tuples(institution(conn)))
   end
 
   def after_the_fact_record_1(conn, %{"after_the_fact_form" => params}) do
-    IO.inspect params
-    render(conn, "after_the_fact_form_2.html")
+    changeset = 
+      params
+      |> Map.put("institution", institution(conn))
+      |> AfterTheFactForm.form_1_changeset
+
+    render(conn, "after_the_fact_form_2.html",
+      changeset: changeset)
   end
 end

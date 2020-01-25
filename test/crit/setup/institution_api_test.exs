@@ -33,6 +33,10 @@ defmodule Crit.Setup.InstitutionApiTest do
     assert actual == expected
   end
 
+  test "an institution can convert an id to a species" do
+    assert InstitutionApi.species_name(@bovine_id, @institution) == @bovine
+  end
+
   test "an institution has time slots" do
     actual = 
       InstitutionApi.time_slot_tuples(@institution)

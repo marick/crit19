@@ -1,1 +1,11 @@
-hi
+<!-- Purpose: <%= Purpose.after_the_fact_pick_animals %> -->
+
+<div class="ui main center aligned text container">
+
+  <h1 class="ui center aligned header">Record a Previous Use of Some Animals</h1>
+
+  <%= start_centered_form() %>
+  <%= end_centered_form() %>
+
+  
+</div>

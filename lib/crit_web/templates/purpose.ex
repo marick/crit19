@@ -37,4 +37,7 @@ defmodule CritWeb.Templates.Purpose do
   def after_the_fact_pick_species_and_time, 
     do: "after the fact pick species and time"
 
+  def after_the_fact_pick_animals, 
+    do: "after the fact pick animals"
+
 end

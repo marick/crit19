@@ -24,6 +24,12 @@ defmodule Crit.Setup.InstitutionApi do
   def available_species(institution) do
     GenServer.call(server(institution), :available_species)
   end
+
+  def species_name(species_id, institution) do
+    available_species(institution)
+    |> Enum.find(fn {_, id} -> id == species_id end)
+    |> elem(0)
+  end
   
 
   @doc """
