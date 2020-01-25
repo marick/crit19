@@ -15,7 +15,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     field :institution, :string
     
     field :species_name, :string
-    field :timespan, Timespan
+    field :span, Timespan
   end
 
   @form_1_fields [:species_id, :date, :date_showable_date,
