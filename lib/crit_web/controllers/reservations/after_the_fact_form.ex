@@ -1,4 +1,4 @@
-defmodule CritWeb.Reservations.ReservationForm do
+defmodule CritWeb.Reservations.AfterTheFactForm do
   use Ecto.Schema
   import Ecto.Changeset
   # import Pile.ChangesetFlow
@@ -9,18 +9,14 @@ defmodule CritWeb.Reservations.ReservationForm do
   embedded_schema do
     field :species_id, :integer
     field :date, :date
-    field :part_of_day, :string
+    field :date_showable_date, :string
+    field :part_of_day_id, :string
   end
 
   @form_fields [:species_id, :date, :part_of_day]
 
-  def initial do
+  def changeset_1 do
     change(%__MODULE__{})
   end
 
-  def changeset(bulk, attrs) do
-    bulk
-    |> cast(attrs, @form_fields)
-    |> validate_required(@form_fields)
-  end
 end

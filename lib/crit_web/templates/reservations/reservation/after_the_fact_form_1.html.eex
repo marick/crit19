@@ -24,9 +24,9 @@
           options: @species_options,
           dropdown_id: "species_select" %>
 
-    <%= small_calendar(f, "Date", :date, unique: "only") %>
+    <%= small_calendar(f, "Date", :date, unique: "showable") %>
 
-    <%= dropdown f, "Time", :part_of_day,
+    <%= dropdown f, "Time", :part_of_day_id,
           options: @time_slot_options,
           dropdown_id: "part_of_day_select" %>
   </div>

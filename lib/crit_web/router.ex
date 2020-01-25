@@ -64,7 +64,9 @@ IO.puts(
     pipe_through :browser
 
     get "/after_the_fact", ReservationController, :after_the_fact_form_1
-    post "/record_step_1", ReservationController, :record_step_1
+    post "/after_the_fact_record_1", ReservationController, :after_the_fact_record_1
+
+    
   end
   
   # Other scopes may use custom stacks.
