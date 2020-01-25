@@ -113,12 +113,12 @@ defmodule CritWeb.Fomantic.Elements do
             <%= label f, target, label %>
             <div class="ui input left icon">
               <i class="calendar icon"></i>
-              <input type="text" name="<%=date%>" id="<%=date%>"
-                     readonly="true"
-                     required="true"
-                     value=""
-                     placeholder="Click for a calendar"
-                     data-target="small-calendar.date"/>
+              <%= text_input f, String.to_atom(date), 
+                     readonly: true,
+                     required: true,
+                     value: "",
+                     placeholder: "Click for a calendar",
+                     data_target: "small-calendar.date" %>
               <%= error_tag f, target %>
             </div>
           </div>
