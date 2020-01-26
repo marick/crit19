@@ -65,6 +65,8 @@ IO.puts(
 
     get "/after_the_fact", ReservationController, :after_the_fact_form_1
     post "/after_the_fact_record_1", ReservationController, :after_the_fact_record_1
+    post "/after_the_fact_record_2", ReservationController, :after_the_fact_record_2
+    post "/after_the_fact_record_3", ReservationController, :after_the_fact_record_3
 
     
   end

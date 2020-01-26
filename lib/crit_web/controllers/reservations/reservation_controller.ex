@@ -22,6 +22,20 @@ defmodule CritWeb.Reservations.ReservationController do
       |> AfterTheFactForm.form_1_changeset
 
     render(conn, "after_the_fact_form_2.html",
-      changeset: changeset)
+      changeset: changeset,
+      path: path(:after_the_fact_record_2))
+
   end
+
+  def after_the_fact_record_1(conn, %{"after_the_fact_form" => params}) do
+    changeset = 
+      params
+      |> Map.put("institution", institution(conn))
+      |> AfterTheFactForm.form_1_changeset
+
+    render(conn, "after_the_fact_form_3.html",
+      changeset: changeset,
+      path: path(:after_the_fact_record_3))
+  end
+  
 end

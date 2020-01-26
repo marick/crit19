@@ -11,7 +11,6 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactTest do
   end
 
   describe "submitting the first form" do
-  
     test "success", %{conn: conn} do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
@@ -20,6 +19,8 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactTest do
     
       post_to_action(conn, :after_the_fact_record_1, nested(params))
       |> assert_purpose(after_the_fact_pick_animals())
+      |> assert_user_sees("January 1, 2019")
+      |> assert_user_sees(@institution_first_time_slot.name)
     end
   end
 

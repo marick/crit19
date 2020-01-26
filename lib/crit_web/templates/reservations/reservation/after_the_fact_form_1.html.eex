@@ -32,7 +32,7 @@
   </div>
 
 </div>
-<%= big_submit_button "Choose animals" %>
+<%= big_submit_button "Now choose animals" %>
 <% end %>
 </div>
   
