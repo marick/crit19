@@ -116,6 +116,13 @@ defmodule Ecto.Span do
           fragment(unquote(postgres_expr), unquote(container), unquote(contained))
         end
       end
+
+      defmacro contains_point(container, contained) do
+        postgres_expr = "?::daterange @> ?::date"
+        quote do
+          fragment(unquote(postgres_expr), unquote(container), unquote(contained))
+        end
+      end
     end
   end
 end

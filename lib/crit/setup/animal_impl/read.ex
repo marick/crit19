@@ -4,15 +4,18 @@ defmodule Crit.Setup.AnimalImpl.Read do
   alias Crit.Sql
   alias Crit.Setup.Schemas.ServiceGap
   alias Crit.FieldConverters.FromSpan
+  import Ecto.Datespan
+  import Ecto.Query
+  alias Crit.Setup.Schemas.Animal
 
   defmodule Query do
     import Ecto.Query
     alias Crit.Setup.Schemas.Animal
 
-    def all(), do: Ecto.Query.from(Animal)
+    def from_all(), do: Ecto.Query.from a in Animal
 
     def from(where) do
-      from Animal, where: ^where
+      from a in Animal, where: ^where
     end
 
     def from_ids(ids) do
@@ -33,9 +36,22 @@ defmodule Crit.Setup.AnimalImpl.Read do
     |> Query.preload_common()
     |> Sql.one(institution)
   end
+
+  def available(species_id, %Date{} = date,
+    [ignoring_service_gaps: true,
+     ignoring_uses: true], institution) do
+
+    query = 
+      Query.from([species_id: species_id])
+#      |> where([a], fragment("?::daterange @> ?::date", a.span, ^date))
+      |> where([a], contains_point(a.span, ^date))
+      |> Query.ordered
+
+    Sql.all(query, institution)
+  end
   
   def all(institution) do
-    Query.all
+    Query.from_all
     |> Query.preload_common()
     |> Query.ordered
     |> Sql.all(institution)

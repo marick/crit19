@@ -35,6 +35,13 @@ defmodule Crit.Setup.AnimalApi do
     |> some(Read).put_updatable_fields(institution)
   end
 
+  def available_after_the_fact(%{species_id: species_id, date: date}, institution) do
+    Read.available(species_id, date,
+      [ignoring_service_gaps: true,
+       ignoring_uses: true],
+      institution)
+  end
+
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
   def update(string_id, attrs, institution) do

@@ -27,7 +27,7 @@ defmodule CritWeb.Reservations.ReservationController do
 
   end
 
-  def after_the_fact_record_1(conn, %{"after_the_fact_form" => params}) do
+  def after_the_fact_record_2(conn, %{"after_the_fact_form" => params}) do
     changeset = 
       params
       |> Map.put("institution", institution(conn))
