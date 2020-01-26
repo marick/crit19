@@ -32,10 +32,7 @@ defmodule Crit.Setup.InstitutionApi do
 
   def timespan(%Date{} = date, time_slot_id, institution) do
     time_slot = time_slot_by_id(time_slot_id, institution)
-    time_tuple = Time.to_erl(time_slot.start)
-    date_tuple = Date.to_erl(date)
-    datetime = NaiveDateTime.from_erl!({date_tuple, time_tuple})
-    Timespan.plus(datetime, time_slot.duration, :minute)
+    Timespan.from_date_time_and_duration(date, time_slot.start, time_slot.duration)
   end
 
   def available_species(institution) do

@@ -11,6 +11,9 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
                  time_slot_id: "1",
                  institution: @institution}
 
+      expected_span =
+        Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
+
       AfterTheFactForm.form_1_changeset(params)
       |> assert_changes(
            species_id: @bovine_id,
@@ -18,7 +21,7 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
            date: ~D[2019-01-01],
            date_showable_date: "January 1, 2019",
            time_slot_name: @institution_first_time_slot.name,
-           span: Timespan.plus(~N[2019-01-01 08:00:00], 4 * 60, :minute)
+           span: expected_span
          )
     end
   end

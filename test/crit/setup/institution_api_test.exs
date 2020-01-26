@@ -57,7 +57,7 @@ defmodule Crit.Setup.InstitutionApiTest do
 
   test "an institution can convert symbolic values to a Timespan" do
     actual = InstitutionApi.timespan(~D[2019-01-01], 1, @institution)
-    expected = Timespan.plus(~N[2019-01-01 08:00:00], 4 * 60, :minute)
+    expected = Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
     assert actual == expected
   end
   
