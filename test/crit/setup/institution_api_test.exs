@@ -39,9 +39,8 @@ defmodule Crit.Setup.InstitutionApiTest do
   end
 
   test "an institution can convert an id to a timeslot name" do
-    time_slot = List.first(InstitutionApi.default.time_slots)
     actual = InstitutionApi.time_slot_name(1, @institution)
-    assert actual == time_slot.name
+    assert actual == @institution_first_time_slot.name
   end
 
   test "an institution has time slots" do

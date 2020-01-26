@@ -1,7 +1,6 @@
 defmodule Crit.Setup.InstitutionServerTest do
   use Crit.DataCase
   alias Crit.Setup.Schemas.Institution
-  alias Crit.Setup.InstitutionApi
   alias Ecto.Changeset
   import Crit.Setup.InstitutionServer, only: [server: 1]
 
@@ -34,13 +33,12 @@ defmodule Crit.Setup.InstitutionServerTest do
   end
 
   test "can find a slot by id", %{server: server} do
-    expected = List.first(InstitutionApi.default.time_slots)
     {:ok, found} = GenServer.call(server, {:time_slot_by_id, 1})
 
     assert_fields(found,
-      name: expected.name,
-      start: expected.start,
-      duration: expected.duration)
+      name: @institution_first_time_slot.name,
+      start: @institution_first_time_slot.start,
+      duration: @institution_first_time_slot.duration)
   end
 
   
