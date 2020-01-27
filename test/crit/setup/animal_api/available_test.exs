@@ -15,9 +15,10 @@ defmodule Crit.Setup.AnimalApi.AvailableTest do
 
       # Order is significant because the default ordering is by id.
       Factory.sql_insert!(:animal, to_be_ordered_second, @institution)
-      Factory.sql_insert!(:animal, to_be_found, @institution)
+      %{id: to_be_found_id} = Factory.sql_insert!(:animal, to_be_found, @institution)
       Factory.sql_insert!(:animal, to_be_skipped, @institution)
-      :ok
+
+      [to_be_found_id: to_be_found_id]
     end
     
     test "the species matters" do
@@ -30,6 +31,23 @@ defmodule Crit.Setup.AnimalApi.AvailableTest do
       
       refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_1})
       refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_8})
+    end
+
+    test "service gaps do NOT matter", %{to_be_found_id: animal_id} do
+      Factory.sql_insert!(:service_gap,
+        [animal_id: animal_id,
+         span: Datespan.customary(@date_2, @date_8)],
+        @institution)
+
+      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_2})
+      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_7})
+      
+      refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_1})
+      refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_8})
+    end
+
+    @tag :skip
+    test "animal being in use does not matter" do
     end
 
     def assert_available_after_the_fact(map) do 
