@@ -29,7 +29,7 @@ defmodule Crit.Setup.InstitutionServer do
   def handle_call(:time_slots, _from, state) do
     tuples = 
       state.institution.time_slots
-      |> Enum.map(fn %{name: name, id: id} -> {name, id} end)
+      |> EnumX.pairs(:name, :id)
     {:reply, tuples, state}
   end
 
@@ -37,7 +37,7 @@ defmodule Crit.Setup.InstitutionServer do
   def handle_call({:time_slot_by_id, slot_id}, _from, state) do
     result = 
       state.institution.time_slots
-      |> Enum.find(fn slot -> slot.id == slot_id end)
+      |> EnumX.find_by_id(slot_id)
     {:reply, {:ok, result}, state}
   end
 
@@ -73,7 +73,7 @@ defmodule Crit.Setup.InstitutionServer do
     router = if institution.prefix, do: RouteToSchema, else: RouteToRepo
     species =
       router.forward(:all, [Species.Query.ordered()], [], institution)
-      |> Enum.map(fn %Species{name: name, id: id} -> {name, id} end)
+      |> EnumX.pairs(:name, :id)
 
     %__MODULE__{institution: institution, router: router, species: species}
   end

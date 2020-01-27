@@ -33,5 +33,22 @@ defmodule EnumXTest do
     expected = [1, 2, 3]
     assert EnumX.ids(input) == expected
   end
+
+  test "pairs" do
+    input = [ %{name: "bossie", id: 1, extra: "stuff"},
+              %{name: "jake", id: 2, extra: "stuff"}
+            ]
+    expected = [{"bossie", 1}, {"jake", 2}]
+    assert expected == EnumX.pairs(input, :name, :id)
+  end
+
+  test "find_id" do
+    bossie = %{name: "bossie", id: 1, extra: "stuff"}
+    input = [ bossie,
+              %{name: "jake", id: 2, extra: "stuff"}
+            ]
+    assert bossie == EnumX.find_by_id(input, 1)
+  end
+  
 end
   
