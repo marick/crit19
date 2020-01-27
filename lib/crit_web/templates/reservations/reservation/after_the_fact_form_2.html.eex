@@ -13,6 +13,8 @@
     <%= hidden_input f, :species_id %>
     <%= hidden_input f, :date %>
     <%= hidden_input f, :time_slot_id %>
+
+    <%= multiple_select f, :animals, @animal_options %>
     
     <%= big_submit_button "Now choose procedures" %>
 <% end %>

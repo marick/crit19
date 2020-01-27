@@ -41,13 +41,10 @@ defmodule Crit.Setup.AnimalImpl.Read do
     [ignoring_service_gaps: true,
      ignoring_uses: true], institution) do
 
-    query = 
-      Query.from([species_id: species_id])
-#      |> where([a], fragment("?::daterange @> ?::date", a.span, ^date))
-      |> where([a], contains_point_fragment(a.span, ^date))
-      |> Query.ordered
-
-    Sql.all(query, institution)
+    Query.from([species_id: species_id])
+    |> where([a], contains_point_fragment(a.span, ^date))
+    |> Query.ordered
+    |> Sql.all(institution)
   end
   
   def all(institution) do

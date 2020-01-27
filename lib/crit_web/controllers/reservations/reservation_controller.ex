@@ -3,7 +3,7 @@ defmodule CritWeb.Reservations.ReservationController do
   use CritWeb.Controller.Path, :reservation_path
   import CritWeb.Plugs.Authorize
   alias CritWeb.Reservations.AfterTheFactForm
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Setup.{InstitutionApi,AnimalApi}
 
   plug :must_be_able_to, :make_reservations
 
@@ -21,9 +21,13 @@ defmodule CritWeb.Reservations.ReservationController do
       |> Map.put("institution", institution(conn))
       |> AfterTheFactForm.form_1_changeset
 
+    animals =
+      AnimalApi.available_after_the_fact(changeset.changes, @institution)
+
     render(conn, "after_the_fact_form_2.html",
       changeset: changeset,
-      path: path(:after_the_fact_record_2))
+      path: path(:after_the_fact_record_2),
+      animal_options: EnumX.pairs(animals, :name, :id))
 
   end
 
