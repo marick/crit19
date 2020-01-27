@@ -1,5 +1,6 @@
 defmodule Ecto.Timespan do
-  use Ecto.Span, db_type: :tsrange, type: Time
+  use Ecto.Span, outer_type: :tsrange,
+                 inner_type: {:timestamp, NaiveDateTime}
   alias Pile.TimeHelper
 
   defp convert_to_endpoint_type(%NaiveDateTime{} = endpoint), do: endpoint

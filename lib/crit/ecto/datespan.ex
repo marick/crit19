@@ -1,5 +1,6 @@
 defmodule Ecto.Datespan do
-  use Ecto.Span, db_type: :daterange, type: Date
+  use Ecto.Span, outer_type: :daterange,
+                 inner_type: {:date, Date}
   use Crit.Global.Constants
 
   defp convert_to_endpoint_type(%Date{} = date), do: date

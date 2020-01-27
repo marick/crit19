@@ -12,6 +12,14 @@ defmodule Crit.Ecto.TimespanTest do
                                         ~N[2001-01-01 01:12:03])
     assert plus_form == customary_form
   end
+  
+
+  test "Time.compare and NaiveDateTimes" do
+    datetime =  ~N[2001-01-01 01:02:03]
+    datetime2 = ~N[2222-02-22 01:02:03]
+
+    assert Time.compare(datetime, datetime2) == :eq
+  end
 
 
   test "conversions" do

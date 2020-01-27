@@ -101,9 +101,9 @@ defmodule Crit.Ecto.SpanTest do
     assert db_contains?(Timespan.infinite_down(@prev_moment, :exclusive))
     refute db_contains?(Timespan.infinite_down(@next_moment, :exclusive))
 
-    refute db_contains?(Timespan.infinite_down(@moment, :inclusive))
-    assert db_contains?(Timespan.infinite_down(@prev_moment, :inclusive))
-    refute db_contains?(Timespan.infinite_down(@next_moment, :inclusive))
+    refute db_contains?(@moment)
+    assert db_contains?(@prev_moment)
+    refute db_contains?(@next_moment)
 
     assert db_contains?(Timespan.customary(@long_ago, @prev_moment))
     assert db_contains?(Timespan.customary(@long_ago, @moment))
@@ -169,7 +169,6 @@ defmodule Crit.Ecto.SpanTest do
     add_reservation!(database_span)
 
     assert db_contains?(Timespan.infinite_up(@moment, :exclusive))
-
     assert db_contains?(Timespan.customary(@moment, @next_moment))
 
 
@@ -184,14 +183,18 @@ defmodule Crit.Ecto.SpanTest do
 
     assert db_contains?(Timespan.customary(@moment, @next_moment))
     assert db_overlaps?(Timespan.customary(@moment, @next_moment))
+    assert db_contains?(@moment)
+    refute db_contains?(@next_moment)
     
     refute db_contains?(Timespan.customary(@moment, @far_forward))
     assert db_overlaps?(Timespan.customary(@moment, @far_forward))
     
     refute db_contains?(Timespan.customary(@prev_moment, @moment))
+    refute db_contains?(@prev_moment)
     refute db_overlaps?(Timespan.customary(@prev_moment, @moment))
 
     refute db_contains?(Timespan.infinite_down(@far_forward, :inclusive))
+    refute db_contains?(@far_forward)
     assert db_overlaps?(Timespan.infinite_down(@far_forward, :inclusive))
     refute db_overlaps?(Timespan.infinite_down(@moment, :exclusive))
     assert db_overlaps?(Timespan.infinite_down(@moment, :inclusive))
@@ -199,15 +202,20 @@ defmodule Crit.Ecto.SpanTest do
     refute db_overlaps?(Timespan.infinite_up(@next_moment, :inclusive))
   end
 
-  defp db_contains?(timespan) do
+  defp db_contains?(%Timespan{} = timespan) do
     {:ok, range} = timespan |> Timespan.dump
-    query = from s in Reservation, where: contains(s.timespan, ^range)
+    query = from s in Reservation, where: contains_fragment(s.timespan, ^range)
     Sql.exists?(query, @institution)
   end
   
-  defp db_overlaps?(timespan) do
+  defp db_contains?(%NaiveDateTime{} = point) do
+    query = from s in Reservation, where: contains_point_fragment(s.timespan, ^point)
+    Sql.exists?(query, @institution)
+  end
+  
+  defp db_overlaps?(%Timespan{} = timespan) do
     {:ok, range} = timespan |> Timespan.dump
-    query = from s in Reservation, where: overlaps(s.timespan, ^range)
+    query = from s in Reservation, where: overlaps_fragment(s.timespan, ^range)
     Sql.exists?(query, @institution)
   end
   

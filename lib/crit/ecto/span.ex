@@ -1,11 +1,11 @@
 # Derived from https://github.com/aliou/radch
 
 defmodule Ecto.Span do
-  defmacro __using__(db_type: db_type,
-                     type: elixir_type) do
-
-    db_overlap_string = "?::#{db_type} && ?::#{db_type}"
-    db_contain_string = "?::#{db_type} @> ?::#{db_type}"
+  defmacro __using__(outer_type: db_range_type,
+                     inner_type: {db_endpoint_type, elixir_endpoint_type}) do
+    db_overlap_string = "?::#{db_range_type} && ?::#{db_range_type}"
+    db_contain_string = "?::#{db_range_type} @> ?::#{db_range_type}"
+    db_contain_point_string = "?::#{db_range_type} @> ?::#{db_endpoint_type}"
     
     quote do
       use Ecto.Type
@@ -42,7 +42,7 @@ defmodule Ecto.Span do
       def customary(first, last), do: new(first, last, true, false)
 
       @impl Ecto.Type
-      def type, do: unquote(db_type)
+      def type, do: unquote(db_range_type)
 
       @impl Ecto.Type
       def cast(%__MODULE__{} = range), do: {:ok, range}
@@ -90,7 +90,7 @@ defmodule Ecto.Span do
             {:unbound, _} -> false
             {_, :unbound} -> false
             _ -> 
-              (unquote(elixir_type).compare(right, left) == :eq)
+              (unquote(elixir_endpoint_type).compare(right, left) == :eq)
           end
         end
 
@@ -103,22 +103,22 @@ defmodule Ecto.Span do
         && equal_in?.(:last)
       end
 
-      defmacro overlaps(span1, span2) do
+      defmacro overlaps_fragment(span1, span2) do
         postgres_expr = unquote(db_overlap_string)
         quote do
           fragment(unquote(postgres_expr), unquote(span1), unquote(span2))
         end
       end
 
-      defmacro contains(container, contained) do
+      defmacro contains_fragment(container, contained) do
         postgres_expr = unquote(db_contain_string)
         quote do
           fragment(unquote(postgres_expr), unquote(container), unquote(contained))
         end
       end
 
-      defmacro contains_point(container, contained) do
-        postgres_expr = "?::daterange @> ?::date"
+      defmacro contains_point_fragment(container, contained) do
+        postgres_expr = unquote(db_contain_point_string)
         quote do
           fragment(unquote(postgres_expr), unquote(container), unquote(contained))
         end
