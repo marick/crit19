@@ -50,6 +50,8 @@ defmodule Crit.MixProject do
       {:puid, "~> 1.0"},
       {:assertions, "~> 0.10", only: :test},
       {:tzdata, "~> 1.0.1"},
+      {:elixir_uuid, "~> 1.0"},
+      {:con_cache, "~> 0.14"},
       {:mockery, "~> 2.3.0", runtime: false}
     ]
   end
