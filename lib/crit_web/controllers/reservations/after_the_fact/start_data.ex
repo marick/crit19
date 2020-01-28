@@ -1,4 +1,4 @@
-defmodule CritWeb.Reservations.AfterTheFactForm do
+defmodule CritWeb.Reservations.AfterTheFact.StartData do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Setup.InstitutionApi
@@ -13,6 +13,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     field :date_showable_date, :string
     field :time_slot_id, :integer
     field :institution, :string
+    field :animal_ids, {:array, :integer}
     
     field :species_name, :string
     field :time_slot_name, :string
@@ -26,7 +27,7 @@ defmodule CritWeb.Reservations.AfterTheFactForm do
     change(%__MODULE__{})
   end
 
-  def form_1_changeset(attrs) do
+  def changeset(attrs) do
     empty()
     |> cast(attrs, @form_1_fields)
     |> validate_required(@form_1_fields)

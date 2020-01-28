@@ -63,12 +63,12 @@ IO.puts(
   scope "/reservation", CritWeb.Reservations do
     pipe_through :browser
 
-    get "/after_the_fact", ReservationController, :after_the_fact_form_1
-    post "/after_the_fact_record_1", ReservationController, :after_the_fact_record_1
-    post "/after_the_fact_record_2", ReservationController, :after_the_fact_record_2
-    post "/after_the_fact_record_3", ReservationController, :after_the_fact_record_3
-
-    
+    scope "/after_the_fact" do 
+      get "/", AfterTheFactController, :start
+      post "/species_and_time", AfterTheFactController, :put_species_and_time
+      post "/animals", AfterTheFactController, :put_animals
+      post "/procedures", AfterTheFactController, :put_procedures
+    end
   end
   
   # Other scopes may use custom stacks.

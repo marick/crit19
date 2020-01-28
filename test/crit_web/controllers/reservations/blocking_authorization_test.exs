@@ -1,11 +1,14 @@
 defmodule CritWeb.Reservations.BlockingAuthorizationTest do
   use CritWeb.ConnCase
-  alias CritWeb.Reservations.ReservationController
+  alias CritWeb.Reservations.AfterTheFactController
   alias Crit.Users.PermissionList
 
   test "how an unlogged-in user is blocked", %{conn: conn} do
     assert_authorization_failures(conn,
-      [&(get &1, ReservationController.path(:after_the_fact_form_1)),
+      [&(get &1, AfterTheFactController.path(:start)),
+       &(post &1, AfterTheFactController.path(:put_species_and_time)),
+       &(post &1, AfterTheFactController.path(:put_procedures)),
+       &(post &1, AfterTheFactController.path(:put_animals)),
       ])
   end
 
@@ -17,7 +20,7 @@ defmodule CritWeb.Reservations.BlockingAuthorizationTest do
 
     test "blocked", %{conn: conn} do
       assert_authorization_failures(conn,
-        [&(get &1, ReservationController.path(:after_the_fact_form_1)),
+        [&(get &1, AfterTheFactController.path(:start)),
         ])
     end
   end

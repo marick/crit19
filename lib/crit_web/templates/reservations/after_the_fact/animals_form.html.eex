@@ -14,7 +14,16 @@
     <%= hidden_input f, :date %>
     <%= hidden_input f, :time_slot_id %>
 
-    <%= multiple_select f, :animals, @animal_options %>
+<%= for a <- @animals do %>
+  <div class="field">
+    <div class="ui checkbox">
+      <%= checkbox(f, :animal_ids,
+          name: "#{input_name(:after_the_fact_form, :animal_ids)}[#{a.id}]",
+          hidden_input: false) %>
+      <label><%=a.name%></label>
+    </div>
+  </div>
+<% end %>
     
     <%= big_submit_button "Now choose procedures" %>
 <% end %>

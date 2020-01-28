@@ -1,9 +1,9 @@
-defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
+defmodule CritWeb.Reservations.AfterTheFact.StartDataTest do
   use Crit.DataCase, async: true
-  alias CritWeb.Reservations.AfterTheFactForm
+  alias CritWeb.Reservations.AfterTheFact.StartData
   alias Ecto.Timespan
 
-  describe "form_1_changeset synthesizes some values" do
+  describe "form synthesizes some values" do
     test "success" do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
@@ -14,7 +14,7 @@ defmodule CritWeb.Reservations.ReservationController.AfterTheFactFormTest do
       expected_span =
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
-      AfterTheFactForm.form_1_changeset(params)
+      StartData.changeset(params)
       |> assert_changes(
            species_id: @bovine_id,
            species_name: @bovine,
