@@ -4,15 +4,14 @@
 
   <h2 class="ui center aligned header">
     Step 2: Choose animals for
-    <%= get_field(@changeset, :date_showable_date) %>, 
-    <%= get_field(@changeset, :time_slot_name) %>
+    <%= @reminders.date_showable_date %>, 
+    <%= @reminders.time_slot_name %>
   </h2>
 
   <%= start_centered_form() %>
-  <%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
-    <%= hidden_input f, :species_id %>
-    <%= hidden_input f, :date %>
-    <%= hidden_input f, :time_slot_id %>
+  <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
+
+  <%= hidden_input f, :transaction_key, value: @transaction_key %>
 
 <%= for a <- @animals do %>
   <div class="field">

@@ -4,6 +4,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   import CritWeb.Plugs.Authorize
   alias CritWeb.Reservations.AfterTheFact.{StartData}
   alias Crit.Setup.{InstitutionApi,AnimalApi}
+  alias Ecto.Changeset
+  alias Crit.MultiStepCache, as: Cache
 
   plug :must_be_able_to, :make_reservations
 
@@ -21,14 +23,19 @@ defmodule CritWeb.Reservations.AfterTheFactController do
       |> Map.put("institution", institution(conn))
       |> StartData.changeset
 
-    animals =
-      AnimalApi.available_after_the_fact(changeset.changes, @institution)
+    case changeset.valid? do
+      true -> 
+        {:ok, struct} = Changeset.apply_action(changeset, :insert)
+        key = Cache.put_first(struct)
+        animals =
+          AnimalApi.available_after_the_fact(changeset.changes, @institution)
 
-    render(conn, "animals_form.html",
-      changeset: changeset,
-      path: path(:put_animals),
-      animals: animals)
-
+        render(conn, "animals_form.html",
+          transaction_key: key,
+          reminders: struct,
+          path: path(:put_animals),
+          animals: animals)
+    end
   end
 
   def put_animals(conn, %{"after_the_fact_form" => _params}) do
