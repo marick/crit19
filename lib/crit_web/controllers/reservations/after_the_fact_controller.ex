@@ -16,7 +16,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   def put_species_and_time(conn, %{"start_data" => params}) do
-    IO.inspect params
     changeset = 
       params
       |> Map.put("institution", institution(conn))
