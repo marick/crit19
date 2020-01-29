@@ -15,4 +15,13 @@ defmodule Crit.CommonTest do
 
     assert result == %{"subforms" => [filled_in]}
   end
+
+  test "standard processing for arrays of ids" do
+    input = %{"animal_ids" => %{"0" => "true", "5" => "true"},
+              "other" => "5"}
+    actual = Common.make_id_array(input, "animal_ids")
+
+    assert actual["other"] == "5"
+    assert_lists_equal(["0", "5"], actual["animal_ids"])
+  end
 end

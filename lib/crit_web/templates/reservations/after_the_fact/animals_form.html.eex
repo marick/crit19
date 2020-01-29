@@ -17,7 +17,7 @@
   <div class="field">
     <div class="ui checkbox">
       <%= checkbox(f, :animal_ids,
-          name: "#{input_name(:after_the_fact_form, :animal_ids)}[#{a.id}]",
+          name: "#{input_name(:animals, :chosen_animal_ids)}[#{a.id}]",
           hidden_input: false) %>
       <label><%=a.name%></label>
     </div>

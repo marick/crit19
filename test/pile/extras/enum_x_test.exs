@@ -49,6 +49,14 @@ defmodule EnumXTest do
             ]
     assert bossie == EnumX.find_by_id(input, 1)
   end
+
+  test "to_id_map" do
+    input = [ %{name: "bossie", id: 1, extra: "stuff"},
+              %{name: "jake", id: 2, extra: "stuff"}
+            ]
+    expected = %{1 => "bossie", 2 => "jake"}
+    assert expected == EnumX.to_id_map(input, :name)
+  end    
   
 end
   

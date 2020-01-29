@@ -29,6 +29,7 @@ defmodule Crit.DataCase do
       import Crit.Assertions.Map
       import Crit.Assertions.Misc
       import Crit.Assertions.Changeset
+      import Assertions
       use Crit.Mock
       import Crit.Extras.ChangesetT, only: [errors_on: 1]
       use Crit.Errors

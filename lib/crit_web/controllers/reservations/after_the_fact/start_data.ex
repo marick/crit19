@@ -13,15 +13,14 @@ defmodule CritWeb.Reservations.AfterTheFact.StartData do
     field :date_showable_date, :string
     field :time_slot_id, :integer
     field :institution, :string
-    field :animal_ids, {:array, :integer}
     
     field :species_name, :string
     field :time_slot_name, :string
     field :span, Timespan
   end
 
-  @form_1_fields [:species_id, :date, :date_showable_date,
-                  :time_slot_id, :institution]
+  @required [:species_id, :date, :date_showable_date,
+             :time_slot_id, :institution]
 
   def empty do
     change(%__MODULE__{})
@@ -29,15 +28,20 @@ defmodule CritWeb.Reservations.AfterTheFact.StartData do
 
   def changeset(attrs) do
     empty()
-    |> cast(attrs, @form_1_fields)
-    |> validate_required(@form_1_fields)
+    |> cast(attrs, @required)
+    |> validate_required(@required)
     |> add_species_name
+    |> add_animal_names
     |> add_span
     |> add_time_slot_name
   end
 
   def add_species_name(changeset) do
     put_change(changeset, :species_name, species_name_from(changeset))
+  end
+
+  def add_animal_names(changeset) do
+    changeset
   end
 
   def add_span(changeset) do

@@ -1,7 +1,8 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
+  use Crit.Global.Constants
   alias Crit.Users.{User,PermissionList}
-  alias Crit.Setup.Schemas.{Animal,ServiceGap}
+  alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure}
   alias Crit.Sql
   alias Crit.Exemplars
   alias Ecto.Datespan
@@ -40,6 +41,12 @@ defmodule Crit.Factory do
       species_id: some_species_id(),
       span: span,
      }
+  end
+
+  def procedure_factory() do
+    %Procedure{
+      name: Faker.Vehicle.make_and_model()
+    }
   end
 
   def service_gap_factory() do

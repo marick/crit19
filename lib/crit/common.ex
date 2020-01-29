@@ -31,4 +31,8 @@ defmodule Crit.Common do
 
     Map.put(params, subform_field, simplified)
   end
+
+  def make_id_array(params, param) do
+    Map.update!(params, param, &Map.keys/1)
+  end
 end
