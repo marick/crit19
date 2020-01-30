@@ -5,7 +5,10 @@ defmodule Crit.Ecto.BulkInsertTest do
   alias Crit.Ecto.BulkInsert.Testable
   alias Crit.Sql
 
-  @procedures [%Procedure{name: "spay"}, %Procedure{name: "physical exam"}]
+  @procedures [
+    %Procedure{name: "spay", species_id: @bovine_id},
+    %Procedure{name: "physical exam", species_id: @bovine_id}
+  ]
 
   describe "insertion_script" do
     test "insertion where nothing is done with the result" do
