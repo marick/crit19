@@ -23,7 +23,6 @@
     </div>
   </div>
 <% end %>
-    
     <%= big_submit_button "Now choose procedures" %>
 <% end %>
 

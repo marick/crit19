@@ -3,7 +3,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
   alias CritWeb.Reservations.AfterTheFact.{StartData,AnimalData}
-  alias Crit.Setup.{InstitutionApi,AnimalApi}
+  alias Crit.Setup.{InstitutionApi,AnimalApi,ProcedureApi}
   alias Ecto.Changeset
   alias Crit.MultiStepCache, as: Cache
 
@@ -49,13 +49,22 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         {:ok, struct} = Changeset.apply_action(changeset, :insert)
         IO.inspect struct
         reminders = Cache.get(struct.transaction_key)
-        IO.inspect reminders
+        # IO.inspect reminders
         animal_names = Enum.map(struct.chosen_animal_ids, &(reminders.animal_names[&1]))
         IO.inspect animal_names
+
+        Cache.add(reminders.transaction_key, %{chosen_animal_ids: struct.chosen_animal_ids})
+
+        procedures =
+          ProcedureApi.all_by_species(reminders.species_id, @institution)
+
+        # IO.inspect procedures
+        
         
         render(conn, "procedures_form.html",
           transaction_key: struct.transaction_key,
           animal_names: Enum.join(animal_names, ", "),
+          procedures: procedures,
           reminders: reminders,
           path: path(:put_procedures))
     end

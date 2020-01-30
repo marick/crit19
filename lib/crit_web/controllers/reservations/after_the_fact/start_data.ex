@@ -17,6 +17,8 @@ defmodule CritWeb.Reservations.AfterTheFact.StartData do
     field :species_name, :string
     field :time_slot_name, :string
     field :span, Timespan
+    field :transaction_key, :string
+    field :animal_names, :map
   end
 
   @required [:species_id, :date, :date_showable_date,

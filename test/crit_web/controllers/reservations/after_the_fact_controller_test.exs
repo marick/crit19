@@ -22,6 +22,11 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       [name: "Bossie", species_id: @bovine_id,
        span: Datespan.inclusive_up(@date)],
       @institution)
+
+    Factory.sql_insert!(:procedure,
+      [name: "only procedure", species_id: @bovine_id],
+      @institution)
+
     [bossie: bossie]
   end
 
@@ -51,18 +56,28 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
 
   describe "submitting animal ids prompts a call for procedure ids" do
-    test "success", %{conn: conn} do
+    test "success", %{conn: conn, bossie: bossie} do
       params = %{transaction_key: @transaction_key,
-                 chosen_animal_ids: %{to_string(@bovine_id) => "true"}}
+                 chosen_animal_ids: %{to_string(bossie.id) => "true"}}
 
       Cache.put_first(%StartData{date_showable_date: "January 1, 2019",
                                  time_slot_name: @institution_first_time_slot.name,
-                                 species_name: @bovine})
-      Cache.add(@transaction_key, :animal_names, %{@bovine_id => "Bossie"})
+                                 species_id: @bovine_id,
+                                 species_name: @bovine,
+                                 transaction_key: @transaction_key
+                                })
+      Cache.add(@transaction_key, :animal_names, %{bossie.id => "Bossie"})
 
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_procedures())
       |> assert_common_to_two_steps()
+      |> assert_user_sees("only procedure")
+
+      Cache.get(@transaction_key)
+      |> IO.inspect
+      |> assert_fields(species_id: @bovine_id,
+                       chosen_animal_ids: [bossie.id])
+      
     end
   end
 
