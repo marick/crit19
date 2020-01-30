@@ -15,7 +15,7 @@ alias Crit.Users.{User,PermissionList}
 alias Crit.Sql
 alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Setup.{AnimalApi,InstitutionApi}
-alias Crit.Setup.Schemas.ServiceGap
+alias Crit.Setup.Schemas.{ServiceGap,Procedure}
 alias Crit.Global.Constants
 alias Ecto.Datespan
 
@@ -55,7 +55,7 @@ equine_id = Constants.equine_id
 
 {:ok, [hank]} = AnimalApi.create_animals(%{"names" => "Hank",
                                     "species_id" => equine_id,
-                                    "in_service_datestring" => "today",
+                                    "in_service_datestring" => "2019-10-01",
                                     "out_of_service_datestring" => "never",
                                     "institution" => institution
                                     }, institution)
@@ -65,4 +65,16 @@ Sql.insert!(%ServiceGap{
       reason: "seed"}, institution)
 
 
-IO.inspect AnimalApi.updatable!(hank.id, institution)
+
+{:ok, _} = Procedure.insert(%{
+      name: "Acupuncture demonstration",
+      species_id: equine_id}, institution)
+{:ok, _} = Procedure.insert(%{
+      name: "Caudal epidural",
+      species_id: bovine_id}, institution)
+{:ok, _} = Procedure.insert(%{
+      name: "Hoof exam and care",
+      species_id: equine_id}, institution)
+{:ok, _} = Procedure.insert(%{
+      name: "Hoof exam and care",
+      species_id: bovine_id}, institution)
