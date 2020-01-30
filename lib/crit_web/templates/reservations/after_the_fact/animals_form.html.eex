@@ -2,27 +2,23 @@
 
 <div class="ui main center aligned text container">
 
-  <h2 class="ui center aligned header">
-    Step 2: Choose animals for
-    <%= @reminders.date_showable_date %>, 
-    <%= @reminders.time_slot_name %>
-  </h2>
+  <%= @header %>
 
   <%= start_centered_form() %>
   <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
 
-  <%= hidden_input f, :transaction_key, value: @transaction_key %>
+    <%= hidden_input f, :transaction_key, value: @transaction_key %>
 
-<%= for a <- @animals do %>
-  <div class="field">
-    <div class="ui checkbox">
-      <%= checkbox(f, :animal_ids,
-          name: "#{input_name(:animals, :chosen_animal_ids)}[#{a.id}]",
-          hidden_input: false) %>
-      <label><%=a.name%></label>
-    </div>
-  </div>
-<% end %>
+    <%= for a <- @animals do %>
+       <div class="field">
+          <div class="ui checkbox">
+            <%= checkbox(f, :animal_ids,
+                  name: "#{input_name(:animals, :chosen_animal_ids)}[#{a.id}]",
+                  hidden_input: false) %>
+            <label><%=a.name%></label>
+         </div>
+       </div>
+    <% end %>
     <%= big_submit_button "Now choose procedures" %>
 <% end %>
 

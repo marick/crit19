@@ -63,5 +63,11 @@ defmodule Ecto.ChangesetX do
     end
   end
 
+  def realize_struct(params, module) do
+    apply(module, :changeset, [params])
+    |> Changeset.apply_action(:insert)
+  end
+
   defp path_to(field), do: [Access.key(:data), Access.key(field)]
+
 end
