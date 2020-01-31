@@ -3,6 +3,8 @@ defmodule CritWeb.Reservations.AfterTheFactData do
   defmodule Workflow do
     defstruct species_and_time_header: nil,
       species_and_time_header: nil,
+      animals_header: nil,
+      institution: nil,
 
       species_id: nil,
       date: nil,
