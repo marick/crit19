@@ -8,6 +8,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias Crit.MultiStepCache, as: Cache
   alias CritWeb.Reservations.AfterTheFactData, as: Data
   alias CritWeb.Reservations.AfterTheFactView, as: View
+  alias Crit.Reservations.Schemas.Reservation
 
   plug :must_be_able_to, :make_reservations
 
@@ -70,38 +71,23 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           header: [workflow_state.species_and_time_header, header]
         )
    end
-
-
-    # changeset = AnimalData.changeset(params)
-
-    # case changeset.valid? do
-    #   true -> 
-    #     {:ok, struct} = Changeset.apply_action(changeset, :insert)
-    #     IO.inspect struct
-    #     reminders = Cache.get(struct.transaction_key)
-    #     # IO.inspect reminders
-    #     animal_names = Enum.map(struct.chosen_animal_ids, &(reminders.animal_names[&1]))
-    #     IO.inspect animal_names
-
-    #     Cache.add(reminders.transaction_key, %{chosen_animal_ids: struct.chosen_animal_ids})
-
-    #     procedures =
-    #       ProcedureApi.all_by_species(reminders.species_id, @institution)
-
-    #     # IO.inspect procedures
-        
-        
-    #     render(conn, "procedures_form.html",
-    #       transaction_key: struct.transaction_key,
-    #       animal_names: Enum.join(animal_names, ", "),
-    #       procedures: procedures,
-    #       reminders: reminders,
-    #       path: path(:put_procedures))
-    # end
   end
   
-  def put_procedures(_conn, %{"after_the_fact_form" => _params}) do
-    # render(conn, "done.html")
+  def put_procedures(conn, %{"procedures" => delivered_params}) do
+    params = Map.put(delivered_params, "institution", institution(conn))
+    case ChangesetX.realize_struct(params, Data.Procedures) do
+      {:ok, new_data} ->
+
+        workflow_state =
+          new_data
+          |> Map.merge(%{chosen_procedure_ids: new_data.chosen_procedure_ids})
+          |> Cache.cast_more(new_data.transaction_key)
+
+
+        {:ok, reservation} = Reservation.create(workflow_state, institution(conn))
+
+        render(conn, "done.html", show: inspect(reservation))
+    end
   end
   
 end

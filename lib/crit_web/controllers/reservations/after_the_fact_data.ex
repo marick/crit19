@@ -73,5 +73,28 @@ defmodule CritWeb.Reservations.AfterTheFactData do
       |> validate_required(@required)
     end
   end
+
+  defmodule Procedures do
+    use Ecto.Schema
+    import Ecto.Changeset
+    alias Crit.Common
+
+    embedded_schema do
+      field :chosen_procedure_ids, {:array, :integer}
+      field :transaction_key, :string
+      field :institution, :string
+    end
+
+    @required [:chosen_procedure_ids, :transaction_key, :institution]
+
+    def changeset(given_attrs) do
+      attrs = Common.make_id_array(given_attrs, "chosen_procedure_ids")
+    
+      %__MODULE__{}
+      |> cast(attrs, @required)
+      |> validate_required(@required)
+    end
+  end
+  
 end
 
