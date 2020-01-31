@@ -6,7 +6,7 @@
 
   <%= start_centered_form() %>
 
-  <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
+  <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
     <%= hidden_input f, :transaction_key, value: @transaction_key %>
 
     <%= for p <- @procedures do %>
