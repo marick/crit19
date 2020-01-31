@@ -2,7 +2,7 @@ defmodule Crit.MultiStepCacheTest do
   use ExUnit.Case, async: true
   alias Crit.MultiStepCache, as: Cache
 
-  defstruct name: nil, id: nil
+  defstruct name: nil, id: nil, species: nil
 
   # There are some dubious choices here that will probably change
 
@@ -15,6 +15,13 @@ defmodule Crit.MultiStepCacheTest do
 
     assert :ok == Cache.add(key, :id, 4)
     assert %{name: "new", id: 4, species: 2} = Cache.get(key)
+  end
+
+
+  test "deletion" do
+    key = Cache.put_first(%__MODULE__{name: "fred", id: 3})
+    Cache.delete(key)
+    assert nil = Cache.get(key)
   end
 end
 
