@@ -2,7 +2,6 @@ defmodule CritWeb.Reservations.AfterTheFactData do
 
   defmodule Workflow do
     defstruct species_and_time_header: nil,
-      species_and_time_header: nil,
       animals_header: nil,
       institution: nil,
 
@@ -61,9 +60,10 @@ defmodule CritWeb.Reservations.AfterTheFactData do
     embedded_schema do
       field :chosen_animal_ids, {:array, :integer}
       field :transaction_key, :string
+      field :institution, :string
     end
 
-    @required [:chosen_animal_ids, :transaction_key]
+    @required [:chosen_animal_ids, :transaction_key, :institution]
 
     def changeset(given_attrs) do
       attrs = Common.make_id_array(given_attrs, "chosen_animal_ids")

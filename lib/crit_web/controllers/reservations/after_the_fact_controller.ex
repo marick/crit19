@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Setup.{InstitutionApi,AnimalApi} #,ProcedureApi}
+  alias Crit.Setup.{InstitutionApi,AnimalApi, ProcedureApi}
   # alias Ecto.Changeset
   alias Ecto.ChangesetX
   alias Crit.MultiStepCache, as: Cache
@@ -28,26 +28,47 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           View.species_and_time_header(
             new_data.date_showable_date,
             InstitutionApi.time_slot_name(new_data.time_slot_id, institution(conn)))
+
+        {key, _workflow_state} =
+          %Data.Workflow{species_and_time_header: header}
+          |> Map.merge(new_data)
+          |> Cache.cast_first
         
-        workflow_state =
-          Map.merge(%Data.Workflow{species_and_time_header: header}, new_data)
-        key = Cache.put_first(workflow_state)
         animals =
           AnimalApi.available_after_the_fact(new_data, @institution)
 
         render(conn, "animals_form.html",
           transaction_key: key,
-          header: header,
           path: path(:put_animals),
+          header: header,
           animals: animals)
     end
   end
 
-  def put_animals(conn, %{"animals" => params}) do
+  def put_animals(conn, %{"animals" => delivered_params}) do
+    params = Map.put(delivered_params, "institution", institution(conn))
 
     case ChangesetX.realize_struct(params, Data.Animals) do
       {:ok, new_data} ->
-        render(conn, "procedures_form.html")
+        header =
+          new_data.chosen_animal_ids
+          |> AnimalApi.ids_to_animals(new_data.institution)
+          |> View.animals_header
+
+        workflow_state = 
+          new_data
+          |> Map.merge(%{animals_header: header})
+          |> Cache.cast_more(new_data.transaction_key)
+
+        procedures =
+          ProcedureApi.all_by_species(workflow_state.species_id, new_data.institution)
+        
+        render(conn, "procedures_form.html",
+          procedures: procedures,
+          transaction_key: new_data.transaction_key,
+          path: path(:put_procedures),
+          header: [workflow_state.species_and_time_header, header]
+        )
    end
 
 

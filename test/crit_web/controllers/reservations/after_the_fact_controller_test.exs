@@ -38,22 +38,27 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   end
 
   describe "submitting the date-and-species form produces some new HTML" do
-    test "success", %{conn: conn, bossie: bossie} do
+    test "success", %{conn: conn} do
       params = %{species_id: to_string(@bovine_id),
                  date: @iso_date,
                  date_showable_date: @human_date,
+                 institution: @institution,
                  time_slot_id: to_string(@time_slot_id)}
 
       post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
       |> assert_purpose(after_the_fact_pick_animals())
-      |> assert_common_to_two_steps()
+      |> assert_user_sees(@transaction_key)
+      |> assert_user_sees("January 1, 2019")
+      |> assert_user_sees(@institution_first_time_slot.name)
+      |> assert_animal_choice("Bossie")
 
       Cache.get(@transaction_key)
       |> assert_fields(
            species_id: @bovine_id,
            date: @date,
            time_slot_id: @time_slot_id,
-           span: InstitutionApi.timespan(@date, @time_slot_id, @institution))
+           span: InstitutionApi.timespan(@date, @time_slot_id, @institution),
+           institution: @institution)
     end
   end
 
@@ -61,30 +66,34 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   describe "submitting animal ids prompts a call for procedure ids" do
     test "success", %{conn: conn, bossie: bossie} do
       params = %{transaction_key: @transaction_key,
-                 chosen_animal_ids: %{to_string(bossie.id) => "true"}}
+                 chosen_animal_ids: %{to_string(bossie.id) => "true"},
+                 institution: @institution}
 
-      Cache.put_first(%Data.Workflow{species_and_time_header: "HEADER"})
+      Cache.cast_first(%Data.Workflow{
+            species_id: @bovine_id,
+            species_and_time_header: "TIME HEADER"})
 
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_procedures())
-      # |> assert_common_to_two_steps()
-      # |> assert_user_sees("only procedure")
+      |> assert_user_sees(@transaction_key)
+      |> assert_user_sees("TIME HEADER")
+      |> assert_animal_header
+      |> assert_user_sees("only procedure")
 
-      # Cache.get(@transaction_key)
-      # |> IO.inspect
-      # |> assert_fields(species_id: @bovine_id,
-      #                  chosen_animal_ids: [bossie.id])
-      
+      Cache.get(@transaction_key)
+      |> assert_fields(chosen_animal_ids: [bossie.id])
     end
   end
 
 
-  defp assert_common_to_two_steps(conn) do
+  defp assert_animal_choice(conn, who) do
     conn
-    |> assert_user_sees("January 1, 2019")
-    |> assert_user_sees(@institution_first_time_slot.name)
-    |> assert_user_sees("Bossie")
-    |> assert_user_sees(@transaction_key)
+    |> assert_user_sees(who)
   end
+
+  defp assert_animal_header(conn) do
+    conn
+    |> assert_user_sees("Bossie")
+  end    
   
 end

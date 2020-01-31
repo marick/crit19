@@ -10,4 +10,14 @@ defmodule CritWeb.Reservations.AfterTheFactView do
     </h2>
     """
   end
+
+  def animals_header(animals) do
+    names = Enum.map_join(animals, ", ", &(&1.name))
+    ~E"""
+    <h2 class="ui center aligned header">
+      <%= names %>
+    </h2>
+    """
+  end
+  
 end
