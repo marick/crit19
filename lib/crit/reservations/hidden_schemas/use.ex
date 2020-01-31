@@ -17,19 +17,8 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
     |> foreign_key_constraint(:procedure_id)
     |> foreign_key_constraint(:reservation_id)
   end
-  
-  def changesets_for_new_uses(animal_ids, procedure_ids) do 
-    unsaved_uses(animal_ids, procedure_ids)
-    |> Enum.map(&create_changeset_with_constraints/1)
-  end
 
-  defp create_changeset_with_constraints(a_use) do 
-    change(a_use)
-    |> foreign_key_constraint(:animal_id)
-    |> foreign_key_constraint(:procedure_id)
-  end
-
-  defp unsaved_uses(animal_ids, procedure_ids) do
+  def unsaved_uses(animal_ids, procedure_ids) do
     for a <- animal_ids, p <- procedure_ids do
       %__MODULE__{animal_id: a, procedure_id: p}
     end

@@ -204,23 +204,23 @@ defmodule Crit.Ecto.SpanTest do
 
   defp db_contains?(%Timespan{} = timespan) do
     {:ok, range} = timespan |> Timespan.dump
-    query = from s in Reservation, where: contains_fragment(s.timespan, ^range)
+    query = from s in Reservation, where: contains_fragment(s.span, ^range)
     Sql.exists?(query, @institution)
   end
   
   defp db_contains?(%NaiveDateTime{} = point) do
-    query = from s in Reservation, where: contains_point_fragment(s.timespan, ^point)
+    query = from s in Reservation, where: contains_point_fragment(s.span, ^point)
     Sql.exists?(query, @institution)
   end
   
   defp db_overlaps?(%Timespan{} = timespan) do
     {:ok, range} = timespan |> Timespan.dump
-    query = from s in Reservation, where: overlaps_fragment(s.timespan, ^range)
+    query = from s in Reservation, where: overlaps_fragment(s.span, ^range)
     Sql.exists?(query, @institution)
   end
   
   defp add_reservation!(timespan) do
-    reservation = %Reservation{species_id: @bovine_id, timespan: timespan}
+    reservation = %Reservation{species_id: @bovine_id, span: timespan}
     Sql.insert!(reservation, @institution)
   end
 end
