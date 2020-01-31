@@ -16,12 +16,12 @@ defmodule Crit.MultiStepCache do
     ConCache.get(Crit.Cache, uuid_key)
   end
 
-  def add(uuid_key, %{} = new_values) do
+  def add(%{} = new_values, uuid_key) do
     ConCache.update(Crit.Cache, uuid_key, &({:ok, Map.merge(&1, new_values)}))
   end
 
-  def add(uuid_key, key, value) do
-    add(uuid_key, %{key => value})
+  def add(key, value, uuid_key) do
+    add(%{key => value}, uuid_key)
   end
 
   def delete(uuid_key), do: ConCache.delete(Crit.Cache, uuid_key)

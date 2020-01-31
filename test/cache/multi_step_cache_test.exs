@@ -10,10 +10,10 @@ defmodule Crit.MultiStepCacheTest do
     key = Cache.put_first(%__MODULE__{name: "fred", id: 3})
     assert %{name: "fred", id: 3} = Cache.get(key)
     
-    assert :ok == Cache.add(key, %{name: "new", species: 2})
+    assert :ok == Cache.add(%{name: "new", species: 2}, key)
     assert %{name: "new", id: 3, species: 2} = Cache.get(key)
 
-    assert :ok == Cache.add(key, :id, 4)
+    assert :ok == Cache.add(:id, 4, key)
     assert %{name: "new", id: 4, species: 2} = Cache.get(key)
   end
 
@@ -21,7 +21,7 @@ defmodule Crit.MultiStepCacheTest do
   test "deletion" do
     key = Cache.put_first(%__MODULE__{name: "fred", id: 3})
     Cache.delete(key)
-    assert nil = Cache.get(key)
+    assert nil == Cache.get(key)
   end
 end
 
