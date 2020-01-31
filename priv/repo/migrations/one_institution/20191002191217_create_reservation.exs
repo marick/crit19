@@ -4,7 +4,7 @@ defmodule Crit.Repo.Migrations.CreateReservation do
   def change do
     create table(:reservations) do
       add :species_id, references("species", on_delete: :restrict), null: false
-      add :timespan, :tsrange, null: false
+      add :span, :tsrange, null: false
       timestamps()
     end
 

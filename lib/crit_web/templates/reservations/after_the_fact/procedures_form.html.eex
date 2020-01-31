@@ -19,6 +19,7 @@
          </div>
        </div>
     <% end %>
+    <%= big_submit_button "Record the use" %>
   
   <% end %>
   
