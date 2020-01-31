@@ -7,14 +7,17 @@ defmodule Crit.MultiStepCacheTest do
   # There are some dubious choices here that will probably change
 
   test "a big glob" do
-    key = Cache.put_first(%__MODULE__{name: "fred", id: 3})
+    first = %__MODULE__{name: "fred", id: 3}
+    {key, ^first} = Cache.put_first(first)
     assert %{name: "fred", id: 3} = Cache.get(key)
-    
-    assert :ok == Cache.add(%{name: "new", species: 2}, key)
-    assert %{name: "new", id: 3, species: 2} = Cache.get(key)
 
-    assert :ok == Cache.add(:id, 4, key)
-    assert %{name: "new", id: 4, species: 2} = Cache.get(key)
+    second = %__MODULE__{name: "new", id: 3, species: 2}
+    assert second == Cache.put_more(%{name: "new", species: 2}, key)
+    assert second == Cache.get(key)
+
+    third = %__MODULE__{name: "new", id: 4, species: 2}
+    assert third == Cache.put_more(:id, 4, key)
+    assert third == Cache.get(key)
   end
 
 

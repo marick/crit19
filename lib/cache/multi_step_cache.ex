@@ -9,19 +9,20 @@ defmodule Crit.MultiStepCache do
   def put_first(%{} = data) do 
     uuid = some(__MODULE__).new_key()
     :ok = ConCache.insert_new(Crit.Cache, uuid, data)
-    uuid
+    {uuid, data}
   end
 
   def get(uuid_key) do
     ConCache.get(Crit.Cache, uuid_key)
   end
 
-  def add(%{} = new_values, uuid_key) do
-    ConCache.update(Crit.Cache, uuid_key, &({:ok, Map.merge(&1, new_values)}))
+  def put_more(%{} = new_values, uuid_key) do
+    :ok = ConCache.update(Crit.Cache, uuid_key, &({:ok, Map.merge(&1, new_values)}))
+    get(uuid_key)
   end
 
-  def add(key, value, uuid_key) do
-    add(%{key => value}, uuid_key)
+  def put_more(key, value, uuid_key) do
+    put_more(%{key => value}, uuid_key)
   end
 
   def delete(uuid_key), do: ConCache.delete(Crit.Cache, uuid_key)
