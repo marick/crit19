@@ -78,7 +78,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_user_sees(@transaction_key)
       |> assert_user_sees("TIME HEADER")
       |> assert_animal_header
-      |> assert_user_sees("only procedure")
+      |> assert_procedure_choice("only procedure")
 
       Cache.get(@transaction_key)
       |> assert_fields(chosen_animal_ids: [bossie.id])
@@ -89,6 +89,13 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   defp assert_animal_choice(conn, who) do
     conn
     |> assert_user_sees(who)
+    |> assert_user_sees("chosen_animal_ids")
+  end
+
+  defp assert_procedure_choice(conn, what) do
+    conn
+    |> assert_user_sees(what)
+    |> assert_user_sees("chosen_procedure_ids")
   end
 
   defp assert_animal_header(conn) do
