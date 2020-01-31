@@ -25,4 +25,17 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
          )
     end
   end
+
+
+  describe "processing of Animals" do
+    test "success" do
+      params = %{"chosen_animal_ids" => %{"8" => "true", "1" => "true"},
+                 "transaction_key" => "uuid"}
+
+      assert {:ok, data} = ChangesetX.realize_struct(params, Data.Animals)
+      
+      assert_lists_equal [1, 8], data.chosen_animal_ids
+      assert "uuid" == data.transaction_key
+    end
+  end  
 end

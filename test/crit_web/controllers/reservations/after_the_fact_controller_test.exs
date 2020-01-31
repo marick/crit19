@@ -4,7 +4,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Ecto.Datespan
   alias Crit.MultiStepCache, as: Cache
-  alias CritWeb.Reservations.AfterTheFact.StartData
+  alias CritWeb.Reservations.AfterTheFactData, as: Data
   alias Crit.Setup.InstitutionApi
 
   setup :logged_in_as_reservation_manager
@@ -59,28 +59,21 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
 
   describe "submitting animal ids prompts a call for procedure ids" do
-    @tag :skip
     test "success", %{conn: conn, bossie: bossie} do
       params = %{transaction_key: @transaction_key,
                  chosen_animal_ids: %{to_string(bossie.id) => "true"}}
 
-      Cache.put_first(%StartData{date_showable_date: "January 1, 2019",
-                                 time_slot_name: @institution_first_time_slot.name,
-                                 species_id: @bovine_id,
-                                 species_name: @bovine,
-                                 transaction_key: @transaction_key
-                                })
-      Cache.add(@transaction_key, :animal_names, %{bossie.id => "Bossie"})
+      Cache.put_first(%Data.Workflow{species_and_time_header: "HEADER"})
 
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_procedures())
-      |> assert_common_to_two_steps()
-      |> assert_user_sees("only procedure")
+      # |> assert_common_to_two_steps()
+      # |> assert_user_sees("only procedure")
 
-      Cache.get(@transaction_key)
-      |> IO.inspect
-      |> assert_fields(species_id: @bovine_id,
-                       chosen_animal_ids: [bossie.id])
+      # Cache.get(@transaction_key)
+      # |> IO.inspect
+      # |> assert_fields(species_id: @bovine_id,
+      #                  chosen_animal_ids: [bossie.id])
       
     end
   end

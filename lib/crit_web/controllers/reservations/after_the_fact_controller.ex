@@ -30,7 +30,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
             InstitutionApi.time_slot_name(new_data.time_slot_id, institution(conn)))
         
         workflow_state =
-          Map.merge(%Data.Workflow{animal_choice_header: header}, new_data)
+          Map.merge(%Data.Workflow{species_and_time_header: header}, new_data)
         key = Cache.put_first(workflow_state)
         animals =
           AnimalApi.available_after_the_fact(new_data, @institution)
@@ -43,7 +43,14 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     end
   end
 
-  def put_animals(_conn, %{"animals" => _params}) do
+  def put_animals(conn, %{"animals" => params}) do
+
+    case ChangesetX.realize_struct(params, Data.Animals) do
+      {:ok, new_data} ->
+        render(conn, "procedures_form.html")
+   end
+
+
     # changeset = AnimalData.changeset(params)
 
     # case changeset.valid? do

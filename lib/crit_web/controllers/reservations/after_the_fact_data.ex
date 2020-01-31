@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactData do
 
   defmodule Workflow do
     defstruct species_and_time_header: nil,
-      animal_choice_header: nil,
+      species_and_time_header: nil,
 
       species_id: nil,
       date: nil,
@@ -50,6 +50,26 @@ defmodule CritWeb.Reservations.AfterTheFactData do
       put_change(changeset, :span, result)
     end
   end
-  
+
+  defmodule Animals do
+    use Ecto.Schema
+    import Ecto.Changeset
+    alias Crit.Common
+
+    embedded_schema do
+      field :chosen_animal_ids, {:array, :integer}
+      field :transaction_key, :string
+    end
+
+    @required [:chosen_animal_ids, :transaction_key]
+
+    def changeset(given_attrs) do
+      attrs = Common.make_id_array(given_attrs, "chosen_animal_ids")
+    
+      %__MODULE__{}
+      |> cast(attrs, @required)
+      |> validate_required(@required)
+    end
+  end
 end
 

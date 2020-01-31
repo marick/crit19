@@ -2,29 +2,6 @@
 
 <div class="ui main center aligned text container">
 
-  <h2 class="ui center aligned header">
-    Step 3: Choose procedures for
-    <%= @reminders.date_showable_date %>, 
-    <%= @reminders.time_slot_name %>
-    <%= @animal_names %>
-  </h2>
-
   <%= start_centered_form() %>
-  <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
-  <%= hidden_input f, :transaction_key, value: @transaction_key %>
-
-<%= for p <- @procedures do %>
-  <div class="field">
-    <div class="ui checkbox">
-      <%= checkbox(f, :procedure_ids,
-          name: "#{input_name(:procedures, :chosen_procedure_ids)}[#{p.id}]",
-          hidden_input: false) %>
-      <label><%=p.name%></label>
-    </div>
-  </div>
-<% end %>
-
-  
-  <% end %>
   <%= end_centered_form() %>
 </div>
