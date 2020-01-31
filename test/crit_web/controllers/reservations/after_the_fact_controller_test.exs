@@ -6,6 +6,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias Crit.MultiStepCache, as: Cache
   alias CritWeb.Reservations.AfterTheFactData, as: Data
   alias Crit.Setup.InstitutionApi
+  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Sql
 
   setup :logged_in_as_reservation_manager
 
@@ -25,11 +27,11 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
        span: Datespan.inclusive_up(@date)],
       @institution)
 
-    Factory.sql_insert!(:procedure,
+    procedure = Factory.sql_insert!(:procedure,
       [name: "only procedure", species_id: @bovine_id],
       @institution)
 
-    [bossie: bossie]
+    [bossie: bossie, procedure: procedure]
   end
 
   test "getting the first form", %{conn: conn} do
@@ -82,6 +84,23 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       Cache.get(@transaction_key)
       |> assert_fields(chosen_animal_ids: [bossie.id])
+    end
+  end
+
+  describe "finishing up" do
+    test "success", %{conn: conn, bossie: bossie, procedure: procedure} do
+      params = %{transaction_key: @transaction_key,
+                 chosen_procedure_ids: %{to_string(procedure.id) => "true"},
+                 institution: @institution}
+
+      Cache.cast_first(%Data.Workflow{
+            species_id: @bovine_id,
+            span: InstitutionApi.timespan(@date, @time_slot_id, @institution),
+            chosen_animal_ids: [bossie.id]})
+
+
+      post_to_action(conn, :put_procedures, under(:procedures, params))
+      IO.inspect Sql.all(Reservation, @institution)
     end
   end
 
