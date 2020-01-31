@@ -37,5 +37,14 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
       assert_lists_equal [1, 8], data.chosen_animal_ids
       assert "uuid" == data.transaction_key
     end
+
+    @tag :skip
+    test "emptiness is rejected" do
+      params = %{"chosen_animal_ids" => %{},
+                 "transaction_key" => "uuid"}
+
+      assert {:error, changeset} = ChangesetX.realize_struct(params, Data.Animals)
+    end
+    
   end  
 end
