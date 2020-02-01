@@ -52,7 +52,8 @@ defmodule Crit.MixProject do
       {:tzdata, "~> 1.0.1"},
       {:elixir_uuid, "~> 1.0"},
       {:con_cache, "~> 0.14"},
-      {:mockery, "~> 2.3.0", runtime: false}
+      {:mockery, "~> 2.3.0", runtime: false},
+      {:phoenix_integration, "~> 0.6", only: :test}      
     ]
   end
 

@@ -17,6 +17,8 @@ config :crit, CritWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
+config :phoenix_integration,
+  endpoint: CritWeb.Endpoint
 
 ## Within-app interfaces
 
