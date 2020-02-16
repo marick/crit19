@@ -13,7 +13,8 @@
        <div class="field">
           <div class="ui checkbox">
             <%= checkbox(f, :procedure_ids,
-                  name: "#{input_name(:procedures, :chosen_procedure_ids)}[#{p.id}]",
+                  name: "#{input_name(:procedures, :chosen_procedure_ids)}[]",
+                  value: p.id,
                   hidden_input: false) %>
             <label><%=p.name%></label>
          </div>

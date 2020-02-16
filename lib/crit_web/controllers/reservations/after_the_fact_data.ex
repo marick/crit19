@@ -65,8 +65,7 @@ defmodule CritWeb.Reservations.AfterTheFactData do
 
     @required [:chosen_animal_ids, :transaction_key, :institution]
 
-    def changeset(given_attrs) do
-      attrs = Common.make_id_array(given_attrs, "chosen_animal_ids")
+    def changeset(attrs) do
     
       %__MODULE__{}
       |> cast(attrs, @required)
@@ -87,8 +86,7 @@ defmodule CritWeb.Reservations.AfterTheFactData do
 
     @required [:chosen_procedure_ids, :transaction_key, :institution]
 
-    def changeset(given_attrs) do
-      attrs = Common.make_id_array(given_attrs, "chosen_procedure_ids")
+    def changeset(attrs) do
     
       %__MODULE__{}
       |> cast(attrs, @required)

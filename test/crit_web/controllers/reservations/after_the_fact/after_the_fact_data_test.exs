@@ -29,7 +29,7 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
 
   describe "processing of Animals" do
     test "success" do
-      params = %{"chosen_animal_ids" => %{"8" => "true", "1" => "true"},
+      params = %{"chosen_animal_ids" => ["8", "1"],
                  "transaction_key" => "uuid", "institution" => @institution}
 
       assert {:ok, data} = ChangesetX.realize_struct(params, Data.Animals)
@@ -40,8 +40,7 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
 
     @tag :skip
     test "emptiness is rejected" do
-      params = %{"chosen_animal_ids" => %{},
-                 "transaction_key" => "uuid"}
+      params = %{"transaction_key" => "uuid"}
 
       assert {:error, changeset} = ChangesetX.realize_struct(params, Data.Animals)
     end

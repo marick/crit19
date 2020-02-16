@@ -68,7 +68,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   describe "submitting animal ids prompts a call for procedure ids" do
     test "success", %{conn: conn, bossie: bossie} do
       params = %{transaction_key: @transaction_key,
-                 chosen_animal_ids: %{to_string(bossie.id) => "true"},
+                 chosen_animal_ids: [to_string(bossie.id)],
                  institution: @institution}
 
       Cache.cast_first(%Data.Workflow{
@@ -90,7 +90,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   describe "finishing up" do
     test "success", %{conn: conn, bossie: bossie, procedure: procedure} do
       params = %{transaction_key: @transaction_key,
-                 chosen_procedure_ids: %{to_string(procedure.id) => "true"},
+                 chosen_procedure_ids: [to_string(procedure.id)],
                  institution: @institution}
 
       Cache.cast_first(%Data.Workflow{
