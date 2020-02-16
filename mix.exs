@@ -53,7 +53,7 @@ defmodule Crit.MixProject do
       {:elixir_uuid, "~> 1.0"},
       {:con_cache, "~> 0.14"},
       {:mockery, "~> 2.3.0", runtime: false},
-      {:phoenix_integration, "~> 0.6", only: :test}      
+      {:phoenix_integration, "~> 0.6", path: "/Users/bem/src/third-party/phoenix_integration", only: :test}      
     ]
   end
 
