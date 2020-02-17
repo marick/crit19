@@ -1,6 +1,6 @@
-defmodule CritWeb.Reservations.AfterTheFactDataTest do
+defmodule CritWeb.Reservations.AfterTheFactStructsTest do
   use Crit.DataCase, async: true
-  alias CritWeb.Reservations.AfterTheFactData, as: Data
+  alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias Ecto.Timespan
   alias Ecto.ChangesetX
 
@@ -15,7 +15,7 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
       expected_span =
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
-      assert {:ok, data} = ChangesetX.realize_struct(params, Data.SpeciesAndTime)
+      assert {:ok, data} = ChangesetX.realize_struct(params, Scratch.SpeciesAndTime)
       data
       |> assert_fields(
            species_id: @bovine_id,
@@ -30,19 +30,19 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
   describe "processing of Animals" do
     test "success" do
       params = %{"chosen_animal_ids" => ["8", "1"],
-                 "workflow_id" => "uuid", "institution" => @institution}
+                 "task_id" => "uuid", "institution" => @institution}
 
-      assert {:ok, data} = ChangesetX.realize_struct(params, Data.Animals)
+      assert {:ok, data} = ChangesetX.realize_struct(params, Scratch.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
-      assert "uuid" == data.workflow_id
+      assert "uuid" == data.task_id
     end
 
     @tag :skip
     test "emptiness is rejected" do
-      params = %{"workflow_id" => "uuid"}
+      params = %{"task_id" => "uuid"}
 
-      assert {:error, changeset} = ChangesetX.realize_struct(params, Data.Animals)
+      assert {:error, changeset} = ChangesetX.realize_struct(params, Scratch.Animals)
     end
     
   end  

@@ -3,23 +3,22 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Ecto.Datespan
-  alias Crit.MultiStepCache, as: Cache
-#  alias CritWeb.Reservations.AfterTheFactData, as: Data
-  alias Crit.Setup.InstitutionApi
+  alias Crit.State.UserTask
+#  alias Crit.Setup.InstitutionApi
 #  alias Crit.Reservations.Schemas.Reservation
   #  alias Crit.Sql
 
   setup :logged_in_as_reservation_manager
 
-  @workflow_id Cache.new_key()
+  @task_id UserTask.new_key()
   @iso_date "2019-01-01"
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
   @time_slot_id 1
 
   setup do
-    given Cache.new_key, [], do: @workflow_id
-    Cache.delete(@workflow_id)
+    given UserTask.new_key, [], do: @task_id
+    UserTask.delete(@task_id)
     bossie = Factory.sql_insert!(:animal,
       [name: "Bossie", species_id: @bovine_id,
        span: Datespan.inclusive_up(@date)],
@@ -39,7 +38,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
 
 
   test "after-the-fact reservation workflow",
-    %{conn: conn, bossie: bossie, unchecked: unchecked, procedure: _procedure} do
+    %{conn: conn, bossie: bossie, unchecked: _unchecked, procedure: _procedure} do
     # ----------------------------------------------------------------------------
     get_via_action(conn, :start)                             # Start
     |> assert_purpose(after_the_fact_pick_species_and_time())
@@ -58,7 +57,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
     |> follow_form(%{animals:                               # Pick animals
           %{chosen_animal_ids: [bossie.id]}})
     |> assert_purpose(after_the_fact_pick_procedures())
-    |> assert_user_sees(@workflow_id)
+    |> assert_user_sees(@task_id)
     |> assert_user_sees_time_header
     |> assert_user_sees_animal_header
     |> assert_procedure_choice("only procedure")
@@ -86,7 +85,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
   
   defp assert_user_sees_time_header(conn) do
     assert_response(conn,
-      html: @workflow_id,
+      html: @task_id,
       html: "January 1, 2019",
       html: @institution_first_time_slot.name)
   end

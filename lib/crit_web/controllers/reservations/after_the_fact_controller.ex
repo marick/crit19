@@ -5,8 +5,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias Crit.Setup.{InstitutionApi,AnimalApi, ProcedureApi}
   # alias Ecto.Changeset
   alias Ecto.ChangesetX
-  alias Crit.MultiStepCache, as: Cache
-  alias CritWeb.Reservations.AfterTheFactData, as: Data
+  alias Crit.State.UserTask
+  alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.Schemas.Reservation
 
@@ -14,7 +14,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   def start(conn, _params) do
     render(conn, "species_and_time_form.html",
-      changeset: Data.SpeciesAndTime.empty,
+      changeset: Scratch.SpeciesAndTime.empty,
       path: path(:put_species_and_time),
       species_options: InstitutionApi.available_species(institution(conn)),
       time_slot_options: InstitutionApi.time_slot_tuples(institution(conn)))
@@ -23,23 +23,23 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_species_and_time(conn, %{"species_and_time" => delivered_params}) do
     params = Map.put(delivered_params, "institution", institution(conn))
 
-    case ChangesetX.realize_struct(params, Data.SpeciesAndTime) do
+    case ChangesetX.realize_struct(params, Scratch.SpeciesAndTime) do
       {:ok, new_data} ->
         header =
           View.species_and_time_header(
             new_data.date_showable_date,
             InstitutionApi.time_slot_name(new_data.time_slot_id, institution(conn)))
 
-        {key, _workflow_state} =
-          %Data.Workflow{species_and_time_header: header}
+        {key, _state} =
+          %Scratch.State{species_and_time_header: header}
           |> Map.merge(new_data)
-          |> Cache.cast_first
+          |> UserTask.cast_first
         
         animals =
           AnimalApi.available_after_the_fact(new_data, @institution)
 
         render(conn, "animals_form.html",
-          workflow_id: key,
+          task_id: key,
           path: path(:put_animals),
           header: header,
           animals: animals)
@@ -49,7 +49,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_animals(conn, %{"animals" => delivered_params}) do
     params = Map.put(delivered_params, "institution", institution(conn))
 
-    case ChangesetX.realize_struct(params, Data.Animals) do
+    case ChangesetX.realize_struct(params, Scratch.Animals) do
       {:ok, new_data} ->
         header =
           new_data.chosen_animal_ids
@@ -59,14 +59,14 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         workflow_state = 
           new_data
           |> Map.merge(%{animals_header: header})
-          |> Cache.cast_more(new_data.workflow_id)
+          |> UserTask.cast_more(new_data.task_id)
 
         procedures =
           ProcedureApi.all_by_species(workflow_state.species_id, new_data.institution)
         
         render(conn, "procedures_form.html",
           procedures: procedures,
-          workflow_id: new_data.workflow_id,
+          task_id: new_data.task_id,
           path: path(:put_procedures),
           header: [workflow_state.species_and_time_header, header]
         )
@@ -75,13 +75,13 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   
   def put_procedures(conn, %{"procedures" => delivered_params}) do
     params = Map.put(delivered_params, "institution", institution(conn))
-    case ChangesetX.realize_struct(params, Data.Procedures) do
+    case ChangesetX.realize_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
 
         workflow_state =
           new_data
           |> Map.merge(%{chosen_procedure_ids: new_data.chosen_procedure_ids})
-          |> Cache.cast_more(new_data.workflow_id)
+          |> UserTask.cast_more(new_data.task_id)
 
 
         {:ok, reservation} = Reservation.create(workflow_state, institution(conn))

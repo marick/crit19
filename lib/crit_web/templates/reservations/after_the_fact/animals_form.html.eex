@@ -7,7 +7,7 @@
   <%= start_centered_form() %>
   <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
 
-    <%= hidden_input f, :workflow_id, value: @workflow_id %>
+    <%= hidden_input f, :task_id, value: @task_id %>
 
     <%= for a <- @animals do %>
        <div class="field">

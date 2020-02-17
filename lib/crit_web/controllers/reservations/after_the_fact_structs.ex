@@ -1,6 +1,6 @@
-defmodule CritWeb.Reservations.AfterTheFactData do
+defmodule CritWeb.Reservations.AfterTheFactStructs do
 
-  defmodule Workflow do
+  defmodule State do
     defstruct species_and_time_header: nil,
       animals_header: nil,
       institution: nil,
@@ -55,15 +55,14 @@ defmodule CritWeb.Reservations.AfterTheFactData do
   defmodule Animals do
     use Ecto.Schema
     import Ecto.Changeset
-    alias Crit.Common
 
     embedded_schema do
       field :chosen_animal_ids, {:array, :integer}
-      field :workflow_id, :string
+      field :task_id, :string
       field :institution, :string
     end
 
-    @required [:chosen_animal_ids, :workflow_id, :institution]
+    @required [:chosen_animal_ids, :task_id, :institution]
 
     def changeset(attrs) do
     
@@ -76,15 +75,14 @@ defmodule CritWeb.Reservations.AfterTheFactData do
   defmodule Procedures do
     use Ecto.Schema
     import Ecto.Changeset
-    alias Crit.Common
 
     embedded_schema do
       field :chosen_procedure_ids, {:array, :integer}
-      field :workflow_id, :string
+      field :task_id, :string
       field :institution, :string
     end
 
-    @required [:chosen_procedure_ids, :workflow_id, :institution]
+    @required [:chosen_procedure_ids, :task_id, :institution]
 
     def changeset(attrs) do
     
