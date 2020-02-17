@@ -30,17 +30,17 @@ defmodule CritWeb.Reservations.AfterTheFactDataTest do
   describe "processing of Animals" do
     test "success" do
       params = %{"chosen_animal_ids" => ["8", "1"],
-                 "transaction_key" => "uuid", "institution" => @institution}
+                 "workflow_id" => "uuid", "institution" => @institution}
 
       assert {:ok, data} = ChangesetX.realize_struct(params, Data.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
-      assert "uuid" == data.transaction_key
+      assert "uuid" == data.workflow_id
     end
 
     @tag :skip
     test "emptiness is rejected" do
-      params = %{"transaction_key" => "uuid"}
+      params = %{"workflow_id" => "uuid"}
 
       assert {:error, changeset} = ChangesetX.realize_struct(params, Data.Animals)
     end

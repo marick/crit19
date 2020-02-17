@@ -59,11 +59,11 @@ defmodule CritWeb.Reservations.AfterTheFactData do
 
     embedded_schema do
       field :chosen_animal_ids, {:array, :integer}
-      field :transaction_key, :string
+      field :workflow_id, :string
       field :institution, :string
     end
 
-    @required [:chosen_animal_ids, :transaction_key, :institution]
+    @required [:chosen_animal_ids, :workflow_id, :institution]
 
     def changeset(attrs) do
     
@@ -80,11 +80,11 @@ defmodule CritWeb.Reservations.AfterTheFactData do
 
     embedded_schema do
       field :chosen_procedure_ids, {:array, :integer}
-      field :transaction_key, :string
+      field :workflow_id, :string
       field :institution, :string
     end
 
-    @required [:chosen_procedure_ids, :transaction_key, :institution]
+    @required [:chosen_procedure_ids, :workflow_id, :institution]
 
     def changeset(attrs) do
     

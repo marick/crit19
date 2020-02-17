@@ -11,15 +11,15 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
 
   setup :logged_in_as_reservation_manager
 
-  @transaction_key Cache.new_key()
+  @workflow_id Cache.new_key()
   @iso_date "2019-01-01"
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
   @time_slot_id 1
 
   setup do
-    given Cache.new_key, [], do: @transaction_key
-    Cache.delete(@transaction_key)
+    given Cache.new_key, [], do: @workflow_id
+    Cache.delete(@workflow_id)
     bossie = Factory.sql_insert!(:animal,
       [name: "Bossie", species_id: @bovine_id,
        span: Datespan.inclusive_up(@date)],
@@ -58,18 +58,11 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
     |> follow_form(%{animals:                               # Pick animals
           %{chosen_animal_ids: [bossie.id]}})
     |> assert_purpose(after_the_fact_pick_procedures())
-    |> assert_user_sees(@transaction_key)
+    |> assert_user_sees(@workflow_id)
     |> assert_user_sees_time_header
     |> assert_user_sees_animal_header
     |> assert_procedure_choice("only procedure")
-
-
-
-
   end
-
-
-
   
   # ----------------------------------------------------------------------------
 
@@ -93,7 +86,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
   
   defp assert_user_sees_time_header(conn) do
     assert_response(conn,
-      html: @transaction_key,
+      html: @workflow_id,
       html: "January 1, 2019",
       html: @institution_first_time_slot.name)
   end

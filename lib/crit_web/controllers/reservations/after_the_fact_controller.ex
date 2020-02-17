@@ -39,7 +39,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           AnimalApi.available_after_the_fact(new_data, @institution)
 
         render(conn, "animals_form.html",
-          transaction_key: key,
+          workflow_id: key,
           path: path(:put_animals),
           header: header,
           animals: animals)
@@ -59,14 +59,14 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         workflow_state = 
           new_data
           |> Map.merge(%{animals_header: header})
-          |> Cache.cast_more(new_data.transaction_key)
+          |> Cache.cast_more(new_data.workflow_id)
 
         procedures =
           ProcedureApi.all_by_species(workflow_state.species_id, new_data.institution)
         
         render(conn, "procedures_form.html",
           procedures: procedures,
-          transaction_key: new_data.transaction_key,
+          workflow_id: new_data.workflow_id,
           path: path(:put_procedures),
           header: [workflow_state.species_and_time_header, header]
         )
@@ -81,7 +81,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         workflow_state =
           new_data
           |> Map.merge(%{chosen_procedure_ids: new_data.chosen_procedure_ids})
-          |> Cache.cast_more(new_data.transaction_key)
+          |> Cache.cast_more(new_data.workflow_id)
 
 
         {:ok, reservation} = Reservation.create(workflow_state, institution(conn))
