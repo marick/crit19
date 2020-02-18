@@ -10,14 +10,14 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
 
   setup :logged_in_as_reservation_manager
 
-  @task_id UserTask.new_key()
+  @task_id UserTask.new_id()
   @iso_date "2019-01-01"
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
   @time_slot_id 1
 
   setup do
-    given UserTask.new_key, [], do: @task_id
+    given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
     bossie = Factory.sql_insert!(:animal,
       [name: "Bossie", species_id: @bovine_id,

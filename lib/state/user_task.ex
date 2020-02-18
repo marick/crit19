@@ -4,26 +4,42 @@ defmodule Crit.State.UserTask do
   """
   import Pile.Interface
 
-  def new_key, do: UUID.uuid4()
+  def new_id, do: UUID.uuid4()
 
-  def cast_first(data) when is_struct(data) do 
-    uuid = some(__MODULE__).new_key()
-    :ok = ConCache.insert_new(Crit.Cache, uuid, data)
-    {uuid, data}
+  def start(module) do
+    task_id = some(__MODULE__).new_id()
+    starting_struct = struct(module, task_id: task_id)
+    :ok = ConCache.insert_new(Crit.Cache, task_id, starting_struct)
+    starting_struct
   end
 
-  def get(uuid_key) do
-    ConCache.get(Crit.Cache, uuid_key)
+  def start(module, initial, opts \\ []) do
+    %{task_id: key} = start(module)
+    store_by_key(key, initial, opts)
   end
 
-  def cast_more(%{} = new_values, uuid_key) do
-    :ok = ConCache.update(Crit.Cache, uuid_key, &({:ok, Map.merge(&1, new_values)}))
-    get(uuid_key)
+  def store(%{task_id: key} = new_values, opts \\ []) do
+    store_by_key(key, new_values, opts)
   end
 
-  def cast_more(key, value, uuid_key) do
-    cast_more(%{key => value}, uuid_key)
+  def get(task_id) do
+    ConCache.get(Crit.Cache, task_id)
   end
 
-  def delete(uuid_key), do: ConCache.delete(Crit.Cache, uuid_key)
+  def delete(task_id), do: ConCache.delete(Crit.Cache, task_id)
+
+  # ----------------------------------------------------------------------------
+  defp store_by_key(key, %{} = new_values, opts) do
+    total = Enum.into(opts, Map.from_struct(new_values) |> Map.delete(:task_id))
+
+    updater = fn old ->
+      {:ok, Map.merge(old, total)}
+    end
+    :ok = ConCache.update(Crit.Cache, key, updater)
+    get(key)
+  end
+
+  
+
+  
 end

@@ -30,16 +30,12 @@ defmodule CritWeb.Reservations.AfterTheFactController do
             new_data.date_showable_date,
             InstitutionApi.time_slot_name(new_data.time_slot_id, institution(conn)))
 
-        {key, _state} =
-          %Scratch.State{species_and_time_header: header}
-          |> Map.merge(new_data)
-          |> UserTask.cast_first
-        
+        state = UserTask.start(Scratch.State, new_data, species_and_time_header: header)
         animals =
           AnimalApi.available_after_the_fact(new_data, @institution)
 
         render(conn, "animals_form.html",
-          task_id: key,
+          task_id: state.task_id,
           path: path(:put_animals),
           header: header,
           animals: animals)
@@ -56,21 +52,18 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> AnimalApi.ids_to_animals(new_data.institution)
           |> View.animals_header
 
-        workflow_state = 
-          new_data
-          |> Map.merge(%{animals_header: header})
-          |> UserTask.cast_more(new_data.task_id)
+        state = UserTask.store(new_data, animals_header: header)
 
         procedures =
-          ProcedureApi.all_by_species(workflow_state.species_id, new_data.institution)
+          ProcedureApi.all_by_species(state.species_id, new_data.institution)
         
         render(conn, "procedures_form.html",
           procedures: procedures,
-          task_id: new_data.task_id,
+          task_id: state.task_id,
           path: path(:put_procedures),
-          header: [workflow_state.species_and_time_header, header]
+          header: [state.species_and_time_header, header]
         )
-   end
+    end
   end
   
   def put_procedures(conn, %{"procedures" => delivered_params}) do
@@ -78,16 +71,11 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     case ChangesetX.realize_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
 
-        workflow_state =
-          new_data
-          |> Map.merge(%{chosen_procedure_ids: new_data.chosen_procedure_ids})
-          |> UserTask.cast_more(new_data.task_id)
+        state = UserTask.store(new_data)
 
-
-        {:ok, reservation} = Reservation.create(workflow_state, institution(conn))
+        {:ok, reservation} = Reservation.create(state, institution(conn))
 
         render(conn, "done.html", show: inspect(reservation))
     end
   end
-  
 end

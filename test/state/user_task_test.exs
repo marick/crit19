@@ -1,30 +1,80 @@
 defmodule Crit.State.UserTaskTest do 
   use ExUnit.Case, async: true
   alias Crit.State.UserTask
+  alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
+  import Crit.Assertions.Map
 
-  defstruct name: nil, id: nil, species: nil
+  test "How controllers use UserTask" do
+    # For readability, return value of `update` is shown in another task
+    
+    %Scratch.State{task_id: task_id} = UserTask.start(Scratch.State)
 
-  # There are some dubious choices here that will probably change
+    (%Scratch.State{} = UserTask.get(task_id))
+    |> assert_fields(chosen_animal_ids: nil,
+                     task_id: task_id)
 
-  test "a big glob" do
-    first = %__MODULE__{name: "fred", id: 3}
-    {key, ^first} = UserTask.cast_first(first)
-    assert %{name: "fred", id: 3} = UserTask.get(key)
+    # task_id gets put in a form's `input type=hidden`
+   UserTask.store(%Scratch.Animals{
+          chosen_animal_ids: [1, 2, 3],
+          task_id: task_id})
 
-    second = %__MODULE__{name: "new", id: 3, species: 2}
-    assert second == UserTask.cast_more(%{name: "new", species: 2}, key)
-    assert second == UserTask.get(key)
+    (%Scratch.State{} = UserTask.get(task_id))
+    |> assert_fields(chosen_animal_ids: [1, 2, 3],
+                     task_id: task_id)
 
-    third = %__MODULE__{name: "new", id: 4, species: 2}
-    assert third == UserTask.cast_more(:id, 4, key)
-    assert third == UserTask.get(key)
+    # Confirm that struct store merges
+    UserTask.store(%Scratch.Procedures{
+          chosen_procedure_ids: [3, 2, 1],
+          task_id: task_id})
+
+    (%Scratch.State{} = UserTask.get(task_id))
+    |> assert_fields(chosen_animal_ids: [1, 2, 3],
+                     chosen_procedure_ids: [3, 2, 1],
+                     task_id: task_id)
+
+    # Show overwrite and how store can take options.
+    struct = %Scratch.Procedures{
+      chosen_procedure_ids: [:new, :new, :new],
+      task_id: task_id}
+    UserTask.store(struct, time_slot_id: 88)
+
+    (%Scratch.State{} = UserTask.get(task_id))
+    |> assert_fields(chosen_animal_ids: [1, 2, 3],
+                     chosen_procedure_ids: [:new, :new, :new],
+                     task_id: task_id)
+
+    UserTask.delete(task_id)
+    assert nil == UserTask.get(task_id)
   end
 
+  test "update returns the whole state" do
+    %Scratch.State{task_id: task_id} = UserTask.start(Scratch.State)
 
-  test "deletion" do
-    key = UserTask.cast_first(%__MODULE__{name: "fred", id: 3})
-    UserTask.delete(key)
-    assert nil == UserTask.get(key)
+    UserTask.store(%Scratch.Animals{
+          chosen_animal_ids: [1, 2, 3],
+          task_id: task_id})
+    
+    actual = UserTask.store(%Scratch.Procedures{
+          chosen_procedure_ids: [3, 2, 1],
+          task_id: task_id})
+
+    assert %Scratch.State{
+      chosen_animal_ids: [1, 2, 3],
+      chosen_procedure_ids: [3, 2, 1],
+      task_id: task_id} = actual
+  end
+
+  # ----------------------------------------------------------------------------
+  defstruct task_id: nil, some_array: [], keyword: false
+
+  test "you can start with some data" do
+    initial = %__MODULE__{some_array: [1, 2, 3]}
+    assert_field(initial, task_id: nil)
+
+    (%__MODULE__{} = UserTask.start(__MODULE__, initial, keyword: true))
+    |> assert_fields(some_array: [1, 2, 3],
+                     keyword: true,
+                     task_id: &is_binary/1)
   end
 end
 

@@ -1,7 +1,8 @@
 defmodule CritWeb.Reservations.AfterTheFactStructs do
 
   defmodule State do
-    defstruct species_and_time_header: nil,
+    defstruct task_id: nil,
+      species_and_time_header: nil,
       animals_header: nil,
       institution: nil,
 
