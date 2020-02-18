@@ -3,14 +3,19 @@ defmodule Crit.Exemplars.Available do
   This creates structures that are "fit for use". For example, an animal
   created here will have been placed into service today or earlier and will be
   taken out of service later than today.
-  """ 
+  """
+
+  # Note: moving forward, @date_1 will be the date of availability, unless
+  # otherwise specified.
   
   use ExUnit.CaseTemplate
   use Crit.Global.Constants
+  use Crit.Exemplars.Simple
   alias Crit.Factory
   alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
   alias Crit.Factory
+  alias Ecto.Datespan
 
   def animal_ids(opts \\ []) do
     params = Enum.into(opts,
@@ -37,4 +42,20 @@ defmodule Crit.Exemplars.Available do
     [id] = animal_ids(true_opts)
     id
   end
+
+  def bovine(name, in_service_date \\ @date_1) do
+    Factory.sql_insert!(:animal,
+      [name: name, species_id: @bovine_id,
+       span: Datespan.inclusive_up(in_service_date)],
+      @institution)
+  end
+
+  def bovine_procedure(name), do: procedure(name, @bovine_id)
+    
+  def procedure(name, species_id) do
+    Factory.sql_insert!(:procedure,
+      [name: name, species_id: species_id],
+      @institution)
+  end
+    
 end

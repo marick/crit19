@@ -2,12 +2,12 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Ecto.Datespan
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.State
   alias Crit.Setup.InstitutionApi
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Sql
+  alias Crit.Exemplars.Available
 
   setup :logged_in_as_reservation_manager
 
@@ -22,15 +22,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   setup do
     given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
-    bossie = Factory.sql_insert!(:animal,
-      [name: "Bossie", species_id: @bovine_id,
-       span: Datespan.inclusive_up(@date)],
-      @institution)
-
-    procedure = Factory.sql_insert!(:procedure,
-      [name: "only procedure", species_id: @bovine_id],
-      @institution)
-
+    bossie = Available.bovine("Bossie", @date)
+    procedure = Available.bovine_procedure("only procedure")
     [bossie: bossie, procedure: procedure]
   end
 
@@ -100,7 +93,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
 
       post_to_action(conn, :put_procedures, under(:procedures, params))
-      IO.inspect Sql.all(Reservation, @institution)
+      # IO.inspect Sql.all(Reservation, @institution)
     end
   end
 
