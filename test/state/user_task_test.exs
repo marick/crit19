@@ -10,8 +10,8 @@ defmodule Crit.State.UserTaskTest do
     %Scratch.State{task_id: task_id} = UserTask.start(Scratch.State)
 
     (%Scratch.State{} = UserTask.get(task_id))
-    |> assert_fields(chosen_animal_ids: nil,
-                     task_id: task_id)
+    |> assert_nothing(:chosen_animal_ids)
+    |> assert_field(task_id: task_id)
 
     # task_id gets put in a form's `input type=hidden`
    UserTask.store(%Scratch.Animals{

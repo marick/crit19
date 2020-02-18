@@ -51,6 +51,7 @@ defmodule CritWeb do
       import CritWeb.Fomantic.Elements
       import CritWeb.Plugs.Accessors
       alias Ecto.ChangesetX
+      import CritWeb.TaskHelpers
     end
   end
 
