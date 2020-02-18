@@ -77,7 +77,11 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
 
       post_to_action(conn, :put_procedures, under(:procedures, params))
-      # IO.inspect Sql.all(Reservation, @institution)
+      |> assert_purpose(show_created_reservation())
+
+      assert UserTask.get(@task_id) == nil
+
+      IO.puts "check for created reservation"
     end
   end
 end

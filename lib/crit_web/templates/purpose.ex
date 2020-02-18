@@ -43,4 +43,7 @@ defmodule CritWeb.Templates.Purpose do
   def after_the_fact_pick_procedures, 
     do: "after the fact pick procedures"
 
+  def show_created_reservation, 
+    do: "show created reservation"
+
 end

@@ -62,12 +62,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     params = Map.put(delivered_params, "institution", institution(conn))
     case ChangesetX.realize_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
-
         state = UserTask.store(new_data)
-
         {:ok, reservation} = Reservation.create(state, institution(conn))
-
-        render(conn, "done.html", show: inspect(reservation))
+        UserTask.delete(state.task_id)
+        render(conn, "done.html", reservation: reservation)
     end
   end
 
@@ -78,5 +76,4 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     all_opts = opts ++ [path: path(next_action), state: state]
     render(conn, html, all_opts)
   end
-  
 end
