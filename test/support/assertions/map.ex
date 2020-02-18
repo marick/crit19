@@ -118,4 +118,11 @@ defmodule Crit.Assertions.Map do
         "Test error: there is no key `#{inspect key}` in #{inspect map.__struct__}"
     end
   end
+
+  def refute_blank(map, keys) do
+    Enum.map(keys, fn key ->
+      refute map[key] in ["", nil, []]
+    end)
+  end
+  
 end

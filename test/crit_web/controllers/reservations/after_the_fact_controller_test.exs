@@ -5,8 +5,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.State
   alias Crit.Setup.InstitutionApi
-  alias Crit.Reservations.Schemas.Reservation
-  alias Crit.Sql
   alias Crit.Exemplars.Available
 
   setup :logged_in_as_reservation_manager
@@ -17,7 +15,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
   @time_slot_id 1
-
 
   setup do
     given UserTask.new_id, [], do: @task_id
@@ -42,19 +39,11 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
       |> assert_purpose(after_the_fact_pick_animals())
-      |> assert_user_sees(@task_id)
-      |> assert_user_sees("January 1, 2019")
-      |> assert_user_sees(@institution_first_time_slot.name)
-      |> assert_animal_choice("Bossie")
 
+      expected_span = InstitutionApi.timespan(@date, @time_slot_id, @institution)
       UserTask.get(@task_id)
-      |> assert_fields(
-           species_id: @bovine_id,
-           date: @date,
-           time_slot_id: @time_slot_id,
-           span: InstitutionApi.timespan(@date, @time_slot_id, @institution),
-           institution: @institution,
-           task_id: @task_id)
+      |> assert_field(span: expected_span)
+      |> refute_blank([:bovine_id, :time_slot_id, :date_showable_date])
     end
   end
 
@@ -70,10 +59,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_procedures())
-      |> assert_user_sees(@task_id)
-      |> assert_user_sees("TIME HEADER")
-      |> assert_animal_header
-      |> assert_procedure_choice("only procedure")
 
       UserTask.get(@task_id)
       |> assert_fields(chosen_animal_ids: [bossie.id])
@@ -96,23 +81,4 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       # IO.inspect Sql.all(Reservation, @institution)
     end
   end
-
-
-  defp assert_animal_choice(conn, who) do
-    conn
-    |> assert_user_sees(who)
-    |> assert_user_sees("chosen_animal_ids")
-  end
-
-  defp assert_procedure_choice(conn, what) do
-    conn
-    |> assert_user_sees(what)
-    |> assert_user_sees("chosen_procedure_ids")
-  end
-
-  defp assert_animal_header(conn) do
-    conn
-    |> assert_user_sees("Bossie")
-  end    
-  
 end
