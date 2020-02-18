@@ -112,16 +112,48 @@ defmodule Crit.Assertions.Map do
   @doc """
   Complain if given a key that doesn't exist in the argument (if it's a struct).
   """
-  def assert_no_typo_in_struct_key(map, key) do
+  defchain assert_no_typo_in_struct_key(map, key) do
     if Map.has_key?(map, :__struct__) do
       assert Map.has_key?(map, key),
         "Test error: there is no key `#{inspect key}` in #{inspect map.__struct__}"
     end
   end
 
-  def refute_nothing(map, keys) do
+  # ----------------------------------------------------------------------------
+  @doc """
+  `assert_nothing` assumes a convention of initializing keys in a map to
+  the sentinal value `:nothing`, with the expectation is that it will later
+  be given a real value. This is useful in multi-step construction of, for
+  example, CritWeb.Reservations.AfterTheFactStructs.
+
+  `assert_nothing` requres that, for each key, the map's value for that key be
+  `:nothing`.
+  """
+
+  defchain assert_nothing(map, keys) when is_list(keys) do
     Enum.map(keys, fn key ->
-      assert MapX.just?(map, key)
+      refute(MapX.just?(map, key), "Expected key `#{inspect key}` to be `:nothing`")
     end)
   end
+
+  def assert_nothing(map, key), do: assert_nothing(map, [key])
+
+  @doc """
+  `refute_nothing` assumes a convention of initializing keys in a map to
+  the sentinal value `:nothing`, with the expectation is that it will later
+  be given a real value. This is useful in multi-step construction of, for
+  example, CritWeb.Reservations.AfterTheFactStructs.
+
+  `refute_nothing` requres that, for each key, the map's value for that key *not*
+  be `:nothing`.
+  """
+  
+  defchain refute_nothing(map, keys) when is_list(keys) do
+    Enum.map(keys, fn key ->
+      assert(MapX.just?(map, key),
+        "Key `#{inspect key}` unexpectedly has value `:nothing`")
+    end)
+  end
+
+  def refute_nothing(map, key), do: refute_nothing(map, [key])
 end

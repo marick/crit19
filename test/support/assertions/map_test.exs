@@ -201,7 +201,27 @@ defmodule Crit.Assertions.MapTest do
           assert_copy(new, old, except: [extra: 33])
         end)
     end
-    
+
+
+  # ----------------------------------------------------------------------------
+    test "assert_nothing and friends" do
+      data = %{nothing: :nothing, something: "something"}
+      assert assert_nothing(data, :nothing) == data
+      assert refute_nothing(data, :something) == data
+
+      assertion_fails_with_diagnostic(
+        "Expected key `:something` to be `:nothing`",
+        fn -> 
+          assert_nothing(data, :something)
+        end)
+
+      assertion_fails_with_diagnostic(
+        "Key `:nothing` unexpectedly has value `:nothing`",
+        fn -> 
+          refute_nothing(data, :nothing)
+        end)
+      
+    end
   end
 end
 
