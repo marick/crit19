@@ -2,12 +2,12 @@
 
 <div class="ui main center aligned text container">
 
-  <%= @state.animals_header %>
+  <%= MapX.just!(@state, :task_header) %>
 
   <%= start_centered_form() %>
   <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
 
-    <%= hidden_input f, :task_id, value: @state.task_id %>
+    <%= hidden_input f, :task_id, value: MapX.just!(@state, :task_id) %>
 
     <%= for a <- @animals do %>
        <div class="field">

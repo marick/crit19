@@ -1,18 +1,17 @@
 defmodule CritWeb.Reservations.AfterTheFactStructs do
 
   defmodule State do
-    defstruct task_id: nil,
-      species_and_time_header: nil,
-      animals_header: nil,
-      institution: nil,
+    defstruct task_id: :nothing,
+      task_header:          :nothing,
+      institution:          :nothing,
 
-      species_id: nil,
-      date: nil,
-      time_slot_id: nil,
-      span: nil,
+      species_id:           :nothing,
+      date:                 :nothing,
+      time_slot_id:         :nothing,
+      span:                 :nothing,
 
-      chosen_animal_ids: nil,
-      chosen_procedure_ids: nil
+      chosen_animal_ids:    :nothing,
+      chosen_procedure_ids: :nothing
   end
 
   defmodule SpeciesAndTime do

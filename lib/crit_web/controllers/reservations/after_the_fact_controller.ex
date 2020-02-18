@@ -31,9 +31,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
             InstitutionApi.time_slot_name(new_data.time_slot_id, institution(conn)))
 
         state =
-          UserTask.start(Scratch.State, new_data, species_and_time_header: header)
+          UserTask.start(Scratch.State, new_data, task_header: header)
         animals =
-          AnimalApi.available_after_the_fact(new_data, @institution)
+          AnimalApi.available_after_the_fact(new_data, institution(conn))
 
         task_render(conn, :put_animals, state, animals: animals)
     end
@@ -46,20 +46,15 @@ defmodule CritWeb.Reservations.AfterTheFactController do
       {:ok, new_data} ->
         header =
           new_data.chosen_animal_ids
-          |> AnimalApi.ids_to_animals(new_data.institution)
+          |> AnimalApi.ids_to_animals(institution(conn))
           |> View.animals_header
 
-        state = UserTask.store(new_data, animals_header: header)
+        state = UserTask.store(new_data, task_header: header)
 
         procedures =
-          ProcedureApi.all_by_species(state.species_id, new_data.institution)
-        
-        render(conn, "procedures_form.html",
-          procedures: procedures,
-          task_id: state.task_id,
-          path: path(:put_procedures),
-          header: [state.species_and_time_header, header]
-        )
+          ProcedureApi.all_by_species(state.species_id, institution(conn))
+
+        task_render(conn, :put_procedures, state, procedures: procedures)
     end
   end
   
