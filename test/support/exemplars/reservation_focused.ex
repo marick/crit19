@@ -4,6 +4,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Crit.Setup.Schemas.{Animal, Procedure}
   alias Crit.Sql
   alias Ecto.Datespan
+  alias Crit.Setup.InstitutionApi
 
 
   defp named_thing_inserter(template) do 
@@ -28,8 +29,14 @@ defmodule Crit.Exemplars.ReservationFocused do
     }
   end
 
-  def inserted_procedure_ids(names) do
-    inserted_named_ids names, %Procedure{}
+  def inserted_procedure_ids(names, species_id) do
+    inserted_named_ids names, %Procedure{species_id: species_id}
+  end
+
+  def a_time_slot_id do
+    [{_name, id} | _] = InstitutionApi.time_slot_tuples(@institution)
+    IO.inspect id
+    id
   end
 end
 

@@ -8,7 +8,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias CritWeb.Reservations.AfterTheFactView, as: View
-  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Reservations.ReservationApi
 
   plug :must_be_able_to, :make_reservations
 
@@ -63,7 +63,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     case ChangesetX.realize_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
         state = UserTask.store(new_data)
-        {:ok, reservation} = Reservation.create(state, institution(conn))
+        {:ok, reservation} = ReservationApi.create(state, institution(conn))
         UserTask.delete(state.task_id)
         render(conn, "done.html", reservation: reservation)
     end

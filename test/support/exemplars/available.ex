@@ -57,5 +57,4 @@ defmodule Crit.Exemplars.Available do
       [name: name, species_id: species_id],
       @institution)
   end
-    
 end
