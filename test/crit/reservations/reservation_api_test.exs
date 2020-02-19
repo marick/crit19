@@ -16,7 +16,7 @@ defmodule Crit.Reservations.ReservationApiTest do
       procedure_ids =
         ReservationFocused.inserted_procedure_ids(
           ["procedure 1", "procedure 2"], @bovine_id)
-      timeslot_id = ReservationFocused.a_timeslot_id
+      timeslot_id = ReservationFocused.some_timeslot_id
       span = InstitutionApi.timespan(@date_1, timeslot_id, @institution)
 
       params = %State{
@@ -30,7 +30,7 @@ defmodule Crit.Reservations.ReservationApiTest do
       ReservationApi.create(params, @institution)
       |> ok_payload
       |> assert_fields(species_id: @bovine_id,
-#                       timeslot_id: timeslot_id,
+                       timeslot_id: timeslot_id,
                        span: span)
     end
 

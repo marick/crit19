@@ -33,10 +33,15 @@ defmodule Crit.Exemplars.ReservationFocused do
     inserted_named_ids names, %Procedure{species_id: species_id}
   end
 
-  def a_timeslot_id do
-    [{_name, id} | _] = InstitutionApi.timeslot_tuples(@institution)
-    id
+  def some_timeslot do
+    InstitutionApi.timeslots(@institution)
+    |> List.first
   end
+
+  def some_timeslot_id do
+    some_timeslot().id
+  end
+  
 end
 
 

@@ -3,6 +3,7 @@ defmodule Crit.Setup.InstitutionApiTest do
 #  alias Crit.Setup.Schemas.Institution
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan
+  alias Crit.Exemplars.ReservationFocused
 
   test "during testing, there's a single institution" do
     [retrieved] = InstitutionApi.all
@@ -19,7 +20,7 @@ defmodule Crit.Setup.InstitutionApiTest do
 
   test "an institution has a timezone" do
     actual = InstitutionApi.timezone(@institution) 
-    assert actual == InstitutionApi.default.timezone
+    assert actual == @default_timezone
   end
 
   test "an institution has tuples of species" do
@@ -33,8 +34,9 @@ defmodule Crit.Setup.InstitutionApiTest do
   end
 
   test "an institution can convert an id to a timeslot name" do
-    actual = InstitutionApi.timeslot_name(1, @institution)
-    assert actual == @institution_first_timeslot.name
+    some_timeslot = ReservationFocused.some_timeslot
+    actual = InstitutionApi.timeslot_name(some_timeslot.id, @institution)
+    assert actual == ReservationFocused.some_timeslot.name
   end
 
   test "an institution has time slots" do

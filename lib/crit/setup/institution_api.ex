@@ -24,7 +24,7 @@ defmodule Crit.Setup.InstitutionApi do
   # strings, and I worry about things like smart quotes not making
   # the round trip correctly.
   def timeslot_tuples(institution) do
-    GenServer.call(server(institution), :timeslots)
+    GenServer.call(server(institution), :timeslot_tuples)
   end
 
   def timeslot_name(id, institution) do
@@ -46,38 +46,9 @@ defmodule Crit.Setup.InstitutionApi do
     |> Enum.find(fn {_, id} -> id == species_id end)
     |> elem(0)
   end
-  
 
-  @doc """
-  This institution must be in the database(s) for all environments: dev, prod, test. 
-  It is also "default" in the sense that a dropdown list of institutions should
-  show/select this one by default.
-
-  Note: this is inserted into the database early in its creation.
-  """
-
-  IO.puts "delete this"
-  def default do
-    %Institution{
-      display_name: "Critter4Us Demo",
-      short_name: "critter4us",
-      prefix: "demo",
-      timezone: "America/Los_Angeles",
-
-      timeslots: [ %Timeslot{name: "morning (8-noon)",
-                              start: ~T[08:00:00],
-                              duration: 4 * 60},
-                    %Timeslot{name: "afternoon (1-5)",
-                              start: ~T[13:00:00],
-                              duration: 4 * 60},
-                    %Timeslot{name: "evening (6-midnight)",
-                              start: ~T[18:00:00],
-                              duration: 5 * 60},
-                    %Timeslot{name: "all day (8-5)",
-                              start: ~T[08:00:00],
-                              duration: 9 * 60},
-                  ]
-      }
+  def timeslots(institution) do 
+    GenServer.call(server(institution), :timeslots)
   end
 
   defp timeslot_by_id(id, institution) do 
