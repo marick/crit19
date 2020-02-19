@@ -5,7 +5,7 @@
   <h2 class="ui center aligned header">
     Step 3: Choose procedures for
     <%= @reminders.date_showable_date %>, 
-    <%= @reminders.time_slot_name %>
+    <%= @reminders.timeslot_name %>
     <%= @animal_names %>
   </h2>
 

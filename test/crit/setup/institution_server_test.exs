@@ -33,12 +33,12 @@ defmodule Crit.Setup.InstitutionServerTest do
   end
 
   test "can find a slot by id", %{server: server} do
-    {:ok, found} = GenServer.call(server, {:time_slot_by_id, 1})
+    {:ok, found} = GenServer.call(server, {:timeslot_by_id, 1})
 
     assert_fields(found,
-      name: @institution_first_time_slot.name,
-      start: @institution_first_time_slot.start,
-      duration: @institution_first_time_slot.duration)
+      name: @institution_first_timeslot.name,
+      start: @institution_first_timeslot.start,
+      duration: @institution_first_timeslot.duration)
   end
 
   

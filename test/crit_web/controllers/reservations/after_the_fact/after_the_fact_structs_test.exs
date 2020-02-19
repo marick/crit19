@@ -9,7 +9,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
                  date_showable_date: "January 1, 2019",
-                 time_slot_id: "1",
+                 timeslot_id: "1",
                  institution: @institution}
 
       expected_span =
@@ -20,7 +20,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       |> assert_fields(
            species_id: @bovine_id,
            date: ~D[2019-01-01],
-           time_slot_id: 1,
+           timeslot_id: 1,
            span: expected_span
          )
     end

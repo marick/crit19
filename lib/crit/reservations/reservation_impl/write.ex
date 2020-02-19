@@ -14,6 +14,5 @@ defmodule Crit.Reservations.ReservationImpl.Write do
     %Reservation{}
     |> Reservation.changeset(attrs)
     |> Sql.insert(institution)
-    |> IO.inspect
   end  
 end

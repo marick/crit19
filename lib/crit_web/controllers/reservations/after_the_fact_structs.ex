@@ -7,7 +7,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
 
       species_id:           :nothing,
       date:                 :nothing,
-      time_slot_id:         :nothing,
+      timeslot_id:         :nothing,
       span:                 :nothing,
 
       chosen_animal_ids:    :nothing,
@@ -24,12 +24,12 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       field :species_id, :integer
       field :date, :date
       field :date_showable_date, :string
-      field :time_slot_id, :integer
+      field :timeslot_id, :integer
       field :institution, :string
       field :span, Timespan
     end
 
-    @required [:species_id, :date, :date_showable_date, :time_slot_id, :institution]
+    @required [:species_id, :date, :date_showable_date, :timeslot_id, :institution]
 
     def empty do
       change(%__MODULE__{})
@@ -44,7 +44,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
 
     defp add_span(changeset) do
       args =
-        [:date, :time_slot_id, :institution]
+        [:date, :timeslot_id, :institution]
         |> Enum.map(&(get_change changeset, &1))
       
       result = apply(InstitutionApi, :timespan, args)

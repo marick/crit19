@@ -26,17 +26,17 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
-  def handle_call(:time_slots, _from, state) do
+  def handle_call(:timeslots, _from, state) do
     tuples = 
-      state.institution.time_slots
+      state.institution.timeslots
       |> EnumX.pairs(:name, :id)
     {:reply, tuples, state}
   end
 
   @impl true
-  def handle_call({:time_slot_by_id, slot_id}, _from, state) do
+  def handle_call({:timeslot_by_id, slot_id}, _from, state) do
     result = 
-      state.institution.time_slots
+      state.institution.timeslots
       |> EnumX.find_by_id(slot_id)
     {:reply, {:ok, result}, state}
   end

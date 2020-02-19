@@ -36,7 +36,7 @@ defmodule Crit.State.UserTaskTest do
     struct = %Scratch.Procedures{
       chosen_procedure_ids: [:new, :new, :new],
       task_id: task_id}
-    UserTask.store(struct, time_slot_id: 88)
+    UserTask.store(struct, timeslot_id: 88)
 
     (%Scratch.State{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],

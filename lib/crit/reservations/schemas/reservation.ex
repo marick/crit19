@@ -7,15 +7,15 @@ defmodule Crit.Reservations.Schemas.Reservation do
   schema "reservations" do
     field :species_id, :id
     field :span, Timespan
-#    field :time_slot_id, :id
+    field :timeslot_id, :id
     
 
     has_many :uses, Use
-#    has_many :animals, through: [:uses 
+#    has_many :animals, through: [:uses, :timeslot_id]
     timestamps()
   end
 
-  @required [:span, :species_id]
+  @required [:span, :species_id, :timeslot_id]
 
   def changeset(reservation, attrs) do
     reservation

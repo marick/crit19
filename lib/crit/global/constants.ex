@@ -24,7 +24,7 @@ defmodule Crit.Global.Constants do
       @equine Constants.equine()
 
       @institution InstitutionApi.default.short_name
-      @institution_first_time_slot List.first(InstitutionApi.default.time_slots)
+      @institution_first_timeslot List.first(InstitutionApi.default.timeslots)
     end
   end
 end

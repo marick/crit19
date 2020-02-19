@@ -4,23 +4,17 @@ defmodule Crit.Setup.InstitutionApiTest do
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan
 
-  test "the institutions are preloaded when app starts" do
-    assert InstitutionApi.all == Repo.all(Institution) |> Repo.preload(:time_slots)
-  end
-
   test "during testing, there's a single institution" do
-    assert [_] = InstitutionApi.all
-  end
-  
-  test "the institution is labeled with a special shortname" do
     [retrieved] = InstitutionApi.all
 
     assert retrieved.short_name == @institution
+    assert [_ | _] = retrieved.timeslots
   end
 
   test "A single institution can be retrieved" do
     retrieved = InstitutionApi.one!(short_name: @institution)
     assert retrieved.short_name == @institution
+    assert [_ | _] = retrieved.timeslots
   end
 
   test "an institution has a timezone" do
@@ -39,13 +33,13 @@ defmodule Crit.Setup.InstitutionApiTest do
   end
 
   test "an institution can convert an id to a timeslot name" do
-    actual = InstitutionApi.time_slot_name(1, @institution)
-    assert actual == @institution_first_time_slot.name
+    actual = InstitutionApi.timeslot_name(1, @institution)
+    assert actual == @institution_first_timeslot.name
   end
 
   test "an institution has time slots" do
     actual = 
-      InstitutionApi.time_slot_tuples(@institution)
+      InstitutionApi.timeslot_tuples(@institution)
       |> Enum.map(fn {name, _id} -> name end)
 
     expected = ["morning (8-noon)",

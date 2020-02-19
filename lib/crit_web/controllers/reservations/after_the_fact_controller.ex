@@ -17,7 +17,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
       changeset: Scratch.SpeciesAndTime.empty,
       path: path(:put_species_and_time),
       species_options: InstitutionApi.available_species(institution(conn)),
-      time_slot_options: InstitutionApi.time_slot_tuples(institution(conn)))
+      timeslot_options: InstitutionApi.timeslot_tuples(institution(conn)))
   end
 
   def put_species_and_time(conn, %{"species_and_time" => delivered_params}) do
@@ -28,7 +28,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         header =
           View.species_and_time_header(
             new_data.date_showable_date,
-            InstitutionApi.time_slot_name(new_data.time_slot_id, institution(conn)))
+            InstitutionApi.timeslot_name(new_data.timeslot_id, institution(conn)))
 
         state =
           UserTask.start(Scratch.State, new_data, task_header: header)

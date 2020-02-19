@@ -13,7 +13,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   @iso_date "2019-01-01"
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
-  @time_slot_id 1
+  @timeslot_id 1
 
   setup do
     given UserTask.new_id, [], do: @task_id
@@ -34,15 +34,15 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
                  date: @iso_date,
                  date_showable_date: @human_date,
                  institution: @institution,
-                 time_slot_id: to_string(@time_slot_id)}
+                 timeslot_id: to_string(@timeslot_id)}
 
       post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
       |> assert_purpose(after_the_fact_pick_animals())
 
-      expected_span = InstitutionApi.timespan(@date, @time_slot_id, @institution)
+      expected_span = InstitutionApi.timespan(@date, @timeslot_id, @institution)
       UserTask.get(@task_id)
       |> assert_field(span: expected_span)
-      |> refute_nothing([:species_id, :time_slot_id, :date_showable_date])
+      |> refute_nothing([:species_id, :timeslot_id, :date_showable_date])
     end
   end
 
@@ -72,7 +72,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       UserTask.start(%State{
             species_id: @bovine_id,
-            span: InstitutionApi.timespan(@date, @time_slot_id, @institution),
+            span: InstitutionApi.timespan(@date, @timeslot_id, @institution),
+            timeslot_id: @timeslot_id,
             chosen_animal_ids: [bossie.id]})
 
 

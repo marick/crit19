@@ -1,16 +1,18 @@
 defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
-  alias Crit.Setup.Schemas.{Institution,TimeSlot}
+  alias Crit.Setup.Schemas.{Institution,Timeslot, Animal}
   import Crit.Setup.InstitutionServer, only: [server: 1]
   import Ecto.Query
   alias Ecto.Timespan
 
   def all do
-    Repo.all(from Institution, preload: :time_slots)
+    Repo.all(from Institution)
+    |> Enum.map(&put_timeslots/1)
   end
 
   def one!(kws) do
-    Repo.one(from Institution, where: ^kws, preload: :time_slots)
+    Repo.one(from Institution, where: ^kws)
+    |> put_timeslots
   end
 
   def timezone(institution) do
@@ -21,18 +23,18 @@ defmodule Crit.Setup.InstitutionApi do
   # This could just be a list of names, but the names are arbitrary
   # strings, and I worry about things like smart quotes not making
   # the round trip correctly.
-  def time_slot_tuples(institution) do
-    GenServer.call(server(institution), :time_slots)
+  def timeslot_tuples(institution) do
+    GenServer.call(server(institution), :timeslots)
   end
 
-  def time_slot_name(id, institution) do
-    time_slot = time_slot_by_id(id, institution)
-    time_slot.name
+  def timeslot_name(id, institution) do
+    timeslot = timeslot_by_id(id, institution)
+    timeslot.name
   end
 
-  def timespan(%Date{} = date, time_slot_id, institution) do
-    time_slot = time_slot_by_id(time_slot_id, institution)
-    Timespan.from_date_time_and_duration(date, time_slot.start, time_slot.duration)
+  def timespan(%Date{} = date, timeslot_id, institution) do
+    timeslot = timeslot_by_id(timeslot_id, institution)
+    Timespan.from_date_time_and_duration(date, timeslot.start, timeslot.duration)
   end
 
   def available_species(institution) do
@@ -50,7 +52,11 @@ defmodule Crit.Setup.InstitutionApi do
   This institution must be in the database(s) for all environments: dev, prod, test. 
   It is also "default" in the sense that a dropdown list of institutions should
   show/select this one by default.
+
+  Note: this is inserted into the database early in its creation.
   """
+
+  IO.puts "delete this"
   def default do
     %Institution{
       display_name: "Critter4Us Demo",
@@ -58,16 +64,16 @@ defmodule Crit.Setup.InstitutionApi do
       prefix: "demo",
       timezone: "America/Los_Angeles",
 
-      time_slots: [ %TimeSlot{name: "morning (8-noon)",
+      timeslots: [ %Timeslot{name: "morning (8-noon)",
                               start: ~T[08:00:00],
                               duration: 4 * 60},
-                    %TimeSlot{name: "afternoon (1-5)",
+                    %Timeslot{name: "afternoon (1-5)",
                               start: ~T[13:00:00],
                               duration: 4 * 60},
-                    %TimeSlot{name: "evening (6-midnight)",
+                    %Timeslot{name: "evening (6-midnight)",
                               start: ~T[18:00:00],
                               duration: 5 * 60},
-                    %TimeSlot{name: "all day (8-5)",
+                    %Timeslot{name: "all day (8-5)",
                               start: ~T[08:00:00],
                               duration: 9 * 60},
                   ]
@@ -76,10 +82,15 @@ defmodule Crit.Setup.InstitutionApi do
 
   
 
-  defp time_slot_by_id(id, institution) do 
-    {:ok, time_slot} =
-      GenServer.call(server(institution), {:time_slot_by_id, id})
-    time_slot
+  defp timeslot_by_id(id, institution) do 
+    {:ok, timeslot} =
+      GenServer.call(server(institution), {:timeslot_by_id, id})
+    timeslot
+  end
+
+  defp put_timeslots(full_institution) do
+    %{full_institution |
+      timeslots: Repo.all(Timeslot, prefix: full_institution.prefix)}
   end
 
 end
