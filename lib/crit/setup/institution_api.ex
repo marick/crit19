@@ -1,6 +1,6 @@
 defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
-  alias Crit.Setup.Schemas.{Institution,Timeslot, Animal}
+  alias Crit.Setup.Schemas.{Institution,Timeslot}
   import Crit.Setup.InstitutionServer, only: [server: 1]
   import Ecto.Query
   alias Ecto.Timespan
@@ -79,8 +79,6 @@ defmodule Crit.Setup.InstitutionApi do
                   ]
       }
   end
-
-  
 
   defp timeslot_by_id(id, institution) do 
     {:ok, timeslot} =

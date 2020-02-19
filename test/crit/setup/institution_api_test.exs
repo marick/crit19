@@ -1,6 +1,6 @@
 defmodule Crit.Setup.InstitutionApiTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.Institution
+#  alias Crit.Setup.Schemas.Institution
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan
 
