@@ -1,10 +1,11 @@
 defmodule Crit.Reservations.HiddenSchemas.Use do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Crit.Setup.Schemas.{Animal,Procedure}
 
   schema "uses" do
-    field :animal_id, :id
-    field :procedure_id, :id
+    belongs_to :animal, Animal
+    belongs_to :procedure, Procedure
     field :reservation_id, :id
   end
 
