@@ -6,7 +6,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     import Ecto.Query
     alias Crit.Reservations.Schemas.Reservation
   
-    def from(where), do: from a in Reservation, where: ^where
+    def from(where), do: from r in Reservation, where: ^where
   end
 
   # Someday, figure out how to do a single query that orders the
@@ -26,6 +26,11 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   def by_id(id, institution) do
     Query.from(id: id)
     |> Sql.one(institution)
+  end
+
+  def by(where, institution) do
+    Query.from(where)
+    |> Sql.all(institution)
   end
 
   def put_updatable_fields(reservation, institution) do 

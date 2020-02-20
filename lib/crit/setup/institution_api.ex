@@ -51,7 +51,7 @@ defmodule Crit.Setup.InstitutionApi do
     GenServer.call(server(institution), :timeslots)
   end
 
-  defp timeslot_by_id(id, institution) do 
+  def timeslot_by_id(id, institution) do 
     {:ok, timeslot} =
       GenServer.call(server(institution), {:timeslot_by_id, id})
     timeslot

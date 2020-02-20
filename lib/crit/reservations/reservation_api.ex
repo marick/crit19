@@ -16,5 +16,7 @@ defmodule Crit.Reservations.ReservationApi do
   end
 
   def reservations_on_date(date, institution) do
+    Read.by([date: date], institution)
+    |> Enum.map(&(Read.put_updatable_fields(&1, institution)))
   end
 end

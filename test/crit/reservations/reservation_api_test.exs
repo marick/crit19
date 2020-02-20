@@ -21,7 +21,7 @@ defmodule Crit.Reservations.ReservationApiTest do
     %State{
       species_id: @bovine_id,
       timeslot_id: @timeslot_id,
-      date: @date,
+      date: @date_1,
       span: @span,
       chosen_animal_ids: animal_ids,
       chosen_procedure_ids: procedure_ids
@@ -32,7 +32,7 @@ defmodule Crit.Reservations.ReservationApiTest do
     assert_fields(reservation,
       species_id: @bovine_id,
       timeslot_id: @timeslot_id,
-      date: @date,
+      date: @date_1,
       span: @span)
 
     [bossie, jeff] = reservation.animal_pairs
