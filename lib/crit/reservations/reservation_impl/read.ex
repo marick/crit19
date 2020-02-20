@@ -1,19 +1,12 @@
 defmodule Crit.Reservations.ReservationImpl.Read do
   alias Crit.Sql
-  import Ecto.Query
-  alias Crit.Reservations.Schemas.Reservation
   alias Crit.Reservations.HiddenSchemas.Use
-  alias Crit.Setup.Schemas.{Animal, Procedure}
   
   defmodule Query do
     import Ecto.Query
     alias Crit.Reservations.Schemas.Reservation
   
     def from(where), do: from a in Reservation, where: ^where
-
-    def ordered(query) do
-      query |> order_by([a], a.name)
-    end
   end
 
   # Someday, figure out how to do a single query that orders the
@@ -36,26 +29,10 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   end
 
   def put_updatable_fields(reservation, institution) do 
-    uses =
-      (from u in Use, where: u.reservation_id == ^reservation.id)
-      |> Sql.all(institution)
-    
-    animal_ids = Enum.map(uses, &(&1.animal_id))
-    procedure_ids = Enum.map(uses, &(&1.procedure_id))
-
-    animal_pairs =
-      (from a in Animal, where: a.id in ^animal_ids, order_by: a.name)
-      |> Sql.all(institution)
-      |> EnumX.id_pairs(:name)
-
-    procedure_pairs =
-      (from p in Procedure, where: p.id in ^procedure_ids, order_by: p.name)
-      |> Sql.all(institution)
-      |> EnumX.id_pairs(:name)
-
+    {animals, procedures} = Use.all_used(reservation.id, institution)
 
     %{reservation |
-      animal_pairs: animal_pairs,
-      procedure_pairs: procedure_pairs}
+      animal_pairs: EnumX.id_pairs(animals, :name),
+      procedure_pairs: EnumX.id_pairs(procedures, :name)}
   end
 end

@@ -29,9 +29,21 @@ defmodule Crit.Exemplars.ReservationFocused do
     }
   end
 
+  def ignored_animal(name, species_id) do
+    inserted_animal_ids([name], species_id)
+    :ok
+  end
+
   def inserted_procedure_ids(names, species_id) do
     inserted_named_ids names, %Procedure{species_id: species_id}
   end
+
+  def ignored_procedure(name, species_id) do
+    inserted_procedure_ids([name], species_id)
+    :ok
+  end
+
+  
 
   def some_timeslot do
     InstitutionApi.timeslots(@institution)

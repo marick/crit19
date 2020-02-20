@@ -11,9 +11,12 @@ defmodule Crit.Reservations.ReservationApiTest do
   def typical_params do 
     animal_ids =
       ReservationFocused.inserted_animal_ids(["Jeff", "bossie"], @bovine_id)
+    ReservationFocused.ignored_animal("Ignored animal", @bovine_id)
+    
     procedure_ids =
       ReservationFocused.inserted_procedure_ids(
         ["procedure 1", "procedure 2"], @bovine_id)
+    ReservationFocused.ignored_procedure("Ignored procedure", @bovine_id)
     
     %State{
       species_id: @bovine_id,

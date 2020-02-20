@@ -1,7 +1,9 @@
 defmodule Crit.Reservations.HiddenSchemas.Use do
   use Ecto.Schema
+  import Ecto.Query
   import Ecto.Changeset
   alias Crit.Setup.Schemas.{Animal,Procedure}
+  alias Crit.Sql
 
   schema "uses" do
     belongs_to :animal, Animal
@@ -23,5 +25,26 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
     for a <- animal_ids, p <- procedure_ids do
       %{animal_id: a, procedure_id: p}
     end
+  end
+
+  def uses(reservation_id, institution) do
+    (from u in __MODULE__, where: u.reservation_id == ^reservation_id)
+    |> Sql.all(institution)
+  end
+
+  def all_used(reservation_id, institution) do 
+    uses = uses(reservation_id, institution)
+    animal_ids = Enum.map(uses, &(&1.animal_id))
+    procedure_ids = Enum.map(uses, &(&1.procedure_id))
+
+    animals =
+      (from a in Animal, where: a.id in ^animal_ids, order_by: a.name)
+      |> Sql.all(institution)
+
+    procedures =
+      (from p in Procedure, where: p.id in ^procedure_ids, order_by: p.name)
+      |> Sql.all(institution)
+
+    {animals, procedures}
   end
 end
