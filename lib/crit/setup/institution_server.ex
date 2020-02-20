@@ -34,7 +34,7 @@ defmodule Crit.Setup.InstitutionServer do
   def handle_call(:timeslot_tuples, _from, state) do
     tuples = 
       state.institution.timeslots
-      |> EnumX.pairs(:name, :id)
+      |> EnumX.id_pairs(:name)
     {:reply, tuples, state}
   end
 
@@ -78,7 +78,7 @@ defmodule Crit.Setup.InstitutionServer do
     router = if institution.prefix, do: RouteToSchema, else: RouteToRepo
     species =
       router.forward(:all, [Species.Query.ordered()], [], institution)
-      |> EnumX.pairs(:name, :id)
+      |> EnumX.id_pairs(:name)
 
     %__MODULE__{institution: institution, router: router, species: species}
   end

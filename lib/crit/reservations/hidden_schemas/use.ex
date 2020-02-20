@@ -19,9 +19,9 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
     |> foreign_key_constraint(:reservation_id)
   end
 
-  def unsaved_uses(animal_ids, procedure_ids) do
+  def cross_product(animal_ids, procedure_ids) do
     for a <- animal_ids, p <- procedure_ids do
-      %__MODULE__{animal_id: a, procedure_id: p}
+      %{animal_id: a, procedure_id: p}
     end
   end
 end

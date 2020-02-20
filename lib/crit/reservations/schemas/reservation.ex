@@ -8,10 +8,10 @@ defmodule Crit.Reservations.Schemas.Reservation do
     field :species_id, :id
     field :span, Timespan
     field :timeslot_id, :id
-    
-
     has_many :uses, Use
-#    has_many :animals, through: [:uses, :timeslot_id]
+
+    field :animal_pairs, :any, virtual: true
+    field :procedure_pairs, :any, virtual: true
     timestamps()
   end
 
@@ -21,6 +21,7 @@ defmodule Crit.Reservations.Schemas.Reservation do
     reservation
     |> cast(attrs, @required)
     |> validate_required(@required)
+    |> cast_assoc(:uses)
     |> foreign_key_constraint(:species_id)
   end
 end

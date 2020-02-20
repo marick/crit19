@@ -5,7 +5,7 @@ defmodule Crit.Reservations.ReservationImpl.Write do
 
   def create(struct, institution) do
     uses = 
-      Use.unsaved_uses(struct.chosen_animal_ids, struct.chosen_procedure_ids)
+      Use.cross_product(struct.chosen_animal_ids, struct.chosen_procedure_ids)
     
     attrs =
       Map.from_struct(struct)

@@ -27,6 +27,8 @@ defmodule EnumX do
   def pairs(maps, first, second),
     do: Enum.map(maps, &({Map.fetch!(&1, first), Map.fetch!(&1, second)}))
 
+  def id_pairs(maps, other), do: pairs(maps, other, :id)
+
   def find_by_id(maps, id), 
     do: Enum.find(maps, fn one -> one.id == id end)
 
