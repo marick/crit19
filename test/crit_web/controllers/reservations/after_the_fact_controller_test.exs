@@ -5,6 +5,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.State
   alias Crit.Setup.InstitutionApi
+  alias Crit.Reservations.ReservationApi
   alias Crit.Exemplars.Available
 
   setup :logged_in_as_reservation_manager
@@ -82,7 +83,9 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_purpose(show_created_reservation())
 
       assert UserTask.get(@task_id) == nil
-      IO.puts "check for created reservation"
+      [only] = ReservationApi.reservations_on_date(@date, @institution)
+
+      assert_fields(only, date: @date, timeslot_id: @timeslot_id)
     end
   end
 end

@@ -4,8 +4,9 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.State.UserTask
   alias Crit.Exemplars.Available
-#  alias Crit.Reservations.Schemas.Reservation
-#  alias Crit.Sql
+  alias Crit.Reservations.ReservationApi
+  alias Crit.Setup.InstitutionApi
+  alias Ecto.Timespan
 
   setup :logged_in_as_reservation_manager
 
@@ -45,10 +46,33 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
     |> follow_form(%{procedures:                               # Pick animals
           %{chosen_procedure_ids: [picked_procedure.id]}})
 
-    IO.puts "check created reservation details"
-    # IO.inspect Sql.all(Reservation, @institution)
-    
+    [only] = ReservationApi.reservations_on_date(@date, @institution)
+    assert_correct_result(only, picked_animal, picked_procedure)
   end
-  
-  # ----------------------------------------------------------------------------
+
+
+  defp assert_correct_result(reservation, picked_animal, picked_procedure) do 
+    assert_fields(reservation,
+      species_id: @bovine_id,
+      date: @date,
+      span: expected_span(),
+      timeslot_id: @timeslot_id,
+      animal_pairs: [{picked_animal.name, picked_animal.id}],
+      procedure_pairs: [{picked_procedure.name, picked_procedure.id}]
+    )
+  end
+
+  # A little paranoia here.
+  defp expected_span do 
+    one_way =
+      InstitutionApi.timespan(@date, @timeslot_id, @institution)
+    another =
+      Timespan.from_date_time_and_duration(@date, ~T[08:00:00], 4 * 60)
+    assert one_way == another
+    
+    assert_fields(InstitutionApi.timeslot_by_id(@timeslot_id, @institution),
+      start: ~T[08:00:00], duration: 4 * 60)
+
+    one_way
+  end
 end
