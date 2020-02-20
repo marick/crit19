@@ -21,6 +21,7 @@ defmodule Crit.Reservations.ReservationApiTest do
     %State{
       species_id: @bovine_id,
       timeslot_id: @timeslot_id,
+      date: @date,
       span: @span,
       chosen_animal_ids: animal_ids,
       chosen_procedure_ids: procedure_ids
@@ -31,6 +32,7 @@ defmodule Crit.Reservations.ReservationApiTest do
     assert_fields(reservation,
       species_id: @bovine_id,
       timeslot_id: @timeslot_id,
+      date: @date,
       span: @span)
 
     [bossie, jeff] = reservation.animal_pairs
@@ -64,6 +66,11 @@ defmodule Crit.Reservations.ReservationApiTest do
     test "by id", %{reservation_id: reservation_id} do
       ReservationApi.updatable!(reservation_id, @institution)
       |> assert_expected_reservation
+    end
+
+    test "by date" do
+      assert [only] = ReservationApi.reservations_on_date(@date_1, @institution)
+      assert_expected_reservation(only)
     end
   end
 end

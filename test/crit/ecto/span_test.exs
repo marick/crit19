@@ -220,7 +220,10 @@ defmodule Crit.Ecto.SpanTest do
   end
   
   defp add_reservation!(timespan) do
-    reservation = %Reservation{species_id: @bovine_id, span: timespan, timeslot_id: 1}
+    reservation =
+      %Reservation{species_id: @bovine_id,
+                   date: ~D{2001-01-01}, # irrelevant for these tests.
+                   span: timespan, timeslot_id: 1}
     Sql.insert!(reservation, @institution)
   end
 end

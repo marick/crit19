@@ -11,6 +11,7 @@ defmodule Crit.Repo.Migrations.CreateReservation do
     create table(:reservations) do
       add :species_id, references("species", on_delete: :restrict), null: false
       add :span, :tsrange, null: false
+      add :date, :date, null: false
       add :timeslot_id, references("timeslots"), null: false
       add :responsible_person, :string
       add :billing_code, :string

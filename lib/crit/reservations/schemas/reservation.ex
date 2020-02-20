@@ -4,8 +4,12 @@ defmodule Crit.Reservations.Schemas.Reservation do
   alias Ecto.Timespan
   alias Crit.Reservations.HiddenSchemas.Use
 
+  # The date could be extracted from the `span`, but making it explicit
+  # is more convenient for some uses.
+  
   schema "reservations" do
     field :species_id, :id
+    field :date, :date
     field :span, Timespan
     field :timeslot_id, :id
     has_many :uses, Use
@@ -15,7 +19,7 @@ defmodule Crit.Reservations.Schemas.Reservation do
     timestamps()
   end
 
-  @required [:span, :species_id, :timeslot_id]
+  @required [:span, :date, :species_id, :timeslot_id]
 
   def changeset(reservation, attrs) do
     reservation

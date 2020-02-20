@@ -14,4 +14,7 @@ defmodule Crit.Reservations.ReservationApi do
     Read.by_id(id, institution)
     |> Read.put_updatable_fields(institution)
   end
+
+  def reservations_on_date(date, institution) do
+  end
 end

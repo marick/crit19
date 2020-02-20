@@ -7,7 +7,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
 
       species_id:           :nothing,
       date:                 :nothing,
-      timeslot_id:         :nothing,
+      timeslot_id:          :nothing,
       span:                 :nothing,
 
       chosen_animal_ids:    :nothing,

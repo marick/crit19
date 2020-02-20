@@ -72,6 +72,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       UserTask.start(%State{
             species_id: @bovine_id,
+            date: @date,
             span: InstitutionApi.timespan(@date, @timeslot_id, @institution),
             timeslot_id: @timeslot_id,
             chosen_animal_ids: [bossie.id]})
@@ -81,7 +82,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_purpose(show_created_reservation())
 
       assert UserTask.get(@task_id) == nil
-
       IO.puts "check for created reservation"
     end
   end
