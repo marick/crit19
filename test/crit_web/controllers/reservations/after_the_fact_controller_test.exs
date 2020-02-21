@@ -79,18 +79,21 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   end
 
   describe "finishing up" do
-    test "success", %{conn: conn, bossie: bossie, procedure: procedure} do
-      params = %{task_id: @task_id,
-                 chosen_procedure_ids: [to_string(procedure.id)],
-                 institution: @institution}
-
+    setup %{bossie: bossie} do
       UserTask.start(%State{
             species_id: @bovine_id,
             date: @date,
             span: InstitutionApi.timespan(@date, @timeslot_id, @institution),
             timeslot_id: @timeslot_id,
+            task_header: "HEADER",
             chosen_animal_ids: [bossie.id]})
+      :ok
+    end
 
+    test "success", %{conn: conn, procedure: procedure} do
+      params = %{task_id: @task_id,
+                 chosen_procedure_ids: [to_string(procedure.id)],
+                 institution: @institution}
 
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_purpose(show_created_reservation())
@@ -99,6 +102,14 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       [only] = ReservationApi.reservations_on_date(@date, @institution)
 
       assert_fields(only, date: @date, timeslot_id: @timeslot_id)
+    end
+
+    test "you must select at least one procedure", %{conn: conn} do
+      params = %{task_id: @task_id,
+                 institution: @institution}
+      post_to_action(conn, :put_procedures, under(:procedures, params))
+      |> assert_purpose(after_the_fact_pick_procedures())
+      |> assert_user_sees("You have to select at least one procedure")
     end
   end
 end

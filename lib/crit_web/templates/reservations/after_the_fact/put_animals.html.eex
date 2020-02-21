@@ -7,7 +7,6 @@
   <%= error_flash_above(@conn) %>
   <%= start_centered_form() %>
   <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
-
     <%= hidden_task_id f, @state %>
     <%= multiple_checkbox f, @animals, :chosen_animal_ids %>
     <%= big_submit_button "Now choose procedures" %>

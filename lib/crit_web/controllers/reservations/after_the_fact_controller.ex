@@ -47,12 +47,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> View.animals_header
 
         state = UserTask.store(new_data, task_header: header)
+        task_render(conn, :put_procedures, state)
 
-        procedures =
-          ProcedureApi.all_by_species(state.species_id, institution(conn))
-
-        task_render(conn, :put_procedures, state, procedures: procedures)
-      {:error, changeset} -> # There's only one error.
+      {:error, changeset} -> 
         conn
         |> selection_list_error("animal")
         |> task_render(:put_animals, UserTask.get(changeset.changes.task_id))
@@ -67,6 +64,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         {:ok, reservation} = ReservationApi.create(state, institution(conn))
         UserTask.delete(state.task_id)
         render(conn, "done.html", reservation: reservation)
+      {:error, changeset} ->
+        conn
+        |> selection_list_error("procedure")
+        |> task_render(:put_procedures, UserTask.get(changeset.changes.task_id))
     end
   end
 
@@ -77,11 +78,17 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   defp task_render(conn, :put_animals, state) do
-    IO.inspect state
     animals =
       AnimalApi.available_after_the_fact(state, institution(conn))
     
     task_render(conn, :put_animals, state, animals: animals)
+  end
+
+  defp task_render(conn, :put_procedures, state) do
+    procedures =
+      ProcedureApi.all_by_species(state.species_id, institution(conn))
+    
+    task_render(conn, :put_procedures, state, procedures: procedures)
   end
 
   defp task_render(conn, next_action, state, opts) do
