@@ -8,18 +8,7 @@
   <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
 
     <%= hidden_task_id f, @state %>
-
-    <%= for a <- @animals do %>
-       <div class="field">
-          <div class="ui checkbox">
-            <%= checkbox(f, :animal_ids,
-                  name: "#{input_name(:animals, :chosen_animal_ids)}[]",
-                  value: a.id,
-                  hidden_input: false) %>
-            <label><%=a.name%></label>
-         </div>
-       </div>
-    <% end %>
+    <%= id_producing_checkboxes f, @animals, :chosen_animal_ids, :name %>
     <%= big_submit_button "Now choose procedures" %>
   <% end %>
   <%= end_centered_form() %>

@@ -248,6 +248,30 @@ defmodule CritWeb.Fomantic.Elements do
     labeled_checkbox(f, humanize(field), field, input_opts)
   end
 
+  def one_list_valued_checkbox(f, checkbox_name, checked_value, label_value) do
+    ~E"""
+    <div class="field">
+       <div class="ui checkbox">
+         <%= checkbox(f, :__ignored__,
+               name: checkbox_name,
+               checked_value: checked_value,
+               hidden_input: false) %>
+         <label><%=label_value%></label>
+      </div>
+    </div>
+    """
+  end
+
+  def id_producing_checkboxes(f, structs, checkbox_list_field, label_field) do
+    checkbox_name = input_name(f, checkbox_list_field) |> to_list_name
+    for s <- structs do 
+      one_list_valued_checkbox(f, checkbox_name, s.id, Map.get(s, label_field))
+    end
+  end
+
+  def to_list_name(name), do: name <> "[]"
+  
+
   def big_submit_button(label) do
     submit label, class: "ui fluid large teal submit button"
   end
