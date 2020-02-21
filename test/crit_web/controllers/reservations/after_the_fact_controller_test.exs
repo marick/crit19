@@ -48,20 +48,33 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   end
 
   describe "submitting animal ids prompts a call for procedure ids" do
+    setup do
+      UserTask.start(%State{
+            species_id: @bovine_id,
+            date: @date,
+            task_header: "HEADER"})
+      :ok
+    end
+       
     test "success", %{conn: conn, bossie: bossie} do
       params = %{task_id: @task_id,
                  chosen_animal_ids: [to_string(bossie.id)],
                  institution: @institution}
 
-      UserTask.start(%State{
-            species_id: @bovine_id,
-            task_header: "HEADER"})
 
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_procedures())
 
       UserTask.get(@task_id)
       |> assert_field(chosen_animal_ids: [bossie.id])
+    end
+
+    test "you must select at least one", %{conn: conn} do
+      params = %{task_id: @task_id,
+                 institution: @institution}
+      post_to_action(conn, :put_animals, under(:animals, params))
+      |> assert_purpose(after_the_fact_pick_animals())
+      |> assert_user_sees("You have to select at least one animal")
     end
   end
 

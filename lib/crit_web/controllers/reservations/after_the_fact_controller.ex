@@ -32,10 +32,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
         state =
           UserTask.start(Scratch.State, new_data, task_header: header)
-        animals =
-          AnimalApi.available_after_the_fact(new_data, institution(conn))
-
-        task_render(conn, :put_animals, state, animals: animals)
+        task_render(conn, :put_animals, state)
     end
   end
 
@@ -55,6 +52,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           ProcedureApi.all_by_species(state.species_id, institution(conn))
 
         task_render(conn, :put_procedures, state, procedures: procedures)
+      {:error, changeset} -> # There's only one error.
+        conn
+        |> selection_list_error("animal")
+        |> task_render(:put_animals, UserTask.get(changeset.changes.task_id))
     end
   end
   
@@ -71,7 +72,19 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   # Helpers
 
-  def task_render(conn, next_action, state, opts \\ []) do
+  def selection_list_error(conn, what) do
+    put_flash(conn, :error, "You have to select at least one #{what}")
+  end
+
+  defp task_render(conn, :put_animals, state) do
+    IO.inspect state
+    animals =
+      AnimalApi.available_after_the_fact(state, institution(conn))
+    
+    task_render(conn, :put_animals, state, animals: animals)
+  end
+
+  defp task_render(conn, next_action, state, opts) do
     html = to_string(next_action) <> ".html"
     all_opts = opts ++ [path: path(next_action), state: state]
     render(conn, html, all_opts)

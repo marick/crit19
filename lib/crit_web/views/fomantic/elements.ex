@@ -3,10 +3,16 @@ defmodule CritWeb.Fomantic.Elements do
   import Phoenix.Controller, only: [get_flash: 2]
   import CritWeb.ErrorHelpers, only: [error_tag: 2]
 
-  def error_flash_above(conn) do
+  def error_flash_attached_above(conn),
+    do: error_flash_above(conn, "ui negative attached message")
+
+  def error_flash_above(conn),
+    do: error_flash_above(conn, "ui negative message")
+
+  def error_flash_above(conn, class) do
     if get_flash(conn, :error) do
       ~E"""
-      <div class="ui negative attached message">
+      <div class="<%=class%>">
         <%= get_flash(conn, :error) %>
       </div>
       """

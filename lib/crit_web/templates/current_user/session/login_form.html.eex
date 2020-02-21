@@ -13,7 +13,7 @@
 
 <%= centered_image "/images/dawn-penlight.png"%> 
 
-<%= error_flash_above(@conn) %>
+<%= error_flash_attached_above(@conn) %>
 <div data-controller="password">
     <%= form_for :login, @path, [class: "ui large form"], fn f -> %>
     <div class="ui segment">

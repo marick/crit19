@@ -4,6 +4,7 @@
 
   <%= task_header @state  %>
 
+  <%= error_flash_above(@conn) %>
   <%= start_centered_form() %>
   <%= form_for :animals, @path, [class: "ui large form"], fn f -> %>
 
