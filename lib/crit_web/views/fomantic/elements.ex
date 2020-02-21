@@ -244,32 +244,44 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
-  def self_labeled_checkbox(f, field, input_opts \\ []) do
-    labeled_checkbox(f, humanize(field), field, input_opts)
+  def self_labeled_checkbox(f, field, opts \\ []) do
+    labeled_checkbox(f, humanize(field), field, opts)
   end
 
-  def one_list_valued_checkbox(f, checkbox_name, checked_value, label_value) do
+  # Like `multiple_select`, but more convenient for user.
+  def multiple_checkbox(f, structs, checkbox_field, opts \\ []) do
+    for s <- structs do 
+      multiple_checkbox_element(f, s, checkbox_field, opts)
+    end
+  end
+  
+  def multiple_checkbox_element(f, struct, checkbox_field, opts \\ []) do 
+    opts = Enum.into(opts, %{sent_field: :id, displayed_field: :name})
+    sent_value = Map.fetch!(struct, opts.sent_field)
+    label_value = Map.fetch!(struct, opts.displayed_field)
+
+    checkbox_id = input_id(f, checkbox_field, sent_value)
+    checkbox_name = input_list_name(f, checkbox_field)
+
+    checkbox_tag = tag(:input,
+      name: checkbox_name,
+      id: checkbox_id,
+      type: "checkbox",
+      value: sent_value)
+
+    label_tag = content_tag(:label, label_value, for: checkbox_id)
+    
     ~E"""
     <div class="field">
        <div class="ui checkbox">
-         <%= checkbox(f, :__ignored__,
-               name: checkbox_name,
-               checked_value: checked_value,
-               hidden_input: false) %>
-         <label><%=label_value%></label>
+         <%= checkbox_tag %>
+         <%= label_tag %>
       </div>
     </div>
     """
   end
 
-  def id_producing_checkboxes(f, structs, checkbox_list_field, label_field) do
-    checkbox_name = input_name(f, checkbox_list_field) |> to_list_name
-    for s <- structs do 
-      one_list_valued_checkbox(f, checkbox_name, s.id, Map.get(s, label_field))
-    end
-  end
-
-  def to_list_name(name), do: name <> "[]"
+  def input_list_name(f, field), do: input_name(f, field) <> "[]"
   
 
   def big_submit_button(label) do

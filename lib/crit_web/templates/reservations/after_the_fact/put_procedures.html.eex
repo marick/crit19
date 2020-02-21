@@ -8,7 +8,7 @@
 
   <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
     <%= hidden_task_id f, @state %>
-    <%= id_producing_checkboxes f, @procedures, :chosen_procedure_ids, :name %>
+    <%= multiple_checkbox f, @procedures, :chosen_procedure_ids %>
     <%= big_submit_button "Record the use" %>
   <% end %>
   
