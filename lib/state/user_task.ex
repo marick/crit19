@@ -3,6 +3,7 @@ defmodule Crit.State.UserTask do
   Cache used user activities that occur in multiple steps.
   """
   import Pile.Interface
+  alias Ecto.Changeset
 
   def new_id, do: UUID.uuid4()
 
@@ -27,6 +28,11 @@ defmodule Crit.State.UserTask do
   end
 
   def delete(task_id), do: ConCache.delete(Crit.Cache, task_id)
+
+  def pour_into_struct(params, struct_module) do
+    apply(struct_module, :changeset, [params])
+    |> Changeset.apply_action(:insert)
+  end
 
   # ----------------------------------------------------------------------------
   defp store_by_key(key, %{} = new_values, opts) do

@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
   use Crit.DataCase, async: true
   alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias Ecto.Timespan
-  alias Ecto.ChangesetX
+  alias Crit.State.UserTask
 
   describe "processing of SpeciesAndTime" do
     test "success" do
@@ -15,7 +15,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       expected_span =
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
-      assert {:ok, data} = ChangesetX.realize_struct(params, Scratch.SpeciesAndTime)
+      assert {:ok, data} = UserTask.pour_into_struct(params, Scratch.SpeciesAndTime)
       data
       |> assert_fields(
            species_id: @bovine_id,
@@ -32,7 +32,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       params = %{"chosen_animal_ids" => ["8", "1"],
                  "task_id" => "uuid", "institution" => @institution}
 
-      assert {:ok, data} = ChangesetX.realize_struct(params, Scratch.Animals)
+      assert {:ok, data} = UserTask.pour_into_struct(params, Scratch.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
       assert "uuid" == data.task_id
@@ -42,7 +42,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
     test "emptiness is rejected" do
       params = %{"task_id" => "uuid"}
 
-      assert {:error, changeset} = ChangesetX.realize_struct(params, Scratch.Animals)
+      assert {:error, changeset} = UserTask.pour_into_struct(params, Scratch.Animals)
     end
     
   end  

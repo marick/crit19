@@ -3,8 +3,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
   alias Crit.Setup.{InstitutionApi,AnimalApi, ProcedureApi}
-  # alias Ecto.Changeset
-  alias Ecto.ChangesetX
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias CritWeb.Reservations.AfterTheFactView, as: View
@@ -23,7 +21,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_species_and_time(conn, %{"species_and_time" => delivered_params}) do
     params = Map.put(delivered_params, "institution", institution(conn))
 
-    case ChangesetX.realize_struct(params, Scratch.SpeciesAndTime) do
+    case UserTask.pour_into_struct(params, Scratch.SpeciesAndTime) do
       {:ok, new_data} ->
         header =
           View.species_and_time_header(
@@ -39,7 +37,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_animals(conn, %{"animals" => delivered_params}) do
     params = Map.put(delivered_params, "institution", institution(conn))
 
-    case ChangesetX.realize_struct(params, Scratch.Animals) do
+    case UserTask.pour_into_struct(params, Scratch.Animals) do
       {:ok, new_data} ->
         header =
           new_data.chosen_animal_ids
@@ -58,7 +56,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   
   def put_procedures(conn, %{"procedures" => delivered_params}) do
     params = Map.put(delivered_params, "institution", institution(conn))
-    case ChangesetX.realize_struct(params, Scratch.Procedures) do
+    case UserTask.pour_into_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
         state = UserTask.store(new_data)
         {:ok, reservation} = ReservationApi.create(state, institution(conn))
