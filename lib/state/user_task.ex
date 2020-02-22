@@ -39,11 +39,15 @@ defmodule Crit.State.UserTask do
     end
   end
 
-  def full_expiry_error, do: "This task has expired; you will have to start again."
+  def expiry_message, do: "This task has expired; you will have to start again."
   
   def pour_into_struct(params, struct_module) do
-    apply(struct_module, :changeset, [params])
-    |> Changeset.apply_action(:insert)
+    changeset = apply(struct_module, :changeset, [params])
+    if Enum.member?(Keyword.keys(changeset.errors), :task_id) do
+      {:task_expiry, expiry_message()}
+    else
+      Changeset.apply_action(changeset, :insert)
+    end
   end
 
   # ----------------------------------------------------------------------------
@@ -56,8 +60,4 @@ defmodule Crit.State.UserTask do
     :ok = ConCache.update(Crit.Cache, key, updater)
     get(key)
   end
-
-  
-
-  
 end

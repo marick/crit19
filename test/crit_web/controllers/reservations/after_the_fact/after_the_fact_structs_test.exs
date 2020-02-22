@@ -27,24 +27,37 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
     end
   end
 
-
   describe "processing of Animals" do
-    test "success" do
+    # Procedures are the same with name changes
+
+    setup do
       %{task_id: task_id} = UserTask.start(Scratch.Animals)
+      [task_id: task_id]
+    end
+      
+    test "success", %{task_id: task_id} do
       params = %{"chosen_animal_ids" => ["8", "1"],
                  "task_id" => task_id}
       
       assert {:ok, data} = UserTask.pour_into_struct(params, Scratch.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
-      assert task_id == data.task_id
     end
 
-    test "emptiness is rejected" do
-      params = %{"task_id" => "uuid"}
+    test "no such task id", %{task_id: task_id} do
+      UserTask.delete(task_id)
+      params = %{"chosen_animal_ids" => ["8", "1"],
+                 "task_id" => task_id}
+
+      assert {:task_expiry, UserTask.expiry_message} ==
+        UserTask.pour_into_struct(params, Scratch.Animals)
+    end
+
+    test "no animals chosen", %{task_id: task_id} do
+      params = %{"task_id" => task_id}
 
       assert {:error, changeset} = UserTask.pour_into_struct(params, Scratch.Animals)
+      assert %{chosen_animal_ids: [_]} = errors_on(changeset)
     end
-    
   end  
 end

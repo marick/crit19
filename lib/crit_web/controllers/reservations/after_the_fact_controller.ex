@@ -46,6 +46,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         state = UserTask.store(new_data, task_header: header)
         task_render(conn, :put_procedures, state)
 
+      {:task_expiry, message} ->
+        task_expiry_error(conn, message, path(:start))
+
       {:error, changeset} -> 
         selection_list_error(conn, changeset, :put_animals, "animal")
     end
@@ -59,6 +62,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         UserTask.delete(state.task_id)
         render(conn, "done.html", reservation: reservation)
 
+      {:task_expiry, message} ->
+        task_expiry_error(conn, message, path(:start))
+
       {:error, changeset} ->
         selection_list_error(conn, changeset, :put_procedures, "procedure")
     end
@@ -66,18 +72,17 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   # ----------------------------------------------------------------------------
 
+  defp task_expiry_error(conn, message, start_again) do 
+    conn
+    |> put_flash(:error, message)
+    |> redirect(to: start_again)
+  end
+
   defp selection_list_error(conn, changeset, action_to_retry, list_element_type) do
     task_id = Changeset.fetch_change!(changeset, :task_id)
-    case Enum.member?(Keyword.keys(changeset.errors), :task_id) do
-      true ->
-        conn
-        |> put_flash(:error, UserTask.full_expiry_error())
-        |> redirect(to: (path(:start)))
-      false -> 
-        conn
-        |> put_flash(:error, "You have to select at least one #{list_element_type}")
-        |> task_render(action_to_retry, UserTask.get(task_id))
-    end
+    conn
+    |> put_flash(:error, "You have to select at least one #{list_element_type}")
+    |> task_render(action_to_retry, UserTask.get(task_id))
   end
 
   defp task_render(conn, :put_animals, state) do

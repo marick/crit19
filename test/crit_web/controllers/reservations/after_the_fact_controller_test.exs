@@ -85,9 +85,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.delete(@task_id)
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_redirected_to(UnderTest.path(:start))
-      |> assert_error_flash_has(UserTask.full_expiry_error())
+      |> assert_error_flash_has(UserTask.expiry_message())
     end
-
   end
 
   describe "finishing up" do
@@ -128,7 +127,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.delete(@task_id)
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_redirected_to(UnderTest.path(:start))
-      |> assert_error_flash_has(UserTask.full_expiry_error())
+      |> assert_error_flash_has(UserTask.expiry_message())
     end
   end
 end
