@@ -26,9 +26,10 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       field :timeslot_id, :integer
       field :institution, :string
       field :span, Timespan
+      field :task_id, :string
     end
 
-    @required [:species_id, :date, :date_showable_date, :timeslot_id, :institution]
+    @required [:species_id, :date, :date_showable_date, :timeslot_id, :institution, :task_id]
 
     def empty do
       change(%__MODULE__{})

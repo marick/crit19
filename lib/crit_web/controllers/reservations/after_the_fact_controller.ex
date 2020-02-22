@@ -12,9 +12,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    render(conn, "species_and_time_form.html",
+    state = UserTask.start(Scratch.State)
+
+    task_render(conn, :put_species_and_time, state,
       changeset: Scratch.SpeciesAndTime.empty,
-      path: path(:put_species_and_time),
       species_options: InstitutionApi.available_species(institution(conn)),
       timeslot_options: InstitutionApi.timeslot_tuples(institution(conn)))
   end
@@ -29,8 +30,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
             new_data.date_showable_date,
             InstitutionApi.timeslot_name(new_data.timeslot_id, institution(conn)))
 
-        state =
-          UserTask.start(Scratch.State, new_data, task_header: header)
+        state = UserTask.store(new_data, task_header: header)
         task_render(conn, :put_animals, state)
     end
   end

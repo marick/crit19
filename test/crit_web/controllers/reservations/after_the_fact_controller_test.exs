@@ -27,6 +27,9 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   test "getting the first form", %{conn: conn} do
     get_via_action(conn, :start)
     |> assert_purpose(after_the_fact_pick_species_and_time())
+
+    UserTask.get(@task_id)
+    |> assert_field(task_id: @task_id)
   end
 
   describe "submitting the date-and-species form produces some new HTML" do
@@ -35,7 +38,10 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
                  date: @iso_date,
                  date_showable_date: @human_date,
                  institution: @institution,
-                 timeslot_id: to_string(@timeslot_id)}
+                 timeslot_id: to_string(@timeslot_id),
+                 task_id: @task_id}
+
+      UserTask.start(%State{task_id: @task_id})
 
       post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
       |> assert_purpose(after_the_fact_pick_animals())
@@ -110,6 +116,16 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_purpose(after_the_fact_pick_procedures())
       |> assert_user_sees("You have to select at least one procedure")
+    end
+
+    @tag :skip
+    test "the task id has expired", %{conn: conn} do
+      params = %{task_id: @task_id,
+                 institution: @institution}
+      UserTask.delete(@task_id)
+      post_to_action(conn, :put_procedures, under(:procedures, params))
+      |> assert_purpose(after_the_fact_pick_species_and_time())
+      |> assert_user_sees("This task expired; you will have to start again")
     end
   end
 end

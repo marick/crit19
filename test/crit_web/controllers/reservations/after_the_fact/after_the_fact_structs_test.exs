@@ -10,7 +10,8 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
                  date: "2019-01-01",
                  date_showable_date: "January 1, 2019",
                  timeslot_id: "1",
-                 institution: @institution}
+                 institution: @institution,
+                 task_id: "uuid"}
 
       expected_span =
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)

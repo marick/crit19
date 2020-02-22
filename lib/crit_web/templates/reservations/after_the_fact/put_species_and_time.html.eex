@@ -17,6 +17,7 @@
   <%= start_centered_form() %>
 
 <%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
+    <%= hidden_task_id f, @state %>
 
 <div class="ui segment">
   <div class="fields">
