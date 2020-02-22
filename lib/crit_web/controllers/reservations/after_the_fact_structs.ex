@@ -3,7 +3,6 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
   defmodule State do
     defstruct task_id: :nothing,
       task_header:          :nothing,
-      institution:          :nothing,
 
       species_id:           :nothing,
       date:                 :nothing,
@@ -59,10 +58,9 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
     embedded_schema do
       field :chosen_animal_ids, {:array, :integer}
       field :task_id, :string
-      field :institution, :string
     end
 
-    @required [:chosen_animal_ids, :task_id, :institution]
+    @required [:chosen_animal_ids, :task_id]
 
     def changeset(attrs) do
     
@@ -79,10 +77,9 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
     embedded_schema do
       field :chosen_procedure_ids, {:array, :integer}
       field :task_id, :string
-      field :institution, :string
     end
 
-    @required [:chosen_procedure_ids, :task_id, :institution]
+    @required [:chosen_procedure_ids, :task_id]
 
     def changeset(attrs) do
     

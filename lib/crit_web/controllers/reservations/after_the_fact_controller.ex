@@ -19,6 +19,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   def put_species_and_time(conn, %{"species_and_time" => delivered_params}) do
+    # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
 
     case UserTask.pour_into_struct(params, Scratch.SpeciesAndTime) do
@@ -34,8 +35,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     end
   end
 
-  def put_animals(conn, %{"animals" => delivered_params}) do
-    params = Map.put(delivered_params, "institution", institution(conn))
+  def put_animals(conn, %{"animals" => params}) do
 
     case UserTask.pour_into_struct(params, Scratch.Animals) do
       {:ok, new_data} ->
@@ -54,8 +54,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     end
   end
   
-  def put_procedures(conn, %{"procedures" => delivered_params}) do
-    params = Map.put(delivered_params, "institution", institution(conn))
+  def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
         state = UserTask.store(new_data)
@@ -69,9 +68,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     end
   end
 
-  # Helpers
+  # ----------------------------------------------------------------------------
 
-  def selection_list_error(conn, what) do
+  defp selection_list_error(conn, what) do
     put_flash(conn, :error, "You have to select at least one #{what}")
   end
 
