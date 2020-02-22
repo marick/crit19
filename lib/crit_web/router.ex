@@ -69,6 +69,8 @@ IO.puts(
       post "/animals", AfterTheFactController, :put_animals
       post "/procedures", AfterTheFactController, :put_procedures
     end
+
+    get "/:reservation_id", ReservationController, :_show
   end
   
   # Other scopes may use custom stacks.

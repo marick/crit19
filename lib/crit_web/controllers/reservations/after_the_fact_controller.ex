@@ -7,6 +7,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi
+  alias CritWeb.Reservations.ReservationController
   alias Ecto.Changeset
 
   plug :must_be_able_to, :make_reservations
@@ -67,7 +68,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         state = UserTask.store(new_data)
         {:ok, reservation} = ReservationApi.create(state, institution(conn))
         UserTask.delete(state.task_id)
-        render(conn, "done.html", reservation: reservation)
+        redirect(conn, to: ReservationController.path(:_show, reservation))
 
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))

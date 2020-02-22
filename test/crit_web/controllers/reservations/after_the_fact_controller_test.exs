@@ -2,6 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
+  alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.State
   alias Crit.Setup.InstitutionApi
@@ -130,13 +131,12 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       params = %{task_id: @task_id,
                  chosen_procedure_ids: [to_string(procedure.id)]}
 
-      post_to_action(conn, :put_procedures, under(:procedures, params))
-      |> assert_purpose(show_created_reservation())
+      conn = post_to_action(conn, :put_procedures, under(:procedures, params))
 
-      assert UserTask.get(@task_id) == nil
       [only] = ReservationApi.reservations_on_date(@date, @institution)
-
       assert_fields(only, date: @date, timeslot_id: @timeslot_id)
+      assert_redirected_to(conn, ReservationController.path(:_show, only.id))
+      refute UserTask.get(@task_id)
     end
 
     test "you must select at least one procedure", %{conn: conn} do
