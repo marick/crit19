@@ -50,6 +50,27 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_field(span: expected_span)
       |> refute_nothing([:species_id, :timeslot_id, :date_showable_date])
     end
+
+    test "task_id has expired"
+
+    test "for some reason, browsers don't obey the calendar's `required` attr",
+      %{conn: conn} do
+      params = %{species_id: to_string(@bovine_id),
+                 date: "",
+                 date_showable_date: "",
+                 timeslot_id: to_string(@timeslot_id),
+                 task_id: @task_id}
+
+      UserTask.start(%State{task_id: @task_id})
+
+      post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
+      |> assert_purpose(after_the_fact_pick_species_and_time())
+      |> assert_user_sees("be blank")
+
+      UserTask.get(@task_id)
+      |> assert_field(task_id: @task_id)
+    end
+    
   end
 
   describe "submitting animal ids prompts a call for procedure ids" do

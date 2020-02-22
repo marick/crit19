@@ -43,6 +43,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       |> add_span
     end
 
+    defp add_span(%{valid?: false} = changeset), do: changeset
     defp add_span(changeset) do
       args =
         [:date, :timeslot_id, :institution]

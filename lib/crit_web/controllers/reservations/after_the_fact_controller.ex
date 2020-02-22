@@ -14,8 +14,12 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def start(conn, _params) do
     state = UserTask.start(Scratch.State)
 
+    start_task_render(conn, state, Scratch.SpeciesAndTime.empty)
+  end
+
+  defp start_task_render(conn, state, changeset) do
     task_render(conn, :put_species_and_time, state,
-      changeset: Scratch.SpeciesAndTime.empty,
+      changeset: changeset,
       species_options: InstitutionApi.available_species(institution(conn)),
       timeslot_options: InstitutionApi.timeslot_tuples(institution(conn)))
   end
@@ -32,6 +36,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
         state = UserTask.store(new_data, task_header: header)
         task_render(conn, :put_animals, state)
+      {:error, changeset} ->
+        task_id = Map.get(params, "task_id")
+        start_task_render(conn, UserTask.get(task_id), changeset)
     end
   end
 
