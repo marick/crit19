@@ -37,7 +37,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       params = %{species_id: to_string(@bovine_id),
                  date: @iso_date,
                  date_showable_date: @human_date,
-                 institution: @institution,
                  timeslot_id: to_string(@timeslot_id),
                  task_id: @task_id}
 
@@ -64,9 +63,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
        
     test "success", %{conn: conn, bossie: bossie} do
       params = %{task_id: @task_id,
-                 chosen_animal_ids: [to_string(bossie.id)],
-                 institution: @institution}
-
+                 chosen_animal_ids: [to_string(bossie.id)]}
 
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_procedures())
@@ -76,12 +73,21 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     end
 
     test "you must select at least one", %{conn: conn} do
-      params = %{task_id: @task_id,
-                 institution: @institution}
+      params = %{task_id: @task_id}
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_purpose(after_the_fact_pick_animals())
       |> assert_user_sees("You have to select at least one animal")
     end
+
+    test "the task id has expired", %{conn: conn} do
+      # Note that expiry takes precedence over no animals having been chosen.
+      params = %{task_id: @task_id}
+      UserTask.delete(@task_id)
+      post_to_action(conn, :put_animals, under(:animals, params))
+      |> assert_redirected_to(UnderTest.path(:start))
+      |> assert_error_flash_has(UserTask.full_expiry_error())
+    end
+
   end
 
   describe "finishing up" do
@@ -98,8 +104,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
     test "success", %{conn: conn, procedure: procedure} do
       params = %{task_id: @task_id,
-                 chosen_procedure_ids: [to_string(procedure.id)],
-                 institution: @institution}
+                 chosen_procedure_ids: [to_string(procedure.id)]}
 
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_purpose(show_created_reservation())
@@ -111,21 +116,19 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     end
 
     test "you must select at least one procedure", %{conn: conn} do
-      params = %{task_id: @task_id,
-                 institution: @institution}
+      params = %{task_id: @task_id}
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_purpose(after_the_fact_pick_procedures())
       |> assert_user_sees("You have to select at least one procedure")
     end
 
-    @tag :skip
-    test "the task id has expired", %{conn: conn} do
+    test "the task id has expired", %{conn: conn, procedure: procedure} do
       params = %{task_id: @task_id,
-                 institution: @institution}
+                 chosen_procedure_ids: [to_string(procedure.id)]}
       UserTask.delete(@task_id)
       post_to_action(conn, :put_procedures, under(:procedures, params))
-      |> assert_purpose(after_the_fact_pick_species_and_time())
-      |> assert_user_sees("This task expired; you will have to start again")
+      |> assert_redirected_to(UnderTest.path(:start))
+      |> assert_error_flash_has(UserTask.full_expiry_error())
     end
   end
 end

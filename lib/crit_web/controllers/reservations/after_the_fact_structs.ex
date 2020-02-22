@@ -1,4 +1,5 @@
 defmodule CritWeb.Reservations.AfterTheFactStructs do
+  alias Crit.State.UserTask
 
   defmodule State do
     defstruct task_id: :nothing,
@@ -68,6 +69,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       %__MODULE__{}
       |> cast(attrs, @required)
       |> validate_required(@required)
+      |> UserTask.validate_task_id
     end
   end
 
@@ -86,6 +88,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       %__MODULE__{}
       |> cast(attrs, @required)
       |> validate_required(@required)
+      |> UserTask.validate_task_id
     end
   end
   

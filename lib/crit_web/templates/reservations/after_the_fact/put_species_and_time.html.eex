@@ -14,7 +14,9 @@
 
   <h1 class="ui center aligned header">Record a Previous Use of Some Animals</h1>
 
+  
   <%= start_centered_form() %>
+  <%= error_flash_above(@conn) %>
 
 <%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
     <%= hidden_task_id f, @state %>

@@ -29,6 +29,18 @@ defmodule Crit.State.UserTask do
 
   def delete(task_id), do: ConCache.delete(Crit.Cache, task_id)
 
+  def validate_task_id(changeset) do
+    # It is fine for the fetch to blow up because a missing task id
+    # is either a program error or someone tampering with the form params.
+    task_id = Changeset.fetch_change!(changeset, :task_id)
+    case get(task_id) do
+      nil -> Changeset.add_error(changeset, :task_id, "has expired")
+      _ -> changeset
+    end
+  end
+
+  def full_expiry_error, do: "This task has expired; you will have to start again."
+  
   def pour_into_struct(params, struct_module) do
     apply(struct_module, :changeset, [params])
     |> Changeset.apply_action(:insert)

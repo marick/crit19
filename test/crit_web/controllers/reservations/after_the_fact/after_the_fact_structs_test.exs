@@ -30,16 +30,16 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
 
   describe "processing of Animals" do
     test "success" do
+      %{task_id: task_id} = UserTask.start(Scratch.Animals)
       params = %{"chosen_animal_ids" => ["8", "1"],
-                 "task_id" => "uuid", "institution" => @institution}
-
+                 "task_id" => task_id}
+      
       assert {:ok, data} = UserTask.pour_into_struct(params, Scratch.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
-      assert "uuid" == data.task_id
+      assert task_id == data.task_id
     end
 
-    @tag :skip
     test "emptiness is rejected" do
       params = %{"task_id" => "uuid"}
 
