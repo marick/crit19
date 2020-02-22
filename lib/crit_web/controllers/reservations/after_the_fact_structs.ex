@@ -82,7 +82,6 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
     @required [:chosen_procedure_ids, :task_id]
 
     def changeset(attrs) do
-    
       %__MODULE__{}
       |> cast(attrs, @required)
       |> validate_required(@required)

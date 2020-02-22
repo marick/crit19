@@ -7,6 +7,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi
+  alias Ecto.Changeset
 
   plug :must_be_able_to, :make_reservations
 
@@ -21,7 +22,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_species_and_time(conn, %{"species_and_time" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
-
     case UserTask.pour_into_struct(params, Scratch.SpeciesAndTime) do
       {:ok, new_data} ->
         header =
@@ -36,7 +36,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   def put_animals(conn, %{"animals" => params}) do
-
     case UserTask.pour_into_struct(params, Scratch.Animals) do
       {:ok, new_data} ->
         header =
@@ -48,9 +47,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         task_render(conn, :put_procedures, state)
 
       {:error, changeset} -> 
-        conn
-        |> selection_list_error("animal")
-        |> task_render(:put_animals, UserTask.get(changeset.changes.task_id))
+        selection_list_error(conn, changeset, :put_animals, "animal")
     end
   end
   
@@ -61,17 +58,19 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         {:ok, reservation} = ReservationApi.create(state, institution(conn))
         UserTask.delete(state.task_id)
         render(conn, "done.html", reservation: reservation)
+
       {:error, changeset} ->
-        conn
-        |> selection_list_error("procedure")
-        |> task_render(:put_procedures, UserTask.get(changeset.changes.task_id))
+        selection_list_error(conn, changeset, :put_procedures, "procedure")
     end
   end
 
   # ----------------------------------------------------------------------------
 
-  defp selection_list_error(conn, what) do
-    put_flash(conn, :error, "You have to select at least one #{what}")
+  defp selection_list_error(conn, changeset, action_to_retry, list_element_type) do
+    task_id = Changeset.fetch_change!(changeset, :task_id)
+    conn
+    |> put_flash(:error, "You have to select at least one #{list_element_type}")
+    |> task_render(action_to_retry, UserTask.get(task_id))
   end
 
   defp task_render(conn, :put_animals, state) do
