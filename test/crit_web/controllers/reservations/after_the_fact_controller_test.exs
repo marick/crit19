@@ -33,13 +33,17 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   end
 
   describe "submitting the date-and-species form produces some new HTML" do
-    test "success", %{conn: conn} do
+    setup do
       params = %{species_id: to_string(@bovine_id),
                  date: @iso_date,
                  date_showable_date: @human_date,
                  timeslot_id: to_string(@timeslot_id),
                  task_id: @task_id}
-
+      [params: params]
+    end
+      
+    
+    test "success", %{conn: conn, params: params} do
       UserTask.start(%State{task_id: @task_id})
 
       post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
@@ -51,16 +55,17 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> refute_nothing([:species_id, :timeslot_id, :date_showable_date])
     end
 
-    test "task_id has expired"
+    test "task_id has expired", %{conn: conn, params: params} do
+      UserTask.delete(@task_id)
+      post_to_action(conn, :put_animals, under(:animals, params))
+      |> assert_redirected_to(UnderTest.path(:start))
+      |> assert_error_flash_has(UserTask.expiry_message())
+    end
 
     test "for some reason, browsers don't obey the calendar's `required` attr",
-      %{conn: conn} do
-      params = %{species_id: to_string(@bovine_id),
-                 date: "",
-                 date_showable_date: "",
-                 timeslot_id: to_string(@timeslot_id),
-                 task_id: @task_id}
+      %{conn: conn, params: original} do
 
+      params = %{original | date: "", date_showable_date: ""}
       UserTask.start(%State{task_id: @task_id})
 
       post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
@@ -70,7 +75,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.get(@task_id)
       |> assert_field(task_id: @task_id)
     end
-    
   end
 
   describe "submitting animal ids prompts a call for procedure ids" do
