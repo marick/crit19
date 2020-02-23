@@ -6,6 +6,7 @@ defmodule Crit.Reservations.ReservationApiTest do
   alias CritWeb.Reservations.AfterTheFactStructs.State
 
   @timeslot_id ReservationFocused.some_timeslot_id
+  @timeslot_name InstitutionApi.timeslot_name(@timeslot_id, @institution)
   @span InstitutionApi.timespan(@date_1, @timeslot_id, @institution)
   
   def typical_params do 

@@ -20,6 +20,21 @@ defmodule Crit.Setup.InstitutionApi do
     institution.timezone
   end
 
+  def timeslots(institution) do 
+    GenServer.call(server(institution), :timeslots)
+  end
+
+  def timeslot_by_id(id, institution) do 
+    {:ok, timeslot} =
+      GenServer.call(server(institution), {:timeslot_by_id, id})
+    timeslot
+  end
+
+  defp put_timeslots(full_institution) do
+    %{full_institution |
+      timeslots: Repo.all(Timeslot, prefix: full_institution.prefix)}
+  end
+
   # This could just be a list of names, but the names are arbitrary
   # strings, and I worry about things like smart quotes not making
   # the round trip correctly.
@@ -45,21 +60,6 @@ defmodule Crit.Setup.InstitutionApi do
     available_species(institution)
     |> Enum.find(fn {_, id} -> id == species_id end)
     |> elem(0)
-  end
-
-  def timeslots(institution) do 
-    GenServer.call(server(institution), :timeslots)
-  end
-
-  def timeslot_by_id(id, institution) do 
-    {:ok, timeslot} =
-      GenServer.call(server(institution), {:timeslot_by_id, id})
-    timeslot
-  end
-
-  defp put_timeslots(full_institution) do
-    %{full_institution |
-      timeslots: Repo.all(Timeslot, prefix: full_institution.prefix)}
   end
 
 end
