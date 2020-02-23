@@ -1,0 +1,3 @@
+<div class="ui main center aligned text container">
+  <%= render "_show_one_reservation.html", assigns %>
+</div>

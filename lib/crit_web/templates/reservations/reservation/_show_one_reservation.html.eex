@@ -1,7 +1,20 @@
-<div class="ui main center aligned text container">
-  TEMPORARY
-  <strong><%= @reservation.date %></strong>
-  <div>
-    <strong><%= inspect @reservation %></strong>
+<div>
+
+  <div class="ui medium header">
+    <%= @reservation.date %>, 
+    <%= @reservation.timeslot_name %>
+  </div>
+
+  <div class="ui two column grid container">
+    <div class="column">
+      <%= for name <- @reservation.animal_names do %>
+          <p><%=name%></p>
+          <% end %>
+    </div>
+    <div class="column">
+      <%= for name <- @reservation.procedure_names do %>
+          <p><%=name%></p>
+          <% end %>
+    </div>
   </div>
 </div>

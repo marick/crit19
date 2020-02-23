@@ -9,11 +9,11 @@ defmodule CritWeb.Reservations.ReservationController do
   plug :must_be_able_to, :make_reservations
 
   def _show(conn, %{"reservation_id" => id}) do
-    reservation = ReservationApi.get!(id, institution(conn))
-    view_model = Reservation.Show.to_view_model(reservation, institution(conn))
+    view_model =
+      id
+      |> ReservationApi.get!(institution(conn))
+      |> Reservation.Show.to_view_model(institution(conn))
 
-    Common.render_for_replacement(conn,
-      "_show_one_reservation.html",
-      reservation: view_model)
+    render(conn, "show.html", reservation: view_model)
   end
 end
