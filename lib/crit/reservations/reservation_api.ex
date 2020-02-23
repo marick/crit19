@@ -10,6 +10,10 @@ defmodule Crit.Reservations.ReservationApi do
     end
   end
 
+  def get!(id, institution) do
+    Read.by_id(id, institution)
+  end
+  
   def updatable!(id, institution) do
     Read.by_id(id, institution)
     |> Read.put_updatable_fields(institution)

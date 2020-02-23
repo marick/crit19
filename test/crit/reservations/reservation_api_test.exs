@@ -1,77 +1,62 @@
 defmodule Crit.Reservations.ReservationApiTest do
   use Crit.DataCase
   alias Crit.Reservations.ReservationApi
-  alias Crit.Setup.InstitutionApi
   alias Crit.Exemplars.ReservationFocused
-  alias CritWeb.Reservations.AfterTheFactStructs.State
 
-  @timeslot_id ReservationFocused.some_timeslot_id
-  @timeslot_name InstitutionApi.timeslot_name(@timeslot_id, @institution)
-  @span InstitutionApi.timespan(@date_1, @timeslot_id, @institution)
-  
   def typical_params do 
-    animal_ids =
-      ReservationFocused.inserted_animal_ids(["Jeff", "bossie"], @bovine_id)
     ReservationFocused.ignored_animal("Ignored animal", @bovine_id)
-    
-    procedure_ids =
-      ReservationFocused.inserted_procedure_ids(
-        ["procedure 1", "procedure 2"], @bovine_id)
     ReservationFocused.ignored_procedure("Ignored procedure", @bovine_id)
-    
-    %State{
-      species_id: @bovine_id,
-      timeslot_id: @timeslot_id,
-      date: @date_1,
-      span: @span,
-      chosen_animal_ids: animal_ids,
-      chosen_procedure_ids: procedure_ids
-    }
+
+    ReservationFocused.ready_to_insert(@bovine_id,
+      ["Jeff", "bossie"], ["procedure 1", "procedure 2"])
   end
 
-  def assert_expected_reservation(reservation) do
+  def assert_expected_reservation(reservation, ready) do
     assert_fields(reservation,
-      species_id: @bovine_id,
-      timeslot_id: @timeslot_id,
-      date: @date_1,
-      span: @span)
+      species_id: ready.species_id,
+      timeslot_id: ready.timeslot_id,
+      date: ready.date,
+      span: ready.span)
 
-    [bossie, jeff] = reservation.animal_pairs
-    assert {"bossie", _id}  = bossie
-    assert {"Jeff", _id} = jeff
+    {[bossie, jeff], [proc1, proc2]} =
+      ReservationApi.all_used(reservation.id, @institution)
+    assert "bossie" == bossie.name
+    assert "Jeff" == jeff.name
 
-    [proc1, proc2] = reservation.procedure_pairs
-    assert {"procedure 1", _id} = proc1
-    assert {"procedure 2", _id} = proc2
+    assert "procedure 1" == proc1.name
+    assert "procedure 2" == proc2.name
   end
 
   describe "insertion" do
     test "we assume success" do
-      typical_params()
+      ready = typical_params()
+
+      ready
       |> ReservationApi.create(@institution)
       |> ok_payload
-      |> assert_expected_reservation
+      |> assert_expected_reservation(ready)
     end
   end
 
-  describe "updatable!" do
+  describe "fetching" do
     setup do
-      %{id: reservation_id} = 
-        typical_params()
+      ready = typical_params()
+      %{id: reservation_id} =
+        ready
         |> ReservationApi.create(@institution)
         |> ok_payload
       
-      [reservation_id: reservation_id]
+      [reservation_id: reservation_id, ready: ready]
     end
 
-    test "by id", %{reservation_id: reservation_id} do
-      ReservationApi.updatable!(reservation_id, @institution)
-      |> assert_expected_reservation
+    test "by id", %{reservation_id: reservation_id, ready: ready} do
+      ReservationApi.get!(reservation_id, @institution)
+      |> assert_expected_reservation(ready)
     end
 
-    test "by date" do
-      assert [only] = ReservationApi.reservations_on_date(@date_1, @institution)
-      assert_expected_reservation(only)
+    test "by date", %{ready: ready} do
+      assert [only] = ReservationApi.reservations_on_date(ready.date, @institution)
+      assert_expected_reservation(only, ready)
     end
   end
 end

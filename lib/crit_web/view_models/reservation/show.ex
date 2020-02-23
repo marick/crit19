@@ -1,9 +1,9 @@
-defmodule Crit.ViewModels.Reservation.Show do
+defmodule CritWeb.ViewModels.Reservation.Show do
   use Ecto.Schema
-  import Ecto.Changeset
   alias Crit.Setup.InstitutionApi
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Reservations.ReservationApi
+  alias Pile.TimeHelper
 
   embedded_schema do
     field :species_name, :string
@@ -21,12 +21,10 @@ defmodule Crit.ViewModels.Reservation.Show do
     %__MODULE__{
       id: r.id,
       species_name: species_name, 
-      date: date_string(r.date),
+      date: TimeHelper.date_string(r.date),
       timeslot_name: timeslot_name,
       animal_names: Enum.map(animals, &(&1.name)),
       procedure_names: Enum.map(procedures, &(&1.name))
     }
   end
-
-  def date_string(date), do: Calendar.Strftime.strftime!(date, "%B %e, %Y")
 end

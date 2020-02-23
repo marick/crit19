@@ -34,7 +34,7 @@ defmodule Crit.Setup.InstitutionServerTest do
   end
 
   test "can find a slot by id", %{server: server} do
-    expected = ReservationFocused.some_timeslot
+    expected = ReservationFocused.timeslot
     {:ok, found} = GenServer.call(server, {:timeslot_by_id, expected.id})
 
     assert_fields(found,

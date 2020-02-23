@@ -16,6 +16,9 @@ defmodule Pile.TimeHelper do
   def stub_today_date(timezone, [to_return: retval]),
     do: fn ^timezone -> retval end
 
+
+  def date_string(date), do: Calendar.Strftime.strftime!(date, "%B %e, %Y")
+
   # Default date conversions are only accurate to microseconds. Using
   # them means that values round-tripped through Postgres would come
   # back with extra digits of zeroes, which breaks tests.
