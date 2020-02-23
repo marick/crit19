@@ -13,9 +13,6 @@ defmodule Crit.Reservations.Schemas.Reservation do
     field :span, Timespan
     field :timeslot_id, :id
     has_many :uses, Use
-
-    field :animal_pairs, :any, virtual: true
-    field :procedure_pairs, :any, virtual: true
     timestamps()
   end
 

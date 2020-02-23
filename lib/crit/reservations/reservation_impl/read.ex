@@ -1,6 +1,5 @@
 defmodule Crit.Reservations.ReservationImpl.Read do
   alias Crit.Sql
-  alias Crit.Reservations.HiddenSchemas.Use
   
   defmodule Query do
     import Ecto.Query
@@ -33,11 +32,4 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     |> Sql.all(institution)
   end
 
-  def put_updatable_fields(reservation, institution) do 
-    {animals, procedures} = Use.all_used(reservation.id, institution)
-
-    %{reservation |
-      animal_pairs: EnumX.id_pairs(animals, :name),
-      procedure_pairs: EnumX.id_pairs(procedures, :name)}
-  end
 end

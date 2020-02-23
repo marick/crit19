@@ -56,10 +56,11 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
       species_id: @bovine_id,
       date: @date,
       span: expected_span(),
-      timeslot_id: @timeslot_id,
-      animal_pairs: [{picked_animal.name, picked_animal.id}],
-      procedure_pairs: [{picked_procedure.name, picked_procedure.id}]
+      timeslot_id: @timeslot_id
     )
+
+    assert {[^picked_animal], [^picked_procedure]} =
+      ReservationApi.all_used(reservation.id, @institution)
   end
 
   # A little paranoia here.
