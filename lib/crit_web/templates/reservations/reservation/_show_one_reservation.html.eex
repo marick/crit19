@@ -5,16 +5,18 @@
     <%= @reservation.timeslot_name %>
   </div>
 
-  <div class="ui two column grid container">
-    <div class="column">
-      <%= for name <- @reservation.animal_names do %>
-          <p><%=name%></p>
-          <% end %>
-    </div>
-    <div class="column">
-      <%= for name <- @reservation.procedure_names do %>
-          <p><%=name%></p>
-          <% end %>
+  <div class="ui two column celled grid container">
+    <div class="row">
+      <div class="column">
+        <%= for name <- @reservation.animal_names do %>
+            <p><%=name%></p>
+            <% end %>
+      </div>
+      <div class="column">
+        <%= for name <- @reservation.procedure_names do %>
+            <p><%=name%></p>
+            <% end %>
+      </div>
     </div>
   </div>
 </div>
