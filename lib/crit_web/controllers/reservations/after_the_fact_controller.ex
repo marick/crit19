@@ -68,7 +68,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         state = UserTask.store(new_data)
         {:ok, reservation} = ReservationApi.create(state, institution(conn))
         UserTask.delete(state.task_id)
-        redirect(conn, to: ReservationController.path(:_show, reservation))
+        redirect(conn, to: ReservationController.path(:show, reservation))
 
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))

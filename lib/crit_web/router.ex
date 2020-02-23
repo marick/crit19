@@ -70,7 +70,7 @@ IO.puts(
       post "/procedures", AfterTheFactController, :put_procedures
     end
 
-    get "/:reservation_id", ReservationController, :_show
+    get "/:reservation_id", ReservationController, :show
   end
   
   # Other scopes may use custom stacks.

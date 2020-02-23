@@ -8,7 +8,7 @@ defmodule CritWeb.Reservations.ReservationController do
   
   plug :must_be_able_to, :make_reservations
 
-  def _show(conn, %{"reservation_id" => id}) do
+  def show(conn, %{"reservation_id" => id}) do
     view_model =
       id
       |> ReservationApi.get!(institution(conn))
