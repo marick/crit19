@@ -32,7 +32,6 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
       picked_procedure: picked_procedure} do 
     # ----------------------------------------------------------------------------
     get_via_action(conn, :start)                             # Start
-    |> assert_purpose(after_the_fact_pick_species_and_time())
     # ----------------------------------------------------------------------------
     |> follow_form(%{species_and_time:                       # Background info
          %{species_id: @bovine_id,
@@ -42,9 +41,10 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
     # ----------------------------------------------------------------------------
     |> follow_form(%{animals:                               # Pick animals
           %{chosen_animal_ids: [picked_animal.id]}})
-
-    |> follow_form(%{procedures:                               # Pick animals
+    # ----------------------------------------------------------------------------
+    |> follow_form(%{procedures:                            # Pick procedures
           %{chosen_procedure_ids: [picked_procedure.id]}})
+    # ----------------------------------------------------------------------------
 
     [only] = ReservationApi.reservations_on_date(@date, @institution)
     assert_correct_result(only, picked_animal, picked_procedure)
