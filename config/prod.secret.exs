@@ -29,7 +29,7 @@ config :crit, CritWeb.Endpoint,
   secret_key_base: secret_key_base
 
 
-config :crit19, CritWeb.Endpoint
+config :crit19, CritWeb.Endpoint,
   http: [port: {:system, "PORT"}], # Possibly not needed, but doesn't hurt
   url: [host: System.get_env("APP_NAME") <> ".gigalixirapp.com", port: 80],
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
