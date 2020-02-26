@@ -1,0 +1,20 @@
+gigalixir pg:psql
+
+DROP SCHEMA global CASCADE;
+DROP SCHEMA demo CASCADE;
+DROP SCHEMA illinois CASCADE;
+
+CREATE SCHEMA global;
+CREATE SCHEMA demo;
+CREATE SCHEMA illinois;
+
+GLOBAL=priv/repo/migrations/global/
+ONE=priv/repo/migrations/one_institution
+
+gigalixir run -- mix ecto.migrate --migrations-path $GLOBAL --prefix global
+gigalixir run -- mix ecto.migrate --migrations-path $ONE --prefix demo 
+gigalixir run -- mix ecto.migrate --migrations-path $ONE --prefix illinois 
+
+
+gigalixir run mix run priv/repo/institutions.exs
+gigalixir run mix run priv/repo/seeds.exs
