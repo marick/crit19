@@ -135,7 +135,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       [only] = ReservationApi.reservations_on_date(@date, @institution)
       assert_fields(only, date: @date, timeslot_id: @timeslot_id)
-      assert_redirected_to(conn, ReservationController.path(:_show, only.id))
+      assert_redirected_to(conn, ReservationController.path(:show, only.id))
       refute UserTask.get(@task_id)
     end
 

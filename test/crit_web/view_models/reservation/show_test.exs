@@ -6,7 +6,7 @@ defmodule CritWeb.ViewModels.Reservation.ShowTest do
   alias Pile.TimeHelper
 
   test "conversion" do
-    ready = ReservationFocused.ready_to_insert(@bovine_id,
+    ready = ReservationFocused.ready_to_reserve!(@bovine_id,
       ["jeff", "bossie"], ["procedure 1", "proc"])
 
     result =

@@ -4,8 +4,9 @@
   <%= error_flash_above(@conn) %>
   <h1 class="ui header">Dashboard</h1>
   <div class="ui center aligned cards">
-    <%= dashboard_card "Reservations",
-        [ list_link("Record a session after it happened", AfterTheFactController, :start),
+    <%= dashboard_card "Reservations", [
+        list_link("Record a session after it happened", AfterTheFactController, :start),
+        list_link("See an animal's reservations", ReservationController, :by_animal_form),
         ] %>
     <%= dashboard_card "Animals and Procedures",
         [ list_link("Add animals", AnimalController, :bulk_create_form),

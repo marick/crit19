@@ -3,5 +3,5 @@ defmodule CritWeb.CurrentUser.SessionView do
 
   alias CritWeb.UserManagement.UserController
   alias CritWeb.Setup.AnimalController
-  alias CritWeb.Reservations.AfterTheFactController
+  alias CritWeb.Reservations.{AfterTheFactController,ReservationController}
 end

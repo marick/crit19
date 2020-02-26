@@ -46,4 +46,7 @@ defmodule CritWeb.Templates.Purpose do
   def show_created_reservation, 
     do: "show created reservation"
 
+  def reservation_by_animal, 
+    do: "reservation by animal"
+
 end

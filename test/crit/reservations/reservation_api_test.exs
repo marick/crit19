@@ -7,7 +7,7 @@ defmodule Crit.Reservations.ReservationApiTest do
     ReservationFocused.ignored_animal("Ignored animal", @bovine_id)
     ReservationFocused.ignored_procedure("Ignored procedure", @bovine_id)
 
-    ReservationFocused.ready_to_insert(@bovine_id,
+    ReservationFocused.ready_to_reserve!(@bovine_id,
       ["Jeff", "bossie"], ["procedure 1", "procedure 2"])
   end
 

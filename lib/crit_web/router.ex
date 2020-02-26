@@ -70,6 +70,8 @@ IO.puts(
       post "/procedures", AfterTheFactController, :put_procedures
     end
 
+    get "/by_animal_form", ReservationController, :by_animal_form
+    post "/by_animal", ReservationController, :by_animal
     get "/:reservation_id", ReservationController, :show
   end
   

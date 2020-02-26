@@ -6,6 +6,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Ecto.Datespan
   alias Crit.Setup.InstitutionApi
   alias CritWeb.Reservations.AfterTheFactStructs.State
+  alias Crit.Reservations.ReservationApi
 
   defp named_thing_inserter(template) do 
     fn name ->
@@ -56,7 +57,7 @@ defmodule Crit.Exemplars.ReservationFocused do
     timeslot().name
   end
 
-  def ready_to_insert(species_id, animal_names, procedure_names, opts \\ []) do
+  def ready_to_reserve!(species_id, animal_names, procedure_names, opts \\ []) do
     timeslot_id = Keyword.get(opts, :timeslot_id, timeslot_id())
     date = Keyword.get(opts, :date, ~D[2019-01-01])
     span = InstitutionApi.timespan(date, timeslot_id, @institution)
@@ -72,11 +73,12 @@ defmodule Crit.Exemplars.ReservationFocused do
       chosen_animal_ids: animal_ids,
       chosen_procedure_ids: procedure_ids
     }
-    
   end
 
-  
-  
+  def reserved!(species_id, animal_names, procedure_names, opts \\ []) do
+    {:ok, reservation} = 
+      ready_to_reserve!(species_id, animal_names, procedure_names, opts)
+      |> ReservationApi.create(@institution)
+    reservation
+  end
 end
-
-

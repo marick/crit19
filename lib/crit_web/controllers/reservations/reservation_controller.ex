@@ -16,4 +16,15 @@ defmodule CritWeb.Reservations.ReservationController do
 
     render(conn, "show.html", reservation: view_model)
   end
+
+  def by_animal_form(conn, _params) do
+    render(conn, "by_animal_form.html",
+      path: path(:by_animal)
+    )
+  end
+
+  def by_animal(conn, %{"animal" => %{"date" => date}}) do
+    conn
+  end
+  
 end
