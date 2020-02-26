@@ -11,6 +11,8 @@ defmodule Crit.Repo.Migrations.CreateInstitutions do
 
       timestamps()
     end
+    create unique_index("institutions", [:short_name])
+    create unique_index("institutions", [:prefix])
 
     create table(:all_password_tokens) do
       add :text, :string, null: false
