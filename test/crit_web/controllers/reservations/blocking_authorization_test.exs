@@ -11,7 +11,7 @@ defmodule CritWeb.Reservations.BlockingAuthorizationTest do
        &(post &1, AfterTheFactController.path(:put_animals)),
 
        &(get &1, ReservationController.path(:show, 1)),
-       &(get &1, ReservationController.path(:by_animal_form)),
+       &(get &1, ReservationController.path(:by_dates_form)),
       ])
   end
 
@@ -29,7 +29,7 @@ defmodule CritWeb.Reservations.BlockingAuthorizationTest do
          &(post &1, AfterTheFactController.path(:put_animals)),
 
          &(get &1, ReservationController.path(:show, 1)),
-         &(get &1, ReservationController.path(:by_animal_form)),
+         &(get &1, ReservationController.path(:by_dates_form)),
         ])
     end
   end

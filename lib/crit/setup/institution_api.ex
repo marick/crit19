@@ -4,6 +4,7 @@ defmodule Crit.Setup.InstitutionApi do
   import Crit.Setup.InstitutionServer, only: [server: 1]
   import Ecto.Query
   alias Ecto.Timespan
+  alias Pile.TimeHelper
 
   def all do
     Repo.all(from Institution)
@@ -19,6 +20,16 @@ defmodule Crit.Setup.InstitutionApi do
     institution = GenServer.call(server(institution), :raw)
     institution.timezone
   end
+
+  def today(institution) do
+    timezone = timezone(institution)
+    {:ok, TimeHelper.today_date(timezone)}
+  end    
+
+  def today!(institution) do
+    timezone = timezone(institution)
+    TimeHelper.today_date(timezone)
+  end    
 
   def timeslots(institution) do 
     GenServer.call(server(institution), :timeslots)
@@ -61,5 +72,4 @@ defmodule Crit.Setup.InstitutionApi do
     |> Enum.find(fn {_, id} -> id == species_id end)
     |> elem(0)
   end
-
 end

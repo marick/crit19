@@ -4,7 +4,8 @@ defmodule CritWeb.Reservations.ReservationController do
   import CritWeb.Plugs.Authorize
   alias CritWeb.ViewModels.Reservation
   alias Crit.Reservations.{ReservationApi}
-  alias CritWeb.Controller.Common
+  # alias CritWeb.Controller.Common
+  alias CritWeb.ViewModels.DateOrDates
   
   plug :must_be_able_to, :make_reservations
 
@@ -17,13 +18,15 @@ defmodule CritWeb.Reservations.ReservationController do
     render(conn, "show.html", reservation: view_model)
   end
 
-  def by_animal_form(conn, _params) do
-    render(conn, "by_animal_form.html",
-      path: path(:by_animal)
+  def by_dates_form(conn, _params) do
+    render(conn, "by_dates_form.html",
+      changeset: DateOrDates.starting_changeset(),
+      path: path(:by_dates)
     )
   end
 
-  def by_animal(conn, %{"animal" => %{"date" => date}}) do
+  def by_dates(conn, %{"date_or_dates" => params}) do
+    IO.inspect params
     conn
   end
   

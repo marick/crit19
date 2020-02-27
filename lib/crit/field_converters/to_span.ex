@@ -112,8 +112,7 @@ defmodule Crit.FieldConverters.ToSpan do
         {:ok, @never}
       @today ->
         institution = Changeset.fetch_field!(changeset, :institution)
-        timezone = some(InstitutionApi).timezone(institution)
-        {:ok, TimeHelper.today_date(timezone)}
+        InstitutionApi.today(institution)
       _ -> 
         Date.from_iso8601(datestring)
     end

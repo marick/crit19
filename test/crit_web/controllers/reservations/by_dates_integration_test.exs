@@ -18,10 +18,10 @@ defmodule CritWeb.Reservations.ByAnimalIntegrationTest do
   end
 
 
-  test "by-animal workflow", %{conn: conn} do 
+  test "by-dates workflow", %{conn: conn} do 
     # ----------------------------------------------------------------------------
-    get_via_action(conn, :by_animal_form)
-    |> assert_purpose(reservation_by_animal())
+    get_via_action(conn, :by_dates_form)
+    |> assert_purpose(reservation_by_dates())
     # ----------------------------------------------------------------------------
     # |> follow_form(%{animal: %{date: @iso_date}})
   end

@@ -1,0 +1,20 @@
+<!-- Purpose: <%= Purpose.reservation_by_dates %> -->
+
+<div class="ui main center aligned text container">
+  <%= start_centered_form() %>
+  <%= form_for @changeset, @path, [class: "ui large form"], fn f -> %>
+
+  <%= calendar_with_alternatives f, "First date", :first_datestring,
+      alternative: "Today"
+      %>
+    
+  <%= calendar_with_alternatives f, "Last date", :last_datestring,
+      alternative: "Just one day",
+      advice: "Reservations from the last date will be included."
+      %>
+    
+    <%= big_submit_button "Show Reservations" %>
+  <% end %>
+  <%= end_centered_form() %>
+    
+</div>
