@@ -32,6 +32,8 @@ defmodule CritWeb.Reservations.ReservationController do
       |> Enum.map(&(Reservation.Show.to_view_model(&1, institution(conn))))
 
     render(conn, "by_dates.html",
+      first_date: first_date,
+      last_date: last_date,
       reservations: reservations
     )
   end

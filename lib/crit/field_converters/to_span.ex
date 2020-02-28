@@ -3,9 +3,7 @@ defmodule Crit.FieldConverters.ToSpan do
   use Crit.Global.Constants
   use Crit.Errors
   alias Ecto.Changeset
-  alias Pile.TimeHelper
   alias Ecto.Datespan
-  import Pile.Interface
   alias Crit.Setup.InstitutionApi
 
   # Assumes this partial schema. Fields are constant because they come from

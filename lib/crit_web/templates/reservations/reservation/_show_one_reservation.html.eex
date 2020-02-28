@@ -1,4 +1,5 @@
 <div>
+  <hr/>
 
   <div class="ui medium header">
     <%= @reservation.date %>, 
