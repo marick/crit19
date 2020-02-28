@@ -1,12 +1,7 @@
 defmodule Crit.Reservations.ReservationImpl.Read do
   alias Crit.Sql
-  
-  defmodule Query do
-    import Ecto.Query
-    alias Crit.Reservations.Schemas.Reservation
-  
-    def from(where), do: from r in Reservation, where: ^where
-  end
+  import Ecto.Query
+  alias Crit.Reservations.Schemas.Reservation
 
   # Someday, figure out how to do a single query that orders the
   # animals and procedure. Note that this isn't actually less efficient
@@ -23,13 +18,19 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   # SELECT ... FROM "demo"."procedures" AS p0 WHERE (p0."id" = ANY($1)) [[50, 51]]
   
   def by_id(id, institution) do
-    Query.from(id: id)
-    |> Sql.one(institution)
+    query =
+      from r in Reservation, where: r.id == ^id
+    
+    Sql.one(query, institution)
   end
 
-  def by(where, institution) do
-    Query.from(where)
-    |> Sql.all(institution)
+  def on_dates(inclusive_first, inclusive_last, institution) do
+    query = 
+      from r in Reservation,
+      where: r.date >= ^inclusive_first,
+      where: r.date <= ^inclusive_last
+
+    Sql.all(query, institution)
   end
 
 end

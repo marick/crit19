@@ -38,7 +38,7 @@ defmodule Crit.Reservations.ReservationApiTest do
     end
   end
 
-  describe "fetching" do
+  describe "fetching by id" do
     setup do
       ready = typical_params()
       %{id: reservation_id} =
@@ -53,10 +53,28 @@ defmodule Crit.Reservations.ReservationApiTest do
       ReservationApi.get!(reservation_id, @institution)
       |> assert_expected_reservation(ready)
     end
+  end
 
-    test "by date", %{ready: ready} do
-      assert [only] = ReservationApi.reservations_on_date(ready.date, @institution)
-      assert_expected_reservation(only, ready)
+  describe "fetching by dates" do
+    setup do
+      ReservationFocused.reserved!(@bovine_id,
+        ["lower boundary"], ["procedure1"],
+        date: @date_1)
+      ReservationFocused.reserved!(@bovine_id,
+        ["upper boundary"], ["procedure2"],
+        date: @date_2)
+      ReservationFocused.reserved!(@bovine_id,
+        ["out of scope"], ["procedure3"],
+        date: @date_3)
+      :ok
+    end
+    
+    test "by date" do
+      assert [lower, upper] =
+        ReservationApi.on_dates(@date_1, @date_2, @institution)
+
+      assert lower.date == @date_1
+      assert upper.date == @date_2
     end
   end
 end

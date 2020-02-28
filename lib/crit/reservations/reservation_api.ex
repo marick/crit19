@@ -10,9 +10,11 @@ defmodule Crit.Reservations.ReservationApi do
   def get!(id, institution) do
     Read.by_id(id, institution)
   end
+
+  def on_date(date, institution), do: on_dates(date, date, institution)
   
-  def reservations_on_date(date, institution) do
-    Read.by([date: date], institution)
+  def on_dates(inclusive_start, inclusive_end, institution) do
+    Read.on_dates(inclusive_start, inclusive_end, institution)
   end
 
   def all_used(reservation_id, institution) do

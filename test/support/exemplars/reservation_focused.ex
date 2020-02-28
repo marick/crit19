@@ -58,17 +58,17 @@ defmodule Crit.Exemplars.ReservationFocused do
   end
 
   def ready_to_reserve!(species_id, animal_names, procedure_names, opts \\ []) do
-    timeslot_id = Keyword.get(opts, :timeslot_id, timeslot_id())
-    date = Keyword.get(opts, :date, ~D[2019-01-01])
-    span = InstitutionApi.timespan(date, timeslot_id, @institution)
+    opts = Enum.into(opts, %{timeslot_id: timeslot_id(),
+                             date: ~D[2019-01-01]})
+    span = InstitutionApi.timespan(opts.date, opts.timeslot_id, @institution)
 
     animal_ids = inserted_animal_ids(animal_names, species_id)
     procedure_ids = inserted_procedure_ids(procedure_names, species_id)
     
     %State{
       species_id: species_id,
-      timeslot_id: timeslot_id,
-      date: date,
+      timeslot_id: opts.timeslot_id,
+      date: opts.date,
       span: span,
       chosen_animal_ids: animal_ids,
       chosen_procedure_ids: procedure_ids

@@ -46,7 +46,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
           %{chosen_procedure_ids: [picked_procedure.id]}})
     # ----------------------------------------------------------------------------
 
-    [only] = ReservationApi.reservations_on_date(@date, @institution)
+    [only] = ReservationApi.on_date(@date, @institution)
     assert_correct_result(only, picked_animal, picked_procedure)
   end
 
