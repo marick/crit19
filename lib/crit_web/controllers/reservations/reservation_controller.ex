@@ -37,5 +37,9 @@ defmodule CritWeb.Reservations.ReservationController do
       reservations: reservations
     )
   end
+
+  def weekly_calendar(conn, _params) do
+    render(conn, "weekly.html")
+  end
   
 end

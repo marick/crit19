@@ -72,6 +72,7 @@ IO.puts(
 
     get "/by_dates_form", ReservationController, :by_dates_form
     post "/by_dates", ReservationController, :by_dates
+    get "/calendar/weekly", ReservationController, :weekly_calendar
     get "/:reservation_id", ReservationController, :show
   end
   
