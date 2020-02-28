@@ -26,8 +26,14 @@ defmodule CritWeb.Reservations.ReservationController do
   end
 
   def by_dates(conn, %{"date_or_dates" => params}) do
-    IO.inspect params
-    conn
+    {:ok, first_date, last_date} = DateOrDates.to_dates(params, institution(conn))
+    reservations =
+      ReservationApi.on_dates(first_date, last_date, institution(conn))
+      |> Enum.map(&(Reservation.Show.to_view_model(&1, institution(conn))))
+
+    render(conn, "by_dates.html",
+      reservations: reservations
+    )
   end
   
 end

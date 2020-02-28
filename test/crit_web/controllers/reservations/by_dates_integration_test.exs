@@ -13,7 +13,8 @@ defmodule CritWeb.Reservations.ByAnimalIntegrationTest do
 
   setup do
     ReservationFocused.reserved!(@bovine_id,
-      ["Jeff", "bossie"], ["procedure 1", "procedure 2"])
+      ["Jeff", "bossie"], ["procedure 1", "procedure 2"],
+      date: @date_1)
     :ok
   end
 
@@ -23,6 +24,11 @@ defmodule CritWeb.Reservations.ByAnimalIntegrationTest do
     get_via_action(conn, :by_dates_form)
     |> assert_purpose(reservation_by_dates())
     # ----------------------------------------------------------------------------
-    # |> follow_form(%{animal: %{date: @iso_date}})
+    |> follow_form(%{date_or_dates:
+                    %{first_datestring: @iso_date_1,
+                      last_datestring: "just one day"}})
+    |> assert_purpose(reservation_by_dates())
+    |> assert_user_sees("Jeff")
+    |> assert_user_sees("bossie")
   end
 end

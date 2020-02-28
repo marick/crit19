@@ -1,0 +1,8 @@
+<!-- Purpose: <%= Purpose.reservation_by_dates %> -->
+
+<div class="ui main center aligned text container">
+  <%= for r <- @reservations do %>
+    <%= render "_show_one_reservation.html",
+      Map.put(assigns, :reservation, r) %>
+  <% end %>
+</div>
