@@ -1,6 +1,8 @@
 defmodule CritWeb.Reservations.ReservationView do
   use CritWeb, :view
   import Pile.TimeHelper
+  alias CritWeb.Reservations.ReservationController
+  alias CritWeb.ViewModels.Reservation.CalendarEntry
   
 
   def date_or_dates_header(first_date, last_date) do
@@ -15,4 +17,25 @@ defmodule CritWeb.Reservations.ReservationView do
     """
   end
 
+  def popup_body(reservation_id, animal_names, procedure_names) do
+    link =
+      Phoenix.HTML.Link.link(
+        "Click to edit or delete",
+        to: ReservationController.path(:show, reservation_id))
+
+    
+    ~E"""
+    <%= Enum.join(animal_names, ", ") %><br/>
+    <%= Enum.join(procedure_names, ", ") %>
+    <p> <%= link %></p>
+    """ |> Phoenix.HTML.safe_to_string
+  end
+
+  def render("week.json", %{reservations: reservations,
+                            institution: institution}) do
+    one = fn reservation ->
+      CalendarEntry.to_map(reservation, institution)
+    end
+    %{data: Enum.map(reservations, one)}
+  end
 end

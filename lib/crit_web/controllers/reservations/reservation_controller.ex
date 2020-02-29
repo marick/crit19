@@ -6,6 +6,8 @@ defmodule CritWeb.Reservations.ReservationController do
   alias Crit.Reservations.{ReservationApi}
   # alias CritWeb.Controller.Common
   alias CritWeb.ViewModels.DateOrDates
+  alias Pile.TimeHelper
+  alias Crit.Setup.InstitutionApi
   
   plug :must_be_able_to, :make_reservations
 
@@ -41,5 +43,16 @@ defmodule CritWeb.Reservations.ReservationController do
   def weekly_calendar(conn, _params) do
     render(conn, "weekly.html")
   end
-  
+
+  def week_data(conn, _params) do
+    {sunday, saturday} =
+      institution(conn)
+      |> InstitutionApi.today!
+      |> TimeHelper.week_dates
+
+    reservations =
+      ReservationApi.on_dates(sunday, saturday, institution(conn))
+    render(conn, "week.json", %{reservations: reservations,
+                               institution: institution(conn)})
+  end
 end

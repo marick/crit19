@@ -8,6 +8,8 @@ defmodule Pile.TimeHelper do
   Manchester, England for a client in California, they'll get the
   `Date` for Tuesday.
   """
+
+  IO.puts "delete TimeHelper.today_date"
   def today_date(timezone) do
     {:ok, datetime} = DateTime.now(timezone)
     DateTime.to_date(datetime)

@@ -13,6 +13,8 @@ defmodule CritWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug CritWeb.Plugs.FetchUser
   end
 
 IO.puts(
@@ -58,6 +60,12 @@ IO.puts(
       get "/", AnimalController, :index
       get "/:animal_id", AnimalController, :_show
     end
+  end
+
+  scope "/reservation/api", CritWeb.Reservations do
+    pipe_through :api
+
+    get "/week_data", ReservationController, :week_data
   end
 
   scope "/reservation", CritWeb.Reservations do
