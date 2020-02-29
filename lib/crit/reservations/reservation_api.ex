@@ -20,4 +20,11 @@ defmodule Crit.Reservations.ReservationApi do
   def all_used(reservation_id, institution) do
     Use.all_used(reservation_id, institution)
   end
+
+  def all_names(reservation_id, institution) do
+    {animals, procedures} = all_used(reservation_id, institution)
+    {Enum.map(animals, &(&1.name)),
+     Enum.map(procedures, &(&1.name))}
+  end
+
 end

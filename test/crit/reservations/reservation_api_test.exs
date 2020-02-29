@@ -25,6 +25,11 @@ defmodule Crit.Reservations.ReservationApiTest do
 
     assert "procedure 1" == proc1.name
     assert "procedure 2" == proc2.name
+
+    {[bossie_name, _], [proc_name, _]} =
+      ReservationApi.all_names(reservation.id, @institution)
+    assert "bossie" == bossie_name
+    assert "procedure 1" == proc_name
   end
 
   describe "insertion" do
@@ -77,4 +82,5 @@ defmodule Crit.Reservations.ReservationApiTest do
       assert upper.date == @date_2
     end
   end
+
 end

@@ -17,14 +17,14 @@ defmodule CritWeb.ViewModels.Reservation.Show do
   def to_view_model(%Reservation{} = r, institution) do 
     species_name = InstitutionApi.species_name(r.species_id, institution)
     timeslot_name = InstitutionApi.timeslot_name(r.timeslot_id, institution)
-    {animals, procedures} = ReservationApi.all_used(r.id, institution)
+    {animal_names, procedure_names} = ReservationApi.all_names(r.id, institution)
     %__MODULE__{
       id: r.id,
       species_name: species_name, 
       date: TimeHelper.date_string(r.date),
       timeslot_name: timeslot_name,
-      animal_names: Enum.map(animals, &(&1.name)),
-      procedure_names: Enum.map(procedures, &(&1.name))
+      animal_names: animal_names,
+      procedure_names: procedure_names
     }
   end
 end
