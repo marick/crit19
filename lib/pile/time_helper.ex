@@ -33,4 +33,11 @@ defmodule Pile.TimeHelper do
     {:ok, result} = NaiveDateTime.new(date, zero_in_milliseconds)
     result
   end
+
+  def week_dates(date) do
+    day_of_week = Calendar.Date.day_of_week_zb(date)
+    { Calendar.Date.subtract!(date, day_of_week),
+      Calendar.Date.advance!(date, 6 - day_of_week)
+    }
+  end
 end

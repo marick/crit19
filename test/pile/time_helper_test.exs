@@ -27,5 +27,15 @@ defmodule Pile.TimeHelperTest do
     end
     
   end
+
+  test "week_dates" do
+    sunday = ~D[2020-03-29]
+    tuesday = ~D[2020-03-31]
+    saturday = ~D[2020-04-04]
+
+    assert {sunday, saturday} == TimeHelper.week_dates(sunday)
+    assert {sunday, saturday} == TimeHelper.week_dates(tuesday)
+    assert {sunday, saturday} == TimeHelper.week_dates(saturday)
+  end
 end
   
