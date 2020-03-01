@@ -12,11 +12,12 @@ defmodule Crit.Reservations.Schemas.Reservation do
     field :date, :date
     field :span, Timespan
     field :timeslot_id, :id
+    field :responsible_person, :string
     has_many :uses, Use
     timestamps()
   end
 
-  @required [:span, :date, :species_id, :timeslot_id]
+  @required [:span, :date, :species_id, :timeslot_id, :responsible_person]
 
   def changeset(reservation, attrs) do
     reservation

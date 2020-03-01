@@ -288,7 +288,16 @@ defmodule CritWeb.Fomantic.Elements do
   end
 
   def input_list_name(f, field), do: input_name(f, field) <> "[]"
-  
+
+  def unordered(list) do
+    ~E"""
+    <ul>
+    <%= for elt <- list do %>
+      <li><%=elt%></li>
+    <% end %>
+    </ul>
+    """
+  end
 
   def big_submit_button(label) do
     submit label, class: "ui fluid large teal submit button"

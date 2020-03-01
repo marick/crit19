@@ -8,13 +8,15 @@ defmodule Crit.Reservations.ReservationApiTest do
     ReservationFocused.ignored_procedure("Ignored procedure", @bovine_id)
 
     ReservationFocused.ready_to_reserve!(@bovine_id,
-      ["Jeff", "bossie"], ["procedure 1", "procedure 2"])
+      ["Jeff", "bossie"], ["procedure 1", "procedure 2"],
+      responsible_person: "dster")
   end
 
   def assert_expected_reservation(reservation, ready) do
     assert_fields(reservation,
       species_id: ready.species_id,
       timeslot_id: ready.timeslot_id,
+      responsible_person: "dster",
       date: ready.date,
       span: ready.span)
 

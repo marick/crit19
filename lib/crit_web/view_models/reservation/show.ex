@@ -9,6 +9,7 @@ defmodule CritWeb.ViewModels.Reservation.Show do
     field :species_name, :string
     field :date, :string
     field :timeslot_name, :id
+    field :responsible_person, :string
 
     field :animal_names, {:array, :string}
     field :procedure_names, {:array, :string}
@@ -23,6 +24,7 @@ defmodule CritWeb.ViewModels.Reservation.Show do
       species_name: species_name, 
       date: TimeHelper.date_string(r.date),
       timeslot_name: timeslot_name,
+      responsible_person: r.responsible_person,
       animal_names: animal_names,
       procedure_names: procedure_names
     }

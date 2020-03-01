@@ -59,7 +59,8 @@ defmodule Crit.Exemplars.ReservationFocused do
 
   def ready_to_reserve!(species_id, animal_names, procedure_names, opts \\ []) do
     opts = Enum.into(opts, %{timeslot_id: timeslot_id(),
-                             date: ~D[2019-01-01]})
+                             date: ~D[2019-01-01],
+                             responsible_person: Faker.Name.name()})
     span = InstitutionApi.timespan(opts.date, opts.timeslot_id, @institution)
 
     animal_ids = inserted_animal_ids(animal_names, species_id)
@@ -70,6 +71,7 @@ defmodule Crit.Exemplars.ReservationFocused do
       timeslot_id: opts.timeslot_id,
       date: opts.date,
       span: span,
+      responsible_person: opts.responsible_person,
       chosen_animal_ids: animal_ids,
       chosen_procedure_ids: procedure_ids
     }

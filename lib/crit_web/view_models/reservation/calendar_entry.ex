@@ -10,7 +10,7 @@ defmodule CritWeb.ViewModels.Reservation.CalendarEntry do
     %{
       id: to_string(r.id),
       calendarId: to_string(r.id),
-      title: "Shipley",
+      title: r.responsible_person,
       category: "time",
       start: r.span.first,
       end: r.span.last,

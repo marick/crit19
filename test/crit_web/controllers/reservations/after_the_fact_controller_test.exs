@@ -39,6 +39,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
                  date: @iso_date,
                  date_showable_date: @human_date,
                  timeslot_id: to_string(@timeslot_id),
+                 responsible_person: "dster",
                  task_id: @task_id}
       [params: params]
     end
@@ -52,7 +53,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
       expected_span = InstitutionApi.timespan(@date, @timeslot_id, @institution)
       UserTask.get(@task_id)
-      |> assert_field(span: expected_span)
+      |> assert_field(span: expected_span,
+                      responsible_person: "dster")
       |> refute_nothing([:species_id, :timeslot_id, :date_showable_date])
     end
 
@@ -83,6 +85,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.start(%State{
             species_id: @bovine_id,
             date: @date,
+            responsible_person: "dster",
             task_header: "HEADER"})
       :ok
     end
@@ -123,6 +126,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
             span: InstitutionApi.timespan(@date, @timeslot_id, @institution),
             timeslot_id: @timeslot_id,
             task_header: "HEADER",
+            responsible_person: "dster",
             chosen_animal_ids: [bossie.id]})
       :ok
     end

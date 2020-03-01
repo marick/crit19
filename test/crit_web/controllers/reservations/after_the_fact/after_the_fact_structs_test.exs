@@ -9,6 +9,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
                  date_showable_date: "January 1, 2019",
+                 responsible_person: "dster", 
                  timeslot_id: "1",
                  institution: @institution,
                  task_id: "uuid"}
@@ -22,6 +23,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
            species_id: @bovine_id,
            date: ~D[2019-01-01],
            timeslot_id: 1,
+           responsible_person: "dster",
            span: expected_span
          )
     end

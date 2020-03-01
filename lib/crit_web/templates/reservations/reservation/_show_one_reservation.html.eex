@@ -2,21 +2,18 @@
   <hr/>
 
   <div class="ui medium header">
-    <%= @reservation.date %>, 
-    <%= @reservation.timeslot_name %>
+    For <%= @reservation.responsible_person %>,
+    <%= @reservation.timeslot_name %>,
+    <%= @reservation.date %>
   </div>
 
   <div class="ui two column celled grid container">
     <div class="row">
-      <div class="column">
-        <%= for name <- @reservation.animal_names do %>
-            <p><%=name%></p>
-            <% end %>
+      <div class="left aligned column">
+        <%= unordered(@reservation.animal_names) %>
       </div>
-      <div class="column">
-        <%= for name <- @reservation.procedure_names do %>
-            <p><%=name%></p>
-            <% end %>
+      <div class="left aligned column">
+        <%= unordered(@reservation.procedure_names) %>
       </div>
     </div>
   </div>

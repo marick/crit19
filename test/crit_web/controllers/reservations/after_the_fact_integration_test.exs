@@ -37,6 +37,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
          %{species_id: @bovine_id,
            date: @iso_date,
            date_showable_date: @human_date,
+           responsible_person: "dster",
            timeslot_id: @timeslot_id}})
     # ----------------------------------------------------------------------------
     |> follow_form(%{animals:                               # Pick animals
@@ -56,6 +57,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
       species_id: @bovine_id,
       date: @date,
       span: expected_span(),
+      responsible_person: "dster",
       timeslot_id: @timeslot_id
     )
 

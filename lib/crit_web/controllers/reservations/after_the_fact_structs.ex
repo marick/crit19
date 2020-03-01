@@ -9,6 +9,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       date:                 :nothing,
       timeslot_id:          :nothing,
       span:                 :nothing,
+      responsible_person:   :nothing,
 
       chosen_animal_ids:    :nothing,
       chosen_procedure_ids: :nothing
@@ -27,10 +28,11 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       field :timeslot_id, :integer
       field :institution, :string
       field :span, Timespan
+      field :responsible_person, :string
       field :task_id, :string
     end
 
-    @required [:species_id, :date, :date_showable_date, :timeslot_id, :institution, :task_id]
+    @required [:responsible_person, :species_id, :date, :date_showable_date, :timeslot_id, :institution, :task_id]
 
     def empty do
       change(%__MODULE__{})
