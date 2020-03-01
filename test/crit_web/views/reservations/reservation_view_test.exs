@@ -15,5 +15,12 @@ defmodule CritWeb.Setup.ReservationViewTest do
       expected = "Reservations on February 24, 2020"
       assert safe_to_string(actual) =~ expected
     end
+
+    test "count_header" do
+      assert ReservationView.count_header(0) == "Zero Reservations"
+      assert ReservationView.count_header(1) == "One Reservation"
+      assert ReservationView.count_header(100) == "One Hundred Reservations"
+      assert ReservationView.count_header(101) == "101 Reservations"
+    end
   end
 end

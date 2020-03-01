@@ -3,6 +3,7 @@ defmodule CritWeb.Reservations.ReservationView do
   import Pile.TimeHelper
   alias CritWeb.Reservations.ReservationController
   alias CritWeb.ViewModels.Reservation.CalendarEntry
+  alias Pile.Extras.IntegerX
   
 
   def date_or_dates_header(first_date, last_date) do
@@ -15,6 +16,11 @@ defmodule CritWeb.Reservations.ReservationView do
     ~E"""
     <h2 class="ui header"><%=header%></h2>
     """
+  end
+
+  def count_header(count) do
+    "#{IntegerX.to_words(count)} #{Inflex.inflect("reservation", count)}"
+    |> Recase.to_title
   end
 
   def popup_body(reservation_id, animal_names, procedure_names) do

@@ -53,6 +53,8 @@ defmodule Crit.MixProject do
       {:elixir_uuid, "~> 1.0"},
       {:con_cache, "~> 0.14"},
       {:mockery, "~> 2.3.0", runtime: false},
+      {:inflex, "~> 2.0"},
+      {:recase, "~> 0.6.0"},
       {:phoenix_integration, "~> 0.8", only: :test}
     ]
   end

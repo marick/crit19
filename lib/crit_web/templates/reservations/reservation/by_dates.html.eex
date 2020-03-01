@@ -2,6 +2,7 @@
 
 <div class="ui main center aligned text container">
   <%= date_or_dates_header(@first_date, @last_date) %> 
+  <%= count_header(length(@reservations)) %>
   <%= for r <- @reservations do %>
     <%= render "_show_one_reservation.html",
       Map.put(assigns, :reservation, r) %>
