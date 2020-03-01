@@ -1,7 +1,29 @@
-<div class="ui main center aligned text container">  
-  <div id="calendar" style="height: 800px;"
-       data-controller="reservation-weekly"
-       >
-    Reservations by week
+<div class="ui main center aligned text container"
+     data-controller="reservation-weekly">
+
+
+  <div class="ui basic segment">
+  <h3 class="ui header">Reservations by week</h3>
+
+    <button class="circular ui left icon button"
+            data-action="reservation-weekly#previous_week">
+      <i class="left arrow icon"></i>
+    </button>
+    <span data-target="reservation-weekly.context">
+      Week containing some date
+    </span>
+    <button class="circular ui right icon button"
+            data-action="reservation-weekly#next_week">
+      <i class="right arrow icon"></i>
+    </button>
+    <button class="ui right floated button"
+            data-action="reservation-weekly#today">
+            
+      Today
+    </button>    
   </div>
+    
+  <div id="calendar" />
 </div>
+
+

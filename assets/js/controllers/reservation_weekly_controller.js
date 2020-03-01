@@ -7,11 +7,11 @@ import "tui-calendar/dist/tui-calendar.css";
 // import 'tui-time-picker/dist/tui-time-picker.css';
 
 export default class extends Controller {
+    static targets = ["context"];
 
     connect() {
-        this.week_offset = 0
         this.first_calendar();
-        this.load_week();
+        this.today();
     }
 
     first_calendar() {
@@ -26,6 +26,12 @@ export default class extends Controller {
                 return "";
             }
         };
+
+        const theme_overrides = { 
+            'week.timegridOneHour.height': '24px',
+            'week.timegridHalfHour.height': '12px',
+        };
+    
         
         this.calendar = new Calendar('#calendar', {
             defaultView: 'week',
@@ -33,6 +39,7 @@ export default class extends Controller {
             useDetailPopup: true,
             taskView: false,
             week: {hourStart: 7},
+            theme: theme_overrides,
         });
     }
 
@@ -44,6 +51,37 @@ export default class extends Controller {
     }
 
     create_schedules(result) {
+        console.log(result["data"]);
+        this.calendar.clear();
         this.calendar.createSchedules(result["data"]);
+        this.calendar.render();
+
+        this.contextTarget.innerHTML = this.context_message();
+    }
+
+    context_message() {
+        const date = this.calendar.getDate().toDate();
+        const options = {year: 'numeric', month: 'long', day: 'numeric'};
+        const date_string = date.toLocaleDateString(undefined, options);
+        return "Date containing " + date_string;
+    }
+
+    today() { 
+        this.calendar.today();
+        this.week_offset = 0;
+        console.log(this.week_offset);
+        this.load_week();
+    }
+
+    previous_week() {
+        this.calendar.prev();
+        this.week_offset--;
+        this.load_week();
+    }
+
+    next_week() {
+        this.calendar.next();
+        this.week_offset++;
+        this.load_week();
     }
 }
