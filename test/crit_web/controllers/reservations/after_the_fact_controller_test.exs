@@ -27,7 +27,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
   test "getting the first form", %{conn: conn} do
     get_via_action(conn, :start)
-    |> assert_purpose(after_the_fact_pick_species_and_time())
+    |> assert_purpose(after_the_fact_pick_non_use_values())
 
     UserTask.get(@task_id)
     |> assert_field(task_id: @task_id)
@@ -47,7 +47,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     test "success", %{conn: conn, params: params} do
       UserTask.start(%State{task_id: @task_id})
 
-      post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
+      post_to_action(conn, :put_non_use_values, under(:non_use_values, params))
       |> assert_purpose(after_the_fact_pick_animals())
 
       expected_span = InstitutionApi.timespan(@date, @timeslot_id, @institution)
@@ -69,8 +69,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       params = %{original | date: "", date_showable_date: ""}
       UserTask.start(%State{task_id: @task_id})
 
-      post_to_action(conn, :put_species_and_time, under(:species_and_time, params))
-      |> assert_purpose(after_the_fact_pick_species_and_time())
+      post_to_action(conn, :put_non_use_values, under(:non_use_values, params))
+      |> assert_purpose(after_the_fact_pick_non_use_values())
       |> assert_user_sees("be blank")
 
       UserTask.get(@task_id)

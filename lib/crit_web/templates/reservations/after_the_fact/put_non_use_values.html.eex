@@ -1,4 +1,4 @@
-<!-- Purpose: <%= Purpose.after_the_fact_pick_species_and_time %> -->
+<!-- Purpose: <%= Purpose.after_the_fact_pick_non_use_values %> -->
 
 <script language="javascript">
   $(document)

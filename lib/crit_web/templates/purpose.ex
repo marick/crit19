@@ -34,7 +34,7 @@ defmodule CritWeb.Templates.Purpose do
   def public_facing_page, 
     do: "public facing page"
 
-  def after_the_fact_pick_species_and_time, 
+  def after_the_fact_pick_non_use_values, 
     do: "after the fact pick species and time"
 
   def after_the_fact_pick_animals, 

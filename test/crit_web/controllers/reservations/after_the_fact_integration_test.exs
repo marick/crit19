@@ -33,7 +33,7 @@ defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
     # ----------------------------------------------------------------------------
     get_via_action(conn, :start)                             # Start
     # ----------------------------------------------------------------------------
-    |> follow_form(%{species_and_time:                       # Background info
+    |> follow_form(%{non_use_values:                       # Background info
          %{species_id: @bovine_id,
            date: @iso_date,
            date_showable_date: @human_date,

@@ -14,7 +14,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       chosen_procedure_ids: :nothing
   end
 
-  defmodule SpeciesAndTime do
+  defmodule NonUseValues do
     use Ecto.Schema
     import Ecto.Changeset
     alias Crit.Setup.InstitutionApi

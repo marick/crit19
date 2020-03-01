@@ -15,23 +15,23 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def start(conn, _params) do
     state = UserTask.start(Scratch.State)
 
-    start_task_render(conn, state, Scratch.SpeciesAndTime.empty)
+    start_task_render(conn, state, Scratch.NonUseValues.empty)
   end
 
   defp start_task_render(conn, state, changeset) do
-    task_render(conn, :put_species_and_time, state,
+    task_render(conn, :put_non_use_values, state,
       changeset: changeset,
       species_options: InstitutionApi.available_species(institution(conn)),
       timeslot_options: InstitutionApi.timeslot_tuples(institution(conn)))
   end
 
-  def put_species_and_time(conn, %{"species_and_time" => delivered_params}) do
+  def put_non_use_values(conn, %{"non_use_values" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
-    case UserTask.pour_into_struct(params, Scratch.SpeciesAndTime) do
+    case UserTask.pour_into_struct(params, Scratch.NonUseValues) do
       {:ok, new_data} ->
         header =
-          View.species_and_time_header(
+          View.non_use_values_header(
             new_data.date_showable_date,
             InstitutionApi.timeslot_name(new_data.timeslot_id, institution(conn)))
 

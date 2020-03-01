@@ -67,7 +67,7 @@ export default class extends Controller {
         return "A week in " + date_string;
     }
 
-    today() { 
+    today() {
         this.calendar.today();
         this.week_offset = 0;
         this.load_week();

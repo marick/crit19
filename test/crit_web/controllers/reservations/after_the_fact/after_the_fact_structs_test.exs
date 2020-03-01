@@ -4,7 +4,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
   alias Ecto.Timespan
   alias Crit.State.UserTask
 
-  describe "processing of SpeciesAndTime" do
+  describe "processing of NonUseValues" do
     test "success" do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
@@ -16,7 +16,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       expected_span =
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
-      assert {:ok, data} = UserTask.pour_into_struct(params, Scratch.SpeciesAndTime)
+      assert {:ok, data} = UserTask.pour_into_struct(params, Scratch.NonUseValues)
       data
       |> assert_fields(
            species_id: @bovine_id,

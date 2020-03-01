@@ -73,7 +73,7 @@ IO.puts(
 
     scope "/after_the_fact" do 
       get "/", AfterTheFactController, :start
-      post "/species_and_time", AfterTheFactController, :put_species_and_time
+      post "/non_use_values", AfterTheFactController, :put_non_use_values
       post "/animals", AfterTheFactController, :put_animals
       post "/procedures", AfterTheFactController, :put_procedures
     end
