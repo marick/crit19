@@ -83,9 +83,13 @@ IO.puts(
     get "/calendar/weekly", ReservationController, :weekly_calendar
     get "/:reservation_id", ReservationController, :show
   end
-  
-  # Other scopes may use custom stacks.
-  # scope "/api", CritWeb do
-  #   pipe_through :api
-  # end
+
+  scope "/report", CritWeb.Reports, as: :reports do
+    pipe_through :browser
+
+    scope "/animals" do
+      get "/use_form", AnimalReportController, :use_form
+      post "/use", AnimalReportController, :use
+    end
+  end
 end
