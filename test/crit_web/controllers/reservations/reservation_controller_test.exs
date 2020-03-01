@@ -14,7 +14,7 @@ defmodule CritWeb.Reservations.ReservationControllerTest do
   
   describe "week_data" do
     test "empty", %{conn: conn} do
-      conn = get_via_action(conn, :week_data)
+      conn = get_via_action(conn, :week_data, "0")
       
       assert json_response(conn, 200)["data"] == []
     end
@@ -25,12 +25,27 @@ defmodule CritWeb.Reservations.ReservationControllerTest do
         date: InstitutionApi.today!(@institution))
 
       assert [result] =
-        get_via_action(conn, :week_data)
+        get_via_action(conn, :week_data, "0")
         |> json_response(200)
         |> Map.get("data")
 
       # The details of the output are in the CalendarEntry tests.
       assert result["body"] == CalendarEntry.to_map(reservation, @institution).body
     end
+
+    test "a reservation in an earlier week", %{conn: conn} do 
+      reservation = ReservationFocused.reserved!(@bovine_id,
+        ["jeff", "bossie"], ["procedure 1", "proc"],
+        date: Date.add(InstitutionApi.today!(@institution), -7))
+
+      assert [result] =
+        get_via_action(conn, :week_data, "-1")
+        |> json_response(200)
+        |> Map.get("data")
+
+      # The details of the output are in the CalendarEntry tests.
+      assert result["body"] == CalendarEntry.to_map(reservation, @institution).body
+    end
+    
   end
 end

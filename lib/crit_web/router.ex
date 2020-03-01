@@ -65,7 +65,7 @@ IO.puts(
   scope "/reservation/api", CritWeb.Reservations do
     pipe_through :api
 
-    get "/week_data", ReservationController, :week_data
+    get "/week_data/:week_offset", ReservationController, :week_data
   end
 
   scope "/reservation", CritWeb.Reservations do

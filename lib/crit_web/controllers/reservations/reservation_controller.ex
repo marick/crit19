@@ -44,11 +44,10 @@ defmodule CritWeb.Reservations.ReservationController do
     render(conn, "weekly.html")
   end
 
-  def week_data(conn, _params) do
-    {sunday, saturday} =
-      institution(conn)
-      |> InstitutionApi.today!
-      |> TimeHelper.week_dates
+  def week_data(conn, %{"week_offset" => count_string}) do
+    count = String.to_integer(count_string)
+    central_date = Date.add(InstitutionApi.today!(institution(conn)), count * 7)
+    {sunday, saturday} = TimeHelper.week_dates(central_date)
 
     reservations =
       ReservationApi.on_dates(sunday, saturday, institution(conn))
