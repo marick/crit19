@@ -7,7 +7,7 @@ import "tui-calendar/dist/tui-calendar.css";
 // import 'tui-time-picker/dist/tui-time-picker.css';
 
 export default class extends Controller {
-    static targets = ["context"];
+    static targets = ["context", "dimmer"];
 
     connect() {
         this.first_calendar();
@@ -44,6 +44,7 @@ export default class extends Controller {
     }
 
     load_week() {
+        // this.dimmerTarget.classList.toggle("active");
         fetch("/reservation/api/week_data/" + this.week_offset)
             .then(response => response.text())
             .then(json => JSON.parse(json))
@@ -51,25 +52,24 @@ export default class extends Controller {
     }
 
     create_schedules(result) {
-        console.log(result["data"]);
         this.calendar.clear();
         this.calendar.createSchedules(result["data"]);
         this.calendar.render();
 
         this.contextTarget.innerHTML = this.context_message();
+        // this.dimmerTarget.classList.toggle("active");
     }
 
     context_message() {
         const date = this.calendar.getDate().toDate();
-        const options = {year: 'numeric', month: 'long', day: 'numeric'};
+        const options = {year: 'numeric', month: 'long'};
         const date_string = date.toLocaleDateString(undefined, options);
-        return "Date containing " + date_string;
+        return "A week in " + date_string;
     }
 
     today() { 
         this.calendar.today();
         this.week_offset = 0;
-        console.log(this.week_offset);
         this.load_week();
     }
 

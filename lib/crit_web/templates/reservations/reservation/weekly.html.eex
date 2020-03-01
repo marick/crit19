@@ -2,9 +2,12 @@
      data-controller="reservation-weekly">
 
 
-  <div class="ui basic segment">
   <h3 class="ui header">Reservations by week</h3>
-
+  <div class="ui basic segment">
+    <div class="ui dimmer"
+         data-target="reservation-weekly.dimmer">
+      <div class="ui text loader">Loading</div>
+    </div>    
     <button class="circular ui left icon button"
             data-action="reservation-weekly#previous_week">
       <i class="left arrow icon"></i>
@@ -18,7 +21,6 @@
     </button>
     <button class="ui right floated button"
             data-action="reservation-weekly#today">
-            
       Today
     </button>    
   </div>
