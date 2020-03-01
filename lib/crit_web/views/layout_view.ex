@@ -41,17 +41,27 @@ defmodule CritWeb.LayoutView do
     """
   end
 
+  def header_link(name, href) do
+    ~E"""
+    <a href="<%=href%>" class="header item">
+      <%= name %>
+    </a>    
+    """
+  end
+
 
   def header(kws) do
-    right_items = Keyword.fetch!(kws, :right)
+    left_items = Keyword.get(kws, :left, "") 
+    right_items = Keyword.get(kws, :right, "")
 
     ~E"""    
       <header>
         <div class="ui fixed inverted menu">
           <div class="ui container">
-            <a href="/" class="header item">
-              Critter4Us
-            </a>
+            <div class="left menu">
+              <%= header_link("Critter4Us", "/") %>
+              <%= left_items %>
+            </div>
             <div class="right menu">
               <%= right_items %>
             </div>

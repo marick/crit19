@@ -2,6 +2,10 @@
 
 
 <%= header(
+    left: [
+      header_link("Dashboard", "/")
+    ],
+    
     right: [
       link_as_header_button("Log out", SessionController, :logout, method: "delete")
     ]) %>
