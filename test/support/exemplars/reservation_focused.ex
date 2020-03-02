@@ -7,6 +7,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Crit.Setup.InstitutionApi
   alias CritWeb.Reservations.AfterTheFactStructs.State
   alias Crit.Reservations.ReservationApi
+  import Ecto.Query
 
   defp named_thing_inserter(template) do 
     fn name ->
@@ -57,14 +58,37 @@ defmodule Crit.Exemplars.ReservationFocused do
     timeslot().name
   end
 
+  defp insert_or_create_x_ids(schema, inserter, names, species_id) do
+    existing =
+      (from x in schema, where: x.name in ^names)
+      |> Sql.all(@institution)
+    
+    existing_ids = EnumX.ids(existing)
+    existing_names = Enum.map(existing, &(&1.name))
+
+    needed = Enum.reject(names, fn name ->
+      Enum.member?(existing_names, name)
+    end)
+
+    new_ids = apply(__MODULE__, inserter, [needed, species_id])
+
+    Enum.concat([existing_ids, new_ids])
+  end
+
+  defp insert_or_create_animal_ids(names, species_id),
+    do: insert_or_create_x_ids(Animal, :inserted_animal_ids, names, species_id)
+          
+  defp insert_or_create_procedure_ids(names, species_id),
+    do: insert_or_create_x_ids(Procedure, :inserted_procedure_ids, names, species_id)
+
   def ready_to_reserve!(species_id, animal_names, procedure_names, opts \\ []) do
     opts = Enum.into(opts, %{timeslot_id: timeslot_id(),
                              date: ~D[2019-01-01],
                              responsible_person: Faker.Name.name()})
     span = InstitutionApi.timespan(opts.date, opts.timeslot_id, @institution)
 
-    animal_ids = inserted_animal_ids(animal_names, species_id)
-    procedure_ids = inserted_procedure_ids(procedure_names, species_id)
+    animal_ids = insert_or_create_animal_ids(animal_names, species_id)
+    procedure_ids = insert_or_create_procedure_ids(procedure_names, species_id)
     
     %State{
       species_id: species_id,
