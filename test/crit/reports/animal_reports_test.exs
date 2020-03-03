@@ -2,6 +2,7 @@ defmodule Crit.Reports.AnimalReportsTest do
   use Crit.DataCase
   alias Crit.Reports.AnimalReports
   alias Crit.Exemplars.ReservationFocused
+  alias Crit.Reservations.ReservationApi
 
   describe "raw data on animal uses" do
     test "no animals" do
@@ -81,6 +82,62 @@ defmodule Crit.Reports.AnimalReportsTest do
 
       assert [] = AnimalReports.use_rows(@date_1, @date_2, @institution)
     end
+
+    test "the raw return values" do
+      %{id: reservation_id} =
+        ReservationFocused.reserved!(@bovine_id,
+          ["Jeff"], ["procedure"],
+          date: @date_1)
+      {[%{id: animal_id}], [%{id: procedure_id}]} = 
+        ReservationApi.all_used(reservation_id, @institution)
+
+
+      actual = 
+        AnimalReports.use_rows(@date_1, @date_2, @institution)
+      expected = [%{animal_name: "Jeff",
+                    animal_id: animal_id,
+                    procedure_name: "procedure",
+                    procedure_id: procedure_id,
+                    count: 1}]
+      
+      assert actual == expected
+    end
+  end
+
+  test "grouping into a hierarchical form" do
+    jeff_id = 1
+    proc1_id = 2
+    proc2_id = 3
+    zeb_id = 4
+    
+
+    input = [%{animal_name: "Jeff",
+               animal_id: jeff_id,
+               procedure_name: "proc",
+               procedure_id: proc1_id,
+               count: 1},
+             %{animal_name: "Jeff",
+               animal_id: jeff_id,
+               procedure_name: "proc2",
+               procedure_id: proc2_id,
+               count: 2},                 
+             %{animal_name: "zeb",
+               animal_id: zeb_id,
+               procedure_name: "proc2",
+               procedure_id: proc2_id,
+               count: 3}                  
+            ]
+    expected = [%{animal: {"Jeff", jeff_id},
+                  procedures: [%{procedure: {"proc", proc1_id},
+                                 count: 1},
+                               %{procedure: {"proc2", proc2_id},
+                                 count: 2}]},
+                %{animal: {"zeb", zeb_id},
+                  procedures: [%{procedure: {"proc2", proc2_id},
+                                 count: 3}]}
+               ]
+    
+    assert expected == AnimalReports.structurize_uses(input)
   end
   
   def animal_procedure_count(record) do
