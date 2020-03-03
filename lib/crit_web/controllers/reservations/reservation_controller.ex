@@ -4,7 +4,6 @@ defmodule CritWeb.Reservations.ReservationController do
   import CritWeb.Plugs.Authorize
   alias CritWeb.ViewModels.Reservation
   alias Crit.Reservations.{ReservationApi}
-  # alias CritWeb.Controller.Common
   alias CritWeb.ViewModels.DateOrDates
   alias Pile.TimeHelper
   alias Crit.Setup.InstitutionApi

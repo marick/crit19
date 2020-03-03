@@ -7,7 +7,6 @@ defmodule CritWeb.ViewModels.Reports.AnimalTest do
     proc1_id = 2
     proc2_id = 3
     zeb_id = 4
-    
 
     input = [%{animal_name: "Jeff",
                animal_id: jeff_id,

@@ -1,6 +1,5 @@
-# This is all wrong. Probably better to have it be an isolated
-# module that knows how to get the institution timezone.
 defmodule Pile.TimeHelper do
+  import Pile.Interface
 
   @doc ~S"""
   Produces a `Date` for today *in the given `timezone`*. That is, if a
@@ -8,16 +7,10 @@ defmodule Pile.TimeHelper do
   Manchester, England for a client in California, they'll get the
   `Date` for Tuesday.
   """
-
-  IO.puts "delete TimeHelper.today_date"
   def today_date(timezone) do
-    {:ok, datetime} = DateTime.now(timezone)
+    {:ok, datetime} = some(DateTime).now(timezone)
     DateTime.to_date(datetime)
   end
-
-  def stub_today_date(timezone, [to_return: retval]),
-    do: fn ^timezone -> retval end
-
 
   def date_string(date), do: Calendar.Strftime.strftime!(date, "%B %e, %Y")
 
