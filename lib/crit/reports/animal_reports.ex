@@ -12,8 +12,8 @@ defmodule Crit.Reports.AnimalReports do
     range = range(first_date, last_date)
     
     query = 
-      from a in Animal, as: :animal,
-      join: r in Reservation,
+      from r in Reservation,
+      join: a in Animal, as: :animal,
       join: u in Use,
       join: p in Procedure, as: :procedure,
       where: overlaps_fragment(r.span, ^range),
