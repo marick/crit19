@@ -89,7 +89,7 @@ IO.puts(
 
     scope "/animals" do
       get "/use_form", AnimalReportController, :use_form
-      post "/use", AnimalReportController, :use
+      post "/use/last_month", AnimalReportController, :use_last_month
     end
   end
 end
