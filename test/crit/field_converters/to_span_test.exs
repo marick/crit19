@@ -18,7 +18,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
     field :span, Datespan
   end
 
-  @timezone "America/Chicago"
+  @timezone "America/Los_Angeles"
 
   describe "cases where there's no upper bound" do
     test "a valid in-service date" do
@@ -30,7 +30,8 @@ defmodule Crit.FieldConverters.ToSpanTest do
     end
 
     test "the special value `today`" do
-      given InstitutionApi.timezone, [@institution], do: @timezone
+      assert InstitutionApi.timezone(@institution) == @timezone
+      # above makes sure that timezone is as expected
       today_date = TimeHelper.today_date(@timezone)
 
       make_changeset(in_service_datestring: @today,
