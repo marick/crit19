@@ -8,15 +8,15 @@ defmodule Crit.Reports.AnimalReports do
   import Ecto.Timespan
 
 
-  def use_rows(first_date, last_date, institution) do
-    range = range(first_date, last_date)
+  def use_rows(timespan, institution) do
+    {:ok, ps_range} = dump(timespan)
     
     query = 
       from r in Reservation,
       join: a in Animal, as: :animal,
       join: u in Use,
       join: p in Procedure, as: :procedure,
-      where: overlaps_fragment(r.span, ^range),
+      where: overlaps_fragment(r.span, ^ps_range),
       where: u.reservation_id == r.id,
       where: u.procedure_id == p.id,
       where: u.animal_id == a.id
@@ -48,13 +48,5 @@ defmodule Crit.Reports.AnimalReports do
     %{animal: {first.animal_name, first.animal_id},
       procedures: Enum.map(animal_uses, procedure_summary)
      }
-  end
-    
-
-  defp range(%Date{} = first_date, %Date{} = last_date) do 
-    {:ok, range} =
-      customary(first_date, Date.add(last_date, 1))
-      |> dump
-    range
   end
 end

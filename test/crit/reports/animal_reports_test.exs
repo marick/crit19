@@ -3,10 +3,13 @@ defmodule Crit.Reports.AnimalReportsTest do
   alias Crit.Reports.AnimalReports
   alias Crit.Exemplars.ReservationFocused
   alias Crit.Reservations.ReservationApi
+  alias Ecto.Timespan
+
+  @date_1_to_date_2_span Timespan.customary(@date_1, @date_2)
 
   describe "raw data on animal uses" do
     test "no animals" do
-      [] = AnimalReports.use_rows(@date_1, @date_2, @institution)
+      [] = AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
     end
 
     test "bounds" do
@@ -16,10 +19,10 @@ defmodule Crit.Reports.AnimalReportsTest do
       
       ReservationFocused.reserved!(@equine_id,
         ["Wilbur"], ["procedure 2", "procedure 1", "proca"],
-        date: @date_2)
+        date: Date.add(@date_2, -1))
 
       result = 
-        AnimalReports.use_rows(@date_1, @date_2, @institution)
+        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
         |> Enum.map(&animal_procedure_count/1)
 
       assert result ==
@@ -40,10 +43,10 @@ defmodule Crit.Reports.AnimalReportsTest do
       
       ReservationFocused.reserved!(@equine_id,
         ["bossie"], ["procedure 2", "procedure 1", "proca"],
-        date: @date_3)
+        date: @date_2) # just past boundary
 
       result = 
-        AnimalReports.use_rows(@date_1, @date_2, @institution)
+        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
         |> Enum.map(&animal_procedure_count/1)
 
       assert result ==
@@ -64,7 +67,7 @@ defmodule Crit.Reports.AnimalReportsTest do
         date: @date_1)
 
       result = 
-        AnimalReports.use_rows(@date_1, @date_2, @institution)
+        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
         |> Enum.map(&animal_procedure_count/1)
 
       assert result ==
@@ -80,7 +83,7 @@ defmodule Crit.Reports.AnimalReportsTest do
       ReservationFocused.ignored_animal("Ignored animal", @bovine_id)
       ReservationFocused.ignored_procedure("Ignored procedure", @bovine_id)
 
-      assert [] = AnimalReports.use_rows(@date_1, @date_2, @institution)
+      assert [] = AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
     end
 
     test "the raw return values" do
@@ -93,7 +96,7 @@ defmodule Crit.Reports.AnimalReportsTest do
 
 
       actual = 
-        AnimalReports.use_rows(@date_1, @date_2, @institution)
+        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
       expected = [%{animal_name: "Jeff",
                     animal_id: animal_id,
                     procedure_name: "procedure",
