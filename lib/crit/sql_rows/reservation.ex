@@ -1,4 +1,4 @@
-defmodule Crit.Reports.AnimalReports do 
+defmodule Crit.SqlRows.Reservation do 
   use Crit.Global.Constants
   import Ecto.Query
   alias Crit.Sql
@@ -8,7 +8,7 @@ defmodule Crit.Reports.AnimalReports do
   import Ecto.Timespan
 
 
-  def use_rows(timespan, institution) do
+  def timespan_uses(timespan, institution) do
     {:ok, ps_range} = dump(timespan)
     
     query = 
@@ -33,20 +33,4 @@ defmodule Crit.Reports.AnimalReports do
     Sql.all(query, institution)
   end
 
-  def structurize_uses(rows) do
-    rows
-    |> Enum.chunk_by(&(&1.animal_name))
-    |> Enum.map(&structurize_animal_uses/1)
-  end
-
-  def structurize_animal_uses([first | _rest] = animal_uses) do
-    procedure_summary = fn animal_use ->
-      %{procedure: {animal_use.procedure_name, animal_use.procedure_id},
-        count: animal_use.count}
-    end
-  
-    %{animal: {first.animal_name, first.animal_id},
-      procedures: Enum.map(animal_uses, procedure_summary)
-     }
-  end
 end

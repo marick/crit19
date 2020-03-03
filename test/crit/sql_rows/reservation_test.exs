@@ -1,6 +1,6 @@
-defmodule Crit.Reports.AnimalReportsTest do
+defmodule Crit.SqlRows.ReservationTest do
   use Crit.DataCase
-  alias Crit.Reports.AnimalReports
+  alias Crit.SqlRows.Reservation
   alias Crit.Exemplars.ReservationFocused
   alias Crit.Reservations.ReservationApi
   alias Ecto.Timespan
@@ -9,7 +9,7 @@ defmodule Crit.Reports.AnimalReportsTest do
 
   describe "raw data on animal uses" do
     test "no animals" do
-      [] = AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
+      [] = Reservation.timespan_uses(@date_1_to_date_2_span, @institution)
     end
 
     test "bounds" do
@@ -22,7 +22,7 @@ defmodule Crit.Reports.AnimalReportsTest do
         date: Date.add(@date_2, -1))
 
       result = 
-        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
+        Reservation.timespan_uses(@date_1_to_date_2_span, @institution)
         |> Enum.map(&animal_procedure_count/1)
 
       assert result ==
@@ -46,7 +46,7 @@ defmodule Crit.Reports.AnimalReportsTest do
         date: @date_2) # just past boundary
 
       result = 
-        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
+        Reservation.timespan_uses(@date_1_to_date_2_span, @institution)
         |> Enum.map(&animal_procedure_count/1)
 
       assert result ==
@@ -67,7 +67,7 @@ defmodule Crit.Reports.AnimalReportsTest do
         date: @date_1)
 
       result = 
-        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
+        Reservation.timespan_uses(@date_1_to_date_2_span, @institution)
         |> Enum.map(&animal_procedure_count/1)
 
       assert result ==
@@ -83,7 +83,7 @@ defmodule Crit.Reports.AnimalReportsTest do
       ReservationFocused.ignored_animal("Ignored animal", @bovine_id)
       ReservationFocused.ignored_procedure("Ignored procedure", @bovine_id)
 
-      assert [] = AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
+      assert [] = Reservation.timespan_uses(@date_1_to_date_2_span, @institution)
     end
 
     test "the raw return values" do
@@ -96,7 +96,7 @@ defmodule Crit.Reports.AnimalReportsTest do
 
 
       actual = 
-        AnimalReports.use_rows(@date_1_to_date_2_span, @institution)
+        Reservation.timespan_uses(@date_1_to_date_2_span, @institution)
       expected = [%{animal_name: "Jeff",
                     animal_id: animal_id,
                     procedure_name: "procedure",
@@ -105,42 +105,6 @@ defmodule Crit.Reports.AnimalReportsTest do
       
       assert actual == expected
     end
-  end
-
-  test "grouping into a hierarchical form" do
-    jeff_id = 1
-    proc1_id = 2
-    proc2_id = 3
-    zeb_id = 4
-    
-
-    input = [%{animal_name: "Jeff",
-               animal_id: jeff_id,
-               procedure_name: "proc",
-               procedure_id: proc1_id,
-               count: 1},
-             %{animal_name: "Jeff",
-               animal_id: jeff_id,
-               procedure_name: "proc2",
-               procedure_id: proc2_id,
-               count: 2},                 
-             %{animal_name: "zeb",
-               animal_id: zeb_id,
-               procedure_name: "proc2",
-               procedure_id: proc2_id,
-               count: 3}                  
-            ]
-    expected = [%{animal: {"Jeff", jeff_id},
-                  procedures: [%{procedure: {"proc", proc1_id},
-                                 count: 1},
-                               %{procedure: {"proc2", proc2_id},
-                                 count: 2}]},
-                %{animal: {"zeb", zeb_id},
-                  procedures: [%{procedure: {"proc2", proc2_id},
-                                 count: 3}]}
-               ]
-    
-    assert expected == AnimalReports.structurize_uses(input)
   end
   
   def animal_procedure_count(record) do
