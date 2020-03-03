@@ -1,4 +1,28 @@
 <div class="ui main center aligned text container">
   <h3>Animal Use</h3>
 
-  hi
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>Animal</th>
+      <th>Uses</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for %{animal: {animal_name, _},
+            procedures: procedures} <- @uses do %>
+    <tr>
+      <td><%= animal_name %></td>
+      <td>
+        <ul>
+          <%= for %{count: count, procedure: {procedure_name, _}} <- procedures do %>
+              <li>
+                <%= procedure_name %> (<%= count %>)
+              </li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

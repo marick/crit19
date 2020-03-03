@@ -2,9 +2,12 @@
   <h3>Animal Use</h3>
   <%= start_centered_form() %>
 
-  <%= form_for :report, @path, [class: "ui large form"], fn f -> %>
+  <div class="ui segment">
+    <%= button("Last month's uses", to: @path, method: :post, class: "ui fluid large teal submit button") %>
+  </div>
 
-  
+  <div class="ui segment">
+  <%= form_for :report, @path, [class: "ui large form"], fn f -> %>
     <div class="fields">
     <%= small_calendar(f, "First date in report",
         :first_datestring, unique: "first") %>
@@ -12,10 +15,10 @@
     <%= small_calendar(f, "Last date in report",
         :last_datestring, unique: "last") %>
     </div>
-    <%= big_submit_button "Make Report" %>
-
+    <%= big_submit_button "This Doesn't Work Yet" %>
   <% end %>
-    
+  </div>
+  
   <%= end_centered_form() %>
 
       
