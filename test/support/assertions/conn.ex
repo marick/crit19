@@ -3,12 +3,13 @@ defmodule CritWeb.Assertions.Conn do
   use Crit.Global.Constants
   import CritWeb.ConnExtras
   import ExUnit.Assertions
-  import Crit.Assertions.Defchain
+  import Crit.Assertions.{Defchain, Map}
   alias CritWeb.PublicController
   alias Crit.Users.User
   import CritWeb.Plugs.Accessors
   alias CritWeb.CurrentUser.SessionController
   alias CritWeb.View.Support.Id
+  
 
   ### Redirection
 
@@ -35,6 +36,11 @@ defmodule CritWeb.Assertions.Conn do
     end)
   end
 
+  ### assigns
+
+  defchain assert_assigns(conn, list) do
+    assert_fields(conn.assigns, list)
+  end
   
   ### Session
 
@@ -104,4 +110,6 @@ defmodule CritWeb.Assertions.Conn do
 
   defchain assert_error_flash_has(conn, string_or_regex),
     do: assert flash_error(conn) =~ string_or_regex
+
+  
 end
