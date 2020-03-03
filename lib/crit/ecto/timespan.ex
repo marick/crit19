@@ -25,4 +25,13 @@ defmodule Ecto.Timespan do
     |> TimeHelper.millisecond_precision
     |> plus(minutes, :minute)
   end
+
+  def month_span(year, month) do
+    case Date.from_erl{year, month, 1} do
+      {:ok, first_day} -> 
+        last_day = Date.add(first_day, Date.days_in_month(first_day))
+        {:ok, customary(first_day, last_day)}
+      error -> error
+    end
+  end
 end

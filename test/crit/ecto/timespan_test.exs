@@ -30,4 +30,18 @@ defmodule Crit.Ecto.TimespanTest do
     expected_end =   ~N[2019-11-12 09:30:00] |> TimeHelper.millisecond_precision
     assert actual == Timespan.customary(expected_start, expected_end)
   end
+
+  describe "month_span" do
+    test "success" do 
+      assert {:ok, actual} = Timespan.month_span(2020, 2)
+      expected = Timespan.customary(
+        ~N[2020-02-01 00:00:00.000000],
+        ~N[2020-03-01 00:00:00.000000])
+      assert actual == expected
+    end
+
+    test "failure" do
+      assert {:error, :invalid_date} == Timespan.month_span(2020, 0)
+    end
+  end
 end
