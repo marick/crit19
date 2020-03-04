@@ -33,7 +33,8 @@ config :crit, CritWeb.Endpoint,
   http: [port: {:system, "PORT"}], # Possibly not needed, but doesn't hurt
   url: [host: "public.critter4us.com", port: 443],
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
-  server: true
+  server: true,
+  force_ssl: [rewrite_on: [:x_forwarded_proto]]  
 
 config :crit, Crit.Repo,
   adapter: Ecto.Adapters.Postgres,
