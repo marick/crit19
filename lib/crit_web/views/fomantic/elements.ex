@@ -204,6 +204,16 @@ defmodule CritWeb.Fomantic.Elements do
     """
   end
 
+  def labeled_number_field(f, label, field, input_opts \\ []) do
+    ~E"""
+      <div class="field">
+          <%= label f, field, label %>
+          <%= number_input f, field, input_opts %>
+          <%= error_tag f, field %>
+      </div>
+    """
+  end
+
   def labeled_text_field_with_advice(f, label, field, advice, input_opts \\ []) do
     ~E"""
       <div class="field">

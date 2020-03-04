@@ -1,25 +1,70 @@
+<script language="javascript">
+  $(document)
+    .ready(function() { 
+        $('#month').dropdown();
+        $('.message').transition('swing down in');
+    });
+</script>
+
+
 <div class="ui main center aligned text container">
-  <h3>Animal Use</h3>
+  <h3>How Animals Were Used</h3>
   <%= start_centered_form() %>
 
-  <div class="ui segment">
-    <%= button("Last month's uses", to: @path, method: :post, class: "ui fluid large teal submit button") %>
+  <div class="ui center aligned segment">
+    <h4>A report for last month</h4>
+    <%= button("Get Report", to: @path, method: :post, class: "ui fluid large teal submit button") %>
   </div>
 
-  <div class="ui segment">
-  <%= form_for :report, @path, [class: "ui large form"], fn f -> %>
+  <div class="ui center aligned segment">
+    <h4>A report for any month (not just the last one)</h4>
+    
+    <%= form_for :report, @path, [class: "ui large form"], fn f -> %>
     <div class="fields">
-    <%= small_calendar(f, "First date in report",
-        :first_datestring, unique: "first") %>
- 
-    <%= small_calendar(f, "Last date in report",
-        :last_datestring, unique: "last") %>
+      <div class="field">
+        <%= dropdown f, "Month", :month, class: "ui selection dropdown",
+            dropdown_id: "month",
+            options: [
+            {"January", 1},
+            {"February", 2},
+            {"March", 3},
+            {"April", 4},
+            {"May", 5},
+            {"June", 6},
+            {"July", 7},
+            {"August", 8},
+            {"September", 9},
+            {"October", 10},
+            {"November", 11},
+            {"December", 23}
+            ] %>
+      </div>
+      <div class="field">
+        <%= labeled_number_field(f, "Year", :year, value: "2020") %>
+      </div>
     </div>
     <%= big_submit_button "This Doesn't Work Yet" %>
-  <% end %>
+    <% end %>
+  </div>
+  
+
+  <div class="ui center aligned segment">
+    <h4>A report that's not for a single month</h4>
+    
+    <%= form_for :report, @path, [class: "ui large form"], fn f -> %>
+    <div class="fields">
+      <div class="field">
+        <%= small_calendar(f, "First date in report",
+            :first_datestring, unique: "first") %>
+      </div>
+      <div class="field">
+        <%= small_calendar(f, "Last date in report",
+            :last_datestring, unique: "last") %>
+      </div>
+    </div>
+    <%= big_submit_button "This Doesn't Work Yet" %>
+    <% end %>
   </div>
   
   <%= end_centered_form() %>
-
-      
 </div>
