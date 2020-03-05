@@ -50,14 +50,62 @@ export default class extends Controller {
             .then(json => JSON.parse(json))
             .then(result => this.create_schedules(result));
     }
-
+    
     create_schedules(result) {
+        const local_offset =
+              this.browser_timezone_offset(new Date().getTimezoneOffset());
+        const locally_timed_schedules = 
+              this.convert_to_browser_datetime(result["data"], local_offset)
+        
         this.calendar.clear();
-        this.calendar.createSchedules(result["data"]);
+        this.calendar.createSchedules(locally_timed_schedules);
         this.calendar.render();
 
         this.contextTarget.innerHTML = this.context_message();
-        // this.dimmerTarget.classList.toggle("active");
+    }
+
+    convert_to_browser_datetime(schedules, offset_suffix) {
+        return schedules.map(function(elt) {
+            elt.start = elt.start + offset_suffix;
+            elt.end = elt.end  +  offset_suffix;
+            return elt;
+        })
+    }
+
+
+    // Critter4Us always works in timezone-less times (Elixir
+    // `NaiveDateTime`).  Toast Calendar takes the browser's local
+    // timezone into account. To have it show the intended time *as
+    // seen from the institution's timezone*, we have to add the local
+    // timezone's offset to the string representations of time. 
+    //
+    // It appears that non-Safari browsers do this automatically when
+    // given a timezone-free ISO8601(ish) time representation, but
+    // wotthehell archie wotthehell 
+    
+    browser_timezone_offset(minute_offset) {
+        const offset_string = (minute_offset / -60).toString()
+
+        var sign;
+        var hours;
+
+        if (offset_string.includes(".")) {
+            throw "Critter4Us doesn't work in timezones a fractional hour away from UTC";
+        }
+
+        if (offset_string.slice(0, 1) == "-") {
+            sign = "-";
+            hours = offset_string.slice(1);
+        } else {
+            sign = "+";
+            hours = offset_string;
+        }
+
+        if (hours.length == 1) {
+            hours = "0" + hours;
+        }
+
+        return sign + hours + ":00";
     }
 
     context_message() {
