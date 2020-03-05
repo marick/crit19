@@ -1,0 +1,46 @@
+<div class="ui main center aligned text container">
+
+  <h1 class="ui center aligned header">Create Procedures</h1>
+
+  <%= start_centered_form() %>
+  <%= form_for :creation, @path, [class: "ui large form"], fn f -> %>
+  <table class="ui table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Species it can be used on</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for changeset <- @changesets do %>
+          <tr>
+          <div class="fields">
+            <td>
+              <div class="field">
+                <%= text_input f, :name %>
+                <%= error_tag f, :name %>
+              </div>
+            </td>
+            <td>
+              <div class="field">
+                <%= for {species_name, species_id} <- @species_pairs do %>
+                    <div class="ui checkbox">
+                    <%= tag(:input,
+                            name: :selected_species,
+                            id: "selected_species_#{species_id}",
+                            type: "checkbox",
+                            value: species_id) %>
+                    <%= content_tag(:label, species_name, 
+                                    for: "selected_species_#{species_id}") %>
+                    </div>
+                <% end %>
+              </div>
+            </td>
+          </div>
+          <tr/>
+      <% end %>
+    </tbody>
+  </table>
+  <% end %>
+  <%= end_centered_form() %>
+</div>

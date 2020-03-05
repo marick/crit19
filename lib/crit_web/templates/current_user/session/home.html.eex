@@ -11,7 +11,8 @@
         ] %>
     <%= dashboard_card "Animals and Procedures",
         [ list_link("Add animals", AnimalController, :bulk_create_form),
-          list_link("See or edit animals", AnimalController, :index)
+          list_link("See or edit animals", AnimalController, :index),
+          list_link("Add procedures", ProcedureController, :bulk_creation_form)
         ] %>
     <%= dashboard_card "Reports",
         [ list_link("Animal use", AnimalReportController, :use_form),

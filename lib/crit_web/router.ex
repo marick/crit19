@@ -60,6 +60,11 @@ IO.puts(
       get "/", AnimalController, :index
       get "/:animal_id", AnimalController, :_show
     end
+
+    scope "/procedures" do 
+      get "/bulk_creation_form", ProcedureController, :bulk_creation_form
+      post "/bulk_create", ProcedureController, :bulk_create
+    end
   end
 
   scope "/reservation/api", CritWeb.Reservations do
