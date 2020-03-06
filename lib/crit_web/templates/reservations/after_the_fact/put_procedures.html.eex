@@ -8,7 +8,7 @@
   <%= start_centered_form() %>
   <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
     <%= hidden_task_id f, @state %>
-    <%= multiple_checkbox f, @procedures, :chosen_procedure_ids %>
+    <%= multiple_checkbox_column f, @procedures, :chosen_procedure_ids %>
     <%= big_submit_button "Record the use" %>
   <% end %>
   

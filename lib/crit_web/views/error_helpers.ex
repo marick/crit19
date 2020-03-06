@@ -2,21 +2,7 @@ defmodule CritWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
-
   use Phoenix.HTML
-
-  @doc """
-  Generates tag for inlined form input errors.
-  """
-  def error_tag(form, field) do
-    Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      ~E"""
-         <span class="ui pointing red basic label">
-           <%= translate_error(error) %>
-         </span>
-      """
-    end)
-  end
 
   @doc """
   Translates an error message using gettext.

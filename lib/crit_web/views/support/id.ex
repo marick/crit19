@@ -1,7 +1,7 @@
 defmodule CritWeb.View.Support.Id do
   alias Phoenix.HTML.Form
   alias Ecto.Changeset
-  import CritWeb.Fomantic.Elements
+  import CritWeb.Fomantic.Labeled
 
   def unique_snippet(%Phoenix.HTML.Form{} = form), do: unique_snippet(form.data)
   def unique_snippet(%Changeset{} = changeset), do: unique_snippet(changeset.data)

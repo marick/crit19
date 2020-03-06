@@ -49,6 +49,12 @@ defmodule CritWeb do
       alias CritWeb.Templates.Purpose
       import CritWeb.View.Support.Id
       import CritWeb.Fomantic.Elements
+      import CritWeb.Fomantic.ListProducing
+      import CritWeb.Fomantic.MapProducingg
+      import CritWeb.Fomantic.Informative
+      import CritWeb.Fomantic.Labeled
+      import CritWeb.Fomantic.Page
+      import CritWeb.Fomantic.Calendars
       import CritWeb.Plugs.Accessors
       alias Ecto.ChangesetX
       import CritWeb.TaskHelpers
