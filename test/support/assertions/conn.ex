@@ -8,7 +8,7 @@ defmodule CritWeb.Assertions.Conn do
   alias Crit.Users.User
   import CritWeb.Plugs.Accessors
   alias CritWeb.CurrentUser.SessionController
-  alias CritWeb.View.Support.Id
+  import CritWeb.Fomantic.Helpers, only: [unique_snippet: 2]
   
 
   ### Redirection
@@ -92,12 +92,12 @@ defmodule CritWeb.Assertions.Conn do
 
   defchain assert_new_service_gap_form(conn, animal) do 
     assert_user_sees(conn,
-      "out_of_service_datestring_" <> Id.unique_snippet(animal, %{id: nil}))
+      "out_of_service_datestring_" <> unique_snippet(animal, %{id: nil}))
   end
 
   defchain assert_existing_service_gap_form(conn, animal, existing) do 
     assert_user_sees(conn,
-      "out_of_service_datestring_" <> Id.unique_snippet(animal, existing))
+      "out_of_service_datestring_" <> unique_snippet(animal, existing))
   end
 
   ### Flash
