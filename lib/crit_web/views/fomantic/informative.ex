@@ -1,7 +1,7 @@
 defmodule CritWeb.Fomantic.Informative do
   use Phoenix.HTML
   import Phoenix.Controller, only: [get_flash: 2]
-  import CritWeb.Fomantic.Helpers
+  # import CritWeb.Fomantic.Helpers
   alias CritWeb.ErrorHelpers
 
 

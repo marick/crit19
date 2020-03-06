@@ -26,7 +26,8 @@ defmodule CritWeb.Setup.ProcedureController do
       species_pairs: species_pairs)
   end
 
-  def bulk_create(conn, %{"bulk_procedure" => _raw_params}) do
+  def bulk_create(conn, params) do
+    IO.inspect params
     conn
   end
 

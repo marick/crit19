@@ -3,7 +3,7 @@
   <h1 class="ui center aligned header">Create Procedures</h1>
 
   <%= start_centered_form() %>
-  <%= form_for :creation, @path, [class: "ui large form"], fn f -> %>
+  <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
   <table class="ui table">
     <thead>
       <tr>
@@ -17,30 +17,20 @@
           <div class="fields">
             <td>
               <div class="field">
-                <%= text_input f, :name %>
-                <%= error_tag f, :name %>
+                <%= indexed_text_input(f, :name, changeset.changes.index) %>
+                <%= error_tag f, :name %> ERROR TAG
               </div>
             </td>
             <td>
-              <div class="field">
-                <%= for {species_name, species_id} <- @species_pairs do %>
-                    <div class="ui checkbox">
-                    <%= tag(:input,
-                            name: :selected_species,
-                            id: "selected_species_#{species_id}",
-                            type: "checkbox",
-                            value: species_id) %>
-                    <%= content_tag(:label, species_name, 
-                                    for: "selected_species_#{species_id}") %>
-                    </div>
-                <% end %>
-              </div>
+              <%= indexed_multiple_checkbox_row(f, @species_pairs, :species_ids, changeset.changes.index) %>
             </td>
           </div>
           <tr/>
       <% end %>
     </tbody>
   </table>
+  <%= big_submit_button "Create" %>
+  
   <% end %>
   <%= end_centered_form() %>
 </div>

@@ -1,6 +1,7 @@
 defmodule CritWeb.Setup.AnimalView do
   use CritWeb, :view
   alias CritWeb.Setup.AnimalController
+  alias Phoenix.HTML.Form
 
   def animal_form_id(animal) do
     "animal_#{animal.id}"
@@ -55,4 +56,14 @@ defmodule CritWeb.Setup.AnimalView do
     </div>
     """
   end
+
+  defp delete_if_exists(f) do
+    if Form.input_value(f, :id) do
+      labeled_checkbox f, "Delete", :delete
+    else
+      []
+    end
+  end
+
+  
 end

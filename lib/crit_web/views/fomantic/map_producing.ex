@@ -1,6 +1,6 @@
 defmodule CritWeb.Fomantic.MapProducing do
   use Phoenix.HTML
-  import CritWeb.Fomantic.Helpers
+  # import CritWeb.Fomantic.Helpers
 
   def indexed_text_input(form, field_label, index) do
     id = input_id(form, field_label, index)
@@ -13,12 +13,12 @@ defmodule CritWeb.Fomantic.MapProducing do
     name = "#{input_name(form, to_string(index))}[#{field_label}][]"
     ~E"""
     <div class="field">
-      <%= for tuple <- tuples, do: one_checkbox(form, tuple, id, name) %>
+      <%= for tuple <- tuples, do: one_checkbox(tuple, id, name) %>
      </div>
     """
   end
 
-  defp one_checkbox(f, {label_value, sent_value}, id, name) do 
+  defp one_checkbox({label_value, sent_value}, id, name) do 
     checkbox_tag = tag(:input,
       name: name,
       id: id,

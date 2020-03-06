@@ -1,7 +1,7 @@
 defmodule CritWeb.Fomantic.Page do
   use Phoenix.HTML
-  import CritWeb.Fomantic.Helpers
-  import CritWeb.Fomantic.Informative
+  # import CritWeb.Fomantic.Helpers
+  # import CritWeb.Fomantic.Informative
 
 
   def start_centered_form do

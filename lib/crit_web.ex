@@ -50,7 +50,7 @@ defmodule CritWeb do
       import CritWeb.View.Support.Id
       import CritWeb.Fomantic.Elements
       import CritWeb.Fomantic.ListProducing
-      import CritWeb.Fomantic.MapProducingg
+      import CritWeb.Fomantic.MapProducing
       import CritWeb.Fomantic.Informative
       import CritWeb.Fomantic.Labeled
       import CritWeb.Fomantic.Page

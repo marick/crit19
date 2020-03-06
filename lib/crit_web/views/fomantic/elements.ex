@@ -1,7 +1,7 @@
 defmodule CritWeb.Fomantic.Elements do
   use Phoenix.HTML
-  import CritWeb.Fomantic.Helpers
-  import CritWeb.Fomantic.Informative
+  # import CritWeb.Fomantic.Helpers
+  # import CritWeb.Fomantic.Informative
 
   def centered_image(src) do
     classes = "ui center aligned container main" 

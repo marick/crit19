@@ -1,6 +1,6 @@
 defmodule CritWeb.Fomantic.Labeled do
   use Phoenix.HTML
-  import CritWeb.Fomantic.Helpers
+  # import CritWeb.Fomantic.Helpers
   import CritWeb.Fomantic.Informative
 
   def labeled_text_field(f, label, field, input_opts \\ []) do
