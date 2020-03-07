@@ -2,7 +2,22 @@
 
 <div class="ui main center aligned text container">
 
-  hi
+  <table class="ui striped sortable table">
+    <th>
+      <tr>
+        <th class="sorted ascending">Name</th>
+        <th class="sorted ascending">Species</th>
+        <th></th>
+      </tr>
+    </th>
+          
+      <%= for procedure <- @procedures do %>
+          <tr>
+            <%= render "_show_one_procedure.html",
+                Map.put(assigns, :procedure, procedure) %>
+         </tr>
+      <% end %>
+  </table>
 
 </div>
 

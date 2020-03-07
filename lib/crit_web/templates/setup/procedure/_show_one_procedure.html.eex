@@ -1,0 +1,10 @@
+<!-- Purpose: <%= Purpose.snippet_to_display_procedure %> -->
+
+  <td>
+    <strong><%= @procedure.name %></strong> 
+  </td>
+
+  <td>
+    <%= @procedure.species_name %>
+  </td>
+  

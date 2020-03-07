@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.ProcedureController do
   use CritWeb.Controller.Path, :setup_procedure_path
   import CritWeb.Plugs.Authorize
   alias Crit.Setup.{ProcedureApi,InstitutionApi}
-  alias CritWeb.ViewModels.Procedure.Creation
+  alias CritWeb.ViewModels.Procedure.{Creation,Show}
   alias Ecto.Changeset
   # alias CritWeb.Audit
   # alias CritWeb.Controller.Common
@@ -27,13 +27,22 @@ defmodule CritWeb.Setup.ProcedureController do
   end
 
   def bulk_create(conn, %{"procedures" => descriptions}) do
+    institution = institution(conn)
     case Creation.changesets(Map.values(descriptions)) do
       {:ok, changesets} ->
-        changesets
-        |> Creation.unfold_to_attrs
-        |> Enum.map(&(ProcedureApi.insert(&1, institution(conn))))
+        procedures = 
+          changesets
+          |> Creation.unfold_to_attrs
+          |> insert_all(institution)
+          |> Enum.map(&(Show.to_view_model(&1, institution)))
+        render(conn, "index.html", procedures: procedures)
     end
-    render(conn, "index.html")
+  end
+
+  def insert_all(changesets, institution) do
+    changesets
+    |> Enum.map(&(ProcedureApi.insert(&1, institution)))
+    |> Enum.map(&(elem(&1, 1)))
   end
 
 end

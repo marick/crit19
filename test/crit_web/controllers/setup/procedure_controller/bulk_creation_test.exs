@@ -37,17 +37,19 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
     end
 
     test "typical case", %{conn: conn} do
-      params = params([{"p1", [@bovine_id, @equine_id]},
-                       {"p2", [@bovine_id]},
+      params = params([{"proc1", [@bovine_id, @equine_id]},
+                       {"proc2", [@bovine_id]},
                        {"", []},
                        {"", []},
                        {"", []}])
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(displaying_procedure_summaries())
+      |> assert_purpose(snippet_to_display_procedure())
+      |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
 
-      assert [%{name: "p1"}, %{name: "p2"}] = 
+      assert [%{name: "proc1"}, %{name: "proc2"}] = 
         ProcedureApi.all_by_species(@bovine_id, @institution)
-      assert [%{name: "p1"}] = 
+      assert [%{name: "proc1"}] = 
         ProcedureApi.all_by_species(@equine_id, @institution)
     end  
     

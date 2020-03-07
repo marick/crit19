@@ -1,7 +1,5 @@
 defmodule CritWeb.ViewModels.Procedure.Creation do
   use Ecto.Schema
-  # use Crit.Global.Constants
-  # alias Crit.Setup.InstitutionApi
   import Ecto.Changeset
   alias Crit.Setup.Schemas.Procedure
 
