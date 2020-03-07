@@ -47,10 +47,10 @@ defmodule CritWeb do
       import CritWeb.Gettext
       alias CritWeb.Router.Helpers, as: Routes
       alias CritWeb.Templates.Purpose
+      import CritWeb.Fomantic.Tags
       import CritWeb.Fomantic.Helpers
       import CritWeb.Fomantic.Elements
       import CritWeb.Fomantic.ListProducing
-      import CritWeb.Fomantic.MapProducing
       import CritWeb.Fomantic.Informative
       import CritWeb.Fomantic.Labeled
       import CritWeb.Fomantic.Page

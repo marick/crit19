@@ -20,4 +20,21 @@ defmodule CritWeb.Fomantic.Helpers do
   def accordion_div_id(id_holder), 
     do: "accordion" <> unique_snippet(id_holder)
 
+
+  # https://en.wikipedia.org/wiki/Atomizer_(album)
+  # https://www.youtube.com/watch?v=03cDvRl3edo
+  def atomizer(string_or_atom_or_int) do
+    string_or_atom_or_int
+    |> to_string
+    |> String.to_atom
+  end
+
+  def atomizer(%Changeset{} = changeset, key) do
+    changeset
+    |> Changeset.fetch_field!(key)
+    |> atomizer
+  end
+
+  def safe(x), do: {:safe, x}
+  
 end

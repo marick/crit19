@@ -13,19 +13,16 @@
     </thead>
     <tbody>
       <%= for changeset <- @changesets do %>
+          <%= inputs_for(f, atomizer(changeset, :index), fn fp -> %>
           <tr>
-          <div class="fields">
-            <td>
-              <div class="field">
-                <%= indexed_text_input(f, :name, changeset.changes.index) %>
-                <%= error_tag f, :name %> ERROR TAG
-              </div>
-            </td>
-            <td>
-              <%= indexed_multiple_checkbox_row(f, @species_pairs, :species_ids, changeset.changes.index) %>
-            </td>
-          </div>
+            <div class="fields">
+                <%= [td(  field( [text_input(fp, :name),
+                                  error_tag(fp, :name)])),
+                     td(  multiple_checkbox_row(fp, @species_pairs, :species_ids))
+                    ] %>
+            </div>
           <tr/>
+          <% end) %>
       <% end %>
     </tbody>
   </table>
