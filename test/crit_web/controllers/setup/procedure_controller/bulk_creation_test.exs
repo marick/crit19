@@ -19,16 +19,40 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
 
   describe "handle bulk creation" do
     test "successful creation of one procedure", %{conn: conn} do
-      params = %{"0" => %{"name" => "procedure", "index" => "0",
-                          "species_ids" => [to_string(@bovine_id)]}}
-      IO.inspect under(:procedures, params)
+      params = params([{"procedure", [@bovine_id]}])
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(displaying_procedure_summaries())
 
       
       assert [only] = ProcedureApi.all_by_species(@bovine_id, @institution)
     end
+
+    test "an empty row is ignored", %{conn: conn} do
+      params = params([{"procedure", [@bovine_id]},
+                       {"", []}])
+      IO.inspect under(:procedures, params)
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      |> assert_purpose(displaying_procedure_summaries())
+
+      assert [only] = ProcedureApi.all_by_species(@bovine_id, @institution)
+    end
+    
   end
 
-  
+  defp params(list) do
+    one_param = fn name, index_string, species_id_strings -> 
+      %{"name" => name, "index" => index_string , "species_ids" => species_id_strings}
+    end
+
+    map_entry = fn {{name, species_ids}, index} ->
+      species_id_strings = Enum.map(species_ids, &to_string/1)
+      index_string = to_string(index)
+      {index_string, one_param.(name, index_string, species_id_strings)}
+    end
+    
+    list
+    |> Enum.with_index
+    |> Enum.map(map_entry)
+    |> Map.new
+  end
 end
