@@ -26,9 +26,14 @@ defmodule CritWeb.Setup.ProcedureController do
       species_pairs: species_pairs)
   end
 
-  def bulk_create(conn, params) do
-    IO.inspect params
-    conn
+  def bulk_create(conn, %{"procedures" => descriptions}) do
+    case Creation.changesets(Map.values(descriptions)) do
+      {:ok, changesets} ->
+        changesets
+        |> Creation.unfold_to_attrs
+        |> Enum.map(&(ProcedureApi.insert(&1, institution(conn))))
+    end
+    render(conn, "index.html")
   end
 
 end

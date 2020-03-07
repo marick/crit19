@@ -1,3 +1,6 @@
+<!-- Purpose: <%= Purpose.show_procedure_creation_form %> -->
+
+
 <div class="ui main center aligned text container">
 
   <h1 class="ui center aligned header">Create Procedures</h1>
@@ -16,6 +19,7 @@
           <%= inputs_for(f, atomizer(changeset, :index), fn fp -> %>
           <tr>
             <div class="fields">
+            <%= hidden_input(fp, :index, value: changeset.changes.index) %>
                 <%= [td(  field( [text_input(fp, :name),
                                   error_tag(fp, :name)])),
                      td(  multiple_checkbox_row(fp, @species_pairs, :species_ids))

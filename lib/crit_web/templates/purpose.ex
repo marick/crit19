@@ -49,4 +49,10 @@ defmodule CritWeb.Templates.Purpose do
   def reservation_by_dates, 
     do: "reservation by dates"
 
+  def show_procedure_creation_form, 
+    do: "show procedure creation form"
+
+  def displaying_procedure_summaries, 
+    do: "displaying procedure summaries"
+
 end
