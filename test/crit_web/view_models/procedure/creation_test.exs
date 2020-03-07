@@ -32,5 +32,21 @@ defmodule CritWeb.ViewModels.Procedure.CreationTest do
   end
 
   describe "unfolding changesets" do
+    test "ones without names are ignored" do
+      {:ok, changesets} = 
+        Creation.changesets([%{"species_ids" => ["1"]}])
+      
+      assert Creation.unfold_to_attrs(changesets) == []
+    end
+
+    test "species are spread apart" do
+      {:ok, changesets} = 
+        Creation.changesets([%{"name" => "p", "species_ids" => ["1", "3"]}])
+
+      actual = Creation.unfold_to_attrs(changesets)
+      expected = [ %{name: "p", species_id: 1},
+                   %{name: "p", species_id: 3} ]
+      assert actual == expected
+    end
   end
 end

@@ -30,12 +30,26 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
     test "an empty row is ignored", %{conn: conn} do
       params = params([{"procedure", [@bovine_id]},
                        {"", []}])
-      IO.inspect under(:procedures, params)
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(displaying_procedure_summaries())
 
       assert [only] = ProcedureApi.all_by_species(@bovine_id, @institution)
     end
+
+    test "typical case", %{conn: conn} do
+      params = params([{"p1", [@bovine_id, @equine_id]},
+                       {"p2", [@bovine_id]},
+                       {"", []},
+                       {"", []},
+                       {"", []}])
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      |> assert_purpose(displaying_procedure_summaries())
+
+      assert [%{name: "p1"}, %{name: "p2"}] = 
+        ProcedureApi.all_by_species(@bovine_id, @institution)
+      assert [%{name: "p1"}] = 
+        ProcedureApi.all_by_species(@equine_id, @institution)
+    end  
     
   end
 

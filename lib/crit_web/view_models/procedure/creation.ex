@@ -37,13 +37,19 @@ defmodule CritWeb.ViewModels.Procedure.Creation do
     end
   end
 
-  def unfold_to_attrs([only | _changesets]) do
-    # changesets
-    # |> Enum.map(&apply_changes/1)
-    # |> Enum.filter 
-    
-    [%{name: fetch_field!(only, :name),
-       species_id: List.first(fetch_field!(only, :species_ids))}]
+  def unfold_to_attrs(changesets) do
+    one_set = fn name, species_id -> 
+      %{name: name, species_id: species_id}
+    end
+
+    Enum.flat_map(changesets, fn changeset ->
+      case fetch_change(changeset, :name) do
+        {:ok, name} -> 
+          Enum.map(fetch_change!(changeset, :species_ids), &(one_set.(name, &1)))
+        _ ->
+          []
+      end
+    end)
   end
 
 end
