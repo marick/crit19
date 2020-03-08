@@ -5,6 +5,8 @@ defmodule CritWeb.Setup.ProcedureController do
   alias Crit.Setup.{ProcedureApi,InstitutionApi}
   alias CritWeb.ViewModels.Procedure.{Creation,Show}
   alias Ecto.Changeset
+  alias Ecto.Multi
+  alias Crit.Sql
   # alias CritWeb.Audit
   # alias CritWeb.Controller.Common
 
@@ -30,12 +32,20 @@ defmodule CritWeb.Setup.ProcedureController do
     institution = institution(conn)
     case Creation.changesets(Map.values(descriptions)) do
       {:ok, changesets} ->
-        procedures = 
+
+        result =
           changesets
-          |> Creation.unfold_to_attrs
-          |> insert_all(institution)
-          |> Enum.map(&(Show.to_view_model(&1, institution)))
-        render(conn, "index.html", procedures: procedures)
+          |> Creation.unfold_to_attrs 
+          |> insert_all__2(institution)
+          |> IO.inspect
+
+        case result do
+          {:ok, stuff} ->
+            models =
+              Map.values(stuff)
+              |> Enum.map(&(Show.to_view_model(&1, institution)))
+            render(conn, "index.html", procedures: models)
+        end
     end
   end
 
@@ -44,5 +54,20 @@ defmodule CritWeb.Setup.ProcedureController do
     |> Enum.map(&(ProcedureApi.insert(&1, institution)))
     |> Enum.map(&(elem(&1, 1)))
   end
+
+  def insert_all__2(attr_list, institution) do
+    reducer = fn attrs, multi ->
+      Multi.insert(multi,
+        {attrs.name, attrs.species_id},
+        ProcedureApi.changeset(attrs),
+        Sql.multi_opts(institution))
+    end
+
+    attr_list
+    |> Enum.reduce(Multi.new, reducer)
+    |> IO.inspect
+    |> Sql.transaction(institution)
+  end
+  
 
 end

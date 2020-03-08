@@ -6,4 +6,6 @@ defmodule Crit.Setup.ProcedureApi do
   
   def all_by_species(species_id, institution),
     do: Procedure.all_by([species_id: species_id], institution)
+
+  def changeset(attrs), do: Procedure.changeset(%Procedure{}, attrs)
 end
