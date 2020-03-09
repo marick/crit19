@@ -1,7 +1,7 @@
 defmodule CritWeb.ViewModels.Procedure.Creation do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Setup.Schemas.Procedure
+  # alias Crit.Setup.Schemas.Procedure
 
   embedded_schema do
     field :index, :integer
@@ -26,7 +26,7 @@ defmodule CritWeb.ViewModels.Procedure.Creation do
     case {fetch_change(start, :name), fetch_change(start, :species_ids)} do
       {:error, :error} -> start
       {:error, _} -> start
-      {_, :error} -> add_error(start, :name, legit_error_messages.at_least_one_species)
+      {_, :error} -> add_error(start, :species_ids, legit_error_messages().at_least_one_species)
       {_, _} -> start
     end
   end

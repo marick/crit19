@@ -4,24 +4,33 @@ defmodule CritWeb.Setup.ProcedureView do
   alias CritWeb.ViewModels.Procedure.Creation  
 
 
-  def creation_error_tag(%Changeset{} = changeset) do
+  def creation_error_tag(%Changeset{} = changeset, field) do
     changeset.errors
-    |> Keyword.get_values(:name)
+    |> Keyword.get_values(field)
     |> Enum.flat_map(&expand_error/1)
-    |> IO.inspect
   end
 
   defp expand_error({message, _}) do
-    IO.inspect message
     case message in Map.values(Creation.legit_error_messages) do
       true ->
         [~E"""
          <span class="ui pointing red basic label">
            <%= message %>
          </span>
-        """] |> IO.inspect
+        """]
       false ->
         []
     end
+  end
+
+  def animal_entry(f, changeset) do 
+    text_input(f, :name, value: Changeset.fetch_field!(changeset, :name))
+    
+  end
+
+  def species_chooser(f, species_pairs, changeset) do 
+    [multiple_checkbox_row(f, species_pairs, :species_ids,
+        checked: Changeset.fetch_field!(changeset, :species_ids)),
+     creation_error_tag(changeset, :species_ids)]
   end
 end

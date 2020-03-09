@@ -20,12 +20,8 @@
           <tr>
             <div class="fields">
             <%= hidden_input(fp, :index, value: changeset.changes.index) %>
-                <%= [td(  field( [text_input(fp, :name,
-                                  value: Changeset.fetch_field!(changeset, :name)),
-                                  creation_error_tag(changeset)])),
-                     td(  multiple_checkbox_row(fp, @species_pairs, :species_ids,
-                            checked: Changeset.fetch_field!(changeset, :species_ids)))
-                    ] %>
+            <%= [td(field(animal_entry(fp, changeset))),
+                 td(species_chooser(fp, @species_pairs, changeset))] %>
             </div>
           <tr/>
           <% end) %>
