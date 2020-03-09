@@ -11,8 +11,24 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Species it can be used on</th>
+        <th>Species it can be used on
+        </th>
       </tr>
+      <tr>
+        <th class="right aligned">
+          Click to select a species in all rows:
+        </th>
+        <th>
+          <%= multiple_checkbox_row(f, @species_pairs, :javascript_only) %>
+        </th>
+      </tr>
+
+      <tr >
+        <th colspan="2">
+          <%= big_submit_button "After filling out the table, click here" %>
+        </th>
+      </tr>
+        
     </thead>
     <tbody>
       <%= for changeset <- @changesets do %>
@@ -20,7 +36,7 @@
           <tr>
             <div class="fields">
             <%= hidden_input(fp, :index, value: changeset.changes.index) %>
-            <%= [td(field(animal_entry(fp, changeset))),
+            <%= [td(field(procedure_input(fp, changeset))),
                  td(species_chooser(fp, @species_pairs, changeset))] %>
             </div>
           <tr/>
@@ -28,7 +44,7 @@
       <% end %>
     </tbody>
   </table>
-  <%= big_submit_button "Create" %>
+  <%= big_submit_button "You can also click here" %>
   
   <% end %>
   <%= end_centered_form() %>

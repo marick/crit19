@@ -6,6 +6,8 @@ defmodule CritWeb.ViewModels.Procedure.Creation do
   alias Crit.Sql
   use Crit.Errors
 
+  # The index is used to give each element of the array its own unique id.
+  # That may not be necessary, but it doesn't hurt and is arguably clearer.
   embedded_schema do
     field :index, :integer
     field :name, :string, default: ""

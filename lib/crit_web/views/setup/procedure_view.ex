@@ -4,8 +4,10 @@ defmodule CritWeb.Setup.ProcedureView do
   alias CritWeb.ViewModels.Procedure.Creation  
 
 
-  def animal_entry(f, changeset) do
-    [text_input(f, :name, value: Changeset.fetch_field!(changeset, :name)),
+  def procedure_input(f, changeset) do
+    [text_input(f, :name,
+        value: Changeset.fetch_field!(changeset, :name),
+        placeholder: "Procedure name"),
      error_tag(changeset, :name)
     ]
   end
