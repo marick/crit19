@@ -3,10 +3,6 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
   alias CritWeb.Setup.ProcedureController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.ProcedureApi
-  alias CritWeb.ViewModels.Procedure.Creation
-  # alias Crit.Setup.Schemas.Procedure
-  # alias CritWeb.Audit
-  # alias Crit.Exemplars
 
   setup :logged_in_as_setup_manager
 
@@ -62,7 +58,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(show_procedure_creation_form())   # again
       |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
-      |> assert_user_sees(Creation.legit_error_messages.at_least_one_species)
+      |> assert_user_sees(@at_least_one_species)
       # Correct one not added.
       assert [] = ProcedureApi.all_by_species(@bovine_id, @institution)
     end
@@ -74,7 +70,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
 
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(show_procedure_creation_form())
-      |> assert_user_sees(Creation.legit_error_messages.already_taken)
+      |> assert_user_sees(@already_taken)
     end
 
     @tag :skip

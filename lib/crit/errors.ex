@@ -26,6 +26,8 @@ defmodule Crit.Errors do
       @login_failed "Login failed"
       @blank_message "can't be blank"
       @blank_message_in_html "can&#39;t be blank"
+      @at_least_one_species "You must choose at least one species"
+      @already_taken "has already been taken"      
     end
   end
 end

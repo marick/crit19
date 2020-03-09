@@ -20,7 +20,7 @@ defmodule CritWeb.ViewModels.Procedure.CreationTest do
       %Creation{}
       |> Creation.changeset(%{"name"=>"procedure"})
       |> assert_invalid
-      |> assert_error(species_ids: Creation.legit_error_messages.at_least_one_species)
+      |> assert_error(species_ids: @at_least_one_species)
     end
 
     test "there can be a species without a name" do
