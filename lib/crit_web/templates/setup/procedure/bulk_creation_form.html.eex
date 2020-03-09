@@ -7,7 +7,9 @@
 
   <%= start_centered_form() %>
   <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
-  <table class="ui table">
+  <table class="ui table"
+         data-controller="procedure-creation"
+         >
     <thead>
       <tr>
         <th>Name</th>
