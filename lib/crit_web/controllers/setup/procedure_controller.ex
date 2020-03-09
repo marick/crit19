@@ -25,27 +25,35 @@ defmodule CritWeb.Setup.ProcedureController do
 
   def bulk_create(conn, %{"procedures" => descriptions}) do
     institution = institution(conn)
-    case Creation.changesets(Map.values(descriptions)) do
-      {:ok, changesets} ->
-
-        result =
-          changesets
-          |> Creation.unfold_to_attrs 
-          |> insert_all(institution)
-
-        case result do
-          {:ok, stuff} ->
-            models =
-              Map.values(stuff)
-              |> Enum.map(&(Show.to_view_model(&1, institution)))
-            render(conn, "index.html", procedures: models)
-        end
+    with(
+      {:ok, changesets} <- Creation.changesets(Map.values(descriptions)),
+      {:ok, procedures} <- insert_changesets(changesets, institution)
+    ) do
+      models =
+        Enum.map(procedures, &(Show.to_view_model(&1, institution)))
+      render(conn, "index.html", procedures: models)
+    else
       {:error, changesets} ->
         render_bulk_creation_form(conn, changesets)
     end
   end
 
-  def insert_all(attr_list, institution) do
+  def insert_changesets(changesets, institution) do
+    case make_multi(changesets, institution)|> Sql.transaction(institution) do
+      {:ok, map} ->
+        {:ok, Map.values(map)}
+      {:error, {name, _id}, %{errors: [name: {msg, _}]}, _} ->
+        index = Enum.find_index(changesets, fn changeset ->
+          changeset.changes.name == name
+      end)
+        updated =
+          changesets
+          |> List.update_at(index, &(Changeset.add_error(&1, :name, msg)))
+        {:error, updated}
+    end
+  end
+
+  def make_multi(changesets, institution) do
     reducer = fn attrs, multi ->
       Multi.insert(multi,
         {attrs.name, attrs.species_id},
@@ -53,10 +61,11 @@ defmodule CritWeb.Setup.ProcedureController do
         Sql.multi_opts(institution))
     end
 
-    attr_list
+    changesets
+    |> Creation.unfold_to_attrs 
     |> Enum.reduce(Multi.new, reducer)
-    |> Sql.transaction(institution)
   end
+
 
   defp render_bulk_creation_form(conn, changesets) do
     species_pairs = InstitutionApi.available_species(institution(conn))

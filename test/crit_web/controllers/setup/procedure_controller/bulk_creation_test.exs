@@ -67,7 +67,6 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       assert [] = ProcedureApi.all_by_species(@bovine_id, @institution)
     end
 
-    @tag :skip
     test "duplicate name", %{conn: conn} do
       params = params([{"procedure", [@bovine_id]}])
       post_to_action(conn, :bulk_create, under(:procedures, params))
@@ -75,7 +74,22 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
 
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(show_procedure_creation_form())
-      |> assert_user_sees("already exists")
+      |> assert_user_sees(Creation.legit_error_messages.already_taken)
+    end
+
+    @tag :skip
+    test "a duplicate prevents valid procedures from being inserted",
+      %{conn: _conn} do
+    end
+
+    @tag :skip
+    test "only one error message for a two-species procedure",
+      %{conn: _conn} do
+    end
+
+    @tag :skip
+    test "two duplicate names in same form", 
+      %{conn: _conn} do
     end
 
     @tag :skip

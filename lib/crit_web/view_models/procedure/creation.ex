@@ -12,7 +12,9 @@ defmodule CritWeb.ViewModels.Procedure.Creation do
   @required [:name, :species_ids, :index]
 
   def legit_error_messages do
-    %{at_least_one_species: "You must choose at least one species"}
+    %{at_least_one_species: "You must choose at least one species",
+      already_taken: "has already been taken"
+    }
   end
 
   def starting_changeset() do
