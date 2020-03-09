@@ -31,7 +31,7 @@ defmodule CritWeb.Setup.ProcedureController do
         result =
           changesets
           |> Creation.unfold_to_attrs 
-          |> insert_all__2(institution)
+          |> insert_all(institution)
 
         case result do
           {:ok, stuff} ->
@@ -45,13 +45,7 @@ defmodule CritWeb.Setup.ProcedureController do
     end
   end
 
-  def insert_all(changesets, institution) do
-    changesets
-    |> Enum.map(&(ProcedureApi.insert(&1, institution)))
-    |> Enum.map(&(elem(&1, 1)))
-  end
-
-  def insert_all__2(attr_list, institution) do
+  def insert_all(attr_list, institution) do
     reducer = fn attrs, multi ->
       Multi.insert(multi,
         {attrs.name, attrs.species_id},
