@@ -20,7 +20,7 @@ defmodule CritWeb.ViewModels.Procedure.CreationTest do
       %Creation{}
       |> Creation.changeset(%{"name"=>"procedure"})
       |> assert_invalid
-      |> assert_error(name: "must have at least one species")
+      |> assert_error(name: Creation.legit_error_messages.at_least_one_species)
     end
 
     test "there can be a species without a name" do
@@ -29,6 +29,19 @@ defmodule CritWeb.ViewModels.Procedure.CreationTest do
       |> Creation.changeset(%{"species_ids" => ["1"]})
       |> assert_valid
     end
+  end
+
+  describe "changesetS return value" do
+    test "on success" do
+      input = [%{"name" => "prep", "species_ids" => ["1"]}]
+      assert {:ok, [only]} = Creation.changesets(input)
+      assert_valid(only)
+    end      
+    test "on failure" do
+      input = [%{"name" => "prep"}]
+      assert {:error, [only]} = Creation.changesets(input)
+      assert_invalid(only)
+    end      
   end
 
   describe "unfolding changesets" do

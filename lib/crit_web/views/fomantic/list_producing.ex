@@ -21,12 +21,13 @@ defmodule CritWeb.Fomantic.ListProducing do
   will all be on the same line.
   """
 
-  IO.puts "Decide whether to keep multiple_checkbox_row"
-  def multiple_checkbox_row(f, [{_,_}|_]=tuples, checkbox_field) do
+  def multiple_checkbox_row(f, [{_,_}|_]=tuples, checkbox_field, opts \\ []) do
+    opts = Enum.into(opts, %{checked: []})
+
     ~E"""
     <div class="field">
       <%= for tuple <- tuples,
-            do: one_checkbox(f, tuple, checkbox_field)
+            do: one_checkbox(f, tuple, checkbox_field, opts.checked)
        %>
      </div>
     """
@@ -40,27 +41,31 @@ defmodule CritWeb.Fomantic.ListProducing do
      structure to use. They default to `:name` and `:id`. 
   """
   def multiple_checkbox_column(f, structs, checkbox_field, opts \\ []) do
-    opts = Enum.into(opts, %{sent_field: :id, displayed_field: :name})
+    defaults = %{sent_field: :id, displayed_field: :name, checked: []}
+    opts = Enum.into(opts, defaults)
     for struct <- structs do
       sent_value = Map.fetch!(struct, opts.sent_field)
       label_value = Map.fetch!(struct, opts.displayed_field)
 
       ~E"""
       <div class="field">
-        <%= one_checkbox(f, {label_value, sent_value}, checkbox_field) %>
+        <%= one_checkbox(f, {label_value, sent_value}, checkbox_field, opts.checked) %>
       </div>
       """
     end
   end
   
-  defp one_checkbox(f, {label_value, sent_value}, checkbox_field) do 
+  defp one_checkbox(f, {label_value, sent_value}, checkbox_field, all_checked) do 
     checkbox_id = input_id(f, checkbox_field, sent_value)
     checkbox_name = input_list_name(f, checkbox_field)
+
+    check_this? = Enum.member?(all_checked, sent_value)
 
     checkbox_tag = tag(:input,
       name: checkbox_name,
       id: checkbox_id,
       type: "checkbox",
+      checked: check_this?,
       value: sent_value)
 
     label_tag = content_tag(:label, label_value, for: checkbox_id)

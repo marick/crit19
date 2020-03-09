@@ -3,6 +3,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
   alias CritWeb.Setup.ProcedureController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.ProcedureApi
+  alias CritWeb.ViewModels.Procedure.Creation
   # alias Crit.Setup.Schemas.Procedure
   # alias CritWeb.Audit
   # alias Crit.Exemplars
@@ -51,7 +52,36 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
         ProcedureApi.all_by_species(@bovine_id, @institution)
       assert [%{name: "proc1"}] = 
         ProcedureApi.all_by_species(@equine_id, @institution)
-    end  
+    end
+
+    test "no species chosen", %{conn: conn} do
+      params = %{"0" => %{"name" => "proc1", "index" => "0"},
+                 "1" => %{"name" => "proc2", "index" => "1",
+                                     "species_ids" => [to_string @bovine_id]},
+                 "2" => %{"name" => "", "index" => "2"}}
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      |> assert_purpose(show_procedure_creation_form())   # again
+      |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
+      |> assert_user_sees(Creation.legit_error_messages.at_least_one_species)
+      # Correct one not added.
+      assert [] = ProcedureApi.all_by_species(@bovine_id, @institution)
+    end
+
+    @tag :skip
+    test "duplicate name", %{conn: conn} do
+      params = params([{"procedure", [@bovine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      |> assert_purpose(displaying_procedure_summaries())
+
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      |> assert_purpose(show_procedure_creation_form())
+      |> assert_user_sees("already exists")
+    end
+
+    @tag :skip
+    test "it is OK if the duplicate name is for a different species",
+      %{conn: _conn} do
+    end
     
   end
 

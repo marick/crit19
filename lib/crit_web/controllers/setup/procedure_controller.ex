@@ -14,18 +14,13 @@ defmodule CritWeb.Setup.ProcedureController do
   plug :must_be_able_to, :manage_animals 
 
   def bulk_creation_form(conn, _params) do
-    species_pairs = InstitutionApi.available_species(institution(conn))
-    
     changesets =
       Creation.starting_changeset    
       |> List.duplicate(10)
       |> Enum.with_index
       |> Enum.map(fn {cs, index} -> Changeset.put_change(cs, :index, index) end)
-    
-    render(conn, "bulk_creation_form.html",
-      changesets: changesets,
-      path: path(:bulk_create),
-      species_pairs: species_pairs)
+
+    render_bulk_creation_form(conn, changesets)
   end
 
   def bulk_create(conn, %{"procedures" => descriptions}) do
@@ -37,7 +32,6 @@ defmodule CritWeb.Setup.ProcedureController do
           changesets
           |> Creation.unfold_to_attrs 
           |> insert_all__2(institution)
-          |> IO.inspect
 
         case result do
           {:ok, stuff} ->
@@ -46,6 +40,8 @@ defmodule CritWeb.Setup.ProcedureController do
               |> Enum.map(&(Show.to_view_model(&1, institution)))
             render(conn, "index.html", procedures: models)
         end
+      {:error, changesets} ->
+        render_bulk_creation_form(conn, changesets)
     end
   end
 
@@ -65,9 +61,15 @@ defmodule CritWeb.Setup.ProcedureController do
 
     attr_list
     |> Enum.reduce(Multi.new, reducer)
-    |> IO.inspect
     |> Sql.transaction(institution)
   end
-  
 
+  defp render_bulk_creation_form(conn, changesets) do
+    species_pairs = InstitutionApi.available_species(institution(conn))
+    
+    render(conn, "bulk_creation_form.html",
+      changesets: changesets,
+      path: path(:bulk_create),
+      species_pairs: species_pairs)
+  end
 end
