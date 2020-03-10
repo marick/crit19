@@ -37,11 +37,9 @@
       <%= for changeset <- @changesets do %>
           <%= inputs_for(f, atomizer(changeset, :index), fn fp -> %>
           <tr>
-            <div class="fields">
             <%= hidden_input(fp, :index, value: changeset.changes.index) %>
             <%= [td(field(procedure_input(fp, changeset))),
                  td(species_chooser(fp, @species_pairs, changeset))] %>
-            </div>
           <tr/>
           <% end) %>
       <% end %>
