@@ -21,7 +21,8 @@
           Click to select a species in all rows:
         </th>
         <th>
-          <%= multiple_checkbox_row(f, @species_pairs, :javascript_only) %>
+          <%= multiple_checkbox_row(:_for_javascript, @species_pairs, :_for_javascript,
+              data_action: "click->procedure-creation#put_one_checkbox_column") %>
         </th>
       </tr>
 

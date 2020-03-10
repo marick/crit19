@@ -1,6 +1,7 @@
 defmodule CritWeb.Setup.ProcedureView do
   use CritWeb, :view
   alias Ecto.Changeset
+  alias CritWeb.Fomantic.ListProducing
 
   def procedure_input(f, changeset) do
     [text_input(f, :name,
@@ -12,8 +13,10 @@ defmodule CritWeb.Setup.ProcedureView do
 
   def species_chooser(f, species_pairs, changeset) do 
     [multiple_checkbox_row(f, species_pairs, :species_ids,
-        checked: Changeset.fetch_field!(changeset, :species_ids)),
+        checked: Changeset.fetch_field!(changeset, :species_ids),
+        data_target: "procedure-creation.checkboxes"),
      error_tag(changeset, :species_ids)
     ]
   end
+
 end

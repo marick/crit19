@@ -22,12 +22,13 @@ defmodule CritWeb.Fomantic.ListProducing do
   """
 
   def multiple_checkbox_row(f, [{_,_}|_]=tuples, checkbox_field, opts \\ []) do
-    opts = Enum.into(opts, %{checked: []})
+    checked = Keyword.get(opts, :checked, [])
+    opts = Keyword.delete(opts, :checked)
 
     ~E"""
     <div class="field">
       <%= for tuple <- tuples,
-            do: one_checkbox(f, tuple, checkbox_field, opts.checked)
+            do: one_checkbox(f, tuple, checkbox_field, checked, opts)
        %>
      </div>
     """
@@ -55,18 +56,19 @@ defmodule CritWeb.Fomantic.ListProducing do
     end
   end
   
-  defp one_checkbox(f, {label_value, sent_value}, checkbox_field, all_checked) do 
+  defp one_checkbox(f, {label_value, sent_value}, checkbox_field, all_checked, opts \\ []) do 
     checkbox_id = input_id(f, checkbox_field, sent_value)
     checkbox_name = input_list_name(f, checkbox_field)
 
     check_this? = Enum.member?(all_checked, sent_value)
 
-    checkbox_tag = tag(:input,
-      name: checkbox_name,
-      id: checkbox_id,
-      type: "checkbox",
-      checked: check_this?,
-      value: sent_value)
+    fixed_opts = [name: checkbox_name,
+                  id: checkbox_id,
+                  type: "checkbox",
+                  checked: check_this?,
+                  value: sent_value]
+
+    checkbox_tag = tag(:input, fixed_opts ++ opts)
 
     label_tag = content_tag(:label, label_value, for: checkbox_id)
     
