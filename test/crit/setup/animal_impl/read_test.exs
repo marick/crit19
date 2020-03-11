@@ -4,7 +4,8 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
   alias Crit.Setup.HiddenSchemas.{Species}
   alias Crit.Setup.AnimalImpl.Read
   alias Ecto.Datespan
-
+  alias Crit.Exemplars.Available
+  
   describe "put_updatable_fields" do
     setup do
       [as_fetched: %Animal{
@@ -125,5 +126,38 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
     %{id: id} = Factory.sql_insert!(:animal, @institution)
 
     [%{id: ^id}] = Read.ids_to_animals([id * 2000, id * 4000, id], @institution)
+  end
+
+
+  describe "animals compared to a timespan" do
+    setup do
+      Available.bovine("not in service yet", @date_7)
+      Available.bovine("out of service", Datespan.customary(@date_1, @date_2))
+      Factory.sql_insert!(:animal,
+        [name: "marked as unavailable",
+         species_id: @bovine_id,
+         span: Datespan.inclusive_up(@date_1),
+         available: false],
+        @institution)
+      :ok
+    end
+      
+    test "fetch animals that have an overlapping service gap" do
+      overlaps = Available.bovine("overlaps - should be returned", @date_3)
+      Factory.sql_insert!(:service_gap,
+        [animal_id: overlaps.id, span: Datespan.customary(@date_3, @date_4)],
+        @institution)
+        
+      _available = Available.bovine("available - should not be", @date_3)
+
+      wrong_species = Available.equine("wrong species", @date_3)
+      Factory.sql_insert!(:service_gap,
+        [animal_id: wrong_species.id, span: Datespan.customary(@date_3, @date_4)],
+        @institution)
+
+      overlaps_id = overlaps.id
+      actual = Read.rejected_at(:service_gap, @date_3, @bovine_id, @institution)
+      assert [%Animal{id: ^overlaps_id}] = actual
+    end
   end
 end

@@ -43,12 +43,28 @@ defmodule Crit.Exemplars.Available do
     id
   end
 
-  def bovine(name, in_service_date \\ @date_1) do
-    Factory.sql_insert!(:animal,
-      [name: name, species_id: @bovine_id,
-       span: Datespan.inclusive_up(in_service_date)],
+  defp insert_species(name, span, species_id) do 
+    Factory.sql_insert!(:animal ,
+      [name: name, species_id: species_id,
+       span: span],
       @institution)
-  end
+    end
+
+  def bovine(name),
+    do: bovine(name, @date_1)
+  def bovine(name, %Date{} = in_service_date), 
+    do: bovine(name, Datespan.inclusive_up(in_service_date))
+  def bovine(name, %Datespan{} = span), 
+    do: insert_species(name, span, @bovine_id)
+
+  def equine(name),
+    do: equine(name, @date_1)
+  def equine(name, %Date{} = in_service_date), 
+    do: equine(name, Datespan.inclusive_up(in_service_date))
+  def equine(name, %Datespan{} = span), 
+    do: insert_species(name, span, @equine_id)
+
+    
 
   def bovine_procedure(name), do: procedure(name, @bovine_id)
     

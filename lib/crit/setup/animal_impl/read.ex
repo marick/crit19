@@ -82,4 +82,18 @@ defmodule Crit.Setup.AnimalImpl.Read do
        institution: institution
     }
   end
+
+
+  def rejected_at(:service_gap, %Date{} = date, species_id, institution) do
+    query = 
+      from a in Animal,
+      join: sg in ServiceGap,
+      where: a.species_id == ^species_id, 
+      where: contains_point_fragment(a.span, ^date),
+      where: sg.animal_id == a.id,
+      where: contains_point_fragment(sg.span, ^date),
+      select: a
+
+    Sql.all(query, institution)
+  end
 end
