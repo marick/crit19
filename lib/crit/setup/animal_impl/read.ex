@@ -12,9 +12,9 @@ defmodule Crit.Setup.AnimalImpl.Read do
     import Ecto.Query
     alias Crit.Setup.Schemas.Animal
 
-    def from_all(), do: Ecto.Query.from a in Animal
+    def start(), do: from a in Animal
 
-    def from(where) do
+    def start(where) do
       from a in Animal, where: ^where
     end
 
@@ -26,13 +26,26 @@ defmodule Crit.Setup.AnimalImpl.Read do
       query |> preload([:species, :service_gaps])
     end
 
+    def available_by_species(date, species_id) do
+      from a in Animal,
+      where: a.species_id == ^species_id,
+      where: a.available == true,
+      where: contains_point_fragment(a.span, ^date)
+    end
+
+    def subtract(all, remove) do
+      from a in all,
+        left_join: sa in subquery(remove), on: a.id == sa.id,
+        where: is_nil(sa.name)
+    end
+
     def ordered(query) do
       query |> order_by([a], a.name)
     end
   end
 
   def one(where, institution) do
-    Query.from(where)
+    Query.start(where)
     |> Query.preload_common()
     |> Sql.one(institution)
   end
@@ -41,14 +54,14 @@ defmodule Crit.Setup.AnimalImpl.Read do
     [ignoring_service_gaps: true,
      ignoring_uses: true], institution) do
 
-    Query.from([species_id: species_id])
+    Query.start([species_id: species_id])
     |> where([a], contains_point_fragment(a.span, ^date))
     |> Query.ordered
     |> Sql.all(institution)
   end
   
   def all(institution) do
-    Query.from_all
+    Query.start
     |> Query.preload_common()
     |> Query.ordered
     |> Sql.all(institution)
@@ -85,15 +98,19 @@ defmodule Crit.Setup.AnimalImpl.Read do
 
 
   def rejected_at(:service_gap, %Date{} = date, species_id, institution) do
-    query = 
-      from a in Animal,
-      join: sg in ServiceGap,
-      where: a.species_id == ^species_id, 
-      where: contains_point_fragment(a.span, ^date),
-      where: sg.animal_id == a.id,
-      where: contains_point_fragment(sg.span, ^date),
-      select: a
-
-    Sql.all(query, institution)
+    Query.available_by_species(date, species_id)
+    |> ServiceGap.narrow_animal_query_to_include(date)
+    |> Query.ordered
+    |> Sql.all(institution)
   end
+
+  def available__2(date, species_id, institution) do
+    all = Query.available_by_species(date, species_id)
+    blocked = ServiceGap.narrow_animal_query_to_include(all, date)
+
+    Query.subtract(all, blocked)
+    |> Query.ordered
+    |> Sql.all(institution)
+  end
+
 end

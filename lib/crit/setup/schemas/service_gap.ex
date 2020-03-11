@@ -5,7 +5,9 @@ defmodule Crit.Setup.Schemas.ServiceGap do
   use Crit.Errors
   alias Crit.FieldConverters.ToSpan
   alias Crit.FieldConverters.FromSpan
-
+  import Ecto.Query
+  import Ecto.Datespan
+  
   schema "service_gaps" do
     field :animal_id, :id
     field :span, Datespan
@@ -46,4 +48,12 @@ defmodule Crit.Setup.Schemas.ServiceGap do
         changeset
     end
   end
+
+  def narrow_animal_query_to_include(query, date) do
+    from a in query,
+      join: sg in __MODULE__,
+      where: sg.animal_id == a.id,
+      where: contains_point_fragment(sg.span, ^date)
+  end    
+    
 end
