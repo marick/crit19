@@ -4,7 +4,8 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
   alias Crit.Setup.HiddenSchemas.{Species}
   alias Crit.Setup.AnimalImpl.Read
   alias Ecto.Datespan
-  alias Crit.Exemplars.Available
+  alias Crit.Exemplars.{Available,ReservationFocused}
+  alias Ecto.Timespan
   
   describe "put_updatable_fields" do
     setup do
@@ -160,17 +161,17 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
       :ok
     end
       
-    test "fetch animals that have an overlapping service gap" do
-      overlaps = Available.bovine("RETURNED by rejected_at", @date_3)
+    test "fetch animals with/without an overlapping service gap" do
+      rejected = Available.bovine("RETURNED by rejected_at", @date_3)
       Factory.sql_insert!(:service_gap,
-        [animal_id: overlaps.id, span: Datespan.customary(@date_3, @date_4)],
+        [animal_id: rejected.id, span: Datespan.customary(@date_3, @date_4)],
         @institution)
         
       available = Available.bovine("RETURNED by available", @date_3)
 
-      overlaps_id = overlaps.id
+      rejected_id = rejected.id
       actual = Read.rejected_at(:service_gap, @date_3, @bovine_id, @institution)
-      assert [%Animal{id: ^overlaps_id}] = actual
+      assert [%Animal{id: ^rejected_id}] = actual
 
       available_id = available.id
       actual = Read.available(@date_3, @bovine_id, @institution)

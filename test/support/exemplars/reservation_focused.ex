@@ -8,6 +8,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias CritWeb.Reservations.AfterTheFactStructs.State
   alias Crit.Reservations.ReservationApi
   import Ecto.Query
+  import ExUnit.Assertions
 
   defp named_thing_inserter(template) do 
     fn name ->
@@ -49,6 +50,19 @@ defmodule Crit.Exemplars.ReservationFocused do
     InstitutionApi.timeslots(@institution)
     |> List.first
   end
+
+  def morning_timeslot do
+    hard_coded = 1
+    assert InstitutionApi.timeslot_by_id(hard_coded, @institution).name =~ "morning"
+    hard_coded
+  end
+
+  def evening_timeslot do
+    hard_coded = 3
+    assert InstitutionApi.timeslot_by_id(hard_coded, @institution).name =~ "evening"
+    hard_coded
+  end
+
 
   def timeslot_id do
     timeslot().id
