@@ -50,16 +50,6 @@ defmodule Crit.Setup.AnimalImpl.Read do
     |> Sql.one(institution)
   end
 
-  def available(species_id, %Date{} = date,
-    [ignoring_service_gaps: true,
-     ignoring_uses: true], institution) do
-
-    Query.start([species_id: species_id])
-    |> where([a], contains_point_fragment(a.span, ^date))
-    |> Query.ordered
-    |> Sql.all(institution)
-  end
-  
   def all(institution) do
     Query.start
     |> Query.preload_common()
@@ -104,7 +94,7 @@ defmodule Crit.Setup.AnimalImpl.Read do
     |> Sql.all(institution)
   end
 
-  def available__2(date, species_id, institution) do
+  def available(date, species_id, institution) do
     all = Query.available_by_species(date, species_id)
     blocked = ServiceGap.narrow_animal_query_to_include(all, date)
 

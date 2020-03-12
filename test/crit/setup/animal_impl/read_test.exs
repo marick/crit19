@@ -173,7 +173,7 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
       assert [%Animal{id: ^overlaps_id}] = actual
 
       available_id = available.id
-      actual = Read.available__2(@date_3, @bovine_id, @institution)
+      actual = Read.available(@date_3, @bovine_id, @institution)
       assert [%Animal{id: ^available_id}] = actual
     end
   end
