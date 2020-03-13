@@ -2,7 +2,6 @@ defmodule Crit.Reservations.ReservationApi do
   use Crit.Global.Constants
   alias Crit.Reservations.ReservationImpl.{Read,Write}
   alias Crit.Reservations.HiddenSchemas.{Use}
-  # alias CritWeb.Reservations.AfterTheFactStructs.State
 
   def create(struct, institution) do
     Write.create(struct, institution)
@@ -31,7 +30,8 @@ defmodule Crit.Reservations.ReservationApi do
   def allowable_animals_after_the_fact(desired, institution) do
     Enum.concat(
       [Read.available(desired, institution),
-       Read.rejected_at(:service_gap, desired, institution)])
+       Read.rejected_at(:service_gap, desired, institution),
+       Read.rejected_at(:uses, desired, institution)])
     |> Enum.sort_by(&(&1.name))
   end
 end

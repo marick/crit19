@@ -16,6 +16,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
   @timeslot_id 1
+  @span InstitutionApi.timespan(@date, @timeslot_id, @institution)
+  
 
   setup do
     given UserTask.new_id, [], do: @task_id
@@ -85,6 +87,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.start(%State{
             species_id: @bovine_id,
             date: @date,
+            span: @span,
             responsible_person: "dster",
             task_header: "HEADER"})
       :ok
@@ -123,7 +126,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.start(%State{
             species_id: @bovine_id,
             date: @date,
-            span: InstitutionApi.timespan(@date, @timeslot_id, @institution),
+            span: @span,
             timeslot_id: @timeslot_id,
             task_header: "HEADER",
             responsible_person: "dster",

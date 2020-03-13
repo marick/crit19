@@ -5,10 +5,11 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   import Ecto.Datespan
   alias Crit.Setup.Schemas.{ServiceGap,Animal}
   alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Reservations.HiddenSchemas.Use
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Reservation.Schemas.Reservation
+    alias Crit.Reservations.Schemas.Reservation
 
     def available_by_species(date, species_id) do
       from a in Animal,
@@ -66,11 +67,20 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     |> Sql.all(institution)
   end
 
+  def rejected_at(:uses, desired, institution) do
+    Query.available_by_species(desired.date, desired.species_id)
+    |> Use.narrow_animal_query_to_include(desired.span)
+    |> Query.ordered
+    |> Sql.all(institution)
+  end
+
   def available(desired, institution) do
     all = Query.available_by_species(desired.date, desired.species_id)
-    blocked = ServiceGap.narrow_animal_query_to_include(all, desired.date)
+    date_blocked = ServiceGap.narrow_animal_query_to_include(all, desired.date)
+    timespan_blocked = Use.narrow_animal_query_to_include(all, desired.span)
 
-    Query.subtract(all, blocked)
+    Query.subtract(all, date_blocked)
+    |> Query.subtract(timespan_blocked)
     |> Query.ordered
     |> Sql.all(institution)
   end

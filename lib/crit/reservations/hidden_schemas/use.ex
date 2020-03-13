@@ -3,7 +3,10 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
   import Ecto.Query
   import Ecto.Changeset
   alias Crit.Setup.Schemas.{Animal,Procedure}
+  alias Crit.Reservations.Schemas.Reservation
   alias Crit.Sql
+  import Ecto.Timespan
+  alias Ecto.Timespan
 
   schema "uses" do
     belongs_to :animal, Animal
@@ -47,4 +50,13 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
 
     {animals, procedures}
   end
+
+  def narrow_animal_query_to_include(query, %Ecto.Timespan{} = span) do
+    {:ok, range} = Timespan.dump(span)
+    
+    from a in query,
+      join: u in __MODULE__, on: u.animal_id == a.id,
+      join: r in Reservation, on: u.reservation_id == r.id,
+      where: overlaps_fragment(r.span, ^range)
+  end    
 end
