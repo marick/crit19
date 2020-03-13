@@ -4,7 +4,6 @@ defmodule Crit.Setup.AnimalImpl.Read do
   alias Crit.Sql
   alias Crit.Setup.Schemas.ServiceGap
   alias Crit.FieldConverters.FromSpan
-  import Ecto.Datespan
   import Ecto.Query
   alias Crit.Setup.Schemas.Animal
 
@@ -24,19 +23,6 @@ defmodule Crit.Setup.AnimalImpl.Read do
 
     def preload_common(query) do
       query |> preload([:species, :service_gaps])
-    end
-
-    def available_by_species(date, species_id) do
-      from a in Animal,
-      where: a.species_id == ^species_id,
-      where: a.available == true,
-      where: contains_point_fragment(a.span, ^date)
-    end
-
-    def subtract(all, remove) do
-      from a in all,
-        left_join: sa in subquery(remove), on: a.id == sa.id,
-        where: is_nil(sa.name)
     end
 
     def ordered(query) do
@@ -85,22 +71,4 @@ defmodule Crit.Setup.AnimalImpl.Read do
        institution: institution
     }
   end
-
-
-  def rejected_at(:service_gap, %Date{} = date, species_id, institution) do
-    Query.available_by_species(date, species_id)
-    |> ServiceGap.narrow_animal_query_to_include(date)
-    |> Query.ordered
-    |> Sql.all(institution)
-  end
-
-  def available(date, species_id, institution) do
-    all = Query.available_by_species(date, species_id)
-    blocked = ServiceGap.narrow_animal_query_to_include(all, date)
-
-    Query.subtract(all, blocked)
-    |> Query.ordered
-    |> Sql.all(institution)
-  end
-
 end

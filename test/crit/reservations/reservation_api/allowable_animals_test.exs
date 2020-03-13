@@ -1,7 +1,7 @@
-defmodule Crit.Setup.AnimalApi.AvailableTest do
+defmodule Crit.Reservations.ReservationApi.AllowableAnimalsTest do
   use Crit.DataCase
   alias Ecto.Datespan
-  alias Crit.Setup.AnimalApi
+  alias Crit.Reservations.ReservationApi
 
   describe "`available_after_the_fact`" do
     setup do
@@ -22,15 +22,15 @@ defmodule Crit.Setup.AnimalApi.AvailableTest do
     end
     
     test "the species matters" do
-      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_2})
+      assert_after_the_fact(%{species_id: @bovine_id, date: @date_2})
     end
 
     test "the date matters" do 
-      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_2})
-      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_7})
+      assert_after_the_fact(%{species_id: @bovine_id, date: @date_2})
+      assert_after_the_fact(%{species_id: @bovine_id, date: @date_7})
       
-      refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_1})
-      refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_8})
+      refute_after_the_fact(%{species_id: @bovine_id, date: @date_1})
+      refute_after_the_fact(%{species_id: @bovine_id, date: @date_8})
     end
 
     test "service gaps do NOT matter", %{to_be_found_id: animal_id} do
@@ -39,24 +39,23 @@ defmodule Crit.Setup.AnimalApi.AvailableTest do
          span: Datespan.customary(@date_2, @date_8)],
         @institution)
 
-      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_2})
-      assert_available_after_the_fact(%{species_id: @bovine_id, date: @date_7})
+      assert_after_the_fact(%{species_id: @bovine_id, date: @date_2})
+      assert_after_the_fact(%{species_id: @bovine_id, date: @date_7})
       
-      refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_1})
-      refute_available_after_the_fact(%{species_id: @bovine_id, date: @date_8})
+      refute_after_the_fact(%{species_id: @bovine_id, date: @date_1})
+      refute_after_the_fact(%{species_id: @bovine_id, date: @date_8})
     end
 
-    @tag :skip
     test "animal being in use does not matter" do
     end
 
-    def assert_available_after_the_fact(map) do 
-      actual = AnimalApi.available_after_the_fact(map, @institution)
+    def assert_after_the_fact(map) do 
+      actual = ReservationApi.allowable_animals_after_the_fact(map, @institution)
       assert [%{name: "bovine"}, %{name: "later"}] = actual
     end
 
-    def refute_available_after_the_fact(map) do 
-      actual = AnimalApi.available_after_the_fact(map, @institution)
+    def refute_after_the_fact(map) do 
+      actual = ReservationApi.allowable_animals_after_the_fact(map, @institution)
       assert [] = actual
     end
   end

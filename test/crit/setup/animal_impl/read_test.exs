@@ -4,8 +4,6 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
   alias Crit.Setup.HiddenSchemas.{Species}
   alias Crit.Setup.AnimalImpl.Read
   alias Ecto.Datespan
-  alias Crit.Exemplars.{Available,ReservationFocused}
-  alias Ecto.Timespan
   
   describe "put_updatable_fields" do
     setup do
@@ -127,55 +125,5 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
     %{id: id} = Factory.sql_insert!(:animal, @institution)
 
     [%{id: ^id}] = Read.ids_to_animals([id * 2000, id * 4000, id], @institution)
-  end
-
-
-  describe "animals compared to a timespan" do
-    setup do
-      Available.bovine("NEVER RETURNED: not in service yet", @date_7)
-      Available.bovine("NEVER RETURNED: past out of service date",
-        Datespan.customary(@date_1, @date_2))
-      hard_unavailable_plus_service_gap_unavailability =
-        Factory.sql_insert!(:animal,
-          [name: "NEVER RETURNED: marked 'hard' unavailable (has conflicting sg)",
-           species_id: @bovine_id,
-           span: Datespan.inclusive_up(@date_1),
-           available: false],
-          @institution)
-      Factory.sql_insert!(:service_gap,
-        [animal_id: hard_unavailable_plus_service_gap_unavailability.id,
-         span: Datespan.customary(@date_3, @date_4)],
-        @institution)
-        
-      Factory.sql_insert!(:animal,
-        [name: "NEVER RETURNED: marked 'hard' unavailable",
-         species_id: @bovine_id,
-         span: Datespan.inclusive_up(@date_1),
-         available: false],
-        @institution)
-
-      wrong_species = Available.equine("NEVER RETURNED: wrong species", @date_3)
-      Factory.sql_insert!(:service_gap,
-        [animal_id: wrong_species.id, span: Datespan.customary(@date_3, @date_4)],
-        @institution)
-      :ok
-    end
-      
-    test "fetch animals with/without an overlapping service gap" do
-      rejected = Available.bovine("RETURNED by rejected_at", @date_3)
-      Factory.sql_insert!(:service_gap,
-        [animal_id: rejected.id, span: Datespan.customary(@date_3, @date_4)],
-        @institution)
-        
-      available = Available.bovine("RETURNED by available", @date_3)
-
-      rejected_id = rejected.id
-      actual = Read.rejected_at(:service_gap, @date_3, @bovine_id, @institution)
-      assert [%Animal{id: ^rejected_id}] = actual
-
-      available_id = available.id
-      actual = Read.available(@date_3, @bovine_id, @institution)
-      assert [%Animal{id: ^available_id}] = actual
-    end
   end
 end

@@ -95,7 +95,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   defp task_render(conn, :put_animals, state) do
     animals =
-      AnimalApi.available_after_the_fact(state, institution(conn))
+      ReservationApi.allowable_animals_after_the_fact(state, institution(conn))
     
     task_render(conn, :put_animals, state, animals: animals)
   end

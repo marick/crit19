@@ -35,13 +35,6 @@ defmodule Crit.Setup.AnimalApi do
     |> some(Read).put_updatable_fields(institution)
   end
 
-  def available_after_the_fact(%{species_id: species_id, date: date}, institution) do
-    Enum.concat(
-      [Read.available(date, species_id, institution),
-       Read.rejected_at(:service_gap, %Date{} = date, species_id, institution)])
-    |> Enum.sort_by(&(&1.name))
-  end
-
   def form_changeset(animal), do: Animal.form_changeset(animal)
 
   def update(string_id, attrs, institution) do
