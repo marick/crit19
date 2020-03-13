@@ -59,16 +59,16 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   end
 
 
-  def rejected_at(:service_gap, %Date{} = date, species_id, institution) do
-    Query.available_by_species(date, species_id)
-    |> ServiceGap.narrow_animal_query_to_include(date)
+  def rejected_at(:service_gap, desired, institution) do
+    Query.available_by_species(desired.date, desired.species_id)
+    |> ServiceGap.narrow_animal_query_to_include(desired.date)
     |> Query.ordered
     |> Sql.all(institution)
   end
 
-  def available(date, species_id, institution) do
-    all = Query.available_by_species(date, species_id)
-    blocked = ServiceGap.narrow_animal_query_to_include(all, date)
+  def available(desired, institution) do
+    all = Query.available_by_species(desired.date, desired.species_id)
+    blocked = ServiceGap.narrow_animal_query_to_include(all, desired.date)
 
     Query.subtract(all, blocked)
     |> Query.ordered

@@ -28,14 +28,10 @@ defmodule Crit.Reservations.ReservationApi do
      Enum.map(procedures, &(&1.name))}
   end
 
-  def allowable_animals_after_the_fact(%{species_id: species_id, date: date},
-    institution) do
-
+  def allowable_animals_after_the_fact(desired, institution) do
     Enum.concat(
-      [Read.available(date, species_id, institution),
-       Read.rejected_at(:service_gap, %Date{} = date, species_id, institution)])
+      [Read.available(desired, institution),
+       Read.rejected_at(:service_gap, desired, institution)])
     |> Enum.sort_by(&(&1.name))
   end
-    
-
 end
