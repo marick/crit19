@@ -1,6 +1,5 @@
 defmodule CritWeb.ViewModels.Procedure.Show do
   use Ecto.Schema
-  import Ecto.Changeset
   alias Crit.Setup.Schemas.Procedure
   alias Crit.Setup.InstitutionApi
 

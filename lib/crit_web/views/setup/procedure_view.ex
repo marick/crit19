@@ -1,7 +1,6 @@
 defmodule CritWeb.Setup.ProcedureView do
   use CritWeb, :view
   alias Ecto.Changeset
-  alias CritWeb.Fomantic.ListProducing
 
   def procedure_input(f, changeset) do
     [text_input(f, :name,
