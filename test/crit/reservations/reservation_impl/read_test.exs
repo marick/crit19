@@ -7,36 +7,8 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
   alias Ecto.Timespan
   
   describe "animals that can be reserved" do
-    setup do
-      Available.bovine("NEVER RETURNED: not in service yet", @date_7)
-      Available.bovine("NEVER RETURNED: past out of service date",
-        Datespan.customary(@date_1, @date_2))
-      hard_unavailable_plus_service_gap_unavailability =
-        Factory.sql_insert!(:animal,
-          [name: "NEVER RETURNED: marked 'hard' unavailable (has conflicting sg)",
-           species_id: @bovine_id,
-           span: Datespan.inclusive_up(@date_1),
-           available: false],
-          @institution)
-      Factory.sql_insert!(:service_gap,
-        [animal_id: hard_unavailable_plus_service_gap_unavailability.id,
-         span: Datespan.customary(@date_3, @date_4)],
-        @institution)
-        
-      Factory.sql_insert!(:animal,
-        [name: "NEVER RETURNED: marked 'hard' unavailable",
-         species_id: @bovine_id,
-         span: Datespan.inclusive_up(@date_1),
-         available: false],
-        @institution)
-
-      wrong_species = Available.equine("NEVER RETURNED: wrong species", @date_3)
-      Factory.sql_insert!(:service_gap,
-        [animal_id: wrong_species.id, span: Datespan.customary(@date_3, @date_4)],
-        @institution)
-      :ok
-    end
-
+    # All tests seek available animals with the following characteristics
+    # Note all the test values use @date_3 for the date
     @desired %{
       date: @date_3,
       species_id: @bovine_id,
@@ -45,42 +17,91 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
       span: Timespan.from_date_time_and_duration(@date_3, ~T[10:00:00.000], 240)
     }
 
+    setup :animals_that_will_never_be_returned
+
+    test "fetch animals in service" do
+      Available.bovine("returned", @date_3)
+
+      Read.in_service(@desired, @institution)
+      |> assert_only("returned")
+    end
+
     test "fetch animals with/without an overlapping service gap" do
-      rejected = Available.bovine("RETURNED by rejected_at", @date_3)
-      Factory.sql_insert!(:service_gap,
-        [animal_id: rejected.id, span: Datespan.customary(@date_3, @date_4)],
-        @institution)
-        
-      available = Available.bovine("RETURNED by available", @date_3)
+      (rejected_name = "RETURNED by rejected_at")
+      |> Available.bovine(@date_3)
+      |> service_gap_including_desired_date!
 
-      rejected_id = rejected.id
-      actual = Read.rejected_at(:service_gap, @desired, @institution)
-      assert [%Animal{id: ^rejected_id}] = actual
+      (available_name = "RETURNED by available")
+      |> Available.bovine(@date_3)
 
-      available_id = available.id
-      actual = Read.available(@desired, @institution)
-      assert [%Animal{id: ^available_id}] = actual
+      Read.rejected_at(:service_gap, @desired, @institution)
+      |> assert_only(rejected_name)
+
+      Read.truly_available(@desired, @institution)
+      |> assert_only(available_name)
     end
 
     test "fetch animals with/without an overlapping use" do
-      rejected = "RETURNED by rejected_at"
-      
-      Available.bovine(rejected, @date_1)
-      ReservationFocused.reserved!(@bovine_id, [rejected], ["procedure"],
-        timeslot_id: ReservationFocused.morning_timeslot,
-        date: @date_3)
+      (rejected_name = "RETURNED by `rejected_at`")
+      |> Available.bovine(@date_1)
+      |> reserved_on_desired_date!(ReservationFocused.morning_timeslot)
         
-      available = "RETURNED by available"
-      Available.bovine(available, @date_1)
-      ReservationFocused.reserved!(@bovine_id, [available], ["procedure"],
-        timeslot_id: ReservationFocused.evening_timeslot,
-        date: @date_3)
+      (available_name = "RETURNED by `available`")
+      |> Available.bovine(@date_1)
+      |> reserved_on_desired_date!(ReservationFocused.evening_timeslot)
 
-      actual = Read.rejected_at(:uses, @desired, @institution)
-      assert [%Animal{name: ^rejected}] = actual
+      Read.rejected_at(:uses, @desired, @institution)
+      |> assert_only(rejected_name)
 
-      actual = Read.available(@desired, @institution)
-      assert [%Animal{name: ^available}] = actual
+      Read.truly_available(@desired, @institution)
+      |> assert_only(available_name)
     end
   end
+
+  def hard_unavailable_bovine!(name) do
+    Factory.sql_insert!(:animal,
+      [name: name,
+       species_id: @bovine_id,
+       span: Datespan.inclusive_up(@date_1),
+       available: false],        # This is what makes it "hard"
+      @institution)
+  end
+
+  def reserved_on_desired_date!(animal, timeslot_id) do
+    ReservationFocused.reserved!(@bovine_id, [animal.name], ["procedure"],
+      timeslot_id: timeslot_id,
+      date: @date_3)
+  end
+  
+  defp service_gap_including_desired_date!(animal),
+    do: service_gap!(animal, Datespan.customary(@date_3, @date_4))
+  
+  def service_gap!(animal, span) do 
+    Factory.sql_insert!(:service_gap, [animal_id: animal.id, span: span],
+      @institution)
+  end
+
+  def assert_only(actual, name), 
+    do: assert [%Animal{name: ^name}] = actual
+
+
+  defp animals_that_will_never_be_returned(_) do 
+    Available.bovine("NEVER RETURNED: not in service yet", @date_7)
+    Available.bovine("NEVER RETURNED: desired is past out of service date",
+      Datespan.customary(@date_1, @date_2))
+    
+    # `animal.available == false`
+    hard_unavailable_bovine!("NEVER RETURNED: marked 'hard' unavailable")
+    
+    # This checks that a service gap doesn't cause an
+    # `animal.available == false` animal to be returned.
+    hard_unavailable_bovine!(
+      "NEVER RETURNED: 'hard' unavailable + matching sg")
+      |> service_gap_including_desired_date!
+    
+    Available.equine("NEVER RETURNED: wrong species", @date_3)
+    |> service_gap_including_desired_date!
+    
+    :ok
+  end    
 end

@@ -74,7 +74,16 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     |> Sql.all(institution)
   end
 
-  def available(desired, institution) do
+  def in_service(desired, institution) do
+    Query.available_by_species(desired.date, desired.species_id)
+    |> Query.ordered
+    |> Sql.all(institution)
+  end
+  
+  @doc """
+  The animal is in service, not in a service gap, and not 
+  """
+  def truly_available(desired, institution) do
     all = Query.available_by_species(desired.date, desired.species_id)
     date_blocked = ServiceGap.narrow_animal_query_to_include(all, desired.date)
     timespan_blocked = Use.narrow_animal_query_to_include(all, desired.span)

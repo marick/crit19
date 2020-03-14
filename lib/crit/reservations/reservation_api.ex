@@ -28,10 +28,6 @@ defmodule Crit.Reservations.ReservationApi do
   end
 
   def allowable_animals_after_the_fact(desired, institution) do
-    Enum.concat(
-      [Read.available(desired, institution),
-       Read.rejected_at(:service_gap, desired, institution),
-       Read.rejected_at(:uses, desired, institution)])
-    |> Enum.sort_by(&(&1.name))
+    Read.in_service(desired, institution)
   end
 end
