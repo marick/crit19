@@ -75,16 +75,16 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   
   @doc """
   Produces an animal that can be reserved before the fact:
-  in service, not in a service gap, and not already reserved.
+  in service, not in a service gap, and not already reserved for the desired time.
   (Later, it will not be in a procedure-exclusion range.)
   """
-  def truly_available(%{species_id: species_id, date: date, span: span},
+  def before_the_fact_animals(%{species_id: species_id, date: date, span: span},
     institution) do
     
     base_query = AnimalApi.query_by_in_service_date(date, species_id)
 
-    reducer = fn add_more_sql, query_so_far ->
-      Query.subtract(query_so_far, add_more_sql.(query_so_far))
+    reducer = fn make_restriction_query, query_so_far ->
+      Query.subtract(query_so_far, make_restriction_query.(query_so_far))
     end
     
     date_blocker = &(ServiceGap.narrow_animal_query_by(&1, date))

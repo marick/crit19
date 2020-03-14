@@ -71,7 +71,7 @@ defmodule Crit.Reservations.ReservationApi.AllowableAnimalsTest do
   defp assert_after_the_fact(partial_map) do
     actual =
       desired(partial_map)
-      |> ReservationApi.allowable_animals_after_the_fact(@institution)
+      |> ReservationApi.after_the_fact_animals(@institution)
     
     assert [%{name: @to_be_found_name}, %{name: @sorts_second}] = actual
   end
@@ -79,7 +79,7 @@ defmodule Crit.Reservations.ReservationApi.AllowableAnimalsTest do
   defp refute_after_the_fact(partial_map) do 
     actual =
       desired(partial_map)
-      |> ReservationApi.allowable_animals_after_the_fact(@institution)
+      |> ReservationApi.after_the_fact_animals(@institution)
     assert [] = actual
   end
 end

@@ -37,7 +37,7 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
       Read.rejected_at(:service_gap, @desired, @institution)
       |> assert_only(rejected_name)
 
-      Read.truly_available(@desired, @institution)
+      Read.before_the_fact_animals(@desired, @institution)
       |> assert_only(available_name)
     end
 
@@ -53,7 +53,7 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
       Read.rejected_at(:uses, @desired, @institution)
       |> assert_only(rejected_name)
 
-      Read.truly_available(@desired, @institution)
+      Read.before_the_fact_animals(@desired, @institution)
       |> assert_only(available_name)
     end
   end

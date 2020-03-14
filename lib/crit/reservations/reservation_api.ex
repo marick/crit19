@@ -27,7 +27,7 @@ defmodule Crit.Reservations.ReservationApi do
      Enum.map(procedures, &(&1.name))}
   end
 
-  def allowable_animals_after_the_fact(desired, institution) do
+  def after_the_fact_animals(desired, institution) do
     Read.in_service(desired, institution)
   end
 end
