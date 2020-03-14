@@ -10,6 +10,7 @@ defmodule Crit.Setup.AnimalImpl.Read do
   defmodule Query do
     import Ecto.Query
     alias Crit.Setup.Schemas.Animal
+    import Ecto.Datespan
 
     def start(), do: from a in Animal
 
@@ -27,6 +28,13 @@ defmodule Crit.Setup.AnimalImpl.Read do
 
     def ordered(query) do
       query |> order_by([a], a.name)
+    end
+
+    def available_by_species(%Date{} = date, species_id) do
+      from a in Animal,
+      where: a.species_id == ^species_id,
+      where: a.available == true,
+      where: contains_point_fragment(a.span, ^date)
     end
   end
 

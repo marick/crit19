@@ -2,21 +2,14 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   use Crit.Global.Constants
   import Ecto.Query
   alias Crit.Sql
-  import Ecto.Datespan
-  alias Crit.Setup.Schemas.{ServiceGap,Animal}
+  alias Crit.Setup.AnimalApi
+  alias Crit.Setup.Schemas.ServiceGap
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Reservations.HiddenSchemas.Use
 
   defmodule Query do
     import Ecto.Query
     alias Crit.Reservations.Schemas.Reservation
-
-    def available_by_species(date, species_id) do
-      from a in Animal,
-      where: a.species_id == ^species_id,
-      where: a.available == true,
-      where: contains_point_fragment(a.span, ^date)
-    end
 
     def subtract(all, remove) do
       from a in all,
@@ -61,35 +54,44 @@ defmodule Crit.Reservations.ReservationImpl.Read do
 
 
   def rejected_at(:service_gap, desired, institution) do
-    Query.available_by_species(desired.date, desired.species_id)
-    |> ServiceGap.narrow_animal_query_to_include(desired.date)
+    AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
+    |> ServiceGap.narrow_animal_query_by(desired.date)
     |> Query.ordered
     |> Sql.all(institution)
   end
 
   def rejected_at(:uses, desired, institution) do
-    Query.available_by_species(desired.date, desired.species_id)
-    |> Use.narrow_animal_query_to_include(desired.span)
+    AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
+    |> Use.narrow_animal_query_by(desired.span)
     |> Query.ordered
     |> Sql.all(institution)
   end
 
   def in_service(desired, institution) do
-    Query.available_by_species(desired.date, desired.species_id)
+    AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
     |> Query.ordered
     |> Sql.all(institution)
   end
   
   @doc """
-  The animal is in service, not in a service gap, and not 
+  Produces an animal that can be reserved before the fact:
+  in service, not in a service gap, and not already reserved.
+  (Later, it will not be in a procedure-exclusion range.)
   """
-  def truly_available(desired, institution) do
-    all = Query.available_by_species(desired.date, desired.species_id)
-    date_blocked = ServiceGap.narrow_animal_query_to_include(all, desired.date)
-    timespan_blocked = Use.narrow_animal_query_to_include(all, desired.span)
+  def truly_available(%{species_id: species_id, date: date, span: span},
+    institution) do
+    
+    base_query = AnimalApi.query_by_in_service_date(date, species_id)
 
-    Query.subtract(all, date_blocked)
-    |> Query.subtract(timespan_blocked)
+    reducer = fn add_more_sql, query_so_far ->
+      Query.subtract(query_so_far, add_more_sql.(query_so_far))
+    end
+    
+    date_blocker = &(ServiceGap.narrow_animal_query_by(&1, date))
+    timespan_blocker = &(Use.narrow_animal_query_by(&1, span))
+
+    [date_blocker, timespan_blocker]
+    |> Enum.reduce(base_query, reducer)
     |> Query.ordered
     |> Sql.all(institution)
   end

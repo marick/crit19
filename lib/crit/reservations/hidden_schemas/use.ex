@@ -51,7 +51,7 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
     {animals, procedures}
   end
 
-  def narrow_animal_query_to_include(query, %Ecto.Timespan{} = span) do
+  def narrow_animal_query_by(query, %Ecto.Timespan{} = span) do
     {:ok, range} = Timespan.dump(span)
     
     from a in query,

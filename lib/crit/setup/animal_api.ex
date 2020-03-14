@@ -61,4 +61,6 @@ defmodule Crit.Setup.AnimalApi do
      |> BulkAnimal.changeset(%{})
   end
 
+  def query_by_in_service_date(date, species_id),
+    do: Read.Query.available_by_species(date, species_id)
 end

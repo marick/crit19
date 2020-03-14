@@ -49,7 +49,7 @@ defmodule Crit.Setup.Schemas.ServiceGap do
     end
   end
 
-  def narrow_animal_query_to_include(query, %Date{} = date) do
+  def narrow_animal_query_by(query, %Date{} = date) do
     from a in query,
       join: sg in __MODULE__, on: sg.animal_id == a.id,
       where: contains_point_fragment(sg.span, ^date)
