@@ -55,6 +55,7 @@ defmodule Crit.MixProject do
       {:mockery, "~> 2.3.0", runtime: false},
       {:inflex, "~> 2.0"},
       {:recase, "~> 0.6.0"},
+      {:conjunction, "~> 1.0.2"},       
       {:phoenix_integration, "~> 0.8", only: :test}
     ]
   end
