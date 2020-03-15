@@ -57,6 +57,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
     |> ServiceGap.narrow_animal_query_by(desired.date)
     |> Query.ordered
+    |> distinct(true)
     |> Sql.all(institution)
   end
 
@@ -64,6 +65,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
     |> Use.narrow_animal_query_by(desired.span)
     |> Query.ordered
+    |> distinct(true)
     |> Sql.all(institution)
   end
 
