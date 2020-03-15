@@ -111,5 +111,6 @@ defmodule CritWeb.Assertions.Conn do
   defchain assert_error_flash_has(conn, string_or_regex),
     do: assert flash_error(conn) =~ string_or_regex
 
-  
+  defchain assert_flash(conn, flash_name, string),
+    do: assert flash(conn, flash_name) == string
 end

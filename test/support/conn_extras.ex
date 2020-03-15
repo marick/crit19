@@ -17,6 +17,12 @@ defmodule CritWeb.ConnExtras do
   def flash_info(conn),
     do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
 
+  def flash(conn, atom) when is_atom(atom),
+    do: flash(conn, to_string(atom))
+
+  def flash(conn, string),
+    do: Plug.Conn.get_session(conn, :phoenix_flash)[string]
+
   def standard_blank_error, do: "can&#39;t be blank"
 
   def latest_audit_record(conn), do: Audit.latest(audit_pid(conn))
