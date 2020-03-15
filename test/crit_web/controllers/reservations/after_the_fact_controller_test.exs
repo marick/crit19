@@ -123,7 +123,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
   describe "finishing up" do
     setup %{bossie: bossie} do
-      UserTask.start(%State{
+      state_copy =
+        UserTask.start(%State{
             species_id: @bovine_id,
             date: @date,
             span: @span,
@@ -131,7 +132,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
             task_header: "HEADER",
             responsible_person: "dster",
             chosen_animal_ids: [bossie.id]})
-      :ok
+      [state_copy: state_copy]
     end
 
     test "success", %{conn: conn, procedure: procedure} do
@@ -144,6 +145,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       assert_fields(only, date: @date, timeslot_id: @timeslot_id)
       assert_redirected_to(conn, ReservationController.path(:show, only.id))
       refute UserTask.get(@task_id)
+      assert get_flash(conn, :service_gap_conflicts) == ""
+      assert get_flash(conn, :use_conflicts) == ""
     end
 
     test "you must select at least one procedure", %{conn: conn} do
@@ -160,6 +163,25 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_redirected_to(UnderTest.path(:start))
       |> assert_error_flash_has(UserTask.expiry_message())
+    end
+
+    @tag :skip
+    test "if the animal was already reserved, that's noted",
+      %{conn: conn, state_copy: again, bossie: bossie, procedure: procedure} do
+      params = %{task_id: @task_id,
+                 chosen_procedure_ids: [to_string(procedure.id)]}
+
+      conn = post_to_action(conn, :put_procedures, under(:procedures, params))
+
+      UserTask.start(again)
+
+      conn = post_to_action(conn, :put_procedures, under(:procedures, params))
+      # After the fact, the duplicate reservation is made.
+      [_first, _second] = ReservationApi.on_date(@date, @institution)
+      
+      conn
+      |> assert_flash(:service_gap_conflicts, "")
+      |> assert_flash(:use_conflicts, bossie.name)
     end
   end
 end

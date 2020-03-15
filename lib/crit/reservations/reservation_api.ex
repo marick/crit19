@@ -7,6 +7,10 @@ defmodule Crit.Reservations.ReservationApi do
     Write.create(struct, institution)
   end
 
+  def create_noting_conflicts(struct, institution) do
+    Write.create_noting_conflicts(struct, institution)
+  end
+
   def get!(id, institution) do
     Read.by_id(id, institution)
   end

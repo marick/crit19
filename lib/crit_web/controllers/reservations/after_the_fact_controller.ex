@@ -66,9 +66,13 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     case UserTask.pour_into_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
         state = UserTask.store(new_data)
-        {:ok, reservation} = ReservationApi.create(state, institution(conn))
+        {:ok, reservation, conflicts} =
+          ReservationApi.create_noting_conflicts(state, institution(conn))
         UserTask.delete(state.task_id)
-        redirect(conn, to: ReservationController.path(:show, reservation))
+
+        conn
+        |> note_conflicts(conflicts)
+        |> redirect(to: ReservationController.path(:show, reservation))
 
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))
@@ -79,6 +83,16 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   # ----------------------------------------------------------------------------
+
+  def note_conflicts(conn, conflicts) do
+    namify = fn list ->
+      Enum.map(list, &(&1.name)) |> Conjunction.join("and")
+    end
+
+    conn
+    |> put_flash(:service_gap_conflicts, namify.(conflicts.service_gap))
+    |> put_flash(:use_conflicts, namify.(conflicts.use))
+  end
 
   defp task_expiry_error(conn, message, start_again) do 
     conn

@@ -4,6 +4,16 @@ defmodule Crit.Reservations.ReservationImpl.Write do
   alias Crit.Sql
 
   def create(struct, institution) do
+    struct_to_changeset(struct) |> Sql.insert(institution)
+  end
+
+  def create_noting_conflicts(struct, institution) do
+    {:ok, result} = struct_to_changeset(struct) |> Sql.insert(institution)
+    {:ok, result, %{service_gap: [], use: []}}
+  end
+
+
+  defp struct_to_changeset(struct) do
     uses = 
       Use.cross_product(struct.chosen_animal_ids, struct.chosen_procedure_ids)
     
@@ -11,8 +21,7 @@ defmodule Crit.Reservations.ReservationImpl.Write do
       Map.from_struct(struct)
       |> Map.put(:uses, uses)
 
-    %Reservation{}
-    |> Reservation.changeset(attrs)
-    |> Sql.insert(institution)
-  end  
+    Reservation.changeset(%Reservation{}, attrs)
+  end
+    
 end
