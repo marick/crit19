@@ -20,6 +20,22 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     def ordered(query) do
       query |> order_by([a], a.name)
     end
+
+    def rejected_at(:service_gap, desired) do
+      AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
+      |> ServiceGap.narrow_animal_query_by(desired.date)
+      |> ordered
+      |> distinct(true)
+    end
+    
+    def rejected_at(:uses, desired) do
+      AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
+      |> Use.narrow_animal_query_by(desired.span)
+      |> ordered
+      |> distinct(true)
+    end
+
+    
   end  
 
   # Someday, figure out how to do a single query that orders the
@@ -50,23 +66,6 @@ defmodule Crit.Reservations.ReservationImpl.Read do
       where: r.date <= ^inclusive_last
 
     Sql.all(query, institution)
-  end
-
-
-  def rejected_at(:service_gap, desired, institution) do
-    AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
-    |> ServiceGap.narrow_animal_query_by(desired.date)
-    |> Query.ordered
-    |> distinct(true)
-    |> Sql.all(institution)
-  end
-
-  def rejected_at(:uses, desired, institution) do
-    AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
-    |> Use.narrow_animal_query_by(desired.span)
-    |> Query.ordered
-    |> distinct(true)
-    |> Sql.all(institution)
   end
 
   def in_service(desired, institution) do

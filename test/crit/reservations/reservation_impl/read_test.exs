@@ -5,6 +5,7 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
   alias Ecto.Datespan
   alias Crit.Exemplars.{Available, ReservationFocused}
   alias Ecto.Timespan
+  alias Crit.Sql
   
   describe "animals that can be reserved" do
     # All tests seek available animals with the following characteristics
@@ -34,7 +35,7 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
       (available_name = "RETURNED by available")
       |> Available.bovine(@date_3)
 
-      Read.rejected_at(:service_gap, @desired, @institution)
+      Read.Query.rejected_at(:service_gap, @desired) |> Sql.all(@institution)
       |> assert_only(rejected_name)
 
       Read.before_the_fact_animals(@desired, @institution)
@@ -50,14 +51,14 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
       |> Available.bovine(@date_1)
       |> reserved_on_desired_date!(ReservationFocused.evening_timeslot)
 
-      Read.rejected_at(:uses, @desired, @institution)
+      Read.Query.rejected_at(:uses, @desired) |> Sql.all(@institution)
       |> assert_only(rejected_name)
 
       Read.before_the_fact_animals(@desired, @institution)
       |> assert_only(available_name)
     end
   end
-
+  
   def hard_unavailable_bovine!(name) do
     Factory.sql_insert!(:animal,
       [name: name,

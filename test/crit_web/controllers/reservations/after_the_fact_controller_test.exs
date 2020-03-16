@@ -165,6 +165,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_error_flash_has(UserTask.expiry_message())
     end
 
+    IO.puts "work on this test"
     @tag :skip
     test "if the animal was already reserved, that's noted",
       %{conn: conn, state_copy: again, bossie: bossie, procedure: procedure} do
