@@ -7,6 +7,13 @@ defmodule Crit.Sql.RouteToSchema do
   """
 
   @impl true
+  def adjust(all_but_last_arg, given_opts, institution) do
+    adjusted_opts = given_opts ++ [prefix_opt(institution)]
+    [Repo, all_but_last_arg ++ [adjusted_opts]]
+  end
+
+  
+  @impl true
   def forward(sql_command, all_but_last_arg, given_opts, institution) do
     adjusted_opts = given_opts ++ [prefix_opt(institution)]
     apply(Repo, sql_command, all_but_last_arg ++ [adjusted_opts])

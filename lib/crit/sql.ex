@@ -3,8 +3,7 @@ defmodule Crit.Sql do
   import Crit.Setup.InstitutionServer, only: [server: 1]
 
   def all(queryable, opts \\ [], short_name) do
-    GenServer.call(server(short_name),
-      {:sql, :all, [queryable], opts})
+    run_modified(short_name, :all, {[queryable], opts})
   end
 
   def delete_all(queryable, opts \\ [], short_name) do
@@ -55,6 +54,14 @@ defmodule Crit.Sql do
   def update(changeset, opts \\ [], short_name) do
     GenServer.call(server(short_name),
       {:sql, :update, [changeset], opts})
+  end
+
+  defp run_modified(short_name, sql_command, data_for_server) do
+    command = Tuple.insert_at(data_for_server, 0, :adjust)
+    [repo, arglist] = 
+      GenServer.call(server(short_name), command)
+
+    apply(repo, sql_command, arglist)
   end
 
 

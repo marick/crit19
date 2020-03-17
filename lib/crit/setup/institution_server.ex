@@ -72,6 +72,13 @@ defmodule Crit.Setup.InstitutionServer do
     {:reply, retval, state}
   end
 
+  @impl true
+  def handle_call({:adjust, all_but_last_arg, given_opts}, _from, state) do
+    retval =
+      state.router.adjust(all_but_last_arg, given_opts, state.institution)
+    {:reply, retval, state}
+  end
+  
   # ----------------------------------------------------------------------------
   # Util
   defp new_state(institution) do

@@ -7,6 +7,11 @@ defmodule Crit.Sql.RouteToRepo do
   """
 
   @impl true
+  def adjust(_all_but_last_arg, _given_opts, _institution) do
+    :unimplemented
+  end
+
+  @impl true
   def forward(_sql_command, _all_but_last_arg, _given_opts, _institution) do
     :unimplemented
   end
