@@ -63,4 +63,7 @@ defmodule Crit.Setup.AnimalApi do
 
   def query_by_in_service_date(date, species_id),
     do: Read.Query.available_by_species(date, species_id)
+
+  def ids_to_query(ids),
+    do: Read.Query.ids_to_query(ids)
 end

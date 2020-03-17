@@ -36,6 +36,12 @@ defmodule Crit.Setup.AnimalImpl.Read do
       where: a.available == true,
       where: contains_point_fragment(a.span, ^date)
     end
+
+    def ids_to_query(ids) do
+      from a in Animal,
+        where: a.id in ^ids
+    end
+      
   end
 
   def one(where, institution) do
