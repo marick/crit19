@@ -2,6 +2,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   use Crit.Global.Constants
   import Ecto.Query
   alias Crit.Sql
+  alias Crit.Sql.CommonQuery
   alias Crit.Setup.AnimalApi
   alias Crit.Setup.Schemas.ServiceGap
   alias Crit.Reservations.Schemas.Reservation
@@ -17,22 +18,16 @@ defmodule Crit.Reservations.ReservationImpl.Read do
         where: is_nil(sa.name)
     end
 
-    def ordered(query) do
-      query |> order_by([a], a.name)
-    end
-
     def rejected_at(:service_gap, desired) do
       AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
       |> ServiceGap.narrow_animal_query_by(desired.date)
-      |> ordered
-      |> distinct(true)
+      |> CommonQuery.for_name_list
     end
     
     def rejected_at(:uses, desired) do
       AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
       |> Use.narrow_animal_query_by(desired.span)
-      |> ordered
-      |> distinct(true)
+      |> CommonQuery.for_name_list
     end
 
     
@@ -70,7 +65,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
 
   def in_service(desired, institution) do
     AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
-    |> Query.ordered
+    |> CommonQuery.for_name_list
     |> Sql.all(institution)
   end
   
