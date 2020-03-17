@@ -12,12 +12,6 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     import Ecto.Query
     alias Crit.Reservations.Schemas.Reservation
 
-    def subtract(all, remove) do
-      from a in all,
-        left_join: sa in subquery(remove), on: a.id == sa.id,
-        where: is_nil(sa.name)
-    end
-
     def rejected_at(:service_gap, desired) do
       AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
       |> ServiceGap.narrow_animal_query_by(desired.date)
@@ -29,8 +23,6 @@ defmodule Crit.Reservations.ReservationImpl.Read do
       |> Use.narrow_animal_query_by(desired.span)
       |> CommonQuery.for_name_list
     end
-
-    
   end  
 
   # Someday, figure out how to do a single query that orders the
@@ -80,7 +72,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     base_query = AnimalApi.query_by_in_service_date(date, species_id)
 
     reducer = fn make_restriction_query, query_so_far ->
-      Query.subtract(query_so_far, make_restriction_query.(query_so_far))
+      CommonQuery.subtract(query_so_far, make_restriction_query.(query_so_far))
     end
     
     date_blocker = &(ServiceGap.narrow_animal_query_by(&1, date))
@@ -88,7 +80,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
 
     [date_blocker, timespan_blocker]
     |> Enum.reduce(base_query, reducer)
-    |> Query.ordered
+    |> CommonQuery.for_name_list
     |> Sql.all(institution)
   end
 end
