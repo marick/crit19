@@ -7,6 +7,7 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
   alias Crit.Sql
   import Ecto.Timespan
   alias Ecto.Timespan
+  alias Crit.Sql.CommonQuery
 
   schema "uses" do
     belongs_to :animal, Animal
@@ -58,5 +59,12 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
       join: u in __MODULE__, on: u.animal_id == a.id,
       join: r in Reservation, on: u.reservation_id == r.id,
       where: overlaps_fragment(r.span, ^range)
-  end    
+  end
+
+  def unavailable_by(animal_query, %Ecto.Timespan{} = span, institution) do
+    animal_query
+    |> narrow_animal_query_by(span)
+    |> CommonQuery.for_name_list
+    |> Sql.all(institution)
+  end
 end
