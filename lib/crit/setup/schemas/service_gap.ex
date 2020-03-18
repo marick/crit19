@@ -7,7 +7,6 @@ defmodule Crit.Setup.Schemas.ServiceGap do
   alias Crit.FieldConverters.FromSpan
   import Ecto.Query
   import Ecto.Datespan
-  alias Crit.Setup.Schemas.Animal
   alias Crit.Sql
   alias Crit.Sql.CommonQuery
   

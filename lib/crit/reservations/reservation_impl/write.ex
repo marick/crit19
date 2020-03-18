@@ -1,6 +1,6 @@
 defmodule Crit.Reservations.ReservationImpl.Write do
   alias Crit.Reservations.HiddenSchemas.Use
-  alias Crit.Setup.Schemas.{ServiceGap,Animal}
+  alias Crit.Setup.Schemas.ServiceGap
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Sql
   alias Ecto.Multi
@@ -11,7 +11,6 @@ defmodule Crit.Reservations.ReservationImpl.Write do
   end
 
   def create_noting_conflicts(struct, institution) do
-    import Ecto.Query
     animals_query = AnimalApi.ids_to_query(struct.chosen_animal_ids)
 
     service_gap_animals_fn = fn _repo, _so_far ->
