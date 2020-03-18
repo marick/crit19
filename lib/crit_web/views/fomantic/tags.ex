@@ -19,4 +19,5 @@ defmodule CritWeb.Fomantic.Tags do
   def field(contents), do: div_class("field", contents)
   def fields(contents), do: div_class("fields", contents)
   def td(contents), do: just_tag("td", contents)
+  def li(contents), do: just_tag("li", contents)
 end
