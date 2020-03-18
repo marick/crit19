@@ -11,17 +11,18 @@ defmodule CritWeb.ConnExtras do
 
   # CONN GETTERS
 
-  def flash_error(conn),
-    do: Plug.Conn.get_session(conn, :phoenix_flash)["error"]
+  defp stringify({:safe, _} = arg), do: html_version(arg)
+  defp stringify(arg) when is_binary(arg), do: arg
 
-  def flash_info(conn),
-    do: Plug.Conn.get_session(conn, :phoenix_flash)["info"]
+  def flash(conn), do: Plug.Conn.get_session(conn, :phoenix_flash)
+
+  def flash_error(conn), do: flash(conn)["error"] |> stringify
+
+  def flash_info(conn), do: flash(conn)["info"] |> stringify
 
   def flash(conn, atom) when is_atom(atom),
-    do: flash(conn, to_string(atom))
-
-  def flash(conn, string),
-    do: Plug.Conn.get_session(conn, :phoenix_flash)[string]
+    do: flash(conn, to_string(atom)) |> stringify
+  def flash(conn, string), do: flash(conn)[string]
 
   def standard_blank_error, do: "can&#39;t be blank"
 
@@ -65,7 +66,6 @@ defmodule CritWeb.ConnExtras do
   """
   def html_version(string),
     do: string |> HTML.html_escape |> HTML.safe_to_string
-
 
   def inspect_html(conn) do
     IO.puts(conn.resp_body)

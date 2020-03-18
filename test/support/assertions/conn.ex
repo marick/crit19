@@ -103,7 +103,10 @@ defmodule CritWeb.Assertions.Conn do
   ### Flash
 
   defchain assert_no_flash(conn),
-    do: refute(Plug.Conn.get_session(conn, :phoenix_flash))
+    do: refute flash(conn)
+
+  defchain assert_no_flash(conn, flash_name),
+    do: refute flash(conn, flash_name)
 
   defchain assert_info_flash_has(conn, string_or_regex),
     do: assert flash_info(conn) =~ string_or_regex
