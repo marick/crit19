@@ -19,5 +19,12 @@ defmodule CritWeb.Reservations.AfterTheFactView do
     </h2>
     """
   end
-  
+
+  def describe_creation(conflicts) do
+    ~E"""
+       <div class="ui positive attached message"> 
+         The reservation was created.
+       </div>
+    """
+  end
 end

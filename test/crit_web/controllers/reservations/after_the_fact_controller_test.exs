@@ -8,6 +8,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias Crit.Setup.InstitutionApi
   alias Crit.Reservations.ReservationApi
   alias Crit.Exemplars.Available
+  alias Ecto.Datespan
 
   setup :logged_in_as_reservation_manager
 
@@ -145,8 +146,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       assert_fields(only, date: @date, timeslot_id: @timeslot_id)
       assert_redirected_to(conn, ReservationController.path(:show, only.id))
       refute UserTask.get(@task_id)
-      assert get_flash(conn, :service_gap_conflicts) == ""
-      assert get_flash(conn, :use_conflicts) == ""
+      assert_info_flash_has(conn, "reservation was created")
     end
 
     test "you must select at least one procedure", %{conn: conn} do
@@ -165,7 +165,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_error_flash_has(UserTask.expiry_message())
     end
 
-    IO.puts "work on this test"
     @tag :skip
     test "if the animal was already reserved, that's noted",
       %{conn: conn, state_copy: again, bossie: bossie, procedure: procedure} do
@@ -181,8 +180,27 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       [_first, _second] = ReservationApi.on_date(@date, @institution)
       
       conn
-      |> assert_flash(:service_gap_conflicts, "")
-      |> assert_flash(:use_conflicts, bossie.name)
+      |> assert_info_flash_has("created despite")
+      |> assert_info_flash_has(bossie.name)
     end
+
+    @tag :skip
+    test "if the animal had a service gap, that's noted",
+      %{conn: conn, bossie: bossie, procedure: procedure} do
+      params = %{task_id: @task_id,
+                 chosen_procedure_ids: [to_string(procedure.id)]}
+
+      Factory.sql_insert!(:service_gap,
+        [animal_id: bossie.id,
+         span: Datespan.customary(@date, Date.add(@date, 1))],
+      @institution)
+
+      conn = post_to_action(conn, :put_procedures, under(:procedures, params))
+
+      conn
+      |> assert_info_flash_has("created despite")
+      |> assert_info_flash_has(bossie.name)
+    end
+    
   end
 end

@@ -1,3 +1,5 @@
 <div class="ui main center aligned text container">
+
+  <%= get_flash(@conn, :info) %>
   <%= render "_show_one_reservation.html", assigns %>
 </div>

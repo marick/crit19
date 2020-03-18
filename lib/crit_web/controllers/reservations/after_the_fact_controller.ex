@@ -71,7 +71,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         UserTask.delete(state.task_id)
 
         conn
-        |> note_conflicts(conflicts)
+        |> put_flash(:info, View.describe_creation(conflicts))
         |> redirect(to: ReservationController.path(:show, reservation))
 
       {:task_expiry, message} ->
@@ -83,16 +83,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   # ----------------------------------------------------------------------------
-
-  def note_conflicts(conn, conflicts) do
-    namify = fn list ->
-      Enum.map(list, &(&1.name)) |> Conjunction.join("and")
-    end
-
-    conn
-    |> put_flash(:service_gap_conflicts, namify.(conflicts.service_gap))
-    |> put_flash(:use_conflicts, namify.(conflicts.use))
-  end
 
   defp task_expiry_error(conn, message, start_again) do 
     conn
