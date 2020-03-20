@@ -78,7 +78,7 @@ defmodule Crit.Exemplars.ReservationFocused do
       |> Sql.all(@institution)
     
     existing_ids = EnumX.ids(existing)
-    existing_names = Enum.map(existing, &(&1.name))
+    existing_names = EnumX.names(existing)
 
     needed = Enum.reject(names, fn name ->
       Enum.member?(existing_names, name)

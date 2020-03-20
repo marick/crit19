@@ -86,7 +86,7 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
 
       ordering = 
         Read.ids_to_animals([id1, id2, id3], @institution)
-        |> Enum.map(&(&1.name))
+        |> EnumX.names
 
       assert ordering == ["aaaaa", "m", "ZZZ"]
     end
@@ -100,7 +100,7 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
         Factory.sql_insert!(:animal, [name: name], @institution)
       end
 
-      as_read = Read.all(@institution) |> Enum.map(&(&1.name))
+      as_read = Read.all(@institution) |> EnumX.names
       sorted = Enum.sort(as_read)
 
       assert as_read == sorted

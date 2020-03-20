@@ -23,6 +23,10 @@ defmodule EnumX do
     |> Enum.sort
   end
 
+  def names(named), do: Enum.map(named, &(&1.name))
+
+  def all_empty?(list_of_enums),
+    do: Enum.all?(list_of_enums, &Enum.empty?/1)
 
   def pairs(maps, first, second),
     do: Enum.map(maps, &({Map.fetch!(&1, first), Map.fetch!(&1, second)}))

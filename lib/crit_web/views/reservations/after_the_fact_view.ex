@@ -11,10 +11,8 @@ defmodule CritWeb.Reservations.AfterTheFactView do
     """
   end
 
-  defp names(animals), do: Enum.map(animals, &(&1.name))  
-
   def animals_header(animals) do
-    names = Conjunction.join(names(animals), "and")
+    names = Conjunction.join(EnumX.names(animals), "and")
     ~E"""
     <h2 class="ui center aligned header">
       <%= names %>
@@ -23,7 +21,7 @@ defmodule CritWeb.Reservations.AfterTheFactView do
   end
 
   def describe_creation(conflicts) do
-    if Enum.all?(Map.values(conflicts), &Enum.empty?/1) do
+    if EnumX.all_empty?(Map.values(conflicts)) do
       ~E"""
       <div class="ui positive attached message"> 
         The reservation was created.
@@ -44,6 +42,8 @@ defmodule CritWeb.Reservations.AfterTheFactView do
 
   def li_was_where(_, []), do: []
 
+  IO.puts("Better names than :service_gap and :use")
+  
   def li_was_where(:service_gap, animal_list) do
     was_where(animal_list, "supposed to be out of service on the reservation date.")
     |> li
@@ -61,6 +61,6 @@ defmodule CritWeb.Reservations.AfterTheFactView do
         2 -> "were"
       end
 
-    "#{Conjunction.join(names(animal_list))} #{was_where} #{suffix}"
+    "#{Conjunction.join(EnumX.names(animal_list))} #{was_where} #{suffix}"
   end
 end

@@ -77,7 +77,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   end
 
   defp assert_names_are(actual, expected),
-    do: assert expected == Enum.map(actual, &(&1.name))
+    do: assert expected == EnumX.names(actual)
 
   # ------------------------------------------------------------------------
 
@@ -86,8 +86,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   end
 
   defp reserved_on_desired_date!(animals, date, timeslot_id) when is_list(animals) do
-    names = Enum.map(animals, &(&1.name))
-    ReservationFocused.reserved!(@bovine_id, names, ["procedure"],
+    ReservationFocused.reserved!(@bovine_id, EnumX.names(animals), ["procedure"],
       timeslot_id: timeslot_id,
       date: date)
   end
