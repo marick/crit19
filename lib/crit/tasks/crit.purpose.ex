@@ -40,7 +40,7 @@ defmodule Mix.Tasks.Crit.Purpose do
 
     IO.puts("<!-- Purpose: <%= Purpose.#{as_defname} %> -->")
     IO.puts("")
-    IO.puts("      assert_purpose conn, #{as_defname}()")
+    IO.puts("      |> assert_purpose(#{as_defname}()")
     
     
     # File.write(
