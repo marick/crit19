@@ -73,26 +73,70 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_user_sees(@already_taken)
     end
 
-    @tag :skip
     test "a duplicate prevents valid procedures from being inserted",
-      %{conn: _conn} do
+      %{conn: conn} do
+      
+      first_params = params([{"duplicate", [@bovine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, first_params))
+      |> assert_purpose(displaying_procedure_summaries())
+
+      second_params = params([{"duplicate", [@bovine_id]},
+                              {"non-duplicate", [@bovine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, second_params))
+      |> assert_purpose(show_procedure_creation_form())
+      |> assert_user_sees(@already_taken)
+
+      assert [%{name: "duplicate"}] =
+        ProcedureApi.all_by_species(@bovine_id, @institution)
     end
 
-    @tag :skip
     test "only one error message for a two-species procedure",
-      %{conn: _conn} do
+      %{conn: conn} do
+
+      params = params([{"duplicate", [@bovine_id, @equine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      
+      html =
+        post_to_action(conn, :bulk_create, under(:procedures, params))
+        |> html_response(200)
+
+      assert [[@already_taken]] == Regex.scan(Regex.compile!(@already_taken), html)
     end
 
-    @tag :skip
     test "two duplicate names in same form", 
-      %{conn: _conn} do
+    %{conn: conn} do
+
+      params = params([{"duplicate 1", [@bovine_id, @equine_id]},
+                       {"duplicate 2", [@bovine_id, @equine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, params))
+      
+      html =
+        post_to_action(conn, :bulk_create, under(:procedures, params))
+        |> html_response(200)
+
+      # Because the error is caught by a database constraint, the error
+      # message only appears in the first form.
+
+      regex = Regex.compile!(@already_taken <> ".*duplicate 2", "s")
+      assert [[_]] = Regex.scan(regex, html)
     end
 
-    @tag :skip
     test "it is OK if the duplicate name is for a different species",
-      %{conn: _conn} do
+      %{conn: conn} do
+
+      first_params = params([{"duplicate", [@bovine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, first_params))
+      |> assert_purpose(displaying_procedure_summaries())
+
+      second_params = params([{"duplicate", [@equine_id]}])
+      post_to_action(conn, :bulk_create, under(:procedures, second_params))
+      |> assert_purpose(displaying_procedure_summaries())
+
+      assert [%{name: "duplicate"}] =
+        ProcedureApi.all_by_species(@bovine_id, @institution)
+      assert [%{name: "duplicate"}] =
+        ProcedureApi.all_by_species(@equine_id, @institution)
     end
-    
   end
 
   defp params(list) do
