@@ -26,7 +26,7 @@ defmodule Crit.Global.Constants do
                                  duration: 4 * 60},
                                %{name: "evening (6-midnight)",
                                  start: ~T[18:00:00],
-                                 duration: 5 * 60},
+                                 duration: 6 * 60},
                                %{name: "all day (8-5)",
                                  start: ~T[08:00:00],
                                  duration: 9 * 60},
