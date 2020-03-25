@@ -22,3 +22,5 @@ config :phoenix_integration,
 
 ## Within-app interfaces
 
+config :pbkdf2_elixir,
+  rounds: 1    # make tests faster
