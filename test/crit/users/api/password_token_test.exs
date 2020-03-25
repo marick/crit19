@@ -84,6 +84,14 @@ defmodule Crit.Users.Api.PasswordTokenTest do
       # The token is not deleted.
       assert Users.one_token(token.text)
     end
+
+    # User could hit back and redeem the token twice. Can't do any harm. 
+    test "redeeming a password token twice",
+      %{valid_password: valid_password, user: user, token: token} do
+      params = PasswordFocused.params(valid_password, valid_password)
+      Users.redeem_password_token(token, params)
+      assert_same_user(user, Users.redeem_password_token(token, params))
+    end
   end
 
   describe "deleting a token" do

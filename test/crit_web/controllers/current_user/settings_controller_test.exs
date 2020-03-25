@@ -58,7 +58,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_ok
     end
 
-    @tag :skip
+
     test "something is wrong with the password",
       %{conn: conn, user: user, token_text: token_text} do
 
@@ -75,6 +75,18 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_error
       
     end
-  end
 
+    test "the token is missing", %{conn: conn, user: user} do
+      # This could happen if the user submitted the change-password form
+      # twice. It's a no-op
+      action__set_fresh_password(conn, @valid_password, @valid_password)
+      # Hits back button...
+      action__set_fresh_password(conn, @valid_password, @valid_password)
+      |> assert_logged_in(user, @institution)
+      |> assert_no_token_in_session
+
+      |> assert_redirected_home
+      |> assert_info_flash_has("You have been logged in")
+    end
+  end
 end
