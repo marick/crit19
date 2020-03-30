@@ -1,4 +1,4 @@
-defmodule Crit.Users.Internal.PasswordTest do
+defmodule Crit.Users.Schemas.PasswordTest do
   use Crit.DataCase, async: true
   alias Crit.Users.Schemas.Password
   alias Ecto.ChangesetX
