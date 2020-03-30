@@ -3,7 +3,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
   import Crit.Assertions.User
   alias Crit.Users
   alias Crit.Users.User
-  alias Crit.Users.PasswordToken
+  alias Crit.Users.Schemas.PasswordToken
   alias Crit.Sql
   alias Crit.Repo
   alias Crit.Users.UserHavingToken, as: UT

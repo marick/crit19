@@ -1,7 +1,7 @@
 defmodule Crit.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Users.PermissionList
+  alias Crit.Users.Schemas.PermissionList
   alias Crit.Ecto.TrimmedString
 
   schema "users" do

@@ -1,4 +1,4 @@
-defmodule Crit.Users.PasswordToken do
+defmodule Crit.Users.Schemas.PasswordToken do
   use Ecto.Schema
   alias Crit.EmailToken
   import Ecto.Changeset
@@ -35,7 +35,7 @@ defmodule Crit.Users.PasswordToken do
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Users.PasswordToken
+    alias Crit.Users.Schemas.PasswordToken
 
     def by(opts),
       do: from PasswordToken, where: ^opts

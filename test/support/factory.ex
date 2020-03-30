@@ -1,7 +1,8 @@
 defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   use Crit.Global.Constants
-  alias Crit.Users.{User,PermissionList}
+  alias Crit.Users.User
+  alias Crit.Users.Schemas.PermissionList
   alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure}
   alias Crit.Sql
   alias Crit.Exemplars

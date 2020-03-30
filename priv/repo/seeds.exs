@@ -11,7 +11,8 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Crit.Users
-alias Crit.Users.{User,PermissionList}
+alias Crit.Users.User
+alias Crit.Users.Schemas.PermissionList
 alias Crit.Sql
 alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Setup.{AnimalApi}

@@ -1,4 +1,4 @@
-defmodule Crit.Users.Password do
+defmodule Crit.Users.Schemas.Password do
   use Ecto.Schema
   alias Crit.Users.User
   import Ecto.Changeset
@@ -67,7 +67,7 @@ defmodule Crit.Users.Password do
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Users.Password
+    alias Crit.Users.Schemas.Password
 
     def by_auth_id(auth_id) do
       from p in Password,

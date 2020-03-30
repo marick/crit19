@@ -1,6 +1,6 @@
 defmodule Crit.Users.UserHavingToken do
   alias Crit.Users.User
-  alias Crit.Users.PasswordToken
+  alias Crit.Users.Schemas.PasswordToken
   
   defstruct [:user, :token]
 

@@ -1,6 +1,6 @@
 defmodule Crit.Users.Internal.PasswordTest do
   use Crit.DataCase, async: true
-  alias Crit.Users.Password
+  alias Crit.Users.Schemas.Password
   alias Ecto.ChangesetX
   alias Faker.String
   alias Crit.Exemplars.PasswordFocused

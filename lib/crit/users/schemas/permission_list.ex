@@ -1,4 +1,4 @@
-defmodule Crit.Users.PermissionList do
+defmodule Crit.Users.Schemas.PermissionList do
   use Ecto.Schema
   import Ecto.Changeset
 

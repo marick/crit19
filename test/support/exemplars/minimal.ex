@@ -8,7 +8,7 @@ defmodule Crit.Exemplars.Minimal do
   use ExUnit.CaseTemplate
   use Crit.Global.Constants
   alias Crit.Factory
-  alias Crit.Users.{Password, PasswordToken}
+  alias Crit.Users.Schemas.{Password, PasswordToken}
   alias Crit.Sql
 
   def user(opts \\ []) do

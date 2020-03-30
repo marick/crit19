@@ -1,7 +1,7 @@
 defmodule CritWeb.Reservations.BlockingAuthorizationTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.{AfterTheFactController,ReservationController}
-  alias Crit.Users.PermissionList
+  alias Crit.Users.Schemas.PermissionList
 
   test "how an unlogged-in user is blocked", %{conn: conn} do
     assert_authorization_failures(conn,

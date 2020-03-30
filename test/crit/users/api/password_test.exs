@@ -2,7 +2,7 @@ defmodule Crit.Users.Api.PasswordTest do
   use Crit.DataCase
   import Crit.Assertions.User
   alias Crit.Users
-  alias Crit.Users.Password
+  alias Crit.Users.Schemas.Password
   alias Crit.Exemplars.{PasswordFocused, Minimal}
 
   @moduledoc """

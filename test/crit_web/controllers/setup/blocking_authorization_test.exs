@@ -1,7 +1,7 @@
 defmodule CritWeb.Setup.BlockingAuthorizationTest do
   use CritWeb.ConnCase
   alias CritWeb.Setup.AnimalController
-  alias Crit.Users.PermissionList
+  alias Crit.Users.Schemas.PermissionList
 
   test "how an unlogged-in user is blocked", %{conn: conn} do
     assert_authorization_failures(conn,

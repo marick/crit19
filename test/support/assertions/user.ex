@@ -2,7 +2,8 @@ defmodule Crit.Assertions.User do
   use Crit.Global.Constants
   import Crit.Assertions.Defchain
   import ExUnit.Assertions
-  alias Crit.Users.{PermissionList, UniqueId}
+  alias Crit.Users.Schemas.PermissionList
+  alias Crit.Users.UniqueId
   alias Crit.Users.User
 
   defchain assert_without_permissions(user), 

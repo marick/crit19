@@ -2,7 +2,7 @@ defmodule Crit.Users.Api.UserTest do
   use Crit.DataCase
   alias Crit.Users
   alias Ecto.ChangesetX
-  alias Crit.Users.PermissionList
+  alias Crit.Users.Schemas.PermissionList
   alias Crit.Exemplars.{TokenFocused, Minimal}
 
   # Factor out verbosity. Is also a handy list of what's tested here

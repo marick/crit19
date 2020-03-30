@@ -1,7 +1,7 @@
 defmodule CritWeb.UserManagement.BlockingAuthorizationTest do
   use CritWeb.ConnCase
   alias CritWeb.UserManagement.UserController
-  alias Crit.Users.PermissionList
+  alias Crit.Users.Schemas.PermissionList
   
   test "how an unlogged-in user is blocked", %{conn: conn} do
 
