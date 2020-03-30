@@ -4,7 +4,7 @@ defmodule CritWeb.UserManagement.UserController do
   import CritWeb.Plugs.Authorize
   import Phoenix.HTML.Link, only: [link: 2]
   import Phoenix.HTML, only: [raw: 1, safe_to_string: 1]
-  alias Crit.Users
+  alias Crit.Users.UserApi
   alias CritWeb.Audit
   alias Crit.Users.UserHavingToken, as: UT
 
@@ -18,16 +18,16 @@ defmodule CritWeb.UserManagement.UserController do
   end
 
   def index(conn, _params) do
-    users = Users.active_users(institution(conn))
+    users = UserApi.active_users(institution(conn))
     render(conn, "index.html", users: users)
   end
 
   def new(conn, _params) do
-    render(conn, "new.html", changeset: Users.fresh_user_changeset)
+    render(conn, "new.html", changeset: UserApi.fresh_user_changeset)
   end
 
   def create(conn, %{"user" => user_params}) do
-    case Users.create_unactivated_user(user_params, institution(conn)) do
+    case UserApi.create_unactivated_user(user_params, institution(conn)) do
       {:ok, %UT{} = tokenized} ->
         flash = instructions_in_lieue_of_email(conn, tokenized)
         conn
@@ -42,22 +42,22 @@ defmodule CritWeb.UserManagement.UserController do
 
   def show(conn, %{"id" => _id}) do
     not_done(conn)
-    # user = Users.get_user!(id)
+    # user = UserApi.get_user!(id)
     # render(conn, "show.html", user: user)
   end
 
   def edit(conn, %{"id" => _id}) do
     not_done(conn)
-    # user = Users.get_user!(id)
-    # changeset = Users.change_user(user)
+    # user = UserApi.get_user!(id)
+    # changeset = UserApi.change_user(user)
     # render(conn, "edit.html", user: user, changeset: changeset)
   end
 
   def update(conn, %{"id" => _id, "user" => _user_params}) do
     not_done(conn)
-    # user = Users.get_user!(id)
+    # user = UserApi.get_user!(id)
 
-    # case Users.update_user(user, user_params) do
+    # case UserApi.update_user(user, user_params) do
     #   {:ok, user} ->
     #     conn
     #     |> put_flash(:info, "User updated successfully.")

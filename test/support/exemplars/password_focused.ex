@@ -1,7 +1,7 @@
 defmodule Crit.Exemplars.PasswordFocused do
   use ExUnit.CaseTemplate
   alias Crit.Users.Schemas.Password
-  alias Crit.Users
+  alias Crit.Users.UserApi
   use Crit.Global.Constants
   alias Crit.Exemplars.Minimal
 
@@ -16,7 +16,7 @@ defmodule Crit.Exemplars.PasswordFocused do
 
   def user(password) do
     user = Minimal.user()
-    assert :ok == Users.set_password(user.auth_id, params(password, password), @institution)
+    assert :ok == UserApi.set_password(user.auth_id, params(password, password), @institution)
     assert Password.count_for(user.auth_id, @institution) == 1
     user
   end

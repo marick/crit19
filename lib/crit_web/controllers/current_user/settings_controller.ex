@@ -1,7 +1,7 @@
 defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :current_user_settings_path
-  alias Crit.Users
+  alias Crit.Users.UserApi
   alias Crit.Users.UniqueId
   alias Ecto.Changeset
   alias CritWeb.{PublicController, CurrentUser.SessionController}
@@ -9,11 +9,11 @@ defmodule CritWeb.CurrentUser.SettingsController do
   # No authentication is needed yet
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
-    case Users.one_token(token_text) do
+    case UserApi.one_token(token_text) do
       {:ok, token} ->
         conn
         |> remember_token(token)
-        |> render_password_creation_form(Users.fresh_password_changeset())
+        |> render_password_creation_form(UserApi.fresh_password_changeset())
       {:error, _} -> 
         conn
         |> put_flash(:error, "The account creation token does not exist. (It has probably expired.)")
@@ -22,7 +22,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   end
 
   def set_fresh_password(conn, %{"password" => params}) do
-    case Users.redeem_password_token(token(conn), params) do
+    case UserApi.redeem_password_token(token(conn), params) do
       {:ok, %UniqueId{} = unique_id} ->
         conn
         |> forget_token

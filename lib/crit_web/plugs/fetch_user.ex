@@ -1,5 +1,6 @@
 defmodule CritWeb.Plugs.FetchUser do
   import CritWeb.Plugs.Accessors
+  alias Crit.Users.UserApi
 
   def init(opts), do: opts
 
@@ -12,7 +13,7 @@ defmodule CritWeb.Plugs.FetchUser do
         conn
 
       user = id &&
-          Crit.Users.permissioned_user_from_id(id, institution(conn)) -> 
+          UserApi.permissioned_user_from_id(id, institution(conn)) -> 
         put_current_user(conn, user)
 
       true ->

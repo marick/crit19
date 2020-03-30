@@ -1,14 +1,14 @@
 defmodule Crit.Exemplars.TokenFocused do
   use ExUnit.CaseTemplate
   use Crit.Global.Constants
-  alias Crit.Users
+  alias Crit.Users.UserApi
   alias Crit.Factory
   alias Crit.Users.UserHavingToken, as: UT
 
 
   def possible_user(attrs \\ []) do
     params = Factory.string_params_for(:user, attrs)
-    Users.create_unactivated_user(params, @institution)
+    UserApi.create_unactivated_user(params, @institution)
   end
 
   def user(attrs \\ []) do

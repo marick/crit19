@@ -3,13 +3,13 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
-  alias Crit.Users
+  alias Crit.Users.UserApi
 
 
   defp session_with_unactivated_user(%{conn: conn}) do
     {:ok, %{user: user, token: token}} =
       Factory.string_params_for(:user)
-      |> Users.create_unactivated_user(@institution)
+      |> UserApi.create_unactivated_user(@institution)
     
     conn = Plug.Test.init_test_session(conn, token: token)
     
@@ -54,7 +54,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_redirected_home
       |> assert_info_flash_has("You have been logged in")
 
-      Users.attempt_login(user.auth_id, @valid_password, @institution)
+      UserApi.attempt_login(user.auth_id, @valid_password, @institution)
       |> assert_ok
     end
 
@@ -71,7 +71,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_user_sees(Common.form_error_message())
       |> assert_user_sees("should be the same as the new password")
 
-      Users.attempt_login(user.auth_id, @valid_password, @institution)
+      UserApi.attempt_login(user.auth_id, @valid_password, @institution)
       |> assert_error
       
     end

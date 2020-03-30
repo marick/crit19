@@ -1,6 +1,6 @@
 defmodule Crit.Users.Api.UserTest do
   use Crit.DataCase
-  alias Crit.Users
+  alias Crit.Users.UserApi
   alias Ecto.ChangesetX
   alias Crit.Users.Schemas.PermissionList
   alias Crit.Exemplars.{TokenFocused, Minimal}
@@ -8,13 +8,13 @@ defmodule Crit.Users.Api.UserTest do
   # Factor out verbosity. Is also a handy list of what's tested here
   # 
   def ut_permissioned_user(id),
-    do: Users.permissioned_user_from_id(id, @institution)
+    do: UserApi.permissioned_user_from_id(id, @institution)
 
   def ut_active_users(),
-    do: Users.active_users(@institution)
+    do: UserApi.active_users(@institution)
 
   def ut_fresh_user_changeset(),
-    do: Users.fresh_user_changeset()
+    do: UserApi.fresh_user_changeset()
 
   ####
 

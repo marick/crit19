@@ -1,4 +1,4 @@
-defmodule Crit.Users do
+defmodule Crit.Users.UserApi do
   import Ecto.Query, warn: false
   import Crit.OkError
 
