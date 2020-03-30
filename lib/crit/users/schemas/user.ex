@@ -62,21 +62,4 @@ defmodule Crit.Users.Schemas.User do
       |> validate_required(required_attrs)
     Enum.reduce(Map.keys(changeset.changes), changeset, &check_attr/2)
   end
-
-  defmodule Query do
-    import Ecto.Query
-    alias Crit.Users.Schemas.User
-
-    def permissioned_user(id) do
-      from u in User,
-        where: u.id == ^id,
-        preload: :permission_list
-    end
-
-    def active_users() do
-      from u in User,
-        where: u.active == true
-    end
-  end
-
 end

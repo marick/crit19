@@ -4,6 +4,7 @@ defmodule Crit.Users.UserApi do
 
   alias Crit.Users.{UserHavingToken, UniqueId}
   alias Crit.Users.Schemas.{User, PasswordToken, Password}
+  alias Crit.Users.UserImpl.Read
   alias Crit.Sql
   alias Crit.Repo
 
@@ -11,14 +12,10 @@ defmodule Crit.Users.UserApi do
 
   def fresh_user_changeset(), do: User.fresh_user_changeset()
 
-  def permissioned_user_from_id(id, institution) do    
-    id |> User.Query.permissioned_user |> Sql.one(institution)
-  end
+  def permissioned_user_from_id(id, institution),
+    do: Read.permissioned_user_from_id(id, institution)
 
-  def active_users(institution) do
-    User.Query.active_users |> Sql.all(institution)
-  end
-  
+  def active_users(institution), do: Read.active_users(institution)
 
   # Primarily about passwords
 
