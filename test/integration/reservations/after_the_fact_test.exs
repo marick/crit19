@@ -1,4 +1,4 @@
-defmodule CritWeb.Reservations.AfterTheFactIntegrationTest do
+defmodule Integration.Reservations.AfterTheFactTest do
   use CritWeb.IntegrationCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
