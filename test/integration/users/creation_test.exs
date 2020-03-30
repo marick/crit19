@@ -4,7 +4,7 @@ defmodule Integration.Users.CreationTest do
   alias CritWeb.CurrentUser.{SettingsController, SessionController}
   alias Crit.Sql
   alias Crit.Repo
-  alias Crit.Users.User
+  alias Crit.Users.Schemas.User
   alias Crit.Users.Schemas.PasswordToken
 
   @auth_id "dmarick"

@@ -1,4 +1,4 @@
-defmodule Crit.Users.User do
+defmodule Crit.Users.Schemas.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Users.Schemas.PermissionList
@@ -67,7 +67,7 @@ defmodule Crit.Users.User do
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Users.User
+    alias Crit.Users.Schemas.User
 
     def permissioned_user(id) do
       from u in User,

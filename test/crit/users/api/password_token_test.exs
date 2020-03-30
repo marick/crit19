@@ -2,7 +2,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
   use Crit.DataCase
   import Crit.Assertions.User
   alias Crit.Users
-  alias Crit.Users.User
+  alias Crit.Users.Schemas.User
   alias Crit.Users.Schemas.PasswordToken
   alias Crit.Sql
   alias Crit.Repo

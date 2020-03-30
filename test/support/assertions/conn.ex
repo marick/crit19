@@ -5,7 +5,7 @@ defmodule CritWeb.Assertions.Conn do
   import ExUnit.Assertions
   import Crit.Assertions.{Defchain, Map}
   alias CritWeb.PublicController
-  alias Crit.Users.User
+  alias Crit.Users.Schemas.User
   import CritWeb.Plugs.Accessors
   alias CritWeb.CurrentUser.SessionController
   import CritWeb.Fomantic.Helpers, only: [unique_snippet: 2]

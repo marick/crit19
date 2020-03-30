@@ -1,6 +1,6 @@
 defmodule Crit.Users.Internal.UserTest do
   use Crit.DataCase, async: true
-  alias Crit.Users.User
+  alias Crit.Users.Schemas.User
   alias Ecto.ChangesetX
 
   # Other tests are in ../user_test.exs

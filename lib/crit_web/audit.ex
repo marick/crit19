@@ -1,7 +1,7 @@
 defmodule CritWeb.Audit do
   import CritWeb.Plugs.Accessors
   alias Crit.Audit.CreationStruct
-  alias Crit.Users.User
+  alias Crit.Users.Schemas.User
 
   def events do
     %{created_user: "created user",

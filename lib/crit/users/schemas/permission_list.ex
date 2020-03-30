@@ -1,9 +1,10 @@
 defmodule Crit.Users.Schemas.PermissionList do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Crit.Users.Schemas.User
 
   schema "permission_lists" do
-    belongs_to :user, Crit.Users.User
+    belongs_to :user, User
     field :manage_and_create_users, :boolean, default: false
     field :manage_animals, :boolean, default: false
     field :make_reservations, :boolean, default: false

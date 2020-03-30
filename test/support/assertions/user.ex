@@ -4,7 +4,7 @@ defmodule Crit.Assertions.User do
   import ExUnit.Assertions
   alias Crit.Users.Schemas.PermissionList
   alias Crit.Users.UniqueId
-  alias Crit.Users.User
+  alias Crit.Users.Schemas.User
 
   defchain assert_without_permissions(user), 
     do: refute %PermissionList{} == user.permission_list

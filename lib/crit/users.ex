@@ -2,8 +2,8 @@ defmodule Crit.Users do
   import Ecto.Query, warn: false
   import Crit.OkError
 
-  alias Crit.Users.{User, UserHavingToken, UniqueId}
-  alias Crit.Users.Schemas.{PasswordToken, Password, PermissionList}
+  alias Crit.Users.{UserHavingToken, UniqueId}
+  alias Crit.Users.Schemas.{User, PasswordToken, Password, PermissionList}
   alias Crit.Sql
   alias Crit.Repo
 
