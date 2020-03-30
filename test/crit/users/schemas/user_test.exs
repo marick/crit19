@@ -1,10 +1,7 @@
-defmodule Crit.Users.Internal.UserTest do
+defmodule Crit.Users.Schemas.UserTest do
   use Crit.DataCase, async: true
   alias Crit.Users.Schemas.User
   alias Ecto.ChangesetX
-
-  # Other tests are in ../user_test.exs
-
 
   describe "the default/blank changeset" do
     test "creation without data" do

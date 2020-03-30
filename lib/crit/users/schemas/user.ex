@@ -19,20 +19,18 @@ defmodule Crit.Users.Schemas.User do
   @creation_optional_attrs []
 
 
-  # A changeset with only default or empty fields. For `new` actions.
-  # Note that the caller can supply non-default values via the starting
-  # structure. This is most useful to set up a starting
-  # `PermissionList`. A second attributes argument can't be used for that
-  # because the changeset will be marked dirty, which will produce confusing
-  # errors.
-  def default_changeset(struct), do: change(struct)
+  def fresh_user_changeset(),
+    do: changeset(%__MODULE__{permission_list: %PermissionList{}}, %{})
 
-  def create_changeset(attrs \\ %{}) do
-    %__MODULE__{}
+  def creation_changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
+  def changeset(%__MODULE__{} = struct, attrs) do 
+    struct
     |> check_attrs(@creation_required_attrs, @creation_optional_attrs, attrs)
     |> cast_assoc(:permission_list, required: true)
   end
-
 
   # Util
 
