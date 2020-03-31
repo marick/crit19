@@ -1,7 +1,7 @@
-defmodule Crit.Users.Api.PasswordTokenTest do
+defmodule Crit.Users.PasswordApi.PasswordTokenTest do
   use Crit.DataCase
   import Crit.Assertions.User
-  alias Crit.Users.UserApi
+  alias Crit.Users.PasswordApi
   alias Crit.Users.Schemas.User
   alias Crit.Users.Schemas.PasswordToken
   alias Crit.Sql
@@ -36,17 +36,17 @@ defmodule Crit.Users.Api.PasswordTokenTest do
     setup :user_and_token
 
     test "token matches", %{token: token} do
-      assert {:ok, retrieved} = UserApi.one_token(token.text)
+      assert {:ok, retrieved} = PasswordApi.one_token(token.text)
       assert token == retrieved
     end
 
     test "is not a destructive read", %{token: token} do
-      assert {:ok, _} = UserApi.one_token(token.text)
-      assert {:ok, _} = UserApi.one_token(token.text)
+      assert {:ok, _} = PasswordApi.one_token(token.text)
+      assert {:ok, _} = PasswordApi.one_token(token.text)
     end
 
     test "no match" do
-      assert {:error, message} = UserApi.one_token("DIFFERENT TOKEN")
+      assert {:error, message} = PasswordApi.one_token("DIFFERENT TOKEN")
       assert message =~ "DIFFERENT TOKEN"
     end
 
@@ -70,7 +70,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
     test "the password is acceptable",
       %{valid_password: valid_password, user: user, token: token} do
       params = PasswordFocused.params(valid_password, valid_password)
-      assert_same_user(user, UserApi.redeem_password_token(token, params))
+      assert_same_user(user, PasswordApi.redeem_password_token(token, params))
       # Token has been deleted
       refute Repo.get_by(PasswordToken, user_id: user.id)
     end
@@ -78,19 +78,19 @@ defmodule Crit.Users.Api.PasswordTokenTest do
     test "something is wrong with the password", 
       %{valid_password: valid_password, token: token} do
       params = PasswordFocused.params(valid_password, "WRONG")
-      assert {:error, changeset} = UserApi.redeem_password_token(token, params)
+      assert {:error, changeset} = PasswordApi.redeem_password_token(token, params)
       assert %{new_password_confirmation: ["should be the same as the new password"]}
       == errors_on(changeset)
       # The token is not deleted.
-      assert UserApi.one_token(token.text)
+      assert PasswordApi.one_token(token.text)
     end
 
     # User could hit back and redeem the token twice. Can't do any harm. 
     test "redeeming a password token twice",
       %{valid_password: valid_password, user: user, token: token} do
       params = PasswordFocused.params(valid_password, valid_password)
-      UserApi.redeem_password_token(token, params)
-      assert_same_user(user, UserApi.redeem_password_token(token, params))
+      PasswordApi.redeem_password_token(token, params)
+      assert_same_user(user, PasswordApi.redeem_password_token(token, params))
     end
   end
 
@@ -100,16 +100,16 @@ defmodule Crit.Users.Api.PasswordTokenTest do
       %UT{token: remove} = TokenFocused.user()
       refute retain.text == remove.text
 
-      assert :ok == UserApi.delete_password_token(remove.text)
-      assert {:error, _} = UserApi.one_token(remove.text)
+      assert :ok == PasswordApi.delete_password_token(remove.text)
+      assert {:error, _} = PasswordApi.one_token(remove.text)
 
-      assert {:ok, _} = UserApi.one_token(retain.text)
+      assert {:ok, _} = PasswordApi.one_token(retain.text)
     end
 
     test "missing token does not throw an error" do
       %{token: remove} = TokenFocused.user()
-      assert :ok == UserApi.delete_password_token(remove.text)
-      assert :ok == UserApi.delete_password_token(remove.text)
+      assert :ok == PasswordApi.delete_password_token(remove.text)
+      assert :ok == PasswordApi.delete_password_token(remove.text)
     end
   end
   
@@ -117,7 +117,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
     test "yes, then no" do
       %{token: token} = TokenFocused.user()
       assert Repo.get_by(PasswordToken, text: token.text)
-      assert :ok == UserApi.delete_password_token(token.text)
+      assert :ok == PasswordApi.delete_password_token(token.text)
       refute Repo.get_by(PasswordToken, text: token.text)
     end
   end
@@ -127,7 +127,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
     
     test "tokens can expire before being 'redeemed'", %{token: token} do
       move_expiration_backward_by_seconds(token, 30) # `now` is now too late.
-      assert {:error, _} = UserApi.one_token(token.text)
+      assert {:error, _} = PasswordApi.one_token(token.text)
     end
 
     test "reading a token updates its 'time to live'", %{token: token} do
@@ -140,7 +140,7 @@ defmodule Crit.Users.Api.PasswordTokenTest do
       end
 
       original_time = token_time.(token.text)
-      assert {:ok, user} = UserApi.one_token(token.text)
+      assert {:ok, user} = PasswordApi.one_token(token.text)
       updated_time = token_time.(token.text)
 
       difference =  NaiveDateTime.diff(updated_time, original_time, :second)

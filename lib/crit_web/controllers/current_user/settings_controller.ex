@@ -1,7 +1,7 @@
 defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :current_user_settings_path
-  alias Crit.Users.{UserApi,PasswordApi}
+  alias Crit.Users.PasswordApi
   alias Crit.Users.UniqueId
   alias Ecto.Changeset
   alias CritWeb.{PublicController, CurrentUser.SessionController}
@@ -9,7 +9,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   # No authentication is needed yet
 
   def fresh_password_form(conn, %{"token_text" => token_text}) do
-    case UserApi.one_token(token_text) do
+    case PasswordApi.one_token(token_text) do
       {:ok, token} ->
         conn
         |> remember_token(token)
@@ -22,7 +22,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
   end
 
   def set_fresh_password(conn, %{"password" => params}) do
-    case UserApi.redeem_password_token(token(conn), params) do
+    case PasswordApi.redeem_password_token(token(conn), params) do
       {:ok, %UniqueId{} = unique_id} ->
         conn
         |> forget_token

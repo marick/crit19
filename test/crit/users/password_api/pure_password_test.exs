@@ -1,4 +1,4 @@
-defmodule Crit.Users.PasswordApiTest do
+defmodule Crit.Users.PasswordApi.PurePasswordTest do
   use Crit.DataCase
   import Crit.Assertions.User
   alias Crit.Users.PasswordApi
