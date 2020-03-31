@@ -4,7 +4,6 @@ defmodule Crit.Users.PasswordApi do
   alias Crit.Users.Schemas.{User, PasswordToken, Password}
   alias Crit.Sql
   alias Crit.Repo
-  import Crit.OkError
 
   def fresh_password_changeset(), do: Password.default_changeset()
       
@@ -41,7 +40,7 @@ defmodule Crit.Users.PasswordApi do
     PasswordToken.Query.expired_tokens |> Repo.delete_all()
     case Repo.get_by(PasswordToken, text: token_text) do
       nil ->
-        lift_nullable(nil, "missing token '#{token_text}'")
+        {:error, "missing token '#{token_text}'"}
       token ->
         PasswordToken.force_update(token, NaiveDateTime.utc_now)
         {:ok, token}
