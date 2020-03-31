@@ -2,7 +2,7 @@ defmodule CritWeb.CurrentUser.SessionController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :current_user_session_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Users.UserApi
+  alias Crit.Users.PasswordApi
   alias Crit.Users.UniqueId
   alias Crit.Setup.InstitutionApi
   alias CritWeb.PublicController
@@ -30,7 +30,7 @@ defmodule CritWeb.CurrentUser.SessionController do
     auth_id = params["auth_id"]
     password = params["password"]
     institution = params["institution"]
-    case UserApi.attempt_login(auth_id, password, institution) do
+    case PasswordApi.attempt_login(auth_id, password, institution) do
       {:ok, %UniqueId{} = unique_id} ->
         successful_login(conn, unique_id)
       :error ->

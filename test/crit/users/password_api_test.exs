@@ -1,16 +1,10 @@
-defmodule Crit.Users.Api.PasswordTest do
+defmodule Crit.Users.PasswordApiTest do
   use Crit.DataCase
   import Crit.Assertions.User
-  alias Crit.Users.UserApi
+  alias Crit.Users.PasswordApi
   alias Crit.Users.Schemas.Password
   alias Crit.Exemplars.{PasswordFocused, Minimal}
 
-  @moduledoc """
-  Working with passwords through the UserApi interface. 
-  See also users/internal/password_test.exs
-  """
-
-  
   setup do
     [user: Minimal.user()]
   end
@@ -66,7 +60,7 @@ defmodule Crit.Users.Api.PasswordTest do
   # Util
 
   def set(auth_id, password) do 
-    UserApi.set_password(
+    PasswordApi.set_password(
       auth_id, PasswordFocused.params(password), @institution)
   end
 
@@ -79,6 +73,6 @@ defmodule Crit.Users.Api.PasswordTest do
   end
 
   def check(auth_id, password) do 
-    UserApi.attempt_login(auth_id, password, @institution)
+    PasswordApi.attempt_login(auth_id, password, @institution)
   end
 end

@@ -3,7 +3,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   alias CritWeb.CurrentUser.SettingsController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
-  alias Crit.Users.UserApi
+  alias Crit.Users.{UserApi,PasswordApi}
 
 
   defp session_with_unactivated_user(%{conn: conn}) do
@@ -54,10 +54,10 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_redirected_home
       |> assert_info_flash_has("You have been logged in")
 
-      UserApi.attempt_login(user.auth_id, @valid_password, @institution)
+      # Therefore you can log in
+      PasswordApi.attempt_login(user.auth_id, @valid_password, @institution)
       |> assert_ok
     end
-
 
     test "something is wrong with the password",
       %{conn: conn, user: user, token_text: token_text} do
@@ -71,9 +71,9 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
       |> assert_user_sees(Common.form_error_message())
       |> assert_user_sees("should be the same as the new password")
 
-      UserApi.attempt_login(user.auth_id, @valid_password, @institution)
+      # Still can't log in.
+      PasswordApi.attempt_login(user.auth_id, @valid_password, @institution)
       |> assert_error
-      
     end
 
     test "the token is missing", %{conn: conn, user: user} do

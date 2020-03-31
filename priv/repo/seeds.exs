@@ -10,7 +10,7 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Crit.Users.UserApi
+alias Crit.Users.{UserApi,PasswordApi}
 alias Crit.Users.Schemas.User
 alias Crit.Users.Schemas.PermissionList
 alias Crit.Sql
@@ -37,7 +37,7 @@ short_name = Constants.default_institution.short_name
   }
 }, short_name
 
-:ok = UserApi.set_password("marick",
+:ok = PasswordApi.set_password("marick",
   %{"new_password" => "weepy-communal",
     "new_password_confirmation" => "weepy-communal"},
   short_name)

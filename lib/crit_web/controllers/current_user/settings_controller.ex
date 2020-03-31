@@ -1,7 +1,7 @@
 defmodule CritWeb.CurrentUser.SettingsController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :current_user_settings_path
-  alias Crit.Users.UserApi
+  alias Crit.Users.{UserApi,PasswordApi}
   alias Crit.Users.UniqueId
   alias Ecto.Changeset
   alias CritWeb.{PublicController, CurrentUser.SessionController}
@@ -13,7 +13,7 @@ defmodule CritWeb.CurrentUser.SettingsController do
       {:ok, token} ->
         conn
         |> remember_token(token)
-        |> render_password_creation_form(UserApi.fresh_password_changeset())
+        |> render_password_creation_form(PasswordApi.fresh_password_changeset())
       {:error, _} -> 
         conn
         |> put_flash(:error, "The account creation token does not exist. (It has probably expired.)")
