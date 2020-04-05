@@ -17,8 +17,8 @@ defmodule Crit.Setup.AnimalImpl.UpdateOptimisticLockTest do
 
       changeset
       |> assert_no_changes # All changes have been wiped out.
-      |> assert_original_data(name: "this version wins",
-                              lock_version: old.lock_version + 1)
+      |> assert_data(name: "this version wins",
+                     lock_version: old.lock_version + 1)
       # Template invents the error message
       |> assert_error(:optimistic_lock_error)
     end
@@ -31,8 +31,8 @@ defmodule Crit.Setup.AnimalImpl.UpdateOptimisticLockTest do
 
       retry_changeset
       |> assert_no_changes         # wipes out user entries
-      |> assert_original_data(name: "this version wins",
-                              lock_version: old.lock_version + 1)
+      |> assert_data(name: "this version wins",
+                     lock_version: old.lock_version + 1)
 
       # The error is noted, but the message is the template's responsibility
       |> assert_error(:optimistic_lock_error)
@@ -53,7 +53,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateOptimisticLockTest do
       assert {:error, changeset} = update_name(old, "preexisting")
 
       changeset
-      |> assert_original_data(lock_version: old.lock_version)
+      |> assert_data(lock_version: old.lock_version)
       |> assert_unchanged(:lock_version)
     end
 
