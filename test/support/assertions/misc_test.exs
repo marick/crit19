@@ -1,6 +1,8 @@
 defmodule Crit.Assertions.MiscTest do
   use ExUnit.Case, async: true
   import Crit.Assertions.Misc
+  import Crit.Assertions.Assertion
+  alias Crit.Users.Schemas.{PermissionList,User}
 
   test "assert_ok" do
     :ok = assert_ok(:ok)
@@ -38,6 +40,49 @@ defmodule Crit.Assertions.MiscTest do
       error_payload({:ok, "payload"})
     end)
   end
+
+
+  describe "assert_shape" do
+    test "structs" do
+      
+      (permission_list = %PermissionList{view_reservations: true})
+      |> assert_shape( %{})
+      |> assert_shape(%PermissionList{})
+      |> assert_shape(%PermissionList{view_reservations: true})
+
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> 
+          assert_shape(permission_list, %User{})
+        end)
+      
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> 
+          assert_shape(permission_list, %PermissionList{view_reservations: false})
+        end)
+    end
+
+    test "shapes with arrays" do
+      assert_shape([1], [_])
+      assert_shape([1], [_ | _])
+      assert_shape([1, 2],  [_ | _])
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> assert_shape(no_op([1]), []) end)
+
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> assert_shape(no_op([1]), [2]) end)
+
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> assert_shape(no_op([1, 2]), [_,  _ , _]) end)
+    end
+  end
+
+  # This prevents impossible matches from being flagged at compile time.
+  defp no_op(list), do: list
   
 end
 

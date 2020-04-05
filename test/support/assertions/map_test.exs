@@ -1,6 +1,7 @@
 defmodule Crit.Assertions.MapTest do
   use ExUnit.Case, async: true
   import Crit.Assertions.{Map, Assertion}
+  alias Crit.Users.Schemas.{PermissionList,User}
 
   defstruct name: nil # Used for typo testing
 
@@ -202,6 +203,45 @@ defmodule Crit.Assertions.MapTest do
         end)
     end
 
+
+
+    test "shape comparison" do
+      assert %PermissionList{}.view_reservations == true # default
+
+      (fresh = %{p: %PermissionList{}})
+      |> assert_field_shape(:p, %{})
+      |> assert_field_shape(:p, %PermissionList{})
+      |> assert_field_shape(:p, %PermissionList{view_reservations: true})
+
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> 
+          assert_field_shape(fresh, :p, %User{})
+        end)
+      
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> 
+          assert_field_shape(fresh, :p, %PermissionList{view_reservations: false})
+        end)
+    end
+
+    test "shapes with arrays" do
+      singleton = %{p: [1]}
+      assert_field_shape(singleton, :p, [_])
+      assert_field_shape(singleton, :p, [_ | _])
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> assert_field_shape(singleton, :p, []) end)
+      
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> assert_field_shape(singleton, :p, [2]) end)
+      
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> assert_field_shape(singleton, :p, [_,  _ | _]) end)
+    end
 
   # ----------------------------------------------------------------------------
     test "assert_nothing and friends" do

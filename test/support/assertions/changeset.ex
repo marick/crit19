@@ -5,12 +5,15 @@ defmodule Crit.Assertions.Changeset do
   import Crit.Assertions.Map
   alias Ecto.Changeset
 
+  # ------------------------------------------------------------------------
+
   defchain assert_valid(%Changeset{} = changeset),
     do: assert changeset.valid?
 
   defchain assert_invalid(%Changeset{} = changeset),
     do: refute changeset.valid?
 
+  # ------------------------------------------------------------------------
   @doc """
   The elements of `list` must be present in the `Changeset`'s changes.
   The simple case just checks whether fields have been changed:
@@ -65,6 +68,7 @@ defmodule Crit.Assertions.Changeset do
     do: Enum.map fields, &(assert_unchanged changeset, &1)
 
 
+  # ------------------------------------------------------------------------
   @doc """
   Assert that a changeset contains specific errors. In the simplest case,
   it requires that the fields have at least one error, but doesn't require
@@ -134,8 +138,6 @@ defmodule Crit.Assertions.Changeset do
   defchain assert_error(cs, arg2) when is_atom(arg2), do: assert_errors(cs, [arg2])
   defchain assert_error(cs, arg2),                    do: assert_errors(cs,  arg2)
 
-
-
   @doc """
   Require that none of the named fields have an associated error:
 
@@ -160,11 +162,27 @@ defmodule Crit.Assertions.Changeset do
     Enum.map(fields, check)
   end
 
-  defchain assert_original_data(changeset, keylist) when is_list(keylist) do
+  # ------------------------------------------------------------------------
+
+  defchain assert_data(changeset, keylist) when is_list(keylist) do
     assert_fields(changeset.data, keylist)
   end
   
-  defchain assert_original_data(changeset, expected) do
+  defchain assert_data(changeset, expected) do
     assert changeset.data == expected
+  end
+
+  @doc """
+  Assert that a field in the data part of the changeset matches a binding form
+
+      assert_data_shape(changeset, :field, %User{})
+      assert_data_shape(changeset, :field, [_ | _])
+  """
+  defmacro assert_data_shape(changeset, key, shape) do
+    quote do
+      eval_once = unquote(changeset)
+      assert_field_shape(eval_once.data, unquote(key), unquote(shape))
+      eval_once
+    end
   end
 end

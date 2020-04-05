@@ -1,6 +1,7 @@
 defmodule Crit.Assertions.Map do
   import Crit.Assertions.Defchain
   import ExUnit.Assertions
+  import Crit.Assertions.Misc
 
   @doc """
   Test the existence and value of multiple fields with a single assertion:
@@ -57,6 +58,22 @@ defmodule Crit.Assertions.Map do
   defchain assert_field(kvs, singleton) do
     assert_fields(kvs, [singleton])
   end
+
+  @doc """
+  Assert that the value of the map at the key matches a binding form. 
+
+      assert_field_shape(map, :field, %User{})
+      assert_field_shape(map, :field, [_ | _])
+  """
+  defmacro assert_field_shape(map, key, shape) do
+    quote do
+      eval_once = unquote(map)
+      assert_shape(Map.fetch!(eval_once, unquote(key)), unquote(shape))
+      eval_once
+    end
+  end
+
+  
 
   @doc """
     An equality comparison of two maps that gives control over
@@ -156,4 +173,9 @@ defmodule Crit.Assertions.Map do
   end
 
   def refute_nothing(map, key), do: refute_nothing(map, [key])
+
+
+  # ------------------------------------------------------------------------
+
+  
 end

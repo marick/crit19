@@ -1,8 +1,9 @@
 defmodule Crit.Assertions.ChangesetTest do
-  use ExUnit.Case, async: true
-  import Crit.Assertions.{Changeset, Assertion}
+  use Crit.DataCase, async: true
   use Ecto.Schema
-  import Ecto.Changeset
+  import Crit.Assertions.{Changeset, Assertion}
+  alias Crit.Users.Schemas.{PermissionList,User}
+  alias Crit.Users.UserApi
 
   embedded_schema do
     field :name, :string
@@ -228,10 +229,33 @@ defmodule Crit.Assertions.ChangesetTest do
 
   describe "testing the data part" do
     test "equality comparison", %{valid: valid} do
-      changeset(valid, %{tags: "bogus"})
-      |> assert_original_data(valid)
+      changeset(valid, %{})
+      |> assert_data(name: valid.name)
+      |> assert_data(tags: valid.tags)
+      |> assert_data(name: valid.name, tags: valid.tags)
+    end
+
+    test "shape comparison" do
+      assert %PermissionList{}.view_reservations == true # default
+
+      (fresh = UserApi.fresh_user_changeset)
+      |> assert_data_shape(:permission_list, %{})
+      |> assert_data_shape(:permission_list, %PermissionList{})
+      |> assert_data_shape(:permission_list,
+                           %PermissionList{view_reservations: true})
+
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> 
+          assert_data_shape(fresh, :permission_list, %User{})
+        end)
+      
+      assertion_fails_with_diagnostic(
+        ["The value doesn't match the given pattern"],
+        fn -> 
+          assert_data_shape(fresh, :permission_list,
+            %PermissionList{view_reservations: false})
+        end)
     end
   end
 end
-
-        
