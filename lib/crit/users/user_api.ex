@@ -24,5 +24,4 @@ defmodule Crit.Users.UserApi do
       {:ok, UserHavingToken.new(user, token)}
     end
   end
-
 end
