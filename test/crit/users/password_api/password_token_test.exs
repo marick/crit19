@@ -1,7 +1,7 @@
 defmodule Crit.Users.PasswordApi.PasswordTokenTest do
   use Crit.DataCase
   import Crit.Assertions.User
-  alias Crit.Users.PasswordApi
+  alias Crit.Users.{PasswordApi,UserApi}
   alias Crit.Users.Schemas.User
   alias Crit.Users.Schemas.PasswordToken
   alias Crit.Sql
@@ -24,9 +24,12 @@ defmodule Crit.Users.PasswordApi.PasswordTokenTest do
     end
 
     test "bad user data prevents a token from being created" do
-      too_short_auth_id = "" 
-      {:error, changeset} = TokenFocused.possible_user(auth_id: too_short_auth_id)
-      assert %{auth_id: ["can't be blank"]} = errors_on(changeset)
+      Factory.string_params_for(:user, auth_id: "")
+      |> UserApi.create_unactivated_user(@institution)
+      |> error_payload
+      |> assert_error(auth_id: "can't be blank")
+
+      # Check that nothing has been created
       assert [] = Repo.all(PasswordToken)
       assert [] = Sql.all(User, @institution)
     end
