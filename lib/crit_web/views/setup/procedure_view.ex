@@ -18,4 +18,12 @@ defmodule CritWeb.Setup.ProcedureView do
     ]
   end
 
+  def frequency_chooser(f) do
+    options = ["unlimited", "once per week"]
+    ~E"""
+        <%= select f, :frequency, options, id: "3838",
+            class: "ui dropdown" %>
+    """
+  end
+
 end
