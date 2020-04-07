@@ -4,24 +4,10 @@
   $(document)
     .ready(function() { 
         $('.dropdown').dropdown();
-        $('#frequency_help').click(function(){
-            $('#foo').toggle().transition('slide');
-        });        
     });
 </script>
 
 <div class="ui main center aligned text container">
-
-          <div class="ui message" id="foo">
-            <i class="close icon"></i>
-            <div class="header">
-              Was this what you wanted?
-            </div>
-            <ul class="list">
-              <li>It's good to see you again.</li>
-              <li>Did you know it's been a while?</li>
-            </ul>
-          </div>          
   <h1 class="ui center aligned header">Create Procedures</h1>
 
   <%= start_centered_form() %>
