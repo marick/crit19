@@ -99,6 +99,6 @@ defmodule Crit.Setup.InstitutionServer do
                      description: "There doesn't have to be a full week between two
           performances. For example, the procedure could be performed
           Friday and then Monday."}]
-                } |> IO.inspect
+                }
   end
 end
