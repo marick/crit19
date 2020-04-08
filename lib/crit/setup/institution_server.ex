@@ -4,7 +4,7 @@ defmodule Crit.Setup.InstitutionServer do
   alias Crit.Setup.HiddenSchemas.Species
   alias Crit.Setup.InstitutionApi
 
-  defstruct institution: nil, router: nil, species: []
+  defstruct institution: nil, router: nil, species: [], procedure_frequencies: []
   
 
   def server(short_name), do: String.to_atom(short_name)
@@ -52,6 +52,11 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
+  def handle_call(:procedure_frequencies, _from, state) do
+    {:reply, state.procedure_frequencies, state}
+  end
+
+  @impl true
   def handle_call(:reload, _from, state) do
     short_name = state.institution.short_name
     new_institution = InstitutionApi.one!(short_name: short_name)
@@ -87,6 +92,13 @@ defmodule Crit.Setup.InstitutionServer do
       router.forward(:all, [Species.Query.ordered()], [], institution)
       |> EnumX.id_pairs(:name)
 
-    %__MODULE__{institution: institution, router: router, species: species}
+    %__MODULE__{institution: institution, router: router, species: species,
+                procedure_frequencies: [%{name: "unlimited",
+                     description: "This procedure can be performed many times per day."},
+                   %{name: "once per week",
+                     description: "There doesn't have to be a full week between two
+          performances. For example, the procedure could be performed
+          Friday and then Monday."}]
+                } |> IO.inspect
   end
 end

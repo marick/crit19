@@ -13,7 +13,7 @@
 <div class="ui main center aligned text container">
   <h1 class="ui center aligned header">Create Procedures</h1>
 
-  <div class="ui sidebar vertical menu">
+  <div class="ui wide sidebar vertical menu">
     <div class="ui message">
       <h2> Frequency choices</h2>
          

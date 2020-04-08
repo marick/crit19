@@ -67,6 +67,10 @@ defmodule Crit.Setup.InstitutionApi do
     GenServer.call(server(institution), :available_species)
   end
 
+  def procedure_frequencies(institution) do
+    GenServer.call(server(institution), :procedure_frequencies)
+  end
+
   def species_name(species_id, institution) do
     available_species(institution)
     |> Enum.find(fn {_, id} -> id == species_id end)
