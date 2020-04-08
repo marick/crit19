@@ -4,12 +4,39 @@
   $(document)
     .ready(function() { 
         $('.dropdown').dropdown();
+        $('.sidebar').first()
+            .sidebar('attach events', '#frequency_help') ;
     });
 </script>
+
 
 <div class="ui main center aligned text container">
   <h1 class="ui center aligned header">Create Procedures</h1>
 
+  <div class="ui sidebar vertical menu">
+    <div class="ui message">
+      <h2> Frequency choices</h2>
+         
+      <p>
+        The frequency choices dropdown describes how often a particular
+        procedure can be performed on an animal.
+      </p>
+      
+      <dl>
+        <dt>unlimited</dt>
+        <dd>This procedure can be performed many times per day.</dd>
+        
+        <dt>once per week</dt>
+        <dd>
+          There doesn't have to be a full week between two
+          performances. For example, the procedure could be performed
+          Friday and then Monday.
+        </dd>
+      </dl>
+    </div>
+  </div>
+    
+<div class="pusher">
   <%= start_centered_form() %>
   <%= form_for :procedures, @path, [class: "ui large form"], fn f -> %>
   <table class="ui table"
@@ -19,7 +46,11 @@
       <tr>
         <th>Name</th>
         <th>Species it can be used on </th>
-        <th> Frequency </th>
+        <th> Frequency
+          <div id="frequency_help" class="ui teal ui mini circular icon button" >
+            <i class="icon help"></i>
+          </div>
+        </th>
       </tr>
       <tr>
         <th class="right aligned">
@@ -30,7 +61,6 @@
               data_action: "click->procedure-creation#put_one_checkbox_column") %>
         </th>
         <th>
-          <div class="ui teal button" id='frequency_help'>Click Me</div>
         </th>
       </tr>
 
@@ -59,4 +89,5 @@
   
   <% end %>
   <%= end_centered_form() %>
+</div>
 </div>
