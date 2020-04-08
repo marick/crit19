@@ -40,10 +40,17 @@ defmodule CritWeb.Setup.ProcedureController do
 
   defp render_bulk_creation_form(conn, changesets) do
     species_pairs = InstitutionApi.available_species(institution(conn))
+    frequencies = [%{name: "unlimited",
+                     description: "This procedure can be performed many times per day."},
+                   %{name: "once per week",
+                     description: "There doesn't have to be a full week between two
+          performances. For example, the procedure could be performed
+          Friday and then Monday."}]
     
     render(conn, "bulk_creation_form.html",
       changesets: changesets,
       path: path(:bulk_create),
-      species_pairs: species_pairs)
+      species_pairs: species_pairs,
+      frequencies: frequencies)
   end
 end

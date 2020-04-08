@@ -23,15 +23,7 @@
       </p>
       
       <dl>
-        <dt>unlimited</dt>
-        <dd>This procedure can be performed many times per day.</dd>
-        
-        <dt>once per week</dt>
-        <dd>
-          There doesn't have to be a full week between two
-          performances. For example, the procedure could be performed
-          Friday and then Monday.
-        </dd>
+        <%= for frequency <- @frequencies, do: frequency_help(frequency) %>
       </dl>
     </div>
   </div>
@@ -78,7 +70,7 @@
             <%= hidden_input(fp, :index, value: changeset.changes.index) %>
             <%= [td(field(procedure_input(fp, changeset))),
                  td(species_chooser(fp, @species_pairs, changeset)),
-                 td(frequency_chooser(fp))
+                 td(frequency_chooser(fp, @frequencies))
                 ] %>
           <tr/>
           <% end) %>
