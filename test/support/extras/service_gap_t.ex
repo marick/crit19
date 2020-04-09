@@ -3,7 +3,7 @@ defmodule Crit.Extras.ServiceGapT do
   Shorthand functions for use in tests.
   """
 
-  use Crit.Global.Constants
+  use Crit.TestConstants
   alias Crit.Setup.Schemas.{Animal,ServiceGap}
   alias Crit.Sql
   alias Crit.Exemplars.Available

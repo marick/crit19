@@ -9,7 +9,7 @@ defmodule Crit.Exemplars.Available do
   # otherwise specified.
   
   use ExUnit.CaseTemplate
-  use Crit.Global.Constants
+  use Crit.TestConstants
   use Crit.TestConstants
   alias Crit.Factory
   alias Crit.Setup.AnimalApi

@@ -3,7 +3,7 @@ defmodule Crit.Extras.AnimalT do
   Shorthand functions for use in tests.
   """
 
-  use Crit.Global.Constants
+  use Crit.TestConstants
   alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
   alias Crit.Setup.Schemas.Animal

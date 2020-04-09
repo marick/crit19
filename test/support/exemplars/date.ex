@@ -1,5 +1,5 @@
 defmodule Crit.Exemplars.Date do
-  use Crit.Global.Constants
+  use Crit.TestConstants
 
   def today_or_earlier(), do: Faker.Date.backward(1000)
   def later_than_today(), do: Faker.Date.forward(1000)

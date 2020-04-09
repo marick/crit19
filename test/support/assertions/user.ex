@@ -1,5 +1,5 @@
 defmodule Crit.Assertions.User do
-  use Crit.Global.Constants
+  use Crit.TestConstants
   import Crit.Assertions.Defchain
   import ExUnit.Assertions
   alias Crit.Users.Schemas.PermissionList
