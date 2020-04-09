@@ -1,5 +1,5 @@
 defmodule Crit.Setups do
-  use Crit.Global.Constants
+  use Crit.TestConstants
   alias Crit.Setup.AnimalApi
   alias Crit.Factory
 

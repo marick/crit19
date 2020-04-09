@@ -2,6 +2,8 @@ defmodule Crit.TestConstants do
 
   defmacro __using__(_) do 
     quote do
+      use Crit.Global.Constants
+      
       @iso_date "2035-09-05"
       @date Date.from_iso8601!(@iso_date)
 

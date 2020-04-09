@@ -23,7 +23,6 @@ defmodule Crit.DataCase do
       import Ecto.Query
       import Crit.DataCase
       alias Crit.Factory
-      use Crit.Global.Constants
       use Crit.TestConstants
       alias Crit.Extras.SqlT
       import Crit.Assertions.Map

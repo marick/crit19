@@ -17,6 +17,7 @@ alias Crit.Sql
 alias Crit.Setup.HiddenSchemas.Species
 alias Crit.Setup.{AnimalApi}
 alias Crit.Setup.Schemas.{ServiceGap,Procedure}
+alias Crit.Setup.HiddenSchemas.ProcedureFrequency
 alias Crit.Global.Constants
 alias Ecto.Datespan
 
@@ -47,6 +48,14 @@ short_name = Constants.default_institution.short_name
 
 bovine_id = Constants.bovine_id
 equine_id = Constants.equine_id
+unlimited_frequency_id = Constants.unlimited_frequency_id
+
+%{id: ^unlimited_frequency_id} =
+  Sql.insert!(%ProcedureFrequency{
+        name: "unlimited",
+        calculation_name: "unlimited",
+        description: "This procedure can be performed many times per day."},
+    short_name)
 
 %{id: ^bovine_id} = 
   Sql.insert!(%Species{name: Constants.bovine}, short_name)
@@ -69,13 +78,21 @@ Sql.insert!(%ServiceGap{
 
 {:ok, _} = Procedure.insert(%{
       name: "Acupuncture demonstration",
-      species_id: equine_id}, short_name)
+      species_id: equine_id,
+      frequency_id: unlimited_frequency_id},
+  short_name)
 {:ok, _} = Procedure.insert(%{
       name: "Caudal epidural",
-      species_id: bovine_id}, short_name)
+      species_id: bovine_id,
+      frequency_id: unlimited_frequency_id},
+  short_name)
 {:ok, _} = Procedure.insert(%{
       name: "Hoof exam and care",
-      species_id: equine_id}, short_name)
+      species_id: equine_id,
+      frequency_id: unlimited_frequency_id},
+  short_name)
 {:ok, _} = Procedure.insert(%{
       name: "Hoof exam and care",
-      species_id: bovine_id}, short_name)
+      species_id: bovine_id,
+      frequency_id: unlimited_frequency_id},
+  short_name)

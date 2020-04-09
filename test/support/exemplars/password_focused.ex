@@ -2,7 +2,7 @@ defmodule Crit.Exemplars.PasswordFocused do
   use ExUnit.CaseTemplate
   alias Crit.Users.Schemas.Password
   alias Crit.Users.PasswordApi
-  use Crit.Global.Constants
+  use Crit.TestConstants
   alias Crit.Exemplars.Minimal
 
   def params(password),

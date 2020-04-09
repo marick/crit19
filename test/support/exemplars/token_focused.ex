@@ -1,6 +1,6 @@
 defmodule Crit.Exemplars.TokenFocused do
   use ExUnit.CaseTemplate
-  use Crit.Global.Constants
+  use Crit.TestConstants
   alias Crit.Users.UserApi
   alias Crit.Factory
   import Crit.Assertions.Misc

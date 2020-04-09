@@ -6,7 +6,7 @@ defmodule Crit.Exemplars.Minimal do
   """ 
   
   use ExUnit.CaseTemplate
-  use Crit.Global.Constants
+  use Crit.TestConstants
   alias Crit.Factory
   alias Crit.Users.Schemas.{Password, PasswordToken}
   alias Crit.Sql
