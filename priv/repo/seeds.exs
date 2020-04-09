@@ -10,7 +10,7 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Crit.Users.{UserApi,PasswordApi}
+alias Crit.Users.PasswordApi
 alias Crit.Users.Schemas.User
 alias Crit.Users.Schemas.PermissionList
 alias Crit.Sql

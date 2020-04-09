@@ -27,5 +27,3 @@ mix run priv/repo/seeds.exs
 MIX_ENV=test mix run priv/repo/test_institutions.exs
 MIX_ENV=test mix run priv/repo/test_seeds.exs
 
-
-echo "MUST MANUALLY ADD PROCEDURES AND PROCEDURE FREQUENCIES"

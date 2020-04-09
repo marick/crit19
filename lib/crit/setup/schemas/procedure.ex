@@ -2,7 +2,7 @@ defmodule Crit.Setup.Schemas.Procedure do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.HiddenSchemas.Species
+  alias Crit.Setup.HiddenSchemas.{Species,ProcedureFrequency}
   alias Crit.Sql
   import Ecto.Query
   alias Crit.Sql
@@ -11,6 +11,7 @@ defmodule Crit.Setup.Schemas.Procedure do
   schema "procedures" do
     field :name, TrimmedString
     belongs_to :species, Species
+    belongs_to :frequency, ProcedureFrequency
 
     timestamps()
   end

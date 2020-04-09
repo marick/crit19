@@ -46,7 +46,8 @@ defmodule Crit.Factory do
   def procedure_factory() do
     %Procedure{
       name: Faker.Vehicle.make_and_model(),
-      species_id: some_species_id()
+      species_id: some_species_id(),
+      frequency_id: @unlimited_frequency_id
     }
   end
 

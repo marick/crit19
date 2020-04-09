@@ -15,7 +15,9 @@ defmodule Crit.Global.Constants do
     short_name: "critter4us",
     prefix: "demo",
     timezone: "America/Los_Angeles"
- }
+  }
+
+  def unlimited_frequency_id, do: 1
 
   # Suitable for insert_all.
   def default_timeslots, do: [ %{name: "morning (8-noon)",
@@ -46,6 +48,8 @@ defmodule Crit.Global.Constants do
       
       @equine_id Constants.equine_id()
       @equine Constants.equine()
+
+      @unlimited_frequency_id Constants.unlimited_frequency_id
 
       @institution Constants.default_institution.short_name
       @default_timezone Constants.default_institution.timezone
