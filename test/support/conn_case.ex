@@ -28,7 +28,7 @@ defmodule CritWeb.ConnCase do
       alias Crit.Audit.ToMemory.Server, as: AuditServer
       import CritWeb.Plugs.Accessors
       use Crit.Global.Constants
-      use Crit.Exemplars.Simple
+      use Crit.TestConstants
       use Crit.Mock
       alias Crit.Extras.SqlT
       import Crit.Assertions.Map

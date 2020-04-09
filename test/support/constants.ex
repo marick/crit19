@@ -1,4 +1,4 @@
-defmodule Crit.Exemplars.Simple do 
+defmodule Crit.TestConstants do 
 
   defmacro __using__(_) do 
     quote do

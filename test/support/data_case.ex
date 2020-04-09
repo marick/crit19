@@ -24,7 +24,7 @@ defmodule Crit.DataCase do
       import Crit.DataCase
       alias Crit.Factory
       use Crit.Global.Constants
-      use Crit.Exemplars.Simple
+      use Crit.TestConstants
       alias Crit.Extras.SqlT
       import Crit.Assertions.Map
       import Crit.Assertions.Misc
