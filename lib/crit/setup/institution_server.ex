@@ -1,7 +1,8 @@
 defmodule Crit.Setup.InstitutionServer do
   use GenServer
   alias Crit.Sql.RouteToSchema
-  alias Crit.Setup.HiddenSchemas.Species
+  alias Crit.Setup.HiddenSchemas.{Species,ProcedureFrequency}
+  alias Crit.Sql.CommonQuery
   alias Crit.Setup.InstitutionApi
 
   defstruct institution: nil, router: nil, species: [], procedure_frequencies: []
@@ -88,17 +89,14 @@ defmodule Crit.Setup.InstitutionServer do
   # Util
   defp new_state(institution) do
     router = if institution.prefix, do: RouteToSchema, else: RouteToRepo
-    species =
-      router.forward(:all, [Species.Query.ordered()], [], institution)
-      |> EnumX.id_pairs(:name)
-
-    %__MODULE__{institution: institution, router: router, species: species,
-                procedure_frequencies: [%{name: "unlimited",
-                     description: "This procedure can be performed many times per day."},
-                   %{name: "once per week",
-                     description: "There doesn't have to be a full week between two
-          performances. For example, the procedure could be performed
-          Friday and then Monday."}]
+    all = fn module ->
+      router.forward(:all, [CommonQuery.ordered_by_name(module)], [], institution)
+    end
+    
+    %__MODULE__{institution: institution,
+                router: router,
+                species: all.(Species) |> EnumX.id_pairs(:name),
+                procedure_frequencies: all.(ProcedureFrequency)
                 }
   end
 end
