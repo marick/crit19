@@ -1,15 +1,24 @@
 defmodule Crit.Sql.CommonQuery do
   import Ecto.Query
 
-  def for_name_list(query) do
+  def start(schema),        do: from x in schema
+  def start(schema, where), do: from x in schema, where: ^where
+
+  def ordered_by_name(%Ecto.Query{} = query) do
     query
     |> distinct([x], x.name)
     |> order_by([x], x.name)
   end
 
   def ordered_by_name(schema) do
-    (from x in schema) |> for_name_list
+    start(schema) |> ordered_by_name
   end
+
+  def narrow_to_ids(query, ids) do
+    query |> where([x], x.id in ^ids)
+  end
+
+  
 
   @doc """
   Produces a query that will remove all elements produced by `undesirable`

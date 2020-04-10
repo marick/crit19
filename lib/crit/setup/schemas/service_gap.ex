@@ -60,7 +60,7 @@ defmodule Crit.Setup.Schemas.ServiceGap do
   def unavailable_by(animal_query, %Date{} = date, institution) do
     animal_query
     |> narrow_animal_query_by(date)
-    |> CommonQuery.for_name_list
+    |> CommonQuery.ordered_by_name
     |> Sql.all(institution)
   end
 end

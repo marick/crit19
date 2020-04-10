@@ -15,13 +15,13 @@ defmodule Crit.Reservations.ReservationImpl.Read do
     def rejected_at(:service_gap, desired) do
       AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
       |> ServiceGap.narrow_animal_query_by(desired.date)
-      |> CommonQuery.for_name_list
+      |> CommonQuery.ordered_by_name
     end
     
     def rejected_at(:uses, desired) do
       AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
       |> Use.narrow_animal_query_by(desired.span)
-      |> CommonQuery.for_name_list
+      |> CommonQuery.ordered_by_name
     end
   end  
 
@@ -57,7 +57,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
 
   def in_service(desired, institution) do
     AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
-    |> CommonQuery.for_name_list
+    |> CommonQuery.ordered_by_name
     |> Sql.all(institution)
   end
   
@@ -80,7 +80,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
 
     [date_blocker, timespan_blocker]
     |> Enum.reduce(base_query, reducer)
-    |> CommonQuery.for_name_list
+    |> CommonQuery.ordered_by_name
     |> Sql.all(institution)
   end
 end

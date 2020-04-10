@@ -64,7 +64,7 @@ defmodule Crit.Reservations.HiddenSchemas.Use do
   def unavailable_by(animal_query, %Ecto.Timespan{} = span, institution) do
     animal_query
     |> narrow_animal_query_by(span)
-    |> CommonQuery.for_name_list
+    |> CommonQuery.ordered_by_name
     |> Sql.all(institution)
   end
 end

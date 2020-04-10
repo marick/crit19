@@ -1,6 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.Read do
   use Crit.Global.Constants
   import Ecto.Query
+  alias Crit.Sql.CommonQuery
   alias Crit.Sql
   alias Crit.Setup.Schemas.ServiceGap
   alias Crit.FieldConverters.FromSpan
@@ -12,22 +13,8 @@ defmodule Crit.Setup.AnimalImpl.Read do
     alias Crit.Setup.Schemas.Animal
     import Ecto.Datespan
 
-    def start(), do: from a in Animal
-
-    def start(where) do
-      from a in Animal, where: ^where
-    end
-
-    def from_ids(ids) do
-      from a in Animal, where: a.id in ^ids
-    end
-
     def preload_common(query) do
       query |> preload([:species, :service_gaps])
-    end
-
-    def ordered(query) do
-      query |> order_by([a], a.name)
     end
 
     def available_by_species(%Date{} = date, species_id) do
@@ -41,27 +28,24 @@ defmodule Crit.Setup.AnimalImpl.Read do
       from a in Animal,
         where: a.id in ^ids
     end
-      
   end
 
   def one(where, institution) do
-    Query.start(where)
+    CommonQuery.start(Animal, where)
     |> Query.preload_common()
     |> Sql.one(institution)
   end
 
   def all(institution) do
-    Query.start
+    CommonQuery.ordered_by_name(Animal)
     |> Query.preload_common()
-    |> Query.ordered
     |> Sql.all(institution)
   end
   
   def ids_to_animals(ids, institution) do
-    ids
-    |> Query.from_ids
+    CommonQuery.ordered_by_name(Animal)
+    |> CommonQuery.narrow_to_ids(ids)
     |> Query.preload_common
-    |> Query.ordered
     |> Sql.all(institution)
   end
 
