@@ -95,7 +95,7 @@ defmodule Crit.Setup.InstitutionServer do
     
     %__MODULE__{institution: institution,
                 router: router,
-                species: all.(Species) |> EnumX.id_pairs(:name),
+                species: all.(Species),
                 procedure_frequencies: all.(ProcedureFrequency)
                 }
   end

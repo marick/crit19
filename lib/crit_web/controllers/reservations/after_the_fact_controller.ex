@@ -21,7 +21,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   defp start_task_render(conn, state, changeset) do
     task_render(conn, :put_non_use_values, state,
       changeset: changeset,
-      species_options: InstitutionApi.available_species(institution(conn)),
+      species_options: InstitutionApi.available_species(institution(conn)) |> EnumX.id_pairs(:name),
       timeslot_options: InstitutionApi.timeslot_tuples(institution(conn)))
   end
 

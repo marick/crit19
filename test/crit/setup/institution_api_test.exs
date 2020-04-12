@@ -23,13 +23,13 @@ defmodule Crit.Setup.InstitutionApiTest do
     assert actual == @default_timezone
   end
 
-  test "an institution has tuples of species" do
+  test "an institution has species" do
     actual = InstitutionApi.available_species(@institution)
     expected = [{@bovine, @bovine_id}, {@equine, @equine_id}]
-    assert actual == expected
+    assert expected == EnumX.id_pairs(actual, :name)
   end
 
-  test "an institution can convert an id to a species" do
+  test "an institution can convert an id to a name" do
     assert InstitutionApi.species_name(@bovine_id, @institution) == @bovine
   end
 

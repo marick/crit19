@@ -73,7 +73,7 @@ defmodule Crit.Setup.InstitutionApi do
 
   def species_name(species_id, institution) do
     available_species(institution)
-    |> Enum.find(fn {_, id} -> id == species_id end)
-    |> elem(0)
+    |> Enum.find(fn %{id: id} -> id == species_id end)
+    |> Map.fetch!(:name)
   end
 end
