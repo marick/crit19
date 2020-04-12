@@ -39,7 +39,7 @@ defmodule CritWeb.Setup.ProcedureController do
   # ------------------------------------------------------------------------
 
   defp render_bulk_creation_form(conn, changesets) do
-    species_pairs = InstitutionApi.available_species(institution(conn)) |> EnumX.id_pairs(:name)
+    species_pairs = InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name)
     frequencies = InstitutionApi.procedure_frequencies(institution(conn))
     
     render(conn, "bulk_creation_form.html",

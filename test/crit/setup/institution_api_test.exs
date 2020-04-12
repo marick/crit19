@@ -24,7 +24,7 @@ defmodule Crit.Setup.InstitutionApiTest do
   end
 
   test "an institution has species" do
-    actual = InstitutionApi.available_species(@institution)
+    actual = InstitutionApi.species(@institution)
     expected = [{@bovine, @bovine_id}, {@equine, @equine_id}]
     assert expected == EnumX.id_pairs(actual, :name)
   end

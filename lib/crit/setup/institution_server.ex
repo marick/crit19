@@ -48,13 +48,18 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
-  def handle_call(:available_species, _from, state) do
+  def handle_call(:species, _from, state) do
     {:reply, state.species, state}
   end
 
   @impl true
   def handle_call(:procedure_frequencies, _from, state) do
     {:reply, state.procedure_frequencies, state}
+  end
+
+  @impl true
+  def handle_call({:get, key}, _from, state) do
+    {:reply, Map.fetch!(state, key), state}
   end
 
   @impl true

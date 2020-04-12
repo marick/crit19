@@ -6,6 +6,13 @@ defmodule Crit.Setup.InstitutionApi do
   alias Ecto.Timespan
   alias Pile.TimeHelper
 
+  def species(institution), do: get(:species, institution)
+  def procedure_frequencies(institution), do: get(:procedure_frequencies, institution)
+
+
+
+
+
   def all do
     Repo.all(from Institution)
     |> Enum.map(&put_timeslots/1)
@@ -63,17 +70,14 @@ defmodule Crit.Setup.InstitutionApi do
     Timespan.from_date_time_and_duration(date, timeslot.start, timeslot.duration)
   end
 
-  def available_species(institution) do
-    GenServer.call(server(institution), :available_species)
-  end
-
-  def procedure_frequencies(institution) do
-    GenServer.call(server(institution), :procedure_frequencies)
-  end
-
   def species_name(species_id, institution) do
-    available_species(institution)
+    species(institution)
     |> Enum.find(fn %{id: id} -> id == species_id end)
     |> Map.fetch!(:name)
   end
+
+
+  defp get(key, institution),
+    do: GenServer.call(server(institution), {:get, key})
+
 end

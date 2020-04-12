@@ -41,7 +41,7 @@ defmodule CritWeb.Setup.AnimalController do
     render(conn, "bulk_creation.html",
       changeset: changeset,
       path: path(:bulk_create),
-      options: InstitutionApi.available_species(institution(conn)) |> EnumX.id_pairs(:name))
+      options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name))
   end
 
   def bulk_create(conn, %{"bulk_animal" => raw_params}) do
