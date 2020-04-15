@@ -2,10 +2,14 @@ defmodule Crit.Setup.InstitutionServer do
   use GenServer
   alias Crit.Sql.RouteToSchema
   alias Crit.Setup.HiddenSchemas.{Species,ProcedureFrequency}
+  alias Crit.Setup.Schemas.Timeslot
   alias Crit.Sql.CommonQuery
   alias Crit.Setup.InstitutionApi
 
-  defstruct institution: nil, router: nil, species: [], procedure_frequencies: []
+  defstruct institution: nil, router: nil,
+    species: [],
+    procedure_frequencies: [],
+    timeslots: []
   
 
   def server(short_name), do: String.to_atom(short_name)
@@ -14,6 +18,7 @@ defmodule Crit.Setup.InstitutionServer do
     do: GenServer.start_link(__MODULE__, institution,
           name: server(institution.short_name))
 
+  # ----------------------------------------------------------------------------
   # Server part
 
   @impl true
@@ -22,13 +27,13 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
-  def handle_call(:raw, _from, state) do
-    {:reply, state.institution, state}
+  def handle_call({:get, key}, _from, state) do
+    {:reply, Map.fetch!(state, key), state}
   end
 
   @impl true
-  def handle_call(:timeslots, _from, state) do
-    {:reply, state.institution.timeslots, state}
+  def handle_call(:raw, _from, state) do
+    {:reply, state.institution, state}
   end
 
   @impl true
@@ -45,21 +50,6 @@ defmodule Crit.Setup.InstitutionServer do
       state.institution.timeslots
       |> EnumX.find_by_id(slot_id)
     {:reply, {:ok, result}, state}
-  end
-
-  @impl true
-  def handle_call(:species, _from, state) do
-    {:reply, state.species, state}
-  end
-
-  @impl true
-  def handle_call(:procedure_frequencies, _from, state) do
-    {:reply, state.procedure_frequencies, state}
-  end
-
-  @impl true
-  def handle_call({:get, key}, _from, state) do
-    {:reply, Map.fetch!(state, key), state}
   end
 
   @impl true
@@ -101,7 +91,8 @@ defmodule Crit.Setup.InstitutionServer do
     %__MODULE__{institution: institution,
                 router: router,
                 species: all.(Species),
-                procedure_frequencies: all.(ProcedureFrequency)
+                procedure_frequencies: all.(ProcedureFrequency),
+                timeslots: all.(Timeslot)
                 }
   end
 end

@@ -8,9 +8,7 @@ defmodule Crit.Setup.InstitutionApi do
 
   def species(institution), do: get(:species, institution)
   def procedure_frequencies(institution), do: get(:procedure_frequencies, institution)
-
-
-
+  def timeslots(institution), do: get(:timeslots, institution)
 
 
   def all do
@@ -37,10 +35,6 @@ defmodule Crit.Setup.InstitutionApi do
     timezone = timezone(institution)
     TimeHelper.today_date(timezone)
   end    
-
-  def timeslots(institution) do 
-    GenServer.call(server(institution), :timeslots)
-  end
 
   def timeslot_by_id(id, institution) do 
     {:ok, timeslot} =
