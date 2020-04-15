@@ -46,14 +46,6 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
-  def handle_call({:timeslot_by_id, slot_id}, _from, state) do
-    result = 
-      state.timeslots
-      |> EnumX.find_by_id(slot_id)
-    {:reply, {:ok, result}, state}
-  end
-
-  @impl true
   def handle_call(:reload, _from, state) do
     short_name = state.institution.short_name
     new_institution =

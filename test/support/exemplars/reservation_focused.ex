@@ -53,13 +53,13 @@ defmodule Crit.Exemplars.ReservationFocused do
 
   def morning_timeslot do
     hard_coded = 1
-    assert InstitutionApi.timeslot_by_id(hard_coded, @institution).name =~ "morning"
+    assert InstitutionApi.timeslot_name(hard_coded, @institution) =~ "morning"
     hard_coded
   end
 
   def evening_timeslot do
     hard_coded = 3
-    assert InstitutionApi.timeslot_by_id(hard_coded, @institution).name =~ "evening"
+    assert InstitutionApi.timeslot_name(hard_coded, @institution) =~ "evening"
     hard_coded
   end
 

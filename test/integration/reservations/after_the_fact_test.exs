@@ -72,10 +72,6 @@ defmodule Integration.Reservations.AfterTheFactTest do
     another =
       Timespan.from_date_time_and_duration(@date, ~T[08:00:00], 4 * 60)
     assert one_way == another
-    
-    assert_fields(InstitutionApi.timeslot_by_id(@timeslot_id, @institution),
-      start: ~T[08:00:00], duration: 4 * 60)
-
     one_way
   end
 end

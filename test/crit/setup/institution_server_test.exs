@@ -3,7 +3,6 @@ defmodule Crit.Setup.InstitutionServerTest do
   alias Crit.Setup.Schemas.Institution
   alias Ecto.Changeset
   import Crit.Setup.InstitutionServer, only: [server: 1]
-  alias Crit.Exemplars.ReservationFocused
 
   setup do
     [server: server(@institution)]
@@ -33,17 +32,6 @@ defmodule Crit.Setup.InstitutionServerTest do
     assert raw.display_name == "Completely new"
   end
 
-  test "can find a slot by id", %{server: server} do
-    expected = ReservationFocused.timeslot
-    {:ok, found} = GenServer.call(server, {:timeslot_by_id, expected.id})
-
-    assert_fields(found,
-      name: expected.name,
-      start: expected.start,
-      duration: expected.duration)
-  end
-
-  
 
   defp assert_holds_default_institution(server) do 
     assert %{short_name: @institution} = GenServer.call(server, :raw)

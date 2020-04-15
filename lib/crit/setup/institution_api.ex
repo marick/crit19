@@ -25,12 +25,6 @@ defmodule Crit.Setup.InstitutionApi do
     TimeHelper.today_date(timezone)
   end
 
-  def timeslot_by_id(id, institution) do 
-    {:ok, timeslot} =
-      GenServer.call(server(institution), {:timeslot_by_id, id})
-    timeslot
-  end
-
   # This could just be a list of names, but the names are arbitrary
   # strings, and I worry about things like smart quotes not making
   # the round trip correctly.
@@ -54,8 +48,14 @@ defmodule Crit.Setup.InstitutionApi do
     |> Map.fetch!(:name)
   end
 
-
+  # ----------------------------------------------------------------------------
+  
   defp get(key, institution),
     do: GenServer.call(server(institution), {:get, key})
 
+
+  defp timeslot_by_id(id, institution) do
+    get(:timeslots, institution)
+    |> EnumX.find_by_id(id)
+  end
 end
