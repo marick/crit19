@@ -1,11 +1,12 @@
 defmodule Crit.Setup.InstitutionServer do
   use GenServer
   alias Crit.Sql.RouteToSchema
+  alias Crit.Setup.Schemas.Institution
   alias Crit.Setup.HiddenSchemas.{Species,ProcedureFrequency}
   alias Crit.Setup.Schemas.Timeslot
   alias Crit.Sql.CommonQuery
-  alias Crit.Setup.InstitutionApi
-
+  alias Crit.Repo
+  
   defstruct institution: nil, router: nil,
     species: [],
     procedure_frequencies: [],
@@ -39,7 +40,7 @@ defmodule Crit.Setup.InstitutionServer do
   @impl true
   def handle_call(:timeslot_tuples, _from, state) do
     tuples = 
-      state.institution.timeslots
+      state.timeslots
       |> EnumX.id_pairs(:name)
     {:reply, tuples, state}
   end
@@ -47,7 +48,7 @@ defmodule Crit.Setup.InstitutionServer do
   @impl true
   def handle_call({:timeslot_by_id, slot_id}, _from, state) do
     result = 
-      state.institution.timeslots
+      state.timeslots
       |> EnumX.find_by_id(slot_id)
     {:reply, {:ok, result}, state}
   end
@@ -55,7 +56,10 @@ defmodule Crit.Setup.InstitutionServer do
   @impl true
   def handle_call(:reload, _from, state) do
     short_name = state.institution.short_name
-    new_institution = InstitutionApi.one!(short_name: short_name)
+    new_institution =
+      Institution
+      |> CommonQuery.start(short_name: short_name)
+      |> Repo.one!
     {:reply, :ok, new_state(new_institution)}
   end
 
@@ -84,14 +88,15 @@ defmodule Crit.Setup.InstitutionServer do
   # Util
   defp new_state(institution) do
     router = if institution.prefix, do: RouteToSchema, else: RouteToRepo
-    all = fn module ->
-      router.forward(:all, [CommonQuery.ordered_by_name(module)], [], institution)
+    all = fn query ->
+      router.forward(:all, [query], [], institution)
     end
+    by_name = &(all.(CommonQuery.ordered_by_name(&1)))
     
     %__MODULE__{institution: institution,
                 router: router,
-                species: all.(Species),
-                procedure_frequencies: all.(ProcedureFrequency),
+                species: by_name.(Species),
+                procedure_frequencies: by_name.(ProcedureFrequency),
                 timeslots: all.(Timeslot)
                 }
   end

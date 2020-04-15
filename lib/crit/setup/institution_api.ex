@@ -16,11 +16,6 @@ defmodule Crit.Setup.InstitutionApi do
     |> Enum.map(&put_timeslots/1)
   end
 
-  def one!(kws) do
-    Repo.one(from Institution, where: ^kws)
-    |> put_timeslots
-  end
-
   def timezone(institution) do
     institution = GenServer.call(server(institution), :raw)
     institution.timezone
