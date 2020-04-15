@@ -23,48 +23,48 @@ defmodule Crit.Sql do
   """
 
   def all(queryable, opts \\ [], short_name) do
-    run_modified(short_name, :all, {[queryable], opts})
+    run_using_institution_data(short_name, :all, {[queryable], opts})
   end
 
   def delete_all(queryable, opts \\ [], short_name) do
-    run_modified(short_name, :delete_all, {[queryable], opts})
+    run_using_institution_data(short_name, :delete_all, {[queryable], opts})
   end
 
   def exists?(queryable, opts \\ [], short_name) do
-    run_modified(short_name, :exists?, {[queryable], opts})
+    run_using_institution_data(short_name, :exists?, {[queryable], opts})
   end
 
   def get(queryable, id, opts \\ [], short_name) do
-    run_modified(short_name, :get, {[queryable, id], opts}) end
+    run_using_institution_data(short_name, :get, {[queryable, id], opts}) end
 
   def get!(queryable, id, opts \\ [], short_name) do
-    run_modified(short_name, :get!, {[queryable, id], opts}) end
+    run_using_institution_data(short_name, :get!, {[queryable, id], opts}) end
 
   def get_by(queryable, clauses, opts \\ [], short_name) do
-    run_modified(short_name, :get_by, {[queryable, clauses], opts})
+    run_using_institution_data(short_name, :get_by, {[queryable, clauses], opts})
   end
 
   def insert(struct_or_changeset, opts \\ [], short_name) do
-    run_modified(short_name, :insert, {[struct_or_changeset], opts})
+    run_using_institution_data(short_name, :insert, {[struct_or_changeset], opts})
   end
 
   def insert!(struct_or_changeset, opts \\ [], short_name) do
-    run_modified(short_name, :insert!, {[struct_or_changeset], opts})
+    run_using_institution_data(short_name, :insert!, {[struct_or_changeset], opts})
   end
 
   def insert_all(schema_or_source, entries, opts \\ [], short_name) do
-    run_modified(short_name, :insert_all, {[schema_or_source, entries], opts})
+    run_using_institution_data(short_name, :insert_all, {[schema_or_source, entries], opts})
   end
 
   def one(queryable, opts \\ [], short_name) do
-    run_modified(short_name, :one, {[queryable], opts})
+    run_using_institution_data(short_name, :one, {[queryable], opts})
   end
 
   def update(changeset, opts \\ [], short_name) do
-    run_modified(short_name, :update, {[changeset], opts}) end
+    run_using_institution_data(short_name, :update, {[changeset], opts}) end
 
-  defp run_modified(short_name, sql_command, data_for_server) do
-    command = Tuple.insert_at(data_for_server, 0, :adjust)
+  defp run_using_institution_data(short_name, sql_command, data_for_server) do
+    command = Tuple.insert_at(data_for_server, 0, :adjusted_repo_call)
     [repo, arglist] = 
       GenServer.call(server(short_name), command)
 

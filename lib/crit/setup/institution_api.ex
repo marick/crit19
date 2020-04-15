@@ -1,6 +1,6 @@
 defmodule Crit.Setup.InstitutionApi do
   alias Crit.Repo
-  alias Crit.Setup.Schemas.{Institution,Timeslot}
+  alias Crit.Setup.Schemas.Institution
   import Crit.Setup.InstitutionServer, only: [server: 1]
   import Ecto.Query
   alias Ecto.Timespan
