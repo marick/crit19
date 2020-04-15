@@ -1,8 +1,8 @@
 defmodule Crit.Sql.CommonQuery do
   import Ecto.Query
 
-  def start(schema),        do: from x in schema
-  def start(schema, where), do: from x in schema, where: ^where
+  def start(schema) when is_atom(schema),        do: from x in schema
+  def start(schema, where) when is_atom(schema), do: from x in schema, where: ^where
 
   def ordered_by_name(%Ecto.Query{} = query) do
     query
@@ -10,7 +10,7 @@ defmodule Crit.Sql.CommonQuery do
     |> order_by([x], x.name)
   end
 
-  def ordered_by_name(schema) do
+  def ordered_by_name(schema) when is_atom(schema) do
     start(schema) |> ordered_by_name
   end
 
