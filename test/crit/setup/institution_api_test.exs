@@ -9,7 +9,6 @@ defmodule Crit.Setup.InstitutionApiTest do
     [retrieved] = InstitutionApi.all
 
     assert retrieved.short_name == @institution
-    assert [_ | _] = retrieved.timeslots
   end
 
   test "an institution has a timezone" do

@@ -13,7 +13,6 @@ defmodule Crit.Setup.InstitutionApi do
 
   def all do
     Repo.all(from Institution)
-    |> Enum.map(&put_timeslots/1)
   end
 
   def timezone(institution) do
@@ -35,11 +34,6 @@ defmodule Crit.Setup.InstitutionApi do
     {:ok, timeslot} =
       GenServer.call(server(institution), {:timeslot_by_id, id})
     timeslot
-  end
-
-  defp put_timeslots(full_institution) do
-    %{full_institution |
-      timeslots: Repo.all(Timeslot, prefix: full_institution.prefix)}
   end
 
   # This could just be a list of names, but the names are arbitrary

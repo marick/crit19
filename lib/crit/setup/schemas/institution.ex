@@ -1,7 +1,6 @@
 defmodule Crit.Setup.Schemas.Institution do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Setup.Schemas.Timeslot
 
   @schema_prefix "global"
   
@@ -11,7 +10,6 @@ defmodule Crit.Setup.Schemas.Institution do
     field :prefix, :string
     field :repo, :string
     field :timezone, :string
-    field :timeslots, {:array, Timeslot}, virtual: true
 
     timestamps()
   end
