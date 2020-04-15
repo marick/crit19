@@ -110,7 +110,7 @@ defmodule Crit.FieldConverters.ToSpan do
         {:ok, @never}
       @today ->
         institution = Changeset.fetch_field!(changeset, :institution)
-        InstitutionApi.today(institution)
+        {:ok, InstitutionApi.today!(institution)}
       _ -> 
         Date.from_iso8601(datestring)
     end

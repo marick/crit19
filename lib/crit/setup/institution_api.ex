@@ -20,15 +20,10 @@ defmodule Crit.Setup.InstitutionApi do
     institution.timezone
   end
 
-  def today(institution) do
-    timezone = timezone(institution)
-    {:ok, TimeHelper.today_date(timezone)}
-  end    
-
   def today!(institution) do
     timezone = timezone(institution)
     TimeHelper.today_date(timezone)
-  end    
+  end
 
   def timeslot_by_id(id, institution) do 
     {:ok, timeslot} =
