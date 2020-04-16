@@ -26,19 +26,16 @@ defmodule Crit.Setup.InstitutionApi do
   end
 
   def timeslot_name(id, institution) do
-    timeslot = timeslot_by_id(id, institution)
-    timeslot.name
+    by_id(:timeslots, id, institution).name
   end
 
   def timespan(%Date{} = date, timeslot_id, institution) do
-    timeslot = timeslot_by_id(timeslot_id, institution)
+    timeslot = by_id(:timeslots, timeslot_id, institution)
     Timespan.from_date_time_and_duration(date, timeslot.start, timeslot.duration)
   end
 
-  def species_name(species_id, institution) do
-    species(institution)
-    |> Enum.find(fn %{id: id} -> id == species_id end)
-    |> Map.fetch!(:name)
+  def species_name(id, institution) do
+    by_id(:species, id, institution).name
   end
 
   # ----------------------------------------------------------------------------
@@ -46,8 +43,6 @@ defmodule Crit.Setup.InstitutionApi do
   defp get(key, institution),
     do: GenServer.call(server(institution), {:get, key})
 
-  defp timeslot_by_id(id, institution) do
-    get(:timeslots, institution)
-    |> EnumX.find_by_id(id)
-  end
+  defp by_id(key, id, institution),
+    do: get(key, institution) |> EnumX.find_by_id(id)
 end
