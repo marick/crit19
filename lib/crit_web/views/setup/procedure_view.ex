@@ -1,6 +1,7 @@
 defmodule CritWeb.Setup.ProcedureView do
   use CritWeb, :view
   alias Ecto.Changeset
+  alias Crit.Global.SeedConstants
 
   def procedure_input(f, changeset) do
     [text_input(f, :name,
@@ -20,8 +21,11 @@ defmodule CritWeb.Setup.ProcedureView do
 
   def frequency_chooser(f, frequencies) do
     ~E"""
-        <%= select f, :frequency, EnumX.names(frequencies), id: "3838",
-            class: "ui dropdown" %>
+        <%= select f, :frequency,
+              EnumX.id_pairs(frequencies, :name),
+              id: input_id(f, :frequency),
+              selected: SeedConstants.unlimited_frequency_id,
+              class: "ui dropdown" %>
     """
   end
 

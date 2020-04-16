@@ -46,6 +46,7 @@ defmodule Crit.Global.SeedConstants do
       @equine SeedConstants.equine()
 
       @unlimited_frequency_id SeedConstants.unlimited_frequency_id
+      @once_per_week_frequency_id SeedConstants.once_per_week_frequency_id
       @default_timezone Constants.default_institution.timezone
     end
   end
