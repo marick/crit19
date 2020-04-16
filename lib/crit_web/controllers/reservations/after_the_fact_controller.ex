@@ -22,7 +22,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     task_render(conn, :put_non_use_values, state,
       changeset: changeset,
       species_options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name),
-      timeslot_options: InstitutionApi.timeslot_tuples(institution(conn)))
+      timeslot_options: InstitutionApi.timeslots(institution(conn)) |> EnumX.id_pairs(:name))
   end
 
   def put_non_use_values(conn, %{"non_use_values" => delivered_params}) do

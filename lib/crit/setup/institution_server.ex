@@ -38,14 +38,6 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
-  def handle_call(:timeslot_tuples, _from, state) do
-    tuples = 
-      state.timeslots
-      |> EnumX.id_pairs(:name)
-    {:reply, tuples, state}
-  end
-
-  @impl true
   def handle_call(:reload, _from, state) do
     short_name = state.institution.short_name
     new_institution =
@@ -58,14 +50,6 @@ defmodule Crit.Setup.InstitutionServer do
   @impl true
   def handle_call({:multi_opts, given_opts}, _from, state) do
     retval = state.router.multi_opts(given_opts, state.institution)
-    {:reply, retval, state}
-  end
-
-  @impl true
-  def handle_call({:sql, sql_command, all_but_last_arg, given_opts}, _from, state) do
-    retval =
-      state.router.forward(sql_command, all_but_last_arg, given_opts,
-        state.institution)
     {:reply, retval, state}
   end
 

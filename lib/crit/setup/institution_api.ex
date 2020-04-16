@@ -10,6 +10,7 @@ defmodule Crit.Setup.InstitutionApi do
   def procedure_frequencies(institution), do: get(:procedure_frequencies, institution)
   def timeslots(institution), do: get(:timeslots, institution)
 
+  # ----------------------------------------------------------------------------
 
   def all do
     Repo.all(from Institution)
@@ -23,13 +24,6 @@ defmodule Crit.Setup.InstitutionApi do
   def today!(institution) do
     timezone = timezone(institution)
     TimeHelper.today_date(timezone)
-  end
-
-  # This could just be a list of names, but the names are arbitrary
-  # strings, and I worry about things like smart quotes not making
-  # the round trip correctly.
-  def timeslot_tuples(institution) do
-    GenServer.call(server(institution), :timeslot_tuples)
   end
 
   def timeslot_name(id, institution) do
@@ -52,7 +46,6 @@ defmodule Crit.Setup.InstitutionApi do
   
   defp get(key, institution),
     do: GenServer.call(server(institution), {:get, key})
-
 
   defp timeslot_by_id(id, institution) do
     get(:timeslots, institution)

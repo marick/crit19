@@ -32,18 +32,6 @@ defmodule Crit.Setup.InstitutionApiTest do
     assert actual == some_timeslot.name
   end
 
-  test "an institution has time slots" do
-    actual = 
-      InstitutionApi.timeslot_tuples(@institution)
-      |> Enum.map(fn {name, _id} -> name end)
-
-    expected = ["morning (8-noon)",
-                "afternoon (1-5)",
-                "evening (6-midnight)",
-                "all day (8-5)"]
-    assert actual == expected
-  end
-
   test "an institution can convert symbolic values to a Timespan" do
     actual = InstitutionApi.timespan(~D[2019-01-01], 1, @institution)
     expected = Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
