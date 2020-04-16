@@ -17,8 +17,7 @@ defmodule Crit.Setup.InstitutionApi do
   end
 
   def timezone(institution) do
-    institution = GenServer.call(server(institution), :raw)
-    institution.timezone
+    get(:institution, institution).timezone
   end
 
   def today!(institution) do

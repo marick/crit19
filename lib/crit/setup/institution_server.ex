@@ -33,11 +33,6 @@ defmodule Crit.Setup.InstitutionServer do
   end
 
   @impl true
-  def handle_call(:raw, _from, state) do
-    {:reply, state.institution, state}
-  end
-
-  @impl true
   def handle_call(:reload, _from, state) do
     short_name = state.institution.short_name
     new_institution =

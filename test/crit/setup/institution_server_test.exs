@@ -28,13 +28,13 @@ defmodule Crit.Setup.InstitutionServerTest do
     assert {:ok, _} = Repo.update(tweaked)
 
     assert :ok = GenServer.call(server, :reload)
-    raw = GenServer.call(server, :raw)
+    raw = GenServer.call(server, {:get, :institution})
     assert raw.display_name == "Completely new"
   end
 
 
   defp assert_holds_default_institution(server) do 
-    assert %{short_name: @institution} = GenServer.call(server, :raw)
+    assert %{short_name: @institution} = GenServer.call(server, {:get, :institution})
   end
 
 end
