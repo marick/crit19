@@ -50,12 +50,24 @@ short_name = Constants.default_institution.short_name
 bovine_id = SeedConstants.bovine_id
 equine_id = SeedConstants.equine_id
 unlimited_frequency_id = SeedConstants.unlimited_frequency_id
+once_per_week_frequency_id = SeedConstants.once_per_week_frequency_id
 
 %{id: ^unlimited_frequency_id} =
   Sql.insert!(%ProcedureFrequency{
         name: "unlimited",
         calculation_name: "unlimited",
         description: "This procedure can be performed many times per day."},
+    short_name)
+%{id: ^once_per_week_frequency_id} =
+  Sql.insert!(%ProcedureFrequency{
+        name: "once per week",
+        calculation_name: "once per week",
+        description:
+        """
+        There doesn't have to be a full week between two
+        performances. For example, the procedure could be performed
+        Friday and then Monday.
+        """},
     short_name)
 
 %{id: ^bovine_id} = 
@@ -80,12 +92,12 @@ Sql.insert!(%ServiceGap{
 {:ok, _} = Procedure.insert(%{
       name: "Acupuncture demonstration",
       species_id: equine_id,
-      frequency_id: unlimited_frequency_id},
+      frequency_id: once_per_week_frequency_id},
   short_name)
 {:ok, _} = Procedure.insert(%{
       name: "Caudal epidural",
       species_id: bovine_id,
-      frequency_id: unlimited_frequency_id},
+      frequency_id: once_per_week_frequency_id},
   short_name)
 {:ok, _} = Procedure.insert(%{
       name: "Hoof exam and care",
