@@ -141,7 +141,10 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
 
   defp params(list) do
     one_param = fn name, index_string, species_id_strings -> 
-      %{"name" => name, "index" => index_string , "species_ids" => species_id_strings}
+      %{"name" => name,
+        "index" => index_string,
+        "frequency_id" => @once_per_week_frequency_id,
+        "species_ids" => species_id_strings}
     end
 
     map_entry = fn {{name, species_ids}, index} ->

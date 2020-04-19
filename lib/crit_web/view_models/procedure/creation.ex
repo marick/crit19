@@ -12,9 +12,10 @@ defmodule CritWeb.ViewModels.Procedure.Creation do
     field :index, :integer
     field :name, :string, default: ""
     field :species_ids, {:array, :id}, default: []
+    field :frequency_id, :integer
   end
 
-  @required [:name, :species_ids, :index]
+  @required [:name, :species_ids, :index, :frequency_id]
 
   def starting_changeset() do
     %__MODULE__{}
@@ -51,14 +52,16 @@ defmodule CritWeb.ViewModels.Procedure.Creation do
   # -------------------------------------------------------------------0- 
 
   def unfold_to_attrs(changesets) do # public for testing
-    one_set = fn name, species_id -> 
-      %{name: name, species_id: species_id}
+    one_set = fn %{changes: changes}, species_id ->
+      %{name: changes.name,
+        species_id: species_id,
+        frequency_id: changes.frequency_id}
     end
 
     Enum.flat_map(changesets, fn changeset ->
       case fetch_change(changeset, :name) do
-        {:ok, name} -> 
-          Enum.map(fetch_change!(changeset, :species_ids), &(one_set.(name, &1)))
+        {:ok, _} -> 
+          Enum.map(fetch_change!(changeset, :species_ids), &(one_set.(changeset, &1)))
         _ ->
           []
       end

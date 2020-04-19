@@ -4,10 +4,14 @@ defmodule Crit.Setup.ProcedureApiTest do
   alias Crit.Setup.ProcedureApi
 
   setup do
-    insert(name: "Equine only", species_id: @equine_id)
-    insert(name: "Bovine only", species_id: @bovine_id)
-    insert(name: "Both", species_id: @equine_id)
-    insert(name: "Both", species_id: @bovine_id)
+    f = fn name, species_id ->
+      insert(name: name, species_id: species_id, frequency_id: @unlimited_frequency_id)
+    end
+    
+    f.("Equine only", @equine_id)
+    f.("Bovine only", @bovine_id)
+    f.("Both", @equine_id)
+    f.("Both", @bovine_id)
     :ok
   end
 

@@ -21,7 +21,7 @@ defmodule CritWeb.Setup.ProcedureView do
 
   def frequency_chooser(f, frequencies) do
     ~E"""
-        <%= select f, :frequency,
+        <%= select f, :frequency_id,
               EnumX.id_pairs(frequencies, :name),
               id: input_id(f, :frequency),
               selected: SeedConstants.unlimited_frequency_id,

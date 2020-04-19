@@ -16,7 +16,7 @@ defmodule Crit.Setup.Schemas.Procedure do
     timestamps()
   end
 
-  @required [:name, :species_id]
+  @required [:name, :species_id, :frequency_id]
 
   def changeset(procedure, attrs) do
     procedure
