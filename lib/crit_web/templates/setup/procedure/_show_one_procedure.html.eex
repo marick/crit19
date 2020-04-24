@@ -8,3 +8,7 @@
     <%= @procedure.species_name %>
   </td>
   
+  <td>
+    <%= @procedure.frequency_name %>
+  </td>
+  

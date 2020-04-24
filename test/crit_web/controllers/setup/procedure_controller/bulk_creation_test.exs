@@ -43,6 +43,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_purpose(displaying_procedure_summaries())
       |> assert_purpose(snippet_to_display_procedure())
       |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
+      |> assert_user_sees(["once per week", "unlimited"])
 
       assert [%{name: "proc1"}, %{name: "proc2"}] = 
         ProcedureApi.all_by_species(@bovine_id, @institution)

@@ -38,6 +38,10 @@ defmodule Crit.Setup.InstitutionApi do
     by_id(:species, id, institution).name
   end
 
+  def procedure_frequency_name(id, institution) do
+    by_id(:procedure_frequencies, id, institution).name
+  end
+
   # ----------------------------------------------------------------------------
   
   defp get(key, institution),
