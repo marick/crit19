@@ -35,3 +35,4 @@ npm-debug.log
 .elixir_ls
 mix.lock
 .vscode
+.DS_Store
