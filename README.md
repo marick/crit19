@@ -1,11 +1,11 @@
 ![](https://github.com/marick/crit19/blob/master/pics/1-trimmed.png?raw=true)
 
 
-Around 2010, I wrote Critter4Us, an animal reservation system for the Agricultural Animal Care and Use Program of the University of Illinois School of Veterinary Medicine. It was a somewhat amateurish system - it was my first ever web application - but it continued to be used through 2019. At that time, I decided to write a better system, intending to open it up to other universities. Like the original, it would be free, because (1) my wife has been a professor of veterinary medicine for many years, so I feel affection for vet schools, (2) I'm (mostly) retired and everyone needs a hobby, right?
+Around 2010, I wrote Critter4Us, an animal reservation system for the Agricultural Animal Care and Use Program of the University of Illinois School of Veterinary Medicine. I did this to please my wife, who was in charge of that program at the time. It was a somewhat amateurish system - it was my first ever web application - but it continued to be used through 2019. Toward the end of that year, I decided to write a better system, intending to open it up to other universities. Like the original, it would be free, because (1) my wife has been a professor of veterinary medicine for many years, so I feel affection for vet schools, (2) I'm (mostly) retired and everyone needs a hobby, right?
 
 This is that better system.
 
-Since I started, new management at the University of Illinois has they prefer an internally-developed system that will "link with several other programs and security features that the university already has in place." As a result, I'm slowing development on this version until I see if any other vet school is interested. 
+Since I started, new management at the University of Illinois has decided they prefer an internally-developed system that will "link with several other programs and security features that the university already has in place." As a result, I'm slowing development on this version until I see if any other vet school is interested. 
 
 ### Features
 
