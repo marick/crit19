@@ -14,6 +14,10 @@ Changed management at the University of Illinois has since decided to replace th
 * The new system is being defined to be flexible. For example, sometimes professors use animals and only report that use after the fact. (Professors not following the rules? Who would have thought it!) Reservations can be created after the fact, even if they violated guidelines.
 * The original system didn't have the notion of who gets billed for particular uses of particular animals. The new one doesn't either, but I expect I'll add it.
 
+### Sample pages
+
+I've tried to make the new version have the features of modern web apps (like scaling down nicely to fit on a phone screen). 
+
 ![](https://github.com/marick/crit19/blob/master/pics/2.png?raw=true)
 ![](https://github.com/marick/crit19/blob/master/pics/3.png?raw=true)
 ![](https://github.com/marick/crit19/blob/master/pics/4.png?raw=true)
