@@ -13,7 +13,7 @@ Since I started, new management at the University of Illinois has decided they p
 * The system can prevent reservations that would violate animal care guidelines. 
 * It also provides audit reports that show guidelines have been followed. They can be used during, for example, USDA inspections.
 * The specific guidelines enforced are how often a particular procedure can be demonstrated on a particular animal. In the original Critter4Us, for example, paravertebral anesthesia could be demonstrated on a bovine only once every two weeks.
-* The new system is being defined to be flexible. For example, sometimes professors use animals and only mention that after the fact. (Professors not following the rules? Who would have thought it!) So reservations can be created after the fact, even if they violated guidelines. (But the violations are recorded.)
+* The new system is being defined to be flexible. For example, sometimes professors use animals and only mention that after the fact. (Professors not following the rules? Who would have thought it!) So reservations can be created retroactively, even if they violated guidelines. (But the violations are recorded.)
 * The original system didn't have the notion of who gets billed for particular uses of particular animals. The new one doesn't either, but I expect I'll add it.
 
 ### Sample pages
