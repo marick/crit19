@@ -20,4 +20,3 @@ I've tried to make the new version have the features of modern web apps (like sc
 
 ![](https://github.com/marick/crit19/blob/master/pics/2.png?raw=true)
 ![](https://github.com/marick/crit19/blob/master/pics/3.png?raw=true)
-![](https://github.com/marick/crit19/blob/master/pics/4.png?raw=true)
