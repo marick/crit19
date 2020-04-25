@@ -10,7 +10,7 @@ Since I started, new management at the University of Illinois has decided they p
 ### Features
 
 * The system lets professors or administrators reserve teaching animals - much as they would reserve a meeting room.
-* In addition, the system can prevent reservations that would violate animal care guidelines. 
+* The system can prevent reservations that would violate animal care guidelines. 
 * It also provides audit reports that shows guidelines have been followed. 
 * The specific guidelines enforced are how often a particular procedure can be demonstrated on a particular animal. In the original Critter4Us, for example, paravertebral anesthesia could be demonstrated on a bovine only once every two weeks.
 * The new system is being defined to be flexible. For example, sometimes professors use animals and only report that use after the fact. (Professors not following the rules? Who would have thought it!) Reservations can be created after the fact, even if they violated guidelines.
