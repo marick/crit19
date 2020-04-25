@@ -1,9 +1,11 @@
 ![](https://github.com/marick/crit19/blob/master/pics/1-trimmed.png?raw=true)
 
 
-Around 2010, I wrote Critter4Us, an animal reservation system for the Agricultural Animal Care and Use Program of the University of Illinois School of Veterinary Medicine. It was a somewhat amateurish system - I was using it to learn - but it continued to be used through 2019. At that time, I decided to write a better system, again using it to learn, with the intent that I could open it up to other universities. This is that better system.
+Around 2010, I wrote Critter4Us, an animal reservation system for the Agricultural Animal Care and Use Program of the University of Illinois School of Veterinary Medicine. It was a somewhat amateurish system - it was my first ever web application - but it continued to be used through 2019. At that time, I decided to write a better system, with the intent that I would open it up to other universities. Like the original, it would be free, because (1) my wife has been a professor of veterinary medicine for many years, so I feel affection for vet schools, (2) I'm (mostly) retired and everyone needs a hobby, right?
 
-Changed management at the University of Illinois has since decided to replace the original Critter4Us with an internally-developed system that will "link with several other programs and security features that the university already has in place". As a result, I'm slowing development on this version until I see if any other school is interested. 
+This is that better system.
+
+Since I started, new management at the University of Illinois has they prefer an internally-developed system that will "link with several other programs and security features that the university already has in place." As a result, I'm slowing development on this version until I see if any other vet school is interested. 
 
 ### Features
 
