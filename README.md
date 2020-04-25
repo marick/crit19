@@ -20,7 +20,6 @@ Since I started, new management at the University of Illinois has decided they p
 
 I've tried to make the new version have the features of modern web apps (like scaling down nicely to fit on a phone screen). 
 
-Here, someone is adding a reservation that already happened:
 ![](https://github.com/marick/crit19/blob/master/pics/2.png?raw=true)
 
 Here's a form you'd use to mark an animal as out of service:
