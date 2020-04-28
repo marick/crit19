@@ -19,10 +19,7 @@ defmodule Crit.Reservations.RestPeriod do
   ]
   
   def conflicting_uses(query, "once per day", desired_date, procedure_id) do
-    first = Date.add(desired_date, -0)
-    after_last = Date.add(desired_date, 1)
-    conflicting_range = Datespan.customary(first, after_last) |> Datespan.dump!
-    
+    conflicting_range = date_range(desired_date, 1)
     
     from a in query,
       join: p in Procedure, on: p.id == ^procedure_id,
@@ -30,6 +27,13 @@ defmodule Crit.Reservations.RestPeriod do
       join: r in Reservation, on: u.reservation_id == r.id,
       where: contains_point_fragment(^conflicting_range, r.date),
       select: %{animal_name: a.name, procedure_name: p.name, date: r.date}
-    
   end
+
+  defp date_range(date, width) do
+    first = Date.add(date, -(width - 1))
+    after_last = Date.add(date, width)
+    Datespan.customary(first, after_last) |> Datespan.dump!
+  end
+    
+    
 end
