@@ -3,11 +3,16 @@ defmodule Crit.Factory do
   use Crit.TestConstants
   alias Crit.Users.Schemas.{User, PermissionList}
   alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure}
+  alias Crit.Setup.HiddenSchemas.ProcedureFrequency
   alias Crit.Sql
   alias Crit.Exemplars
   alias Ecto.Datespan
   require Faker
 
+  def sql_insert!(tag),
+    do: sql_insert!(tag, [], @institution)
+  def sql_insert!(tag, opts) when is_list(opts), 
+    do: sql_insert!(tag, opts, @institution)
   def sql_insert!(tag, opts \\ [], institution) do
     build(tag, opts) |> Sql.insert!(institution)
   end
@@ -41,6 +46,14 @@ defmodule Crit.Factory do
       species_id: some_species_id(),
       span: span,
      }
+  end
+
+  def procedure_frequency_factory() do
+    %ProcedureFrequency{
+      name: "some procedure frequency",
+      calculation_name: "unlimited",
+      description: "a procedure frequency"
+    }
   end
 
   def procedure_factory() do
