@@ -6,6 +6,7 @@ defmodule Crit.Setup.Schemas.Procedure do
   alias Crit.Sql
   import Ecto.Query
   alias Crit.Sql
+  alias Crit.Sql.CommonQuery
   
 
   schema "procedures" do
@@ -29,10 +30,5 @@ defmodule Crit.Setup.Schemas.Procedure do
     %__MODULE__{}
     |> changeset(attrs)
     |> Sql.insert(institution)
-  end
-
-  def all_by(where, institution) do
-    query = from p in __MODULE__, where: ^where
-    Sql.all(query, institution)
   end
 end
