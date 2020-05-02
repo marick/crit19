@@ -41,6 +41,18 @@ defmodule Crit.Assertions.MiscTest do
     end)
   end
 
+  test "ok_id" do
+    assert 3 == ok_id({:ok, %{id: 3}})
+    assert_raise(ExUnit.AssertionError, fn ->
+      ok_id({:error, %{no: :id}})
+    end)
+    assert_raise(ExUnit.AssertionError, fn ->
+      ok_id(:ok)
+    end)
+    assert_raise(ExUnit.AssertionError, fn ->
+      ok_id({:error, %{id: :irrelevant}})
+    end)
+  end
 
   describe "assert_shape" do
     test "structs" do

@@ -19,6 +19,10 @@ defmodule Crit.Assertions.Misc do
     payload
   end
 
+  def ok_id(x) do
+    ok_payload(x).id
+  end
+
   @doc """
   Assert that the matches a binding form. 
 
