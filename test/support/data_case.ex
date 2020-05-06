@@ -25,8 +25,7 @@ defmodule Crit.DataCase do
       alias Crit.Factory
       use Crit.TestConstants
       alias Crit.Extras.SqlT
-      import Crit.Assertions.Map
-      import Crit.Assertions.Misc
+      import Crit.Assertions.{Ecto, Map, Misc}
       import Crit.Assertions.Changeset
       import Assertions
       use Crit.Mock

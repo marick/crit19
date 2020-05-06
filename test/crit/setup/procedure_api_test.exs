@@ -12,16 +12,18 @@ defmodule Crit.Setup.ProcedureApiTest do
     :ok
   end
 
-  describe "fetching procedures by species" do 
+  ### The following are cursory tests of generated functions. 
+
+  describe "fetching procedures by species" do
     test "bovine" do
       actual = ProcedureApi.all_by_species(@bovine_id, @institution)
-      assert [%Procedure{name: "Bovine only", species_id: @bovine_id},
-              %Procedure{name: "Both", species_id: @bovine_id}] = actual
+      assert [%Procedure{name: "Both", species_id: @bovine_id},
+              %Procedure{name: "Bovine only", species_id: @bovine_id}] = actual
     end      
   end
 
   describe "one" do
-    test "simple use" do 
+    test "simple use" do
       id = insert("procedure", @bovine_id) |> ok_id
       actual = ProcedureApi.one_by_id(id, @institution)
       assert_fields(actual, 
@@ -33,22 +35,10 @@ defmodule Crit.Setup.ProcedureApiTest do
 
     test "loading assoc fields" do 
       id = insert("procedure", @bovine_id) |> ok_id
-      actual = ProcedureApi.one_by_id(id,
-        @institution)
-      refute assoc_loaded?(actual.species)
-      refute assoc_loaded?(actual.frequency)
-
-      actual = ProcedureApi.one_by_id(id,
-        [preload: [:species]], @institution)
+      actual = ProcedureApi.one_by_id(id, @institution, preload: [:species])
       assert assoc_loaded?(actual.species)
       refute assoc_loaded?(actual.frequency)
-
-      actual = ProcedureApi.one_by_id(id,
-        [preload: [:species, :frequency]], @institution)
-      assert assoc_loaded?(actual.species)
-      assert assoc_loaded?(actual.frequency)
     end
-    
   end
 
   def insert(name, species_id) when is_binary(name) and is_integer(species_id) do 
@@ -60,6 +50,4 @@ defmodule Crit.Setup.ProcedureApiTest do
     attrs = Enum.into(opts, %{})
     ProcedureApi.insert(attrs, @institution)
   end
-
-  
 end
