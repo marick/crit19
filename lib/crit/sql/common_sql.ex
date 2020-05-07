@@ -7,11 +7,17 @@ defmodule Crit.Sql.CommonSql do
     apply(Sql, command, [query, institution])
   end
 
-  defmacro deftypical(name, command, schema, [{_field, value}] = where) do
+  defmacro deftypical(name, command, [{_field, value}] = where) do
     quote do
       def unquote(name)(unquote(value), institution, opts \\ []) do
-        typical(institution, unquote(command), unquote(schema), unquote(where), opts)
+        typical(institution, unquote(command), target_schema(), unquote(where), opts)
       end
+    end
+  end
+
+  defmacro __using__(schema: schema) do
+    quote do
+      defp target_schema(), do: unquote(schema)
     end
   end
 end
