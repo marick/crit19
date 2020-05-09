@@ -48,4 +48,10 @@ defmodule Crit.Assertions.Misc do
       eval_once
     end
   end
+
+
+  def singleton_payload(value) do
+    assert_shape(value, [_only])
+    List.first(value)
+  end
 end
