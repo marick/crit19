@@ -1,75 +1,79 @@
 defmodule Crit.Reservations.RestPeriodTest do
   use Crit.DataCase
+  import Crit.Exemplars.Background
+  import Ecto.Query
   alias Crit.Reservations.RestPeriod
-  alias Crit.Exemplars.ReservationFocused
   alias Crit.Sql
   alias Crit.Setup.Schemas.{Animal}
-  import DeepMerge
+  alias Crit.Sql
 
-  @thursday ~D[2020-06-18]
-  @friday   ~D[2020-06-19]
-  @saturday ~D[2020-06-20]
-  @sunday   ~D[2020-06-21]
-  @monday   ~D[2020-06-22]
-  @tuesday  ~D[2020-06-23]
+  @wednesday ~D[2020-06-17]
+  @thursday  ~D[2020-06-18]
+  @friday    ~D[2020-06-19]
+  @saturday  ~D[2020-06-20]
+  @sunday    ~D[2020-06-21]
+  @monday    ~D[2020-06-22]
+  @tuesday   ~D[2020-06-23]
 
-  setup do # animal and procedure
-    background = 
-      background(@bovine_id)
-      |> procedure_frequency("once per day")
-      |> procedure("used procedure", frequency: "once per day")
-      |> animal("bossie")
-    [background: background]
-  end    
+  defp common_background(frequency) do 
+    background(@bovine_id)
+    |> procedure_frequency(frequency)
+    |> procedure("used procedure", frequency: frequency)
+    |> animal("bossie")
+  end
 
-  describe "once per day" do
-    setup(%{background: background}) do
-      background =
-        background
-        |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: @friday)
-
-      [background: background]
-    end
+  def t_conflicting_uses(data, date) do
+    procedure_id = data[:procedure]["used procedure"].id
+    frequency =
+      data[:procedure_frequency]
+      |> Map.keys
+      |> List.first
     
-    test "can't make another reservation on the same day",
-      %{background: background} do
-      background
-      |> t_conflicting_uses(@friday)
-      |> assert_conflicting_reservation_on(@friday)
-    end
-    
-    test "can make a reservation on the previous day",
-      %{background: background} do
-      background 
-      |> t_conflicting_uses(@thursday)
-      |> assert_empty
-    end
+    fetch_these_animals(data)
+    |> RestPeriod.conflicting_uses(frequency, date, procedure_id)
+    |> Sql.all(@institution)
+  end
 
-    test "can make a reservation on the next day",
-      %{background: background} do
-      
-      background 
-      |> t_conflicting_uses(@saturday)
-      |> assert_empty
-    end
+  defp attempt(existing, proposed, frequency) do 
+    common_background(frequency)
+    |> put_reservation(existing) 
+    |> t_conflicting_uses(proposed)
+  end
+
+  def attempt(existing, proposed, frequency, :is_allowed) do
+    attempt(existing, proposed, frequency) |> assert_empty
+  end
+
+  def attempt(existing, proposed, frequency, :is_refused) do
+    attempt(existing, proposed, frequency) |> assert_conflict_on(existing)
+  end
+
+
+  #-----------------------------------------------------
+
+  describe "constant width frequencies" do
+    test "same day",
+      do: attempt @friday, @friday,   "once per day", :is_refused
+    
+    test "previous day",
+      do: attempt @friday, @thursday, "once per day", :is_allowed
+
+    test "next day", 
+      do: attempt @friday, @saturday, "once per day", :is_allowed
   end
 
   describe "once per week" do
-    @tag :skip
-    test "wednesday allows next wednesday", %{background: _background} do
-    end
+    test "wednesday allows next wednesday",
+      do: attempt @wednesday, Date.add(@wednesday, 7),   "once per week", :is_allowed
     
-    @tag :skip
-    test "wednesday allows previous wednesday", %{background: _background} do
-    end
+    test "wednesday allows previous wednesday",
+      do: attempt @wednesday, Date.add(@wednesday, -7),   "once per week", :is_allowed
     
-    @tag :skip
-    test "wednesday prohibits previous thursday", %{background: _background} do
-    end
+    test "wednesday prohibits previous thursday",
+      do: attempt @wednesday, Date.add(@wednesday, -6),   "once per week", :is_refused
     
-    @tag :skip
-    test "wednesday prohibits next tuesday", %{background: _background} do
-    end
+    test "wednesday prohibits next tuesday", 
+      do: attempt @wednesday, Date.add(@wednesday, 6),   "once per week", :is_refused
   end
 
 
@@ -93,12 +97,12 @@ defmodule Crit.Reservations.RestPeriodTest do
 
       background
       |> t_conflicting_uses(@monday)
-      |> assert_conflicting_reservation_on(@sunday)
+      |> assert_conflict_on(@sunday)
 
       # and also on Sunday itself
       background
       |> t_conflicting_uses(@sunday)
-      |> assert_conflicting_reservation_on(@sunday)
+      |> assert_conflict_on(@sunday)
 
       # But a Tuesday reservation is allowed
       background
@@ -138,26 +142,12 @@ defmodule Crit.Reservations.RestPeriodTest do
 
 
   
-  def assert_conflicting_reservation_on(results, date) do
+  def assert_conflict_on(results, date) do
     results
     |> singleton_payload
     |> assert_fields(animal_name: "bossie",
                      procedure_name: "used procedure",
                      date: date)
-  end
-
-
-  def t_conflicting_uses(data, date) do
-
-    procedure_id = data[:procedure]["used procedure"].id
-    frequency =
-      data[:procedure_frequency]
-      |> Map.keys
-      |> List.first
-    
-    fetch_these_animals(data)
-    |> RestPeriod.conflicting_uses(frequency, date, procedure_id)
-    |> Sql.all(@institution)
   end
 
   def fetch_these_animals(data) do
@@ -166,59 +156,11 @@ defmodule Crit.Reservations.RestPeriodTest do
     from a in Animal, where: a.id in ^animal_ids
   end
   
-
-  def background(species_id) do
-    %{species_id: species_id}
+  defp put_reservation(data, date) do
+    data
+    |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: date)    
   end
-
-  def procedure_frequency(data, calculation_name) do
-    schema = :procedure_frequency
-    
-    addition = Factory.sql_insert!(schema,
-      name: calculation_name <> " procedure frequency",
-      calculation_name: calculation_name)
-
-    deep_merge(data, %{schema => %{calculation_name => addition}})
-  end
-
-  def procedure(data, procedure_name, [frequency: frequency_name]) do 
-    schema = :procedure
-
-    frequency_id = data.procedure_frequency[frequency_name].id
-    species_id = data.species_id
-
-    addition = Factory.sql_insert!(schema,
-      name: procedure_name,
-      species_id: species_id,
-      frequency_id: frequency_id)
-
-    deep_merge(data, %{schema => %{procedure_name => addition}})
-  end
+  
 
 
-  def procedures(data, descriptors) do
-    Enum.reduce(descriptors, data, fn {key, opts}, acc ->
-      apply &procedure/3, [acc, key, opts]
-    end)
-  end
-
-  def animal(data, animal_name) do 
-    schema = :animal
-
-    addition = Factory.sql_insert!(schema,
-      name: animal_name,
-      species_id: data.species_id)
-
-    deep_merge(data, %{schema => %{animal_name => addition}})
-  end
-
-  def reservation_for(data, purpose, animal_names, procedure_names, opts \\ []) do
-    schema = :reservation
-    species_id = data.species_id
-    
-    addition =
-      ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
-
-    deep_merge(data, %{schema => %{purpose => addition}})
-  end
 end

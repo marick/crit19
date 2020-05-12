@@ -29,8 +29,8 @@ defmodule Crit.Reservations.RestPeriod do
   end
 
   def conflicting_uses(query, "once per week", desired_date, procedure_id) do
-    range = date_range_with_week_boundary(desired_date)
-    conflicting_uses(query, range, procedure_id)
+    range = date_range(desired_date, 7)
+    conflicting_uses(query, range, procedure_id);
   end
 
   defp date_range(date, width) do
@@ -39,7 +39,7 @@ defmodule Crit.Reservations.RestPeriod do
     Datespan.customary(first, after_last) |> Datespan.dump!
   end
 
-  defp date_range_with_week_boundary(desired_date) do
+  def _adjusting_for_end_of_week(desired_date) do
     case Calendar.Date.day_of_week_name(desired_date) do
       "Sunday" ->
         date_range(desired_date, 2)
