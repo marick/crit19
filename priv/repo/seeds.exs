@@ -50,7 +50,9 @@ short_name = Constants.default_institution.short_name
 bovine_id = SeedConstants.bovine_id
 equine_id = SeedConstants.equine_id
 unlimited_frequency_id = SeedConstants.unlimited_frequency_id
+once_per_day_frequency_id = SeedConstants.once_per_day_frequency_id
 once_per_week_frequency_id = SeedConstants.once_per_week_frequency_id
+twice_per_week_frequency_id = SeedConstants.twice_per_week_frequency_id
 
 %{id: ^unlimited_frequency_id} =
   Sql.insert!(%ProcedureFrequency{
@@ -64,9 +66,33 @@ once_per_week_frequency_id = SeedConstants.once_per_week_frequency_id
         calculation_name: "once per week",
         description:
         """
-        There doesn't have to be a full week between two
-        performances. For example, the procedure could be performed
-        Friday and then Monday.
+        The procedure can be performed at most once per week. For example,
+        if an animal has been used on Friday, the earliest it can be
+        used again is on the next Friday.
+        """},
+    short_name)
+%{id: ^once_per_day_frequency_id} =
+  Sql.insert!(%ProcedureFrequency{
+        name: "once per day",
+        calculation_name: "once per day",
+        description:
+        """
+        The procedure can be performed at most one time per day. It is OK to
+        perform the procedure late at night and then first thing in the morning
+        of the next day. 
+        """},
+    short_name)
+
+%{id: ^twice_per_week_frequency_id} =
+  Sql.insert!(%ProcedureFrequency{
+        name: "twice per week",
+        calculation_name: "twice per week",
+        description:
+        """
+        The procedure can be performed at most twice per week. There must be
+        at least one full day between uses. (That is, using the same
+        animal every Tuesday and Thursday is fine, but Tuesday and Wednesday is
+        not allowed.
         """},
     short_name)
 

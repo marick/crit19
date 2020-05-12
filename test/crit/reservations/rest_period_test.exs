@@ -1,34 +1,114 @@
 defmodule Crit.Reservations.RestPeriodTest do
   use Crit.DataCase
   alias Crit.Reservations.RestPeriod
-  alias Crit.Exemplars.{ReservationFocused,Available}
+  alias Crit.Exemplars.ReservationFocused
   alias Crit.Sql
   alias Crit.Setup.Schemas.{Animal}
   import DeepMerge
 
-  describe "once per day" do
+  @thursday ~D[2020-06-18]
+  @friday   ~D[2020-06-19]
+  @saturday ~D[2020-06-20]
+  @sunday   ~D[2020-06-21]
+  @monday   ~D[2020-06-22]
+  @tuesday  ~D[2020-06-23]
 
-    setup do
+  setup do # animal and procedure
+    background = 
+      background(@bovine_id)
+      |> procedure_frequency("once per day")
+      |> procedure("used procedure", frequency: "once per day")
+      |> animal("bossie")
+    [background: background]
+  end    
+
+  describe "once per day" do
+    setup(%{background: background}) do
       background =
-        background(@bovine_id)
-        |> procedure_frequency("once per day")
-        |> procedure("used procedure", frequency: "once per day")
-        |> animal("leaky cow")
+        background
+        |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: @friday)
 
       [background: background]
     end
     
     test "can't make another reservation on the same day",
       %{background: background} do
-        background
-        |> reservation_for("vcm103", ["leaky cow"], ["used procedure"], date: @date_2)
-      
-        |> t_conflicting_uses("once per day", @date_2, "used procedure")
+      background
+      |> t_conflicting_uses(@friday)
+      |> assert_conflicting_reservation_on(@friday)
+    end
+    
+    test "can make a reservation on the previous day",
+      %{background: background} do
+      background 
+      |> t_conflicting_uses(@thursday)
+      |> assert_empty
+    end
 
-        |> singleton_payload
-        |> assert_fields(animal_name: "leaky cow",
-                         procedure_name: "used procedure",
-                         date: @date_2)
+    test "can make a reservation on the next day",
+      %{background: background} do
+      
+      background 
+      |> t_conflicting_uses(@saturday)
+      |> assert_empty
+    end
+  end
+
+  describe "once per week" do
+    @tag :skip
+    test "wednesday allows next wednesday", %{background: _background} do
+    end
+    
+    @tag :skip
+    test "wednesday allows previous wednesday", %{background: _background} do
+    end
+    
+    @tag :skip
+    test "wednesday prohibits previous thursday", %{background: _background} do
+    end
+    
+    @tag :skip
+    test "wednesday prohibits next tuesday", %{background: _background} do
+    end
+  end
+
+
+
+  describe "twice per week" do
+    @tag :skip
+    test "Tuesday / Thursday is typical" do
+    end
+
+    @tag :skip
+    test "Monday / Wednesday / Friday is prohibited" do
+    end
+
+    @tag :skip
+    test "adjoining days are prohibited",
+      %{background: background} do
+
+      background =
+        background
+        |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: @sunday)
+
+      background
+      |> t_conflicting_uses(@monday)
+      |> assert_conflicting_reservation_on(@sunday)
+
+      # and also on Sunday itself
+      background
+      |> t_conflicting_uses(@sunday)
+      |> assert_conflicting_reservation_on(@sunday)
+
+      # But a Tuesday reservation is allowed
+      background
+      |> t_conflicting_uses(@tuesday)
+      |> assert_empty
+
+      # ... and a saturday
+      background
+      |> t_conflicting_uses(@saturday)
+      |> assert_empty
     end
   end
 
@@ -58,10 +138,22 @@ defmodule Crit.Reservations.RestPeriodTest do
 
 
   
+  def assert_conflicting_reservation_on(results, date) do
+    results
+    |> singleton_payload
+    |> assert_fields(animal_name: "bossie",
+                     procedure_name: "used procedure",
+                     date: date)
+  end
 
-  def t_conflicting_uses(data, frequency, date, procedure_name) do
 
-    procedure_id = data[:procedure][procedure_name].id
+  def t_conflicting_uses(data, date) do
+
+    procedure_id = data[:procedure]["used procedure"].id
+    frequency =
+      data[:procedure_frequency]
+      |> Map.keys
+      |> List.first
     
     fetch_these_animals(data)
     |> RestPeriod.conflicting_uses(frequency, date, procedure_id)

@@ -1,5 +1,6 @@
 defmodule Crit.Assertions.Misc do
   import ExUnit.Assertions
+  import Crit.Assertions.Defchain
   
   def assert_ok(:ok), do: :ok
   def assert_ok({:ok, _} = value), do: value
@@ -53,5 +54,9 @@ defmodule Crit.Assertions.Misc do
   def singleton_payload(value) do
     assert_shape(value, [_only])
     List.first(value)
+  end
+
+  defchain assert_empty(value) do
+    assert Enum.empty?(value)
   end
 end

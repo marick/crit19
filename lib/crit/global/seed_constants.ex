@@ -18,6 +18,8 @@ defmodule Crit.Global.SeedConstants do
 
   def unlimited_frequency_id, do: 1
   def once_per_week_frequency_id, do: 2
+  def once_per_day_frequency_id, do: 3
+  def twice_per_week_frequency_id, do: 4
 
   # Suitable for insert_all.
   def default_timeslots, do: [ %{name: "morning (8-noon)",
