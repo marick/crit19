@@ -7,13 +7,15 @@ defmodule Crit.Reservations.RestPeriodTest do
   alias Crit.Setup.Schemas.{Animal}
   alias Crit.Sql
 
+  @monday    ~D[2020-06-15]
+  @tuesday   ~D[2020-06-16]
   @wednesday ~D[2020-06-17]
   @thursday  ~D[2020-06-18]
   @friday    ~D[2020-06-19]
   @saturday  ~D[2020-06-20]
-  @sunday    ~D[2020-06-21]
-  @monday    ~D[2020-06-22]
-  @tuesday   ~D[2020-06-23]
+  @sunday_   ~D[2020-06-21]
+  @monday_   ~D[2020-06-22]
+  @tuesday_  ~D[2020-06-23]
 
   defp common_background(frequency) do 
     background(@bovine_id)
@@ -79,8 +81,8 @@ defmodule Crit.Reservations.RestPeriodTest do
 
 
   describe "twice per week" do
-    @tag :skip
     test "Tuesday / Thursday is typical" do
+      attempt @tuesday, @thursday, "twice per week", :is_allowed
     end
 
     @tag :skip
@@ -93,20 +95,20 @@ defmodule Crit.Reservations.RestPeriodTest do
 
       background =
         background
-        |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: @sunday)
+        |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: @sunday_)
 
       background
-      |> t_conflicting_uses(@monday)
-      |> assert_conflict_on(@sunday)
+      |> t_conflicting_uses(@monday_)
+      |> assert_conflict_on(@sunday_)
 
       # and also on Sunday itself
       background
-      |> t_conflicting_uses(@sunday)
-      |> assert_conflict_on(@sunday)
+      |> t_conflicting_uses(@sunday_)
+      |> assert_conflict_on(@sunday_)
 
       # But a Tuesday reservation is allowed
       background
-      |> t_conflicting_uses(@tuesday)
+      |> t_conflicting_uses(@tuesday_)
       |> assert_empty
 
       # ... and a saturday
@@ -142,13 +144,16 @@ defmodule Crit.Reservations.RestPeriodTest do
 
 
   
-  def assert_conflict_on(results, date) do
+  def assert_conflict_on(results, dates) when is_list(dates) do
     results
     |> singleton_payload
     |> assert_fields(animal_name: "bossie",
                      procedure_name: "used procedure",
-                     date: date)
+                     dates: dates)
   end
+
+  def assert_conflict_on(results, date), do: assert_conflict_on(results, [date])
+  
 
   def fetch_these_animals(data) do
     animal_ids = data[:animal] |> Map.values |> EnumX.ids

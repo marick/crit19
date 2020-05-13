@@ -12,6 +12,7 @@ defmodule Crit.Reservations.RestPeriod do
     "unlimited",
     "once per day",
     "once per week",
+    "twice per week",
   ]
 
   def conflicting_uses(query, conflicting_range, procedure_id) do
@@ -32,6 +33,14 @@ defmodule Crit.Reservations.RestPeriod do
     range = date_range(desired_date, 7)
     conflicting_uses(query, range, procedure_id);
   end
+
+  def conflicting_uses(query, "twice per week", desired_date, procedure_id) do
+    range = date_range(desired_date, 2)
+    # IO.inspect range
+    conflicting_uses(query, range, procedure_id)
+  end
+
+  
 
   defp date_range(date, width) do
     first = Date.add(date, -(width - 1))
