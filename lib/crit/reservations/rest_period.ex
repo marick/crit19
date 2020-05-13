@@ -15,29 +15,48 @@ defmodule Crit.Reservations.RestPeriod do
     "twice per week",
   ]
 
-  def conflicting_uses(query, conflicting_range, procedure_id) do
+  def joins(query, procedure_id) do
     from a in query,
       join: p in Procedure, on: p.id == ^procedure_id,
       join: u in Use, on: u.procedure_id == ^procedure_id,
-      join: r in Reservation, on: u.reservation_id == r.id,
-      where: contains_point_fragment(^conflicting_range, r.date),
-      select: %{animal_name: a.name, procedure_name: p.name, date: r.date}
+      join: r in Reservation, on: u.reservation_id == r.id
+  end
+
+  def describe_result(query) do
+    from [a, p, u, r] in query,
+      group_by: [a.name, p.name],
+      select: %{animal_name: a.name,
+                procedure_name: p.name,
+                dates: fragment("array_agg(?)", r.date)}
+  end
+
+
+  def date_range_fragment(conflicting_range) do
+    fn query -> 
+      where(query, [a, p, u, r], contains_point_fragment(^conflicting_range, r.date))
+    end
+  end
+
+  def conflicting_uses(query, where_maker, procedure_id) do
+    joins(query, procedure_id)
+    |> where_maker.()
+    |> describe_result
   end
   
   def conflicting_uses(query, "once per day", desired_date, procedure_id) do
-    range = date_range(desired_date, 1)
-    conflicting_uses(query, range, procedure_id)
+    where = date_range_fragment(date_range(desired_date, 1))
+    conflicting_uses(query, where, procedure_id)
   end
 
   def conflicting_uses(query, "once per week", desired_date, procedure_id) do
-    range = date_range(desired_date, 7)
-    conflicting_uses(query, range, procedure_id);
+    where = date_range_fragment(date_range(desired_date, 7))
+    conflicting_uses(query, where, procedure_id);
   end
 
   def conflicting_uses(query, "twice per week", desired_date, procedure_id) do
-    range = date_range(desired_date, 2)
+    where = date_range_fragment(date_range(desired_date, 2))
     # IO.inspect range
-    conflicting_uses(query, range, procedure_id)
+    conflicting_uses(query, where, procedure_id)
   end
 
   
