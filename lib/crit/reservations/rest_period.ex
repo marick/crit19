@@ -30,33 +30,29 @@ defmodule Crit.Reservations.RestPeriod do
                 dates: fragment("array_agg(?)", r.date)}
   end
 
-
-  def date_range_fragment(conflicting_range) do
+  def where_uses_range(desired_date, days) do
+    conflicting_range = date_range(desired_date, days)
     fn query -> 
       where(query, [a, p, u, r], contains_point_fragment(^conflicting_range, r.date))
     end
   end
 
-  def conflicting_uses(query, where_maker, procedure_id) do
+  def full_query(where_maker, query, procedure_id) do
     joins(query, procedure_id)
     |> where_maker.()
     |> describe_result
   end
   
   def conflicting_uses(query, "once per day", desired_date, procedure_id) do
-    where = date_range_fragment(date_range(desired_date, 1))
-    conflicting_uses(query, where, procedure_id)
+    where_uses_range(desired_date, 1) |> full_query(query, procedure_id)
   end
 
   def conflicting_uses(query, "once per week", desired_date, procedure_id) do
-    where = date_range_fragment(date_range(desired_date, 7))
-    conflicting_uses(query, where, procedure_id);
+    where_uses_range(desired_date, 7) |> full_query(query, procedure_id)
   end
 
   def conflicting_uses(query, "twice per week", desired_date, procedure_id) do
-    where = date_range_fragment(date_range(desired_date, 2))
-    # IO.inspect range
-    conflicting_uses(query, where, procedure_id)
+    where_uses_range(desired_date, 2) |> full_query(query, procedure_id)
   end
 
   
