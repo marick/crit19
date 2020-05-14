@@ -165,22 +165,6 @@ defmodule Crit.Reservations.RestPeriodTest do
     @tag :skip
     test "it does not touch the database"
   end
-
-
-
-  describe "facts that apply to any of the frequencies (except 'unlimited')" do
-    @tag :skip
-    test "doesn't return procedures not mentioned in the proposed reservation"
-
-
-    @tag :skip
-    test "not fooled by animal of animal of a different species"
-
-    @tag :skip
-    test "will return more than one conflict for the same animal"
-  end
-
-
   
   def assert_conflict_on(results, dates) when is_list(dates) do
     results
