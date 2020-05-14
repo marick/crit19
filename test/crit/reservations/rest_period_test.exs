@@ -7,15 +7,13 @@ defmodule Crit.Reservations.RestPeriodTest do
   alias Crit.Setup.Schemas.{Animal}
   alias Crit.Sql
 
+  @sunday    ~D[2020-06-14]
   @monday    ~D[2020-06-15]
   @tuesday   ~D[2020-06-16]
   @wednesday ~D[2020-06-17]
   @thursday  ~D[2020-06-18]
   @friday    ~D[2020-06-19]
   @saturday  ~D[2020-06-20]
-  @sunday_   ~D[2020-06-21]
-  @monday_   ~D[2020-06-22]
-  @tuesday_  ~D[2020-06-23]
 
   defp common_background(frequency) do 
     background(@bovine_id)
@@ -78,42 +76,82 @@ defmodule Crit.Reservations.RestPeriodTest do
       do: attempt @wednesday, Date.add(@wednesday, 6),   "once per week", :is_refused
   end
 
-
-
   describe "twice per week" do
     test "Tuesday / Thursday is typical" do
       attempt @tuesday, @thursday, "twice per week", :is_allowed
     end
 
-    @tag :skip
-    test "Monday / Wednesday / Friday is prohibited" do
+    test "adjacent days are not allowed" do
+      attempt @tuesday, @wednesday, "twice per week", :is_refused
     end
 
-    @tag :skip
-    test "adjoining days are prohibited",
-      %{background: background} do
+    test "Monday / Wednesday / Friday is prohibited" do
+      common_background("twice per week")
+      |> put_reservation(@monday)
+      |> put_reservation(@wednesday)
+      
+      |> t_conflicting_uses(@friday)
+      
+      |> singleton_payload
+      |> assert_fields(animal_name: "bossie",
+                       procedure_name: "used procedure",
+                       dates: [@monday, @wednesday])
+    end
 
-      background =
-        background
-        |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: @sunday_)
+    test "a different procedure on Wednesday won't prevent Friday" do
+      # See previous test first.
+      different = "different procedure"
+      
+      common_background("twice per week")
+      |> put_reservation(@monday)
 
+      |> procedure(different, frequency: "twice per week")
+      |> reservation_for("vcm103",
+              ["bossie"], [different], date: @wednesday)
+      |> t_conflicting_uses(@friday)
+      
+      |> assert_empty
+    end
+
+    test "Week boundaries" do
+      background = 
+        common_background("twice per week")
+        |> put_reservation(@monday)
+        |> put_reservation(@wednesday)
+
+      # Sunday is the beginning of the week.
+      # (I know this is a myth programmers believe about time.)
+      # This also tests what happens when there's a conflict
+      # for two reasons. It's kind to show them both.
+      [first_reason, second_reason] = 
+        t_conflicting_uses(background, @sunday)
+
+      assert_fields(first_reason,
+        animal_name: "bossie",
+        procedure_name: "used procedure",
+        dates: [@monday])
+
+      assert_fields(second_reason,
+        animal_name: "bossie",
+        procedure_name: "used procedure",
+        dates: [@monday, @wednesday])
+
+      # The day before sunday is in a new week.
       background
-      |> t_conflicting_uses(@monday_)
-      |> assert_conflict_on(@sunday_)
-
-      # and also on Sunday itself
-      background
-      |> t_conflicting_uses(@sunday_)
-      |> assert_conflict_on(@sunday_)
-
-      # But a Tuesday reservation is allowed
-      background
-      |> t_conflicting_uses(@tuesday_)
+      |> t_conflicting_uses(Date.add(@sunday, -1))
       |> assert_empty
 
-      # ... and a saturday
+      # Saturday is the end of the week
       background
       |> t_conflicting_uses(@saturday)
+      |> singleton_payload
+      |> assert_fields(animal_name: "bossie",
+                       procedure_name: "used procedure",
+                       dates: [@monday, @wednesday])
+
+      # Next sunday is next week
+      background
+      |> t_conflicting_uses(Date.add(@saturday, 1))
       |> assert_empty
     end
   end
