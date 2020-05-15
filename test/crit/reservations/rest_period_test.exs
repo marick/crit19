@@ -157,13 +157,12 @@ defmodule Crit.Reservations.RestPeriodTest do
   end
 
   describe "the unlimited frequency" do
-    @tag :skip
-    test "it never returns a conflict" do
-      # This demonstrates that it doesn't return non-frequency conflicts"
+    test "never returns a conflict" do
+      common_background("unlimited")
+      |> put_reservation(@monday)
+      |> t_conflicting_uses(@monday)
+      |> assert_empty
     end
-    
-    @tag :skip
-    test "it does not touch the database"
   end
   
   def assert_conflict_on(results, dates) when is_list(dates) do
@@ -187,7 +186,4 @@ defmodule Crit.Reservations.RestPeriodTest do
     data
     |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: date)    
   end
-  
-
-
 end

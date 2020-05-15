@@ -15,6 +15,7 @@ defmodule Crit.Reservations.RestPeriod do
     "twice per week",
   ]
 
+
   def conflicting_uses(query, "once per day", desired_date, procedure_id) do
     where_uses_centered_range(desired_date, 1) |> full_query(query, procedure_id)
   end
@@ -30,6 +31,14 @@ defmodule Crit.Reservations.RestPeriod do
       where_uses_week_range(desired_date) |> full_query(query, procedure_id)
 
     union(two_days, ^week)
+  end
+
+  def conflicting_uses(query, "unlimited", _desired_date, procedure_id) do
+    f = fn query ->
+      where(query, [_a], 1 == 2)
+    end
+
+    full_query(f, query, procedure_id)
   end
 
   #-----------------------------------------------------
