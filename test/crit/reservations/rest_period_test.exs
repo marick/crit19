@@ -22,7 +22,7 @@ defmodule Crit.Reservations.RestPeriodTest do
     |> animal("bossie")
   end
 
-  def t_conflicting_uses(data, date) do
+  def t_one_procedure_uses(data, date) do
     procedure_id = data[:procedure]["used procedure"].id
     frequency =
       data[:procedure_frequency]
@@ -30,14 +30,14 @@ defmodule Crit.Reservations.RestPeriodTest do
       |> List.first
     
     fetch_these_animals(data)
-    |> RestPeriod.conflicting_uses(frequency, date, procedure_id)
+    |> RestPeriod.one_procedure_uses(frequency, date, procedure_id)
     |> Sql.all(@institution)
   end
 
   defp attempt(existing, proposed, frequency) do 
     common_background(frequency)
     |> put_reservation(existing) 
-    |> t_conflicting_uses(proposed)
+    |> t_one_procedure_uses(proposed)
   end
 
   def attempt(existing, proposed, frequency, :is_allowed) do
@@ -90,7 +90,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       |> put_reservation(@monday)
       |> put_reservation(@wednesday)
       
-      |> t_conflicting_uses(@friday)
+      |> t_one_procedure_uses(@friday)
       
       |> singleton_payload
       |> assert_fields(animal_name: "bossie",
@@ -108,7 +108,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       |> procedure(different, frequency: "twice per week")
       |> reservation_for("vcm103",
               ["bossie"], [different], date: @wednesday)
-      |> t_conflicting_uses(@friday)
+      |> t_one_procedure_uses(@friday)
       
       |> assert_empty
     end
@@ -124,7 +124,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       # This also tests what happens when there's a conflict
       # for two reasons. It's kind to show them both.
       [first_reason, second_reason] = 
-        t_conflicting_uses(background, @sunday)
+        t_one_procedure_uses(background, @sunday)
 
       assert_fields(first_reason,
         animal_name: "bossie",
@@ -138,12 +138,12 @@ defmodule Crit.Reservations.RestPeriodTest do
 
       # The day before sunday is in a new week.
       background
-      |> t_conflicting_uses(Date.add(@sunday, -1))
+      |> t_one_procedure_uses(Date.add(@sunday, -1))
       |> assert_empty
 
       # Saturday is the end of the week
       background
-      |> t_conflicting_uses(@saturday)
+      |> t_one_procedure_uses(@saturday)
       |> singleton_payload
       |> assert_fields(animal_name: "bossie",
                        procedure_name: "used procedure",
@@ -151,7 +151,7 @@ defmodule Crit.Reservations.RestPeriodTest do
 
       # Next sunday is next week
       background
-      |> t_conflicting_uses(Date.add(@saturday, 1))
+      |> t_one_procedure_uses(Date.add(@saturday, 1))
       |> assert_empty
     end
   end
@@ -160,7 +160,7 @@ defmodule Crit.Reservations.RestPeriodTest do
     test "never returns a conflict" do
       common_background("unlimited")
       |> put_reservation(@monday)
-      |> t_conflicting_uses(@monday)
+      |> t_one_procedure_uses(@monday)
       |> assert_empty
     end
   end
