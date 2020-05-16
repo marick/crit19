@@ -5,7 +5,6 @@ defmodule Crit.Reservations.RestPeriodTest do
   alias Crit.Reservations.RestPeriod
   alias Crit.Sql
   alias Crit.Setup.Schemas.{Animal}
-  alias Crit.Sql
 
   @sunday    ~D[2020-06-14]
   @monday    ~D[2020-06-15]
@@ -22,22 +21,24 @@ defmodule Crit.Reservations.RestPeriodTest do
     |> animal("bossie")
   end
 
-  def t_one_procedure_uses(data, date) do
-    procedure_id = data[:procedure]["used procedure"].id
+  def t_unavailable_by(data, date) do
     frequency =
       data[:procedure_frequency]
       |> Map.keys
       |> List.first
     
-    fetch_these_animals(data)
-    |> RestPeriod.one_procedure_uses(frequency, date, procedure_id)
-    |> Sql.all(@institution)
+    RestPeriod.unavailable_by("ignored",
+      %{chosen_animal_ids: data[:animal] |> Map.values |> EnumX.ids,
+       chosen_procedure_ids: data[:procedure] |> Map.values|> EnumX.ids,
+       date: date,
+       frequency: frequency},
+      @institution)
   end
 
   defp attempt(existing, proposed, frequency) do 
     common_background(frequency)
     |> put_reservation(existing) 
-    |> t_one_procedure_uses(proposed)
+    |> t_unavailable_by(proposed)
   end
 
   def attempt(existing, proposed, frequency, :is_allowed) do
@@ -90,7 +91,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       |> put_reservation(@monday)
       |> put_reservation(@wednesday)
       
-      |> t_one_procedure_uses(@friday)
+      |> t_unavailable_by(@friday)
       
       |> singleton_payload
       |> assert_fields(animal_name: "bossie",
@@ -108,7 +109,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       |> procedure(different, frequency: "twice per week")
       |> reservation_for("vcm103",
               ["bossie"], [different], date: @wednesday)
-      |> t_one_procedure_uses(@friday)
+      |> t_unavailable_by(@friday)
       
       |> assert_empty
     end
@@ -124,7 +125,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       # This also tests what happens when there's a conflict
       # for two reasons. It's kind to show them both.
       [first_reason, second_reason] = 
-        t_one_procedure_uses(background, @sunday)
+        t_unavailable_by(background, @sunday)
 
       assert_fields(first_reason,
         animal_name: "bossie",
@@ -138,12 +139,12 @@ defmodule Crit.Reservations.RestPeriodTest do
 
       # The day before sunday is in a new week.
       background
-      |> t_one_procedure_uses(Date.add(@sunday, -1))
+      |> t_unavailable_by(Date.add(@sunday, -1))
       |> assert_empty
 
       # Saturday is the end of the week
       background
-      |> t_one_procedure_uses(@saturday)
+      |> t_unavailable_by(@saturday)
       |> singleton_payload
       |> assert_fields(animal_name: "bossie",
                        procedure_name: "used procedure",
@@ -151,7 +152,7 @@ defmodule Crit.Reservations.RestPeriodTest do
 
       # Next sunday is next week
       background
-      |> t_one_procedure_uses(Date.add(@saturday, 1))
+      |> t_unavailable_by(Date.add(@saturday, 1))
       |> assert_empty
     end
   end
@@ -160,7 +161,7 @@ defmodule Crit.Reservations.RestPeriodTest do
     test "never returns a conflict" do
       common_background("unlimited")
       |> put_reservation(@monday)
-      |> t_one_procedure_uses(@monday)
+      |> t_unavailable_by(@monday)
       |> assert_empty
     end
   end

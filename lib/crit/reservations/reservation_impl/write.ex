@@ -2,6 +2,7 @@ defmodule Crit.Reservations.ReservationImpl.Write do
   alias Crit.Reservations.HiddenSchemas.Use
   alias Crit.Setup.Schemas.ServiceGap
   alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Reservations.RestPeriod
   alias Crit.Sql
   alias Ecto.Multi
   alias Crit.Setup.AnimalApi
@@ -21,6 +22,10 @@ defmodule Crit.Reservations.ReservationImpl.Write do
       {:ok, Use.unavailable_by(animals_query, struct.span, institution)}
     end
 
+    rest_periods_fn = fn _repo, _so_far ->
+      {:ok, RestPeriod.unavailable_by(animals_query, struct, institution)}
+    end
+
     changeset = struct_to_changeset(struct)
 
     
@@ -28,10 +33,17 @@ defmodule Crit.Reservations.ReservationImpl.Write do
       Multi.new
       |> Multi.run(:service_gap, service_gap_animals_fn)
       |> Multi.run(:use, use_animals_fn)
+      |> Multi.run(:rest_period, rest_periods_fn)
       |> Multi.insert(:insert, changeset, Sql.multi_opts(institution))
       |> Sql.transaction(institution)
-    
-    {:ok, result.insert, %{service_gap: result.service_gap, use: result.use}}
+
+    conflicts = %{
+      service_gap: result.service_gap,
+      use: result.use,
+      rest_period: result.rest_period
+    }
+      
+    {:ok, result.insert, conflicts}
   end
 
 

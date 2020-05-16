@@ -1,7 +1,7 @@
 defmodule Crit.Reservations.RestPeriod do
   import Ecto.Query
-#  alias Crit.Sql.CommonQuery
-  alias Crit.Setup.Schemas.Procedure
+  alias Crit.Sql
+  alias Crit.Setup.Schemas.{Animal,Procedure}
   alias Crit.Reservations.HiddenSchemas.Use
   alias Crit.Reservations.Schemas.Reservation
   alias Ecto.Datespan
@@ -15,7 +15,22 @@ defmodule Crit.Reservations.RestPeriod do
     "twice per week",
   ]
 
-  def conflicting_uses(desired_date, procedure) do
+  def unavailable_by(_query, struct, institution) do
+    pairs =
+      EnumX.cross_product(struct.chosen_animal_ids, struct.chosen_procedure_ids)
+
+
+    [first | rest] = 
+    for {animal_id, procedure_id} <- pairs do
+      frequency____ = Map.get(struct, :frequency, "unlimited")
+      query = (from a in Animal, where: [id: ^animal_id])
+      one_procedure_uses(query, frequency____, struct.date, procedure_id)
+    end
+
+    Enum.reduce(rest, first, fn q, acc ->
+      union(acc, ^q)
+    end)
+    |> Sql.all(institution)
   end
 
   def one_procedure_uses(query, "once per day", desired_date, procedure_id) do
