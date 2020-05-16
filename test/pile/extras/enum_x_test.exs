@@ -56,7 +56,45 @@ defmodule EnumXTest do
             ]
     expected = %{1 => "bossie", 2 => "jake"}
     assert expected == EnumX.to_id_map(input, :name)
-  end    
-  
+  end
+
+  describe "cross_product" do
+    test "without optional args" do
+      actual = EnumX.cross_product([1, 2, 3], ["a", "b", "c"])
+      expected = [
+        {1, "a"}, {1, "b"}, {1, "c"},  
+        {2, "a"}, {2, "b"}, {2, "c"},  
+        {3, "a"}, {3, "b"}, {3, "c"}
+      ]
+      assert actual == expected
+    end
+
+    test "with functional optional args" do
+      actual =
+        EnumX.cross_product([1, 2, 3], ["a", "b", "c"],
+          &(&1+1), &String.upcase/1)
+      expected = [
+        {2, "A"}, {2, "B"}, {2, "C"},  
+        {3, "A"}, {3, "B"}, {3, "C"},  
+        {4, "A"}, {4, "B"}, {4, "C"}
+      ]
+      assert actual == expected
+    end
+
+    test "with atoms for structure access" do
+      actual =
+        EnumX.cross_product(
+          [%{id: 1},     %{id: 2},     %{id: 3}],
+          [%{name: "A"}, %{name: "B"}, %{name: "C"}],
+          :id, :name)
+      expected = [
+        {1, "A"}, {1, "B"}, {1, "C"},  
+        {2, "A"}, {2, "B"}, {2, "C"},  
+        {3, "A"}, {3, "B"}, {3, "C"}
+      ]
+      assert actual == expected
+    end
+    
+  end
 end
   

@@ -31,6 +31,16 @@ defmodule EnumX do
   def pairs(maps, first, second),
     do: Enum.map(maps, &({Map.fetch!(&1, first), Map.fetch!(&1, second)}))
 
+  defp extended_apply(fnlike, args) when is_function(fnlike),
+    do: apply(fnlike, args)
+  defp extended_apply(fnlike, [%{} = map]) when is_atom(fnlike),
+      do: Map.fetch!(map, fnlike)
+  
+  def cross_product(xs, ys, x_transform \\ &(&1), y_transform \\ &(&1)) do
+    for x <- xs, y <-ys,
+      do: {extended_apply(x_transform, [x]), extended_apply(y_transform, [y])}
+  end
+
   def id_pairs(maps, other), do: pairs(maps, other, :id)
 
   def find_by_id(maps, id), 
