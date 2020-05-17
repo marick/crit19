@@ -53,8 +53,11 @@ defmodule Crit.State.UserTask do
   # ----------------------------------------------------------------------------
   def flash_key(task_id), do: task_id <> task_id
 
-  def put_flash(task_id, value),
-    do: ConCache.put(Crit.Cache, flash_key(task_id), value)
+  def put_flash(task_id, value) do 
+    :ok = ConCache.put(Crit.Cache, flash_key(task_id), value)
+    value
+  end
+    
   def get_flash(task_id),
     do: ConCache.get(Crit.Cache, flash_key(task_id))
 

@@ -78,6 +78,9 @@ defmodule Crit.State.UserTaskTest do
       # a `put` overwrites
       UserTask.put_flash(task_id, "another value")
       assert UserTask.get_flash(task_id) == "another value"
+
+      # Putting a value returns the value.
+      assert UserTask.put_flash(task_id, 3) == 3
     end
   end
 
