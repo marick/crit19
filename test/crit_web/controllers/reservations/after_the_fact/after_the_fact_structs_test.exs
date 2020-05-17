@@ -1,6 +1,6 @@
 defmodule CritWeb.Reservations.AfterTheFactStructsTest do
   use Crit.DataCase, async: true
-  alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
+  alias CritWeb.Reservations.AfterTheFactStructs.StepMemory, as: Scratch
   alias Ecto.Timespan
   alias Crit.State.UserTask
 

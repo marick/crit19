@@ -1,44 +1,45 @@
 defmodule Crit.State.UserTaskTest do 
   use ExUnit.Case, async: true
   alias Crit.State.UserTask
-  alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
+  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
+  alias CritWeb.Reservations.AfterTheFactStructs.StepMemory, as: Scratch
   import Crit.Assertions.Map
 
   test "How controllers use UserTask" do
     # For readability, return value of `update` is shown in another task
     
-    %Scratch.State{task_id: task_id} = UserTask.start(Scratch.State)
+    %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
 
-    (%Scratch.State{} = UserTask.get(task_id))
+    (%TaskMemory{} = UserTask.get(task_id))
     |> assert_nothing(:chosen_animal_ids)
     |> assert_field(task_id: task_id)
 
     # task_id gets put in a form's `input type=hidden`
-   UserTask.store(%Scratch.Animals{
+   UserTask.remember_relevant(%Scratch.Animals{
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
 
-    (%Scratch.State{} = UserTask.get(task_id))
+    (%TaskMemory{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      task_id: task_id)
 
-    # Confirm that struct store merges
-    UserTask.store(%Scratch.Procedures{
+    # Confirm that struct remember_relevant merges
+    UserTask.remember_relevant(%Scratch.Procedures{
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
-    (%Scratch.State{} = UserTask.get(task_id))
+    (%TaskMemory{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      chosen_procedure_ids: [3, 2, 1],
                      task_id: task_id)
 
-    # Show overwrite and how store can take options.
+    # Show overwrite and how remember_relevant can take options.
     struct = %Scratch.Procedures{
       chosen_procedure_ids: [:new, :new, :new],
       task_id: task_id}
-    UserTask.store(struct, timeslot_id: 88)
+    UserTask.remember_relevant(struct, timeslot_id: 88)
 
-    (%Scratch.State{} = UserTask.get(task_id))
+    (%TaskMemory{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      chosen_procedure_ids: [:new, :new, :new],
                      task_id: task_id)
@@ -48,17 +49,17 @@ defmodule Crit.State.UserTaskTest do
   end
 
   test "update returns the whole state" do
-    %Scratch.State{task_id: task_id} = UserTask.start(Scratch.State)
+    %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
 
-    UserTask.store(%Scratch.Animals{
+    UserTask.remember_relevant(%Scratch.Animals{
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
     
-    actual = UserTask.store(%Scratch.Procedures{
+    actual = UserTask.remember_relevant(%Scratch.Procedures{
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
-    assert %Scratch.State{
+    assert %TaskMemory{
       chosen_animal_ids: [1, 2, 3],
       chosen_procedure_ids: [3, 2, 1],
       task_id: task_id} = actual

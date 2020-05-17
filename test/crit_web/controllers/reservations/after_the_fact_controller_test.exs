@@ -4,7 +4,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
-  alias CritWeb.Reservations.AfterTheFactStructs.State
+  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
   alias Crit.Setup.InstitutionApi
   alias Crit.Reservations.ReservationApi
   alias Crit.Exemplars.Available
@@ -49,7 +49,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       
     
     test "success", %{conn: conn, params: params} do
-      UserTask.start(%State{task_id: @task_id})
+      UserTask.start(%TaskMemory{task_id: @task_id})
 
       post_to_action(conn, :put_non_use_values, under(:non_use_values, params))
       |> assert_purpose(after_the_fact_pick_animals())
@@ -72,7 +72,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       %{conn: conn, params: original} do
 
       params = %{original | date: "", date_showable_date: ""}
-      UserTask.start(%State{task_id: @task_id})
+      UserTask.start(%TaskMemory{task_id: @task_id})
 
       post_to_action(conn, :put_non_use_values, under(:non_use_values, params))
       |> assert_purpose(after_the_fact_pick_non_use_values())
@@ -85,7 +85,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
   describe "submitting animal ids prompts a call for procedure ids" do
     setup do
-      UserTask.start(%State{
+      UserTask.start(%TaskMemory{
             species_id: @bovine_id,
             date: @date,
             span: @span,
@@ -125,7 +125,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   describe "finishing up" do
     setup %{bossie: bossie} do
       state_copy =
-        UserTask.start(%State{
+        UserTask.start(%TaskMemory{
             species_id: @bovine_id,
             date: @date,
             span: @span,

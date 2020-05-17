@@ -3,7 +3,6 @@ defmodule Crit.Reservations.RestPeriodTest do
   import Crit.Exemplars.Background
   import Ecto.Query
   alias Crit.Reservations.RestPeriod
-  alias Crit.Sql
   alias Crit.Setup.Schemas.{Animal}
 
   @sunday    ~D[2020-06-14]

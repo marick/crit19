@@ -4,7 +4,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   import CritWeb.Plugs.Authorize
   alias Crit.Setup.{InstitutionApi,AnimalApi, ProcedureApi}
   alias Crit.State.UserTask
-  alias CritWeb.Reservations.AfterTheFactStructs, as: Scratch
+  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
+  alias CritWeb.Reservations.AfterTheFactStructs.StepMemory, as: Scratch
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi
   alias CritWeb.Reservations.ReservationController
@@ -13,7 +14,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    state = UserTask.start(Scratch.State)
+    state = UserTask.start(TaskMemory)
 
     start_task_render(conn, state, Scratch.NonUseValues.empty)
   end
@@ -35,7 +36,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
             new_data.date_showable_date,
             InstitutionApi.timeslot_name(new_data.timeslot_id, institution(conn)))
 
-        state = UserTask.store(new_data, task_header: header)
+        state = UserTask.remember_relevant(new_data, task_header: header)
         task_render(conn, :put_animals, state)
       {:error, changeset} ->
         task_id = Map.get(params, "task_id")
@@ -51,7 +52,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> AnimalApi.ids_to_animals(institution(conn))
           |> View.animals_header
 
-        state = UserTask.store(new_data, task_header: header)
+        state = UserTask.remember_relevant(new_data, task_header: header)
         task_render(conn, :put_procedures, state)
 
       {:task_expiry, message} ->
@@ -65,7 +66,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, Scratch.Procedures) do
       {:ok, new_data} ->
-        state = UserTask.store(new_data)
+        state = UserTask.remember_relevant(new_data)
         {:ok, reservation, conflicts} =
           ReservationApi.create_noting_conflicts(state, institution(conn))
         UserTask.delete(state.task_id)

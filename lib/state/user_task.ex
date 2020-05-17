@@ -19,7 +19,7 @@ defmodule Crit.State.UserTask do
     store_by_key(key, initial, opts)
   end
 
-  def store(%{task_id: key} = new_values, opts \\ []) do
+  def remember_relevant(%{task_id: key} = new_values, opts \\ []) do
     store_by_key(key, new_values, opts)
   end
 

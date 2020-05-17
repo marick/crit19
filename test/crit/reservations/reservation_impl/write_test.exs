@@ -6,11 +6,11 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Setup.InstitutionApi
   alias Ecto.Datespan
   alias Crit.Exemplars.{Available, ReservationFocused}
-  alias CritWeb.Reservations.AfterTheFactStructs.State
+  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
 
   @date @date_3
   @timeslot_id ReservationFocused.morning_timeslot
-  @times_that_matter %State{
+  @times_that_matter %TaskMemory{
     date: @date,
     species_id: @bovine_id,
     timeslot_id: @timeslot_id, 
