@@ -65,6 +65,22 @@ defmodule Crit.State.UserTaskTest do
       task_id: task_id} = actual
   end
 
+  describe "every task has an associated 'flash' memory" do
+    test "typical use" do
+      %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
+
+      UserTask.put_flash(task_id, ["some", "value"])
+      assert UserTask.get_flash(task_id) == ["some", "value"]
+
+      # Read is not destructive.
+      assert UserTask.get_flash(task_id) == ["some", "value"]
+
+      # a `put` overwrites
+      UserTask.put_flash(task_id, "another value")
+      assert UserTask.get_flash(task_id) == "another value"
+    end
+  end
+
   # ----------------------------------------------------------------------------
   defstruct task_id: nil, some_array: [], keyword: false
 

@@ -51,6 +51,14 @@ defmodule Crit.State.UserTask do
   end
 
   # ----------------------------------------------------------------------------
+  def flash_key(task_id), do: task_id <> task_id
+
+  def put_flash(task_id, value),
+    do: ConCache.put(Crit.Cache, flash_key(task_id), value)
+  def get_flash(task_id),
+    do: ConCache.get(Crit.Cache, flash_key(task_id))
+
+  # ----------------------------------------------------------------------------
   defp store_by_key(key, %{} = new_values, opts) do
     total = Enum.into(opts, Map.from_struct(new_values) |> Map.delete(:task_id))
 
