@@ -12,10 +12,13 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       responsible_person:   :nothing,
 
       chosen_animal_ids:    :nothing,
-      chosen_procedure_ids: :nothing
+      chosen_procedure_ids: :nothing,
+
+      chosen_animals:       :nothing,
+      chosen_procedures:    :nothing
   end
 
-  defmodule StepMemory do 
+  defmodule Transient do 
 
     defmodule NonUseValues do
       use Ecto.Schema

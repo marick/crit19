@@ -5,7 +5,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias Crit.Setup.{InstitutionApi,AnimalApi, ProcedureApi}
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  alias CritWeb.Reservations.AfterTheFactStructs.StepMemory, as: Scratch
+  alias CritWeb.Reservations.AfterTheFactStructs.Transient
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi
   alias CritWeb.Reservations.ReservationController
@@ -16,7 +16,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def start(conn, _params) do
     state = UserTask.start(TaskMemory)
 
-    start_task_render(conn, state, Scratch.NonUseValues.empty)
+    start_task_render(conn, state, Transient.NonUseValues.empty)
   end
 
   defp start_task_render(conn, state, changeset) do
@@ -29,7 +29,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_non_use_values(conn, %{"non_use_values" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
-    case UserTask.pour_into_struct(params, Scratch.NonUseValues) do
+    case UserTask.pour_into_struct(params, Transient.NonUseValues) do
       {:ok, new_data} ->
         header =
           View.non_use_values_header(
@@ -45,7 +45,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   def put_animals(conn, %{"animals" => params}) do
-    case UserTask.pour_into_struct(params, Scratch.Animals) do
+    case UserTask.pour_into_struct(params, Transient.Animals) do
       {:ok, new_data} ->
         header =
           new_data.chosen_animal_ids
@@ -64,7 +64,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
   
   def put_procedures(conn, %{"procedures" => params}) do
-    case UserTask.pour_into_struct(params, Scratch.Procedures) do
+    case UserTask.pour_into_struct(params, Transient.Procedures) do
       {:ok, new_data} ->
         state = UserTask.remember_relevant(new_data)
         {:ok, reservation, conflicts} =
