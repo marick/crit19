@@ -53,9 +53,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> View.animals_header
 
         task_memory = UserTask.remember_relevant(new_data, task_header: header)
-        UserTask.put_flash(
+        UserTask.for_next_action(
           task_memory.task_id,
-          ProcedureApi.all_by_species(task_memory.species_id, institution(conn)))
+          ProcedureApi.all_by_species(task_memory.species_id, institution(conn), preload: [:frequency]))
     
         task_render(conn, :put_procedures, task_memory)
 
@@ -70,7 +70,12 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, Transient.Procedures) do
       {:ok, new_data} ->
+        UserTask.put(new_data.task_id,
+          :chosen_procedures,
+          (UserTask.for_this_action(new_data.task_id) |> EnumX.filter_by_ids(new_data.chosen_procedure_ids)))
+
         task_memory = UserTask.remember_relevant(new_data)
+        
         {:ok, reservation, conflicts} =
           ReservationApi.create_noting_conflicts(task_memory, institution(conn))
         UserTask.delete(task_memory.task_id)
@@ -110,7 +115,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   defp task_render(conn, :put_procedures, task_memory) do
-    procedures = UserTask.get_flash(task_memory.task_id) |> IO.inspect
+    procedures = UserTask.for_this_action(task_memory.task_id)
     task_render(conn, :put_procedures, task_memory, procedures: procedures)
   end
 
