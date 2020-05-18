@@ -94,7 +94,12 @@ defmodule EnumXTest do
       ]
       assert actual == expected
     end
-    
+
+    test "filter_by_ids" do
+      actual = 
+        EnumX.filter_by_ids([%{id: 1}, %{id: 2}, %{id: 3}], [1,3])
+      assert actual == [%{id: 1}, %{id: 3}]
+    end
   end
 end
   

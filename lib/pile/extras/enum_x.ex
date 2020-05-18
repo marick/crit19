@@ -46,6 +46,12 @@ defmodule EnumX do
   def find_by_id(maps, id), 
     do: Enum.find(maps, fn one -> one.id == id end)
 
+  # Note that order is preserved.
+  def filter_by_ids(maps, ids) do 
+    idset = MapSet.new(ids)
+    Enum.filter(maps, &MapSet.member?(idset, &1.id))
+  end
+
   def to_id_map(maps, value_key) do
     maps 
     |> pairs(:id, value_key)
