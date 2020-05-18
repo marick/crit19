@@ -14,13 +14,13 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    state = UserTask.start(TaskMemory)
+    task_memory = UserTask.start(TaskMemory)
 
-    start_task_render(conn, state, Transient.NonUseValues.empty)
+    start_task_render(conn, task_memory, Transient.NonUseValues.empty)
   end
 
-  defp start_task_render(conn, state, changeset) do
-    task_render(conn, :put_non_use_values, state,
+  defp start_task_render(conn, task_memory, changeset) do
+    task_render(conn, :put_non_use_values, task_memory,
       changeset: changeset,
       species_options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name),
       timeslot_options: InstitutionApi.timeslots(institution(conn)) |> EnumX.id_pairs(:name))
@@ -36,8 +36,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
             new_data.date_showable_date,
             InstitutionApi.timeslot_name(new_data.timeslot_id, institution(conn)))
 
-        state = UserTask.remember_relevant(new_data, task_header: header)
-        task_render(conn, :put_animals, state)
+        task_memory = UserTask.remember_relevant(new_data, task_header: header)
+        task_render(conn, :put_animals, task_memory)
       {:error, changeset} ->
         task_id = Map.get(params, "task_id")
         start_task_render(conn, UserTask.get(task_id), changeset)
@@ -52,8 +52,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> AnimalApi.ids_to_animals(institution(conn))
           |> View.animals_header
 
-        state = UserTask.remember_relevant(new_data, task_header: header)
-        task_render(conn, :put_procedures, state)
+        task_memory = UserTask.remember_relevant(new_data, task_header: header)
+        task_render(conn, :put_procedures, task_memory)
 
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))
@@ -66,10 +66,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, Transient.Procedures) do
       {:ok, new_data} ->
-        state = UserTask.remember_relevant(new_data)
+        task_memory = UserTask.remember_relevant(new_data)
         {:ok, reservation, conflicts} =
-          ReservationApi.create_noting_conflicts(state, institution(conn))
-        UserTask.delete(state.task_id)
+          ReservationApi.create_noting_conflicts(task_memory, institution(conn))
+        UserTask.delete(task_memory.task_id)
 
         conn
         |> put_flash(:info, View.describe_creation(conflicts))
@@ -98,23 +98,23 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     |> task_render(action_to_retry, UserTask.get(task_id))
   end
 
-  defp task_render(conn, :put_animals, state) do
+  defp task_render(conn, :put_animals, task_memory) do
     animals =
-      ReservationApi.after_the_fact_animals(state, institution(conn))
+      ReservationApi.after_the_fact_animals(task_memory, institution(conn))
     
-    task_render(conn, :put_animals, state, animals: animals)
+    task_render(conn, :put_animals, task_memory, animals: animals)
   end
 
-  defp task_render(conn, :put_procedures, state) do
+  defp task_render(conn, :put_procedures, task_memory) do
     procedures =
-      ProcedureApi.all_by_species(state.species_id, institution(conn))
+      ProcedureApi.all_by_species(task_memory.species_id, institution(conn))
     
-    task_render(conn, :put_procedures, state, procedures: procedures)
+    task_render(conn, :put_procedures, task_memory, procedures: procedures)
   end
 
-  defp task_render(conn, next_action, state, opts) do
+  defp task_render(conn, next_action, task_memory, opts) do
     html = to_string(next_action) <> ".html"
-    all_opts = opts ++ [path: path(next_action), state: state]
+    all_opts = opts ++ [path: path(next_action), state: task_memory]
     render(conn, html, all_opts)
   end
 end
