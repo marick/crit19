@@ -149,8 +149,9 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       assert_info_flash_has(conn, "reservation was created")
     end
 
-    test "you must select at least one procedure", %{conn: conn} do
+    test "you must select at least one procedure", %{conn: conn, procedure: procedure} do
       params = %{task_id: @task_id}
+      UserTask.put_flash(@task_id, [procedure])
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_purpose(after_the_fact_pick_procedures())
       |> assert_user_sees("You have to select at least one procedure")

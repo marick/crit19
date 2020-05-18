@@ -53,6 +53,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> View.animals_header
 
         task_memory = UserTask.remember_relevant(new_data, task_header: header)
+        UserTask.put_flash(
+          task_memory.task_id,
+          ProcedureApi.all_by_species(task_memory.species_id, institution(conn)))
+    
         task_render(conn, :put_procedures, task_memory)
 
       {:task_expiry, message} ->
@@ -106,9 +110,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   defp task_render(conn, :put_procedures, task_memory) do
-    procedures =
-      ProcedureApi.all_by_species(task_memory.species_id, institution(conn))
-    
+    procedures = UserTask.get_flash(task_memory.task_id) |> IO.inspect
     task_render(conn, :put_procedures, task_memory, procedures: procedures)
   end
 
