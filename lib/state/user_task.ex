@@ -15,12 +15,20 @@ defmodule Crit.State.UserTask do
   end
 
   def start(module, initial, opts \\ []) do
-    %{task_id: key} = start(module)
-    store_by_key(key, initial, opts)
+    %{task_id: task_id} = start(module)
+    store_by_task_id(task_id, initial, opts)
   end
 
-  def remember_relevant(%{task_id: key} = new_values, opts \\ []) do
-    store_by_key(key, new_values, opts)
+  def remember_relevant(%{task_id: task_id} = new_values, extras \\ []) do
+    store_by_task_id(task_id, new_values, extras)
+  end
+
+  def put(task_id, key, value) do
+    updater = fn old ->
+      {:ok, Map.put(old, key, value)}
+    end
+    :ok = ConCache.update(Crit.Cache, task_id, updater)
+    get(task_id)
   end
 
   def get(task_id) do
@@ -53,22 +61,22 @@ defmodule Crit.State.UserTask do
   # ----------------------------------------------------------------------------
   def flash_key(task_id), do: task_id <> task_id
 
-  def put_flash(task_id, value) do 
+  def for_next_action(task_id, value) do 
     :ok = ConCache.put(Crit.Cache, flash_key(task_id), value)
     value
   end
     
-  def get_flash(task_id),
+  def for_this_action(task_id),
     do: ConCache.get(Crit.Cache, flash_key(task_id))
 
   # ----------------------------------------------------------------------------
-  defp store_by_key(key, %{} = new_values, opts) do
-    total = Enum.into(opts, Map.from_struct(new_values) |> Map.delete(:task_id))
+  defp store_by_task_id(task_id, %{} = new_values, extras) when is_struct(new_values) do
+    total = Enum.into(extras, Map.from_struct(new_values) |> Map.delete(:task_id))
 
     updater = fn old ->
       {:ok, Map.merge(old, total)}
     end
-    :ok = ConCache.update(Crit.Cache, key, updater)
-    get(key)
+    :ok = ConCache.update(Crit.Cache, task_id, updater)
+    get(task_id)
   end
 end
