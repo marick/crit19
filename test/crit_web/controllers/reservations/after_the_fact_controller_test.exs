@@ -196,6 +196,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
          span: Datespan.customary(@date, Date.add(@date, 1))],
       @institution)
 
+      UserTask.for_next_action(@task_id, [procedure])
       conn = post_to_action(conn, :put_procedures, under(:procedures, params))
 
       conn
