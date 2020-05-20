@@ -18,7 +18,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       chosen_procedures:    :nothing
   end
 
-  defmodule Transient do 
+  defmodule ActionData do 
 
     defmodule NonUseValues do
       use Ecto.Schema
