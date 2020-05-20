@@ -70,9 +70,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, Transient.Procedures) do
       {:ok, new_data} ->
+        IO.inspect new_data
         UserTask.put(new_data.task_id,
           :chosen_procedures,
-          (UserTask.for_this_action(new_data.task_id) |> EnumX.filter_by_ids(new_data.chosen_procedure_ids)))
+          (UserTask.for_this_action(new_data.task_id) |> IO.inspect |> EnumX.filter_by_ids(new_data.chosen_procedure_ids)))
 
         task_memory = UserTask.remember_relevant(new_data)
         

@@ -10,9 +10,10 @@ defmodule Crit.Reservations.RestPeriod do
  
   def unavailable_by(_query, struct, institution) do
 
-    IO.inspect struct
+    chosen_procedure_ids = struct.chosen_procedures |> EnumX.ids
+    # IO.inspect struct
     pairs =
-      EnumX.cross_product(struct.chosen_animal_ids, struct.chosen_procedure_ids)
+      EnumX.cross_product(struct.chosen_animal_ids, chosen_procedure_ids)
 
 
     [first | rest] = 

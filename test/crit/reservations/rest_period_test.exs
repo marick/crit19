@@ -29,6 +29,7 @@ defmodule Crit.Reservations.RestPeriodTest do
     RestPeriod.unavailable_by("ignored",
       %{chosen_animal_ids: data[:animal] |> Map.values |> EnumX.ids,
        chosen_procedure_ids: data[:procedure] |> Map.values|> EnumX.ids,
+       chosen_procedures: data[:procedure] |> Map.values,
        date: date,
        frequency: frequency},
       @institution)

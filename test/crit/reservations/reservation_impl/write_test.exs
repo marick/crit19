@@ -4,6 +4,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Reservations.ReservationApi
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Setup.InstitutionApi
+  alias Crit.Setup.ProcedureApi
   alias Ecto.Datespan
   alias Crit.Exemplars.{Available, ReservationFocused}
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
@@ -30,16 +31,21 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
     service_gap_including_desired_date!(two_conflicts, @date)
     reserved_on_desired_date!(
       two_conflicts, @date, ReservationFocused.morning_timeslot)
-    
+
     just_use_conflict = Available.bovine(@just_use_conflict, @date)
     [two_conflicts, just_use_conflict]
     |> reserved_on_desired_date!(@date, ReservationFocused.morning_timeslot)
+
+    [procedure_id] = chosen_procedure()
+    procedure = ProcedureApi.one_by_id(procedure_id, @institution)
 
     desired =
       %{ @times_that_matter |
          responsible_person: "anyone",
          chosen_animal_ids: [two_conflicts.id, just_use_conflict.id],
-         chosen_procedure_ids: chosen_procedure()}
+         chosen_procedures: [procedure],
+         chosen_procedure_ids: [procedure_id]
+       }
 
     [desired: desired]
   end
