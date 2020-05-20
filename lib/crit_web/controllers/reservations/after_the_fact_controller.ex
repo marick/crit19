@@ -53,7 +53,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
           |> View.animals_header
 
         task_memory = UserTask.remember_relevant(new_data, task_header: header)
-        UserTask.for_next_action(
+        UserTask.send_to_next_action(
           task_memory.task_id,
           ProcedureApi.all_by_species(task_memory.species_id, institution(conn), preload: [:frequency]))
     

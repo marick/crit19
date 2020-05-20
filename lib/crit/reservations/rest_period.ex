@@ -8,14 +8,9 @@ defmodule Crit.Reservations.RestPeriod do
   import Ecto.Datespan  # This has to be imported for query construction.
   
  
-  def possible_frequencies, do: [
-    "unlimited",
-    "once per day",
-    "once per week",
-    "twice per week",
-  ]
-
   def unavailable_by(_query, struct, institution) do
+
+    IO.inspect struct
     pairs =
       EnumX.cross_product(struct.chosen_animal_ids, struct.chosen_procedure_ids)
 

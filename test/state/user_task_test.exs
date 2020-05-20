@@ -84,18 +84,18 @@ defmodule Crit.State.UserTaskTest do
     test "typical use" do
       %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
 
-      UserTask.for_next_action(task_id, ["some", "value"])
+      UserTask.send_to_next_action(task_id, ["some", "value"])
       assert UserTask.for_this_action(task_id) == ["some", "value"]
 
       # Read is not destructive.
       assert UserTask.for_this_action(task_id) == ["some", "value"]
 
       # a `put` overwrites
-      UserTask.for_next_action(task_id, "another value")
+      UserTask.send_to_next_action(task_id, "another value")
       assert UserTask.for_this_action(task_id) == "another value"
 
       # Putting a value returns the value.
-      assert UserTask.for_next_action(task_id, 3) == 3
+      assert UserTask.send_to_next_action(task_id, 3) == 3
     end
   end
 
