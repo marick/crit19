@@ -9,18 +9,13 @@ defmodule Crit.Reservations.RestPeriod do
   
  
   def unavailable_by(_query, struct, institution) do
-
-    chosen_procedure_ids = struct.chosen_procedures |> EnumX.ids
-    # IO.inspect struct
     pairs =
-      EnumX.cross_product(struct.chosen_animal_ids, chosen_procedure_ids)
-
+      EnumX.cross_product(struct.chosen_animal_ids, struct.chosen_procedures)
 
     [first | rest] = 
-    for {animal_id, procedure_id} <- pairs do
-      frequency____ = Map.get(struct, :frequency, "unlimited")
+    for {animal_id, procedure} <- pairs do
       query = (from a in Animal, where: [id: ^animal_id])
-      one_procedure_uses(query, frequency____, struct.date, procedure_id)
+      one_procedure_uses(query, procedure.frequency.calculation_name, struct.date, procedure.id)
     end
 
     Enum.reduce(rest, first, fn q, acc ->

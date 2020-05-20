@@ -21,17 +21,10 @@ defmodule Crit.Reservations.RestPeriodTest do
   end
 
   def t_unavailable_by(data, date) do
-    frequency =
-      data[:procedure_frequency]
-      |> Map.keys
-      |> List.first
-    
     RestPeriod.unavailable_by("ignored",
       %{chosen_animal_ids: data[:animal] |> Map.values |> EnumX.ids,
-       chosen_procedure_ids: data[:procedure] |> Map.values|> EnumX.ids,
        chosen_procedures: data[:procedure] |> Map.values,
-       date: date,
-       frequency: frequency},
+       date: date}, 
       @institution)
   end
 

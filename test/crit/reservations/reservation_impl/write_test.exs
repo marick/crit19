@@ -21,7 +21,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   # Names for the data in question
   @two_conflicts "service gap and use animal"   
   @just_use_conflict "other"
-  @procedure "new procedure"
+  @procedure_name "new procedure"
 
   # two conflicting reservations and a conflicting service gap
   # (Unlikely in practice)
@@ -36,15 +36,14 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
     [two_conflicts, just_use_conflict]
     |> reserved_on_desired_date!(@date, ReservationFocused.morning_timeslot)
 
-    [procedure_id] = chosen_procedure()
-    procedure = ProcedureApi.one_by_id(procedure_id, @institution)
+    procedure = chosen_procedure()
 
     desired =
       %{ @times_that_matter |
          responsible_person: "anyone",
          chosen_animal_ids: [two_conflicts.id, just_use_conflict.id],
          chosen_procedures: [procedure],
-         chosen_procedure_ids: [procedure_id]
+         chosen_procedure_ids: [procedure.id]
        }
 
     [desired: desired]
@@ -79,7 +78,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
     {[just_use_conflict, service_gap], [procedure]} = all_used
     assert just_use_conflict.name == @just_use_conflict
     assert service_gap.name == @two_conflicts
-    assert procedure.name == @procedure
+    assert procedure.name == @procedure_name
   end
 
   defp assert_names_are(actual, expected),
@@ -88,7 +87,8 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   # ------------------------------------------------------------------------
 
   defp chosen_procedure() do
-    ReservationFocused.inserted_procedure_ids([@procedure], @bovine_id)
+    [id] = ReservationFocused.inserted_procedure_ids([@procedure_name], @bovine_id)
+    ProcedureApi.one_by_id(id, @institution, preload: [:frequency])
   end
 
   defp reserved_on_desired_date!(animals, date, timeslot_id) when is_list(animals) do

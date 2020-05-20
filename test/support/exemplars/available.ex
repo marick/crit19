@@ -70,7 +70,7 @@ defmodule Crit.Exemplars.Available do
     
   def procedure(name, species_id) do
     Factory.sql_insert!(:procedure,
-      [name: name, species_id: species_id],
+      [name: name, species_id: species_id, frequency_id: @unlimited_frequency_id],
       @institution)
   end
 end

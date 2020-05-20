@@ -2,6 +2,7 @@ defmodule Crit.Exemplars.Background do
   use ExUnit.CaseTemplate
   use Crit.TestConstants
   alias Crit.Exemplars.ReservationFocused
+  alias Crit.Setup.ProcedureApi
   import DeepMerge
   alias Crit.Factory
 
@@ -24,14 +25,15 @@ defmodule Crit.Exemplars.Background do
   def procedure(data, procedure_name, [frequency: frequency_name]) do 
     schema = :procedure
 
-    frequency_id = data.procedure_frequency[frequency_name].id
+    frequency = data.procedure_frequency[frequency_name]
     species_id = data.species_id
 
-    addition = Factory.sql_insert!(schema,
+    %{id: id} = Factory.sql_insert!(schema,
       name: procedure_name,
       species_id: species_id,
-      frequency_id: frequency_id)
-
+      frequency_id: frequency.id)
+    addition = ProcedureApi.one_by_id(id, @institution, preload: [:frequency])
+    
     deep_merge(data, %{schema => %{procedure_name => addition}})
   end
 

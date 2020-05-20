@@ -4,10 +4,7 @@ defmodule Crit.Setup.Schemas.Procedure do
   alias Crit.Ecto.TrimmedString
   alias Crit.Setup.HiddenSchemas.{Species,ProcedureFrequency}
   alias Crit.Sql
-  import Ecto.Query
   alias Crit.Sql
-  alias Crit.Sql.CommonQuery
-  
 
   schema "procedures" do
     field :name, TrimmedString

@@ -5,7 +5,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Setup.{InstitutionApi,ProcedureApi}
   alias Crit.Reservations.ReservationApi
   alias Crit.Exemplars.Available
   alias Ecto.Datespan
@@ -24,7 +24,11 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
     bossie = Available.bovine("Bossie", @date)
-    procedure = Available.bovine_procedure("only procedure")
+
+    # TEMP - move away from `Available`
+    %{id: procedure_id} = Available.bovine_procedure("only procedure")
+    procedure = ProcedureApi.one_by_id(procedure_id, @institution, preload: [:frequency])
+
     [bossie: bossie, procedure: procedure]
   end
 

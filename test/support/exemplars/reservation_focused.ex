@@ -38,7 +38,9 @@ defmodule Crit.Exemplars.ReservationFocused do
   end
 
   def inserted_procedure_ids(names, species_id) do
-    inserted_named_ids names, %Procedure{species_id: species_id}
+    inserted_named_ids(
+      names,
+      %Procedure{species_id: species_id, frequency_id: @unlimited_frequency_id})
   end
 
   def ignored_procedure(name, species_id) do
