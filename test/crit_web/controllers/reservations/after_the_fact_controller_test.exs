@@ -109,6 +109,10 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_field(chosen_animal_ids: [bossie.id])
     end
 
+    test "make sure procedures are filtered by id." do
+      IO.inspect "Need this test"
+    end
+    
     test "you must select at least one", %{conn: conn} do
       params = %{task_id: @task_id}
       post_to_action(conn, :put_animals, under(:animals, params))

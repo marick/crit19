@@ -1,5 +1,6 @@
 defmodule CritWeb.Reservations.AfterTheFactView do
   use CritWeb, :view
+  alias Pile.TimeHelper
 
   def non_use_values_header(showable_date, timeslot_name) do
     ~E"""
@@ -34,6 +35,7 @@ defmodule CritWeb.Reservations.AfterTheFactView do
         <ul> 
            <%= li_was_where(:service_gap, conflicts.service_gap) %>
            <%= li_was_where(:use, conflicts.use) %>
+           <%= li_was_where(:rest_period, conflicts.rest_period) %>
         </ul>
       </div>
       """
@@ -54,11 +56,23 @@ defmodule CritWeb.Reservations.AfterTheFactView do
     |> li
   end
 
+  def li_was_where(:rest_period, conflict_list) do
+    one = fn %{animal_name: a, procedure_name: p, dates: dates} ->
+      datestring =
+        dates 
+        |> Enum.map(&TimeHelper.date_string_without_year/1)
+        |> Conjunction.join
+      li "This use of #{a} for #{p} is too close to #{datestring}."
+    end
+    
+    Enum.map(conflict_list, one)
+  end
+
   def was_where(animal_list, suffix) do
     was_where =
       case length(animal_list) do
         1 -> "was"
-        2 -> "were"
+        _ -> "were"
       end
 
     "#{Conjunction.join(EnumX.names(animal_list))} #{was_where} #{suffix}"

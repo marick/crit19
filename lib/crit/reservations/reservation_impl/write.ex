@@ -49,7 +49,10 @@ defmodule Crit.Reservations.ReservationImpl.Write do
 
   defp struct_to_changeset(struct) do
     uses = 
-      Use.cross_product(struct.chosen_animal_ids, struct.chosen_procedure_ids)
+      Use.cross_product(
+        struct.chosen_animal_ids,
+        struct.chosen_procedures |> EnumX.ids)
+    
     
     attrs =
       Map.from_struct(struct)

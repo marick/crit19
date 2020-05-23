@@ -13,6 +13,7 @@ defmodule Pile.TimeHelper do
   end
 
   def date_string(date), do: Calendar.Strftime.strftime!(date, "%B %e, %Y")
+  def date_string_without_year(date), do: Calendar.Strftime.strftime!(date, "%B %e")
 
   # Default date conversions are only accurate to microseconds. Using
   # them means that values round-tripped through Postgres would come

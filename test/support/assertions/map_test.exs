@@ -226,8 +226,12 @@ defmodule Crit.Assertions.MapTest do
         end)
     end
 
+    # This needs to be outside the test to keep compiler from knowing that
+    # a match is impossible.
+    defp singleton(), do: %{p: [1]}
+
     test "shapes with arrays" do
-      singleton = %{p: [1]}
+      singleton = singleton()
       assert_field_shape(singleton, :p, [_])
       assert_field_shape(singleton, :p, [_ | _])
       assertion_fails_with_diagnostic(
