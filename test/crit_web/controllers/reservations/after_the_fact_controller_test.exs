@@ -148,7 +148,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       params = %{task_id: @task_id,
                  chosen_procedure_ids: [to_string(procedure.id)]}
 
-      UserTask.send_to_next_action(@task_id, [procedure])
       conn = post_to_action(conn, :put_procedures, under(:procedures, params))
 
       [only] = ReservationApi.on_date(@date, @institution)
@@ -158,9 +157,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       assert_info_flash_has(conn, "reservation was created")
     end
 
-    test "you must select at least one procedure", %{conn: conn, procedure: procedure} do
+    test "you must select at least one procedure", %{conn: conn} do
       params = %{task_id: @task_id}
-      UserTask.send_to_next_action(@task_id, [procedure])
       post_to_action(conn, :put_procedures, under(:procedures, params))
       |> assert_purpose(after_the_fact_pick_procedures())
       |> assert_user_sees("You have to select at least one procedure")
@@ -180,7 +178,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       params = %{task_id: @task_id,
                  chosen_procedure_ids: [to_string(procedure.id)]}
 
-      UserTask.send_to_next_action(@task_id, [procedure])
       conn = post_to_action(conn, :put_procedures, under(:procedures, params))
 
       UserTask.start(again)
@@ -204,7 +201,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
          span: Datespan.customary(@date, Date.add(@date, 1))],
       @institution)
 
-      UserTask.send_to_next_action(@task_id, [procedure])
       conn = post_to_action(conn, :put_procedures, under(:procedures, params))
 
       conn

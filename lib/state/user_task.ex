@@ -62,17 +62,6 @@ defmodule Crit.State.UserTask do
   end
 
   # ----------------------------------------------------------------------------
-  def action_key(task_id), do: task_id <> task_id
-
-  def send_to_next_action(task_id, value) do 
-    :ok = ConCache.put(Crit.Cache, action_key(task_id), value)
-    value
-  end
-    
-  def for_this_action(task_id),
-    do: ConCache.get(Crit.Cache, action_key(task_id))
-
-  # ----------------------------------------------------------------------------
   defp store_by_task_id(task_id, %{} = new_values, extras) when is_struct(new_values) do
     total = Enum.into(extras, Map.from_struct(new_values) |> Map.delete(:task_id))
 

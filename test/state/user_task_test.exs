@@ -80,25 +80,6 @@ defmodule Crit.State.UserTaskTest do
     assert "some date" = UserTask.get(task_id).date
   end
 
-  describe "a task can send a value to the next action" do
-    test "typical use" do
-      %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
-
-      UserTask.send_to_next_action(task_id, ["some", "value"])
-      assert UserTask.for_this_action(task_id) == ["some", "value"]
-
-      # Read is not destructive.
-      assert UserTask.for_this_action(task_id) == ["some", "value"]
-
-      # a `put` overwrites
-      UserTask.send_to_next_action(task_id, "another value")
-      assert UserTask.for_this_action(task_id) == "another value"
-
-      # Putting a value returns the value.
-      assert UserTask.send_to_next_action(task_id, 3) == 3
-    end
-  end
-
   # ----------------------------------------------------------------------------
   defstruct task_id: nil, some_array: [], keyword: false
 

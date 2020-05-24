@@ -9,7 +9,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi
   alias CritWeb.Reservations.ReservationController
-  alias Ecto.Changeset
 
   plug :must_be_able_to, :make_reservations
 
@@ -45,16 +44,13 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   def put_animals(conn, %{"animals" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Animals) do
-      {:ok, action_data, task_id} ->
+      {:ok, action_data, _task_id} ->
         header =
           action_data.chosen_animal_ids
           |> AnimalApi.ids_to_animals(institution(conn))
           |> View.animals_header
 
         task_memory = UserTask.remember_relevant(action_data, task_header: header)
-        UserTask.send_to_next_action(
-          task_id,
-          ProcedureApi.all_by_species(task_memory.species_id, institution(conn), preload: [:frequency]))
     
         task_render(conn, :put_procedures, task_memory)
 
@@ -71,11 +67,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Procedures) do
       {:ok, action_data, task_id} ->
-        UserTask.put(task_id,
-          :chosen_procedures,
-          (UserTask.for_this_action(task_id) |> EnumX.filter_by_ids(action_data.chosen_procedure_ids)))
+        species_id = UserTask.get(task_id).species_id
+        chosen_procedures = ProcedureApi.all_by_species(species_id, institution(conn), preload: [:frequency]) |> EnumX.filter_by_ids(action_data.chosen_procedure_ids)
 
-        task_memory = UserTask.remember_relevant(action_data)
+        task_memory = UserTask.remember_relevant(action_data, chosen_procedures: chosen_procedures)
         
         {:ok, reservation, conflicts} =
           ReservationApi.create_noting_conflicts(task_memory, institution(conn))
