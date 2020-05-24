@@ -9,4 +9,5 @@ defmodule Crit.Setup.ProcedureApi do
 
   deftypical(:all_by_species, :all, [species_id: species_id])
   deftypical(:one_by_id, :one, [id: id])
+  def_all_by_Xs(:id)
 end

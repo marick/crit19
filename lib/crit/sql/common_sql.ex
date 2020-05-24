@@ -15,8 +15,21 @@ defmodule Crit.Sql.CommonSql do
     end
   end
 
+  defmacro def_all_by_Xs(column) do
+    full_name = "all_by_#{column}s" |> String.to_atom
+    quote do
+      def unquote(full_name)(desired_ids, institution, opts \\ []) do
+        CommonQuery.typical(target_schema(), opts)
+        |> where([x], x. unquote(column) in ^desired_ids)
+        |> Sql.all(institution)
+      end
+    end
+  end
+
+
   defmacro __using__(schema: schema) do
     quote do
+      import Ecto.Query
       defp target_schema(), do: unquote(schema)
     end
   end

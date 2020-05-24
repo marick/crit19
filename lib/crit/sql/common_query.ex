@@ -28,6 +28,14 @@ defmodule Crit.Sql.CommonQuery do
     |> preload(^preloads)
   end
   
+  def typical(schema, opts) when is_atom(schema) and is_list(opts) do
+    preloads = Keyword.get(opts, :preload, [])
+
+    schema
+    |> ordered_by_name
+    |> preload(^preloads)
+  end
+  
 
   @doc """
   Produces a query that will remove all elements produced by `undesirable`
