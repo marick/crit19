@@ -54,7 +54,10 @@ defmodule Crit.State.UserTask do
     if Enum.member?(Keyword.keys(changeset.errors), :task_id) do
       {:task_expiry, expiry_message()}
     else
-      Changeset.apply_action(changeset, :insert)
+      task_id = Changeset.fetch_change!(changeset, :task_id)
+      changeset
+      |> Changeset.apply_action(:insert)
+      |> Tuple.append(task_id)
     end
   end
 

@@ -30,7 +30,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
     case UserTask.pour_into_struct(params, ActionData.NonUseValues) do
-      {:ok, action_data} ->
+      {:ok, action_data, _task_id} ->
         header =
           View.non_use_values_header(
             action_data.date_showable_date,
@@ -38,15 +38,14 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
         task_memory = UserTask.remember_relevant(action_data, task_header: header)
         task_render(conn, :put_animals, task_memory)
-      {:error, changeset} ->
-        task_id = Map.get(params, "task_id")
+      {:error, changeset, task_id} ->
         start_task_render(conn, UserTask.get(task_id), changeset)
     end
   end
 
   def put_animals(conn, %{"animals" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Animals) do
-      {:ok, action_data} ->
+      {:ok, action_data, task_id} ->
         header =
           action_data.chosen_animal_ids
           |> AnimalApi.ids_to_animals(institution(conn))
@@ -54,7 +53,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
         task_memory = UserTask.remember_relevant(action_data, task_header: header)
         UserTask.send_to_next_action(
-          task_memory.task_id,
+          task_id,
           ProcedureApi.all_by_species(task_memory.species_id, institution(conn), preload: [:frequency]))
     
         task_render(conn, :put_procedures, task_memory)
@@ -62,23 +61,25 @@ defmodule CritWeb.Reservations.AfterTheFactController do
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))
 
-      {:error, changeset} -> 
-        selection_list_error(conn, changeset, :put_animals, "animal")
+      {:error, _changeset, task_id} ->
+        conn
+        |> selection_list_error("animal")
+        |> task_render(:put_animals, UserTask.get(task_id))
     end
   end
   
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Procedures) do
-      {:ok, action_data} ->
-        UserTask.put(action_data.task_id,
+      {:ok, action_data, task_id} ->
+        UserTask.put(task_id,
           :chosen_procedures,
-          (UserTask.for_this_action(action_data.task_id) |> EnumX.filter_by_ids(action_data.chosen_procedure_ids)))
+          (UserTask.for_this_action(task_id) |> EnumX.filter_by_ids(action_data.chosen_procedure_ids)))
 
         task_memory = UserTask.remember_relevant(action_data)
         
         {:ok, reservation, conflicts} =
           ReservationApi.create_noting_conflicts(task_memory, institution(conn))
-        UserTask.delete(task_memory.task_id)
+        UserTask.delete(task_id)
 
         conn
         |> put_flash(:info, View.describe_creation(conflicts))
@@ -87,8 +88,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))
 
-      {:error, changeset} ->
-        selection_list_error(conn, changeset, :put_procedures, "procedure")
+      {:error, _changeset, task_id} ->
+        conn
+        |> selection_list_error("procedure")
+        |> task_render(:put_procedures, UserTask.get(task_id))
     end
   end
 
@@ -100,11 +103,9 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     |> redirect(to: start_again)
   end
 
-  defp selection_list_error(conn, changeset, action_to_retry, list_element_type) do
-    task_id = Changeset.fetch_change!(changeset, :task_id)
+  defp selection_list_error(conn, list_element_type) do
     conn
     |> put_flash(:error, "You have to select at least one #{list_element_type}")
-    |> task_render(action_to_retry, UserTask.get(task_id))
   end
 
   defp task_render(conn, :put_animals, task_memory) do
@@ -115,7 +116,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   defp task_render(conn, :put_procedures, task_memory) do
-    procedures = UserTask.for_this_action(task_memory.task_id)
+    procedures =
+      ProcedureApi.all_by_species(task_memory.species_id, institution(conn))
     task_render(conn, :put_procedures, task_memory, procedures: procedures)
   end
 

@@ -17,7 +17,8 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       expected_span =
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
-      assert {:ok, data} = UserTask.pour_into_struct(params, ActionData.NonUseValues)
+      assert {:ok, data, "uuid"} =
+        UserTask.pour_into_struct(params, ActionData.NonUseValues)
       data
       |> assert_fields(
            species_id: @bovine_id,
@@ -41,7 +42,8 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
       params = %{"chosen_animal_ids" => ["8", "1"],
                  "task_id" => task_id}
       
-      assert {:ok, data} = UserTask.pour_into_struct(params, ActionData.Animals)
+      assert {:ok, data, ^task_id} =
+        UserTask.pour_into_struct(params, ActionData.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
     end
@@ -58,7 +60,8 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
     test "no animals chosen", %{task_id: task_id} do
       params = %{"task_id" => task_id}
 
-      assert {:error, changeset} = UserTask.pour_into_struct(params, ActionData.Animals)
+      assert {:error, changeset, ^task_id} =
+        UserTask.pour_into_struct(params, ActionData.Animals)
       assert %{chosen_animal_ids: [_]} = errors_on(changeset)
     end
   end  
