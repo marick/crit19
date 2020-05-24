@@ -67,8 +67,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Procedures) do
       {:ok, action_data, task_id} ->
-        species_id = UserTask.get(task_id).species_id
-        chosen_procedures = ProcedureApi.all_by_species(species_id, institution(conn), preload: [:frequency]) |> EnumX.filter_by_ids(action_data.chosen_procedure_ids)
+        chosen_procedures =
+          ProcedureApi.all_by_ids(action_data.chosen_procedure_ids,
+            institution(conn),
+            preload: [:frequency])
 
         task_memory = UserTask.remember_relevant(action_data, chosen_procedures: chosen_procedures)
         
