@@ -63,9 +63,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         |> task_render(:put_animals, UserTask.get(task_id))
     end
   end
-  
 
-  IO.puts "centralize task_expiry error messages"
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Procedures) do
       {:ok, action_data, task_id} ->
