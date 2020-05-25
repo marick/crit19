@@ -42,7 +42,6 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
       %{ @times_that_matter |
          responsible_person: "anyone",
          chosen_animal_ids: [two_conflicts.id, just_use_conflict.id],
-         chosen_procedures: [procedure],
          chosen_procedure_ids: [procedure.id]
        }
 

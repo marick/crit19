@@ -64,15 +64,12 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     end
   end
   
+
+  IO.puts "centralize task_expiry error messages"
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, ActionData.Procedures) do
       {:ok, action_data, task_id} ->
-        chosen_procedures =
-          ProcedureApi.all_by_ids(action_data.chosen_procedure_ids,
-            institution(conn),
-            preload: [:frequency])
-
-        task_memory = UserTask.remember_relevant(action_data, chosen_procedures: chosen_procedures)
+        task_memory = UserTask.remember_relevant(action_data)
         
         {:ok, reservation, conflicts} =
           ReservationApi.create_noting_conflicts(task_memory, institution(conn))

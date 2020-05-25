@@ -4,7 +4,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Crit.Setup.Schemas.{Animal, Procedure}
   alias Crit.Sql
   alias Ecto.Datespan
-  alias Crit.Setup.{InstitutionApi,ProcedureApi}
+  alias Crit.Setup.InstitutionApi
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
   alias Crit.Reservations.ReservationApi
   import Ecto.Query
@@ -106,8 +106,6 @@ defmodule Crit.Exemplars.ReservationFocused do
     animal_ids = insert_or_create_animal_ids(animal_names, species_id)
     procedure_ids = insert_or_create_procedure_ids(procedure_names, species_id)
     
-    procedures = Enum.map(procedure_ids, &(ProcedureApi.one_by_id &1, @institution))
-    
     %TaskMemory{
       species_id: species_id,
       timeslot_id: opts.timeslot_id,
@@ -115,7 +113,7 @@ defmodule Crit.Exemplars.ReservationFocused do
       span: span,
       responsible_person: opts.responsible_person,
       chosen_animal_ids: animal_ids,
-      chosen_procedures: procedures
+      chosen_procedure_ids: procedure_ids
     }
   end
 

@@ -4,13 +4,19 @@ defmodule Crit.Reservations.RestPeriod do
   alias Crit.Setup.Schemas.{Animal,Procedure}
   alias Crit.Reservations.HiddenSchemas.Use
   alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Setup.ProcedureApi
   alias Ecto.Datespan
   import Ecto.Datespan  # This has to be imported for query construction.
   
  
   def unavailable_by(_query, struct, institution) do
+    chosen_procedures =
+      ProcedureApi.all_by_ids(struct.chosen_procedure_ids,
+        institution,
+        preload: [:frequency])
+    
     pairs =
-      EnumX.cross_product(struct.chosen_animal_ids, struct.chosen_procedures)
+      EnumX.cross_product(struct.chosen_animal_ids, chosen_procedures)
 
     [first | rest] = 
     for {animal_id, procedure} <- pairs do

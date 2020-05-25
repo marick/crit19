@@ -12,10 +12,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructs do
       responsible_person:   :nothing,
 
       chosen_animal_ids:    :nothing,
-      chosen_procedure_ids: :nothing,
-
-      chosen_animals:       :nothing,
-      chosen_procedures:    :nothing
+      chosen_procedure_ids: :nothing
   end
 
   defmodule ActionData do 
