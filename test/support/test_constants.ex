@@ -4,19 +4,11 @@ defmodule Crit.TestConstants do
     quote do
       use Crit.Global.Constants
       use Crit.Global.SeedConstants
-      
-      @iso_date "2035-09-05"
-      @date Date.from_iso8601!(@iso_date)
 
-      @bumped_date Date.add(@date, 1)
-      @iso_bumped_date Date.to_iso8601(@bumped_date)
-  
-      @later_iso_date "2046-09-05"
-      @later_date Date.from_iso8601!(@later_iso_date)
+      defp next_day(%Date{} = date), do: Date.add(date, 1)
+      defp next_day(iso_date), do: iso_date |> Date.from_iso8601! |> next_day
 
-      @later_bumped_date Date.add(@later_date, 1)
-      @later_iso_bumped_date Date.to_iso8601(@later_bumped_date)
-
+      defp iso_next_day(date_like), do: date_like |> next_day |> Date.to_iso8601
 
       @iso_date_1 "2201-01-01"
       @iso_date_2 "2202-02-02"

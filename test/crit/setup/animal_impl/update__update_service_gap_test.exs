@@ -8,18 +8,18 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
   describe "successfully updating a service gap" do
     setup do
       %{id: animal_id} =
-        Factory.sql_insert!(:animal, [span: Datespan.inclusive_up(@date)], @institution)
+        Factory.sql_insert!(:animal, [span: Datespan.inclusive_up(@date_1)], @institution)
           
 
       Factory.sql_insert!(:service_gap,
         [animal_id: animal_id,
-         span: Datespan.customary(@date, @bumped_date)],
+         span: Datespan.customary(@date_1, next_day(@date_1))],
         @institution)
 
       # # A second service gap that is to be unchanged.
       Factory.sql_insert!(:service_gap,
         [animal_id: animal_id,
-         span: Datespan.customary(@later_date, @later_bumped_date)],
+         span: Datespan.customary(@date_2, @date_3)],
         @institution)
 
       [animal: AnimalApi.updatable!(animal_id, @institution)]
@@ -33,7 +33,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
         AnimalT.unchanged_params(animal)
         |> Map.put("name", new_name)
         |> put_in(["service_gaps", "1", "out_of_service_datestring"],
-                  @later_iso_date)
+                  @iso_date_2)
 
       new_animal = AnimalT.update_for_success(animal.id, params)
 
@@ -44,8 +44,8 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
       # Note that the returned value is suitable for another form.
       assert_copy(AnimalT.service_gap_n(new_animal, 0),
                   AnimalT.service_gap_n(    animal, 0),
-        except: [out_of_service_datestring: @later_iso_date,
-                 span: Datespan.customary(@date, @later_date)])
+        except: [out_of_service_datestring: @iso_date_2,
+                 span: Datespan.customary(@date_1, @date_2)])
 
       assert_copy(AnimalT.service_gap_n(new_animal, 1),
                   AnimalT.service_gap_n(    animal, 1))
@@ -55,18 +55,18 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
 
       params =
         AnimalT.unchanged_params(animal)
-        |> Map.put("in_service_datestring", @later_iso_date)
-        |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date)
+        |> Map.put("in_service_datestring", @iso_date_2)
+        |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_1)
 
       error_changeset = AnimalT.update_for_error_changeset(animal.id, params)
 
       # Check that that the animal will be displayed with the changed value
-      assert_change(error_changeset, in_service_datestring: @later_iso_date)
+      assert_change(error_changeset, in_service_datestring: @iso_date_2)
 
       [empty, changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
       assert_no_changes(empty)
       assert empty.data == %ServiceGap{}
-      assert_change(changed_sg, out_of_service_datestring: @iso_date)
+      assert_change(changed_sg, out_of_service_datestring: @iso_date_1)
       assert_no_changes(unchanged_sg)
     end
 
@@ -79,7 +79,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
         |> Map.put("name", "conflicting name")
         # This is a valid change
         |> put_in(["service_gaps", "1", "out_of_service_datestring"],
-                  @later_iso_date)
+                  @iso_date_2)
 
       error_changeset = AnimalT.update_for_error_changeset(animal.id, params)
 
@@ -88,7 +88,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
       [empty, changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
       assert_no_changes(empty)
       assert empty.data == %ServiceGap{}
-      assert_change(changed_sg, out_of_service_datestring: @later_iso_date)
+      assert_change(changed_sg, out_of_service_datestring: @iso_date_2)
       assert_no_changes(unchanged_sg)
     end
 
@@ -97,14 +97,14 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
         AnimalT.unchanged_params(animal)
         |> Map.put("name", "non-conflicting name")
         |> put_in(["service_gaps", "1", "out_of_service_datestring"],
-                  @iso_date)
+                  @iso_date_1)
 
       error_changeset = AnimalT.update_for_error_changeset(animal.id, params)
 
       [empty, changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
       assert_no_changes(empty)
       assert empty.data == %ServiceGap{}
-      assert_change(changed_sg, out_of_service_datestring: @iso_date)
+      assert_change(changed_sg, out_of_service_datestring: @iso_date_1)
       assert_no_changes(unchanged_sg)
     end
   end

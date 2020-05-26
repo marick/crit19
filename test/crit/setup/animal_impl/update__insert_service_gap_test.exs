@@ -16,8 +16,8 @@ defmodule Crit.Setup.AnimalImpl.UpdateInsertServiceGapTest do
       params =
         AnimalT.unchanged_params(animal)
         |> put_in(["service_gaps", "0"],
-             %{"in_service_datestring" => @later_iso_date,
-               "out_of_service_datestring" => @later_iso_bumped_date,
+             %{"in_service_datestring" => @iso_date_2,
+               "out_of_service_datestring" => @iso_date_3,
                "reason" => "addition",
                "delete" => false,
                "institution" => @institution})
@@ -38,12 +38,12 @@ defmodule Crit.Setup.AnimalImpl.UpdateInsertServiceGapTest do
 
       assert_fields(added_gap,
         id: &is_integer/1,
-        in_service_datestring: @later_iso_date,
-        out_of_service_datestring: @later_iso_bumped_date,
+        in_service_datestring: @iso_date_2,
+        out_of_service_datestring: @iso_date_3,
         reason: "addition",
         delete: false,
         
-        span: Datespan.customary(@later_date, @later_bumped_date)
+        span: Datespan.customary(@date_2, @date_3)
         )
     end
 
@@ -63,12 +63,12 @@ defmodule Crit.Setup.AnimalImpl.UpdateInsertServiceGapTest do
       # the actual database values for further use (`id` and `span`).
       assert_fields(added_gap,
         id: &is_integer/1,
-        in_service_datestring: @later_iso_date,
-        out_of_service_datestring: @later_iso_bumped_date,
+        in_service_datestring: @iso_date_2,
+        out_of_service_datestring: @iso_date_3,
         reason: "addition",
         delete: false,
         
-        span: Datespan.customary(@later_date, @later_bumped_date)
+        span: Datespan.customary(@date_2, @date_3)
         )
     end
 

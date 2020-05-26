@@ -19,11 +19,11 @@ defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
     end
 
     test "some changes are distributed to each of the created changesets" do
-      [one_cs, two_cs] = make_changeset(@iso_date, @later_iso_date)
+      [one_cs, two_cs] = make_changeset(@iso_date_1, @iso_date_2)
 
       one_cs
       |> assert_changes(species_id: 1,
-                        span: Datespan.customary(@date, @later_date))
+                        span: Datespan.customary(@date_1, @date_2))
       assert one_cs.changes.name == "one"
       assert one_cs.data == %Animal{}
 
@@ -31,23 +31,23 @@ defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
     end
 
     test "only the name changes" do
-      [one_cs, two_cs] = make_changeset(@iso_date, @later_iso_date)
+      [one_cs, two_cs] = make_changeset(@iso_date_1, @iso_date_2)
 
       assert_change(one_cs, name: "one")
       assert_change(two_cs, name: "two")
     end
 
     test "the data part is an empty animal - causing creation" do
-      [one_cs, two_cs] = make_changeset(@iso_date, @later_iso_date)
+      [one_cs, two_cs] = make_changeset(@iso_date_1, @iso_date_2)
 
       assert one_cs.data == %Animal{}
       assert two_cs.data == %Animal{}
     end
     
     test "out_of_service_datestring can be never" do 
-      [one_cs, two_cs] = make_changeset(@iso_date, @never)
+      [one_cs, two_cs] = make_changeset(@iso_date_1, @never)
 
-      span = Datespan.inclusive_up(@date)
+      span = Datespan.inclusive_up(@date_1)
       assert_change(one_cs, span: span)
       assert_change(two_cs, span: span)
     end

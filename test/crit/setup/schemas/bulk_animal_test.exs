@@ -6,8 +6,8 @@ defmodule Crit.Setup.Animal.Schemas.BulkAnimalTest do
   @correct %{
     names: "a, b, c",
     species_id: "1",
-    in_service_datestring: @iso_date,
-    out_of_service_datestring: @later_iso_date,
+    in_service_datestring: @iso_date_1,
+    out_of_service_datestring: @iso_date_2,
     institution: @institution
   }
 
@@ -27,7 +27,7 @@ defmodule Crit.Setup.Animal.Schemas.BulkAnimalTest do
       |> assert_valid
       |> assert_changes(species_id: 1,
                         computed_names: ["a", "b", "c"],
-                        span: Datespan.customary(@date, @later_date))
+                        span: Datespan.customary(@date_1, @date_2))
     end
   end
 end

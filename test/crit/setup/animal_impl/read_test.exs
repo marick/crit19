@@ -9,25 +9,25 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
     setup do
       [as_fetched: %Animal{
           species: %Species{name: @bovine},
-          span: Datespan.customary(@date, @later_date),
+          span: Datespan.customary(@date_1, @date_2),
           service_gaps: [%ServiceGap{
-                            span: Datespan.customary(@bumped_date, @later_bumped_date),
+                            span: Datespan.customary(next_day(@date_1), @date_3),
                             reason: "reason"}
                         ]
        },
        
        new_animal_fields: %{
          species_name: @bovine,
-         in_service_datestring: @iso_date,
-         out_of_service_datestring: @later_iso_date,
+         in_service_datestring: @iso_date_1,
+         out_of_service_datestring: @iso_date_2,
          institution: @institution
        },
 
        # Note: it's valid for fields to be Date structures rather than
        # strings because EEX knows how to render them.
        new_service_gap_fields: %{
-         in_service_datestring: @iso_bumped_date,
-         out_of_service_datestring: @later_iso_bumped_date,
+         in_service_datestring: iso_next_day(@date_1),
+         out_of_service_datestring: @iso_date_3
        },
       ]
     end
@@ -44,9 +44,9 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
 
     test "with an infinite-up span", %{as_fetched: fetched} do
       fetched
-      |> Map.put(:span, Datespan.inclusive_up(@date))
+      |> Map.put(:span, Datespan.inclusive_up(@date_1))
       |> Read.put_updatable_fields(@institution)
-      |> assert_field(in_service_datestring: @iso_date,
+      |> assert_field(in_service_datestring: @iso_date_1,
                       out_of_service_datestring: @never)
     end
     

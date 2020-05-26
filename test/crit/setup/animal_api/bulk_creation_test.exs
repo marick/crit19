@@ -5,7 +5,7 @@ defmodule Crit.Setup.AnimalApi.BulkCreationTest do
   @basic_params %{
     "species_id" => @bovine_id,
     "names" => "Bossie, Jake",
-    "in_service_datestring" => @iso_date,
+    "in_service_datestring" => @iso_date_1,
     "out_of_service_datestring" => @never,
     "institution" => @institution
   }
@@ -17,7 +17,7 @@ defmodule Crit.Setup.AnimalApi.BulkCreationTest do
       AnimalApi.updatable!(returned.id, @institution)
       |> assert_fields(id: returned.id,
                        name: returned.name,
-                       in_service_datestring: @iso_date,
+                       in_service_datestring: @iso_date_1,
                        out_of_service_datestring: @never,
                        species_name: @bovine)
     end
@@ -29,8 +29,8 @@ defmodule Crit.Setup.AnimalApi.BulkCreationTest do
   test "a error returns a changeset" do
     params =
       @basic_params
-      |> Map.put("in_service_datestring", @later_iso_date) # out of order
-      |> Map.put("out_of_service_datestring", @iso_date)
+      |> Map.put("in_service_datestring", @iso_date_2) # out of order
+      |> Map.put("out_of_service_datestring", @iso_date_1)
       |> Map.put("names", ",") # no name
 
     assert {:error, changeset} = AnimalApi.create_animals(params, @institution)

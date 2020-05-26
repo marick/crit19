@@ -22,11 +22,11 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
   describe "cases where there's no upper bound" do
     test "a valid in-service date" do
-      make_changeset(in_service_datestring: @iso_date,
+      make_changeset(in_service_datestring: @iso_date_1,
                      out_of_service_datestring: @never,
                      institution: "--irrelevant--")
       |> assert_valid
-      |> assert_change(span: Datespan.inclusive_up(@date))
+      |> assert_change(span: Datespan.inclusive_up(@date_1))
     end
 
     test "the special value `today`" do
@@ -66,12 +66,12 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
   describe "cases where there IS an upper bound" do
     test "a valid in-service date" do
-      make_changeset(in_service_datestring: @iso_date,
-                     out_of_service_datestring: @later_iso_date,
+      make_changeset(in_service_datestring: @iso_date_1,
+                     out_of_service_datestring: @iso_date_2,
                      institution: "--irrelevant--")
 
       |> assert_valid
-      |> assert_change(span: Datespan.customary(@date, @later_date))
+      |> assert_change(span: Datespan.customary(@date_1, @date_2))
     end
 
     test "both dates are invalid" do
@@ -99,8 +99,8 @@ defmodule Crit.FieldConverters.ToSpanTest do
     # That checks are only made if there are no previous errors
     # is implied by the fact that previous tests don't blow up.
     test "both values are valid" do
-      make_changeset(in_service_datestring: @later_iso_date,
-                     out_of_service_datestring: @iso_date,
+      make_changeset(in_service_datestring: @iso_date_2,
+                     out_of_service_datestring: @iso_date_1,
                      institution: "--irrelevant--")
 
       |> assert_error(out_of_service_datestring: @date_misorder_message)
@@ -109,8 +109,8 @@ defmodule Crit.FieldConverters.ToSpanTest do
     end
 
     test "the bounds of equality" do
-      make_changeset(in_service_datestring: @iso_date,
-                     out_of_service_datestring: @iso_date,
+      make_changeset(in_service_datestring: @iso_date_1,
+                     out_of_service_datestring: @iso_date_1,
                      institution: "--irrelevant--")
 
       |> assert_error(out_of_service_datestring: @date_misorder_message)
@@ -122,29 +122,29 @@ defmodule Crit.FieldConverters.ToSpanTest do
   describe "workings when some of the data is not from a change" do
     test "there is backing data, and one field differs" do
       original = %__MODULE__{
-        in_service_datestring: @iso_date,
+        in_service_datestring: @iso_date_1,
         out_of_service_datestring: @never,
         institution: "--irrelevant--",
-        span: Datespan.inclusive_up(@date)
+        span: Datespan.inclusive_up(@date_1)
       }
 
-      make_changeset(original, in_service_datestring: @iso_date,
-                               out_of_service_datestring: @later_iso_date,
+      make_changeset(original, in_service_datestring: @iso_date_1,
+                               out_of_service_datestring: @iso_date_2,
                                institution: "--irrelevant--")
       |> assert_valid
-      |> assert_change(span: Datespan.customary(@date, @later_date))
+      |> assert_change(span: Datespan.customary(@date_1, @date_2))
     end
 
     test "error case for backing data" do
       original = %__MODULE__{
-        in_service_datestring: @iso_date,
-        out_of_service_datestring: @later_iso_date,
+        in_service_datestring: @iso_date_1,
+        out_of_service_datestring: @iso_date_2,
         institution: "--irrelevant--",
-        span: Datespan.customary(@date, @later_date)
+        span: Datespan.customary(@date_1, @date_2)
       }
 
-      make_changeset(original, in_service_datestring: @iso_date,
-                               out_of_service_datestring: @iso_date,
+      make_changeset(original, in_service_datestring: @iso_date_1,
+                               out_of_service_datestring: @iso_date_1,
                                institution: "--irrelevant--")
       |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
@@ -153,15 +153,15 @@ defmodule Crit.FieldConverters.ToSpanTest do
 
     test "if there is no change, the span will not be redundantly written" do
       original = %__MODULE__{
-        in_service_datestring: @iso_date,
-        out_of_service_datestring: @later_iso_date,
+        in_service_datestring: @iso_date_1,
+        out_of_service_datestring: @iso_date_2,
         institution: "--irrelevant--",
         
-        span: Datespan.customary(@date, @later_date)
+        span: Datespan.customary(@date_1, @date_2)
       }
 
-      make_changeset(original, in_service_datestring: @iso_date,
-                               out_of_service_datestring: @later_iso_date,
+      make_changeset(original, in_service_datestring: @iso_date_1,
+                               out_of_service_datestring: @iso_date_2,
                                institution: "--irrelevant--")
 
       |> assert_valid
@@ -175,7 +175,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
       # Note that the user will get two messages, but they're clear enough.
       # Also the user is supposed to be using a date-picker.
       date_opts = %{
-        in_service_datestring: @iso_date,
+        in_service_datestring: @iso_date_1,
         out_of_service_datestring: " ",
         institution: "--irrelevant--"
       }
@@ -193,7 +193,7 @@ defmodule Crit.FieldConverters.ToSpanTest do
     test "a blank in_service field cannot lead to a crash" do
       date_opts = %{
         in_service_datestring: " ",
-        out_of_service_datestring: @iso_date,
+        out_of_service_datestring: @iso_date_1,
         institution: "--irrelevant--"
       }
 

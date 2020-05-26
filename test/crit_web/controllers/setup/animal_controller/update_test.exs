@@ -90,8 +90,8 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> AnimalApi.updatable!(@institution)
         |> AnimalT.unchanged_params
         # Dates are in wrong order
-        |> put_in(["in_service_datestring"], @later_iso_date)
-        |> put_in(["out_of_service_datestring"], @iso_date)
+        |> put_in(["in_service_datestring"], @iso_date_2)
+        |> put_in(["out_of_service_datestring"], @iso_date_1)
         # ... and there's an error in a service gap change.
         |> put_in(["service_gaps", "0", "out_of_service_datestring"], "nver")
 

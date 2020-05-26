@@ -1,3 +1,4 @@
+
 defmodule Crit.Global.Constants do
   alias Crit.Global.Constants
   alias Crit.Setup.Schemas.Institution
