@@ -1,7 +1,7 @@
 defmodule Crit.Reservations.ReservationApi do 
   use Crit.Global.Constants
   alias Crit.Reservations.ReservationImpl.{Read,Write}
-  alias Crit.Reservations.HiddenSchemas.{Use}
+  alias Crit.Reservations.Schemas.Use
 
   def create(struct, institution) do
     Write.create(struct, institution)

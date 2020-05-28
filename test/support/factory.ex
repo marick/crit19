@@ -2,8 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   use Crit.TestConstants
   alias Crit.Users.Schemas.{User, PermissionList}
-  alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure}
-  alias Crit.Setup.HiddenSchemas.ProcedureFrequency
+  alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure,ProcedureFrequency}
   alias Crit.Sql
   alias Crit.Exemplars
   alias Ecto.Datespan

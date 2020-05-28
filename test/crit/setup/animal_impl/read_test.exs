@@ -1,7 +1,6 @@
 defmodule Crit.Setup.AnimalImpl.ReadTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.{Animal, ServiceGap}
-  alias Crit.Setup.HiddenSchemas.{Species}
+  alias Crit.Setup.Schemas.{Animal, ServiceGap,Species}
   alias Crit.Setup.AnimalImpl.Read
   alias Ecto.Datespan
   

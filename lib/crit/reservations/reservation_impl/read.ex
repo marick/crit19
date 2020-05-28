@@ -5,8 +5,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   alias Crit.Sql.CommonQuery
   alias Crit.Setup.AnimalApi
   alias Crit.Setup.Schemas.ServiceGap
-  alias Crit.Reservations.Schemas.Reservation
-  alias Crit.Reservations.HiddenSchemas.Use
+  alias Crit.Reservations.Schemas.{Reservation,Use}
 
   defmodule Query do
     import Ecto.Query

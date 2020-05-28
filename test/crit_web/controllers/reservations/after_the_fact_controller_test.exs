@@ -50,7 +50,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
                  task_id: @task_id}
       [params: params]
     end
-      
     
     test "success", %{conn: conn, params: params} do
       UserTask.start(%TaskMemory{task_id: @task_id})

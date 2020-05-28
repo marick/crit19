@@ -2,7 +2,7 @@ defmodule Crit.Setup.Schemas.Procedure do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.HiddenSchemas.{Species,ProcedureFrequency}
+  alias Crit.Setup.Schemas.{Species,ProcedureFrequency}
   alias Crit.Sql
   alias Crit.Sql
 

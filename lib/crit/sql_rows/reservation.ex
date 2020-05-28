@@ -2,8 +2,7 @@ defmodule Crit.SqlRows.Reservation do
   use Crit.Global.Constants
   import Ecto.Query
   alias Crit.Sql
-  alias Crit.Reservations.Schemas.Reservation
-  alias Crit.Reservations.HiddenSchemas.Use
+  alias Crit.Reservations.Schemas.{Reservation,Use}
   alias Crit.Setup.Schemas.{Animal, Procedure}
   import Ecto.Timespan
 

@@ -2,8 +2,7 @@ defmodule Crit.Setup.Schemas.Animal do
 
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.HiddenSchemas.Species
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.{ServiceGap,Species}
   alias Ecto.Datespan
   import Ecto.Changeset
   alias Crit.FieldConverters.ToSpan

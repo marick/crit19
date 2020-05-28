@@ -2,7 +2,7 @@ defmodule Crit.Reservations.RestPeriod do
   import Ecto.Query
   alias Crit.Sql
   alias Crit.Setup.Schemas.{Animal,Procedure}
-  alias Crit.Reservations.HiddenSchemas.Use
+  alias Crit.Reservations.Schemas.Use
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Setup.ProcedureApi
   alias Ecto.Datespan

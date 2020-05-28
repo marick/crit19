@@ -1,7 +1,6 @@
 defmodule Crit.Reservations.ReservationImpl.Write do
-  alias Crit.Reservations.HiddenSchemas.Use
   alias Crit.Setup.Schemas.ServiceGap
-  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Reservations.Schemas.{Reservation,Use}
   alias Crit.Reservations.RestPeriod
   alias Crit.Sql
   alias Ecto.Multi
