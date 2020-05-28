@@ -5,6 +5,7 @@ defmodule Crit.Exemplars.Background do
   alias Crit.Setup.ProcedureApi
   import DeepMerge
   alias Crit.Factory
+  alias Ecto.Datespan
 
   #-----------------------------------------------------
 
@@ -22,10 +23,11 @@ defmodule Crit.Exemplars.Background do
     deep_merge(data, %{schema => %{calculation_name => addition}})
   end
 
-  def procedure(data, procedure_name, [frequency: frequency_name]) do 
-    schema = :procedure
+  def procedure(data, procedure_name, opts \\ []) do 
+    opts = Enum.into(opts, %{frequency: "unlimited"})
 
-    frequency = data.procedure_frequency[frequency_name]
+    schema = :procedure
+    frequency = data.procedure_frequency[opts.frequency]
     species_id = data.species_id
 
     %{id: id} = Factory.sql_insert!(schema,
@@ -44,12 +46,21 @@ defmodule Crit.Exemplars.Background do
     end)
   end
 
-  def animal(data, animal_name) do 
+  def animal(data, animal_name, opts \\ []) do
+    opts =
+      Enum.into(opts, %{
+            available_on: @earliest_date,
+            species_id: data.species_id})
+    
     schema = :animal
+
+    in_service_date = opts.available_on
+    span = Datespan.customary(in_service_date, @latest_date)
 
     addition = Factory.sql_insert!(schema,
       name: animal_name,
-      species_id: data.species_id)
+      span: span,
+      species_id: opts.species_id)
 
     deep_merge(data, %{schema => %{animal_name => addition}})
   end
