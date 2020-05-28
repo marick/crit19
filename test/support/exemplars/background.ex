@@ -26,19 +26,17 @@ defmodule Crit.Exemplars.Background do
   def procedure(data, procedure_name, opts \\ []) do 
     opts = Enum.into(opts, %{frequency: "unlimited"})
 
-    schema = :procedure
     frequency = data.procedure_frequency[opts.frequency]
     species_id = data.species_id
 
-    %{id: id} = Factory.sql_insert!(schema,
+    %{id: id} = Factory.sql_insert!(:procedure,
       name: procedure_name,
       species_id: species_id,
       frequency_id: frequency.id)
     addition = ProcedureApi.one_by_id(id, @institution, preload: [:frequency])
-    
-    deep_merge(data, %{schema => %{procedure_name => addition}})
-  end
 
+    assemble(data, :procedure, procedure_name, addition)
+  end
 
   def procedures(data, descriptors) do
     Enum.reduce(descriptors, data, fn {key, opts}, acc ->
@@ -51,18 +49,16 @@ defmodule Crit.Exemplars.Background do
       Enum.into(opts, %{
             available_on: @earliest_date,
             species_id: data.species_id})
-    
-    schema = :animal
 
     in_service_date = opts.available_on
     span = Datespan.customary(in_service_date, @latest_date)
 
-    addition = Factory.sql_insert!(schema,
+    addition = Factory.sql_insert!(:animal,
       name: animal_name,
       span: span,
       species_id: opts.species_id)
 
-    deep_merge(data, %{schema => %{animal_name => addition}})
+    assemble(data, :animal, animal_name, addition)
   end
 
   def reservation_for(data, purpose, animal_names, procedure_names, opts \\ []) do
@@ -77,5 +73,11 @@ defmodule Crit.Exemplars.Background do
 
   #-----------------------------------------------------
 
-  
+  defp assemble(data, schema, name, addition) do
+    atom = name |> String.downcase |> String.to_atom
+    
+    data
+    |> deep_merge(%{schema => %{name => addition}})
+    |> Map.put(atom, addition)
+  end
 end
