@@ -27,6 +27,9 @@ defmodule Crit.TestConstants do
       @date_6 Date.from_iso8601!(@iso_date_6)
       @date_7 Date.from_iso8601!(@iso_date_7)
       @date_8 Date.from_iso8601!(@iso_date_8)
+
+      @earliest_date @date_1
+      @latest_date @date_8
     end
   end
   

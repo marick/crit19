@@ -37,8 +37,8 @@ defmodule Crit.Factory do
   end
 
   def animal_factory() do
-    in_service = Exemplars.Date.today_or_earlier
-    out_of_service = Exemplars.Date.later_than_today
+    in_service = @earliest_date
+    out_of_service = @latest_date
     span = Datespan.customary(in_service, out_of_service)
                               
     %Animal{
