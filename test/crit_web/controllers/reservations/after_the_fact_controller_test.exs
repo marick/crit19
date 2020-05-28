@@ -2,12 +2,12 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
+  import Crit.Exemplars.Background
   alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  alias Crit.Setup.{InstitutionApi,ProcedureApi}
+  alias Crit.Setup.{InstitutionApi}
   alias Crit.Reservations.ReservationApi
-  alias Crit.Exemplars.Available
   alias Ecto.Datespan
 
   setup :logged_in_as_reservation_manager
@@ -19,17 +19,17 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   @timeslot_id 1
   @span InstitutionApi.timespan(@date, @timeslot_id, @institution)
   
-
   setup do
     given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
-    bossie = Available.bovine("Bossie", @date)
 
-    # TEMP - move away from `Available`
-    %{id: procedure_id} = Available.bovine_procedure("only procedure")
-    procedure = ProcedureApi.one_by_id(procedure_id, @institution, preload: [:frequency])
-
-    [bossie: bossie, procedure: procedure]
+    b = 
+      background(@bovine_id)
+      |> procedure_frequency("unlimited")
+      |> animal("Bossie", available_on: @date)
+      |> procedure("only_procedure")
+    
+    [bossie: b.bossie, procedure: b.only_procedure, background: b]
   end
 
   test "getting the first form", %{conn: conn} do
@@ -40,7 +40,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     |> assert_field(task_id: @task_id)
   end
 
-  describe "submitting the date-and-species form produces some new HTML" do
+  describe "submitting the date, species, etc. form produces some new HTML" do
     setup do
       params = %{species_id: to_string(@bovine_id),
                  date: @iso_date,
@@ -109,10 +109,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_field(chosen_animal_ids: [bossie.id])
     end
 
-    test "make sure procedures are filtered by id." do
-      IO.inspect "Need this test"
-    end
-    
     test "you must select at least one", %{conn: conn} do
       params = %{task_id: @task_id}
       post_to_action(conn, :put_animals, under(:animals, params))
@@ -164,6 +160,20 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       |> assert_user_sees("You have to select at least one procedure")
     end
 
+    test "make sure unchosen procedures are not included.",
+      %{conn: conn, procedure: procedure} do
+      params = %{task_id: @task_id,
+                 chosen_procedure_ids: [to_string(procedure.id)]}
+
+      Factory.sql_insert!(:procedure, name: "NOT_INCLUDED")
+
+      post_to_action(conn, :put_procedures, under(:procedures, params))
+
+
+      [only_reservation] = ReservationApi.on_date(@date, @institution)
+      {[_only_use], _} = ReservationApi.all_used(only_reservation.id, @institution)
+    end
+
     test "the task id has expired", %{conn: conn, procedure: procedure} do
       params = %{task_id: @task_id,
                  chosen_procedure_ids: [to_string(procedure.id)]}
@@ -174,9 +184,9 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     end
 
     test "if the animal was already reserved, that's noted",
-      %{conn: conn, state_copy: again, bossie: bossie, procedure: procedure} do
+      %{conn: conn, state_copy: again, procedure: procedure, bossie: bossie} do
       params = %{task_id: @task_id,
-                 chosen_procedure_ids: [to_string(procedure.id)]}
+                 chosen_procedure_ids: [procedure.id]}
 
       conn = post_to_action(conn, :put_procedures, under(:procedures, params))
 
