@@ -1,6 +1,5 @@
-defmodule Crit.Setup.HiddenSchemas.ProcedureFrequency do
+defmodule Crit.Setup.Schemas.ProcedureFrequency do
   use Ecto.Schema
-#  import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
 
   schema "procedure_frequencies" do
