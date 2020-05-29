@@ -9,7 +9,7 @@ defmodule Crit.Exemplars.Background do
 
   #-----------------------------------------------------
 
-  def background(species_id) do
+  def background(species_id \\ @bovine_id) do
     %{species_id: species_id}
   end
 
@@ -23,10 +23,29 @@ defmodule Crit.Exemplars.Background do
     deep_merge(data, %{schema => %{calculation_name => addition}})
   end
 
+  defp lazy_get(data, top_level, name) do
+    with(
+      category <- data[top_level],
+      value <- category[name]
+    ) do
+      value
+    end
+  end
+  
+  defp lazy_get(data, top_level, name, putter) do
+    lazy_get(data, top_level, name)
+    || putter.(data) |> lazy_get(top_level, name, putter)
+  end
+
+  defp lazy_frequency(data, calculation_name) do
+    lazy_get(data, :procedure_frequency, calculation_name,
+      &(procedure_frequency(&1, calculation_name)))
+  end
+
   def procedure(data, procedure_name, opts \\ []) do 
     opts = Enum.into(opts, %{frequency: "unlimited"})
 
-    frequency = data.procedure_frequency[opts.frequency]
+    frequency = lazy_frequency(data, opts.frequency)
     species_id = data.species_id
 
     %{id: id} = Factory.sql_insert!(:procedure,

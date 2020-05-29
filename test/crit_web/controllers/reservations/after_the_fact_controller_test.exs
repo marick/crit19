@@ -25,7 +25,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
     b = 
       background(@bovine_id)
-      |> procedure_frequency("unlimited")
       |> animal("Bossie", available_on: @date)
       |> procedure("only_procedure")
     

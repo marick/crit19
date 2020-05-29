@@ -14,7 +14,7 @@ defmodule Crit.Reservations.RestPeriodTest do
   @saturday  ~D[2020-06-20]
 
   defp common_background(frequency) do 
-    background(@bovine_id)
+    background()
     |> procedure_frequency(frequency)
     |> procedure("used procedure", frequency: frequency)
     |> animal("bossie")
