@@ -4,6 +4,13 @@ defmodule Crit.Setup.AnimalApi do
   alias Crit.Setup.AnimalImpl.{Read,BulkCreationTransaction,Write}
   alias Crit.Setup.Schemas.{Animal,BulkAnimal}
   alias Ecto.ChangesetX
+  use Crit.Sql.CommonSql, schema: Animal
+  import Crit.Sql.CommonSql
+
+  deftypical(:all_by_species, :all, [species_id: species_id])
+  deftypical(:one_by_id, :one, [id: id])
+  def_all_by_Xs(:id)
+  
 
   def updatable!(id, institution) do
     case some(Read).one([id: id], institution) do

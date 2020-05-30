@@ -32,6 +32,8 @@ defmodule Crit.Setup.Schemas.Animal do
     field :species_name, :string, virtual: true
   end
 
+  def preloads, do: [:species, :service_gaps]
+
   # This changeset comes from bulk creation with the datestrings
   # already turned into a span. This is perilous - rethink?
   def from_bulk_creation_changeset(attrs) do

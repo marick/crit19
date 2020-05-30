@@ -14,6 +14,8 @@ defmodule Crit.Setup.Schemas.Procedure do
     timestamps()
   end
 
+  def preloads, do: [:species, :frequency]
+
   @required [:name, :species_id, :frequency_id]
 
   def changeset(procedure, attrs) do

@@ -27,6 +27,8 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       background(@bovine_id)
       |> animal("Bossie", available_on: @date)
       |> procedure("only_procedure")
+      |> load_completely
+      |> shorthand
     
     [bossie: b.bossie, procedure: b.only_procedure, background: b]
   end
