@@ -4,54 +4,60 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Reservations.ReservationApi
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Setup.InstitutionApi
-  alias Crit.Setup.ProcedureApi
-  alias Ecto.Datespan
-  alias Crit.Exemplars.{Available, ReservationFocused}
+  alias Crit.Exemplars.ReservationFocused
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
+  import Crit.Exemplars.Background
 
   @date @date_3
   @timeslot_id ReservationFocused.morning_timeslot
-  @times_that_matter %TaskMemory{
-    date: @date,
-    species_id: @bovine_id,
-    timeslot_id: @timeslot_id, 
-    span: InstitutionApi.timespan(@date, @timeslot_id, @institution),
-  }
 
   # Names for the data in question
-  @two_conflicts "service gap and use animal"   
-  @just_use_conflict "other"
+  @animal__two_conflicts "service gap and use animal"   
+  @animal__only_use_conflict "reserved animal"
   @procedure_name "new procedure"
 
   # two conflicting reservations and a conflicting service gap
   # (Unlikely in practice)
   
-  def arrange(_) do
-    two_conflicts = Available.bovine(@two_conflicts, @date)
-    service_gap_including_desired_date!(two_conflicts, @date)
-    reserved_on_desired_date!(
-      two_conflicts, @date, ReservationFocused.morning_timeslot)
+  setup do 
+    b =
+      background()
+      |> animal(@animal__two_conflicts)
+      |> animal(@animal__only_use_conflict)
+      |> procedure("any old procedure")
+      |> procedure(@procedure_name)
+      |> reservation_for("vcm103",
+                         [@animal__two_conflicts, @animal__only_use_conflict],
+                         ["any old procedure"],
+                         date: @date)
+      |> service_gap_for(@animal__two_conflicts, starting: @date)
 
-    just_use_conflict = Available.bovine(@just_use_conflict, @date)
-    [two_conflicts, just_use_conflict]
-    |> reserved_on_desired_date!(@date, ReservationFocused.morning_timeslot)
-
-    procedure = chosen_procedure()
-
-    desired =
-      %{ @times_that_matter |
-         responsible_person: "anyone",
-         chosen_animal_ids: [two_conflicts.id, just_use_conflict.id],
-         chosen_procedure_ids: [procedure.id]
-       }
-
-    [desired: desired]
+    [background: b]
   end
 
-  setup :arrange
+  def reservation_data(b, date, animal_names, procedure_names) do
+    %TaskMemory{
+      # When the reservation is
+      date:  date,
+      timeslot_id: @timeslot_id, 
+      span: InstitutionApi.timespan(date, @timeslot_id, @institution),
 
-  test "create, noting conflicts", %{desired: desired} do
+      chosen_animal_ids: ids(b, :animal, animal_names),
+      chosen_procedure_ids: ids(b, :procedure, procedure_names),
+
+      # Not important but required
+      species_id: b.species_id,
+      responsible_person: "anyone"
+    }
+  end
+
+  test "create, noting conflicts", %{background: b} do
     # act
+    desired =
+      reservation_data(b,
+        @date,
+        [@animal__two_conflicts, @animal__only_use_conflict],
+        [@procedure_name])
     assert {:ok, %Reservation{id: reservation_id}, conflicts} =
       Write.create_noting_conflicts(desired, @institution)
 
@@ -59,8 +65,8 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
       ReservationApi.get!(reservation_id, @institution),
       ReservationApi.all_used(reservation_id, @institution))
 
-    assert_names_are(conflicts.service_gap, [@two_conflicts])
-    assert_names_are(conflicts.use, [@just_use_conflict, @two_conflicts])
+    assert_names_are(conflicts.service_gap, [@animal__two_conflicts])
+    assert_names_are(conflicts.use, [@animal__only_use_conflict, @animal__two_conflicts])
   end
 
   # ------------------------------------------------------------------------
@@ -74,38 +80,13 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
       span: desired.span,
       timeslot_id: desired.timeslot_id)
     
-    {[just_use_conflict, service_gap], [procedure]} = all_used
-    assert just_use_conflict.name == @just_use_conflict
-    assert service_gap.name == @two_conflicts
+    {[animal__only_use_conflict, service_gap], [procedure]} = all_used
+    assert animal__only_use_conflict.name == @animal__only_use_conflict
+    assert service_gap.name == @animal__two_conflicts
     assert procedure.name == @procedure_name
   end
 
   defp assert_names_are(actual, expected),
     do: assert expected == EnumX.names(actual)
 
-  # ------------------------------------------------------------------------
-
-  defp chosen_procedure() do
-    [id] = ReservationFocused.inserted_procedure_ids([@procedure_name], @bovine_id)
-    ProcedureApi.one_by_id(id, @institution, preload: [:frequency])
-  end
-
-  defp reserved_on_desired_date!(animals, date, timeslot_id) when is_list(animals) do
-    ReservationFocused.reserved!(@bovine_id, EnumX.names(animals), ["procedure"],
-      timeslot_id: timeslot_id,
-      date: date)
-  end
-  
-  defp reserved_on_desired_date!(animal, date, timeslot_id),
-    do: reserved_on_desired_date!([animal], date, timeslot_id)
-
-  defp service_gap_including_desired_date!(animal, date),
-    do: service_gap!(
-          animal,
-          Datespan.customary(date, Date.add(date, 1)))
-  
-  defp service_gap!(animal, span) do 
-    Factory.sql_insert!(:service_gap, [animal_id: animal.id, span: span],
-      @institution)
-  end
 end  

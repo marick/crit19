@@ -104,6 +104,19 @@ defmodule Crit.Exemplars.Background do
     put(data, schema, purpose, addition)
   end
 
+  def service_gap_for(data, animal_name, opts \\ []) do
+    opts = Enum.into(opts, %{
+          starting: @earliest_date, ending: @latest_date,
+          name: Factory.name("service_gap")})
+    animal_id = id(data, :animal, animal_name)
+    span = Datespan.customary(opts.starting, opts.ending)
+
+    addition =
+      Factory.sql_insert!(:service_gap, [animal_id: animal_id, span: span],
+        @institution)
+    put(data, :service_gap, opts.name, addition)
+  end
+
   #-----------------------------------------------------
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
@@ -131,6 +144,10 @@ defmodule Crit.Exemplars.Background do
   end
 
   def id(data, schema, name), do: get(data, schema, name).id
+
+  def ids(data, schema, names) do
+    for name <- names, do: id(data, schema, name)
+  end
 
   defp lazy_frequency(data, calculation_name) do
     lazy_get(data, :procedure_frequency, calculation_name,

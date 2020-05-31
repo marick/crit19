@@ -88,6 +88,7 @@ defmodule Crit.Factory do
     |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
   end
 
+  def name(prefix), do: sequence(:name, &"#{prefix}_#{&1}")
 
 
   # Warning: this depends on the fact that the test database has
