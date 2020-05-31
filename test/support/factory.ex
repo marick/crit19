@@ -20,8 +20,8 @@ defmodule Crit.Factory do
     %User{
       active: true,
       display_name: Faker.Name.name(),
-      auth_id: sequence(:auth_id, &"auth-id-#{&1}"),
-      email: sequence(:email, &"email-#{&1}@example.com"),
+      auth_id: unique(:auth_id),
+      email: unique(:email),
       permission_list: build(:permission_list)
     }
   end
@@ -49,7 +49,7 @@ defmodule Crit.Factory do
 
   def procedure_frequency_factory() do
     %ProcedureFrequency{
-      name: "some procedure frequency",
+      name: unique(:procedure_frequency_name),
       calculation_name: "unlimited",
       description: "a procedure frequency"
     }
@@ -57,7 +57,7 @@ defmodule Crit.Factory do
 
   def procedure_factory() do
     %Procedure{
-      name: sequence(:name, &"procedure-#{&1}"),
+      name: unique(:procedure),
       species_id: some_species_id(),
       frequency_id: @unlimited_frequency_id
     }
@@ -69,7 +69,7 @@ defmodule Crit.Factory do
       Exemplars.Date.later_than_today)
 
     %ServiceGap{
-      reason: sequence(:reason, &"reason#{&1}"),
+      reason: unique(:reason),
       span: span
     }
   end
@@ -88,8 +88,7 @@ defmodule Crit.Factory do
     |> Enum.map(fn {name, index} -> "#{name}_!_#{index}" end)
   end
 
-  def name(prefix), do: sequence(:name, &"#{prefix}_#{&1}")
-
+  def unique(prefix), do: sequence(prefix, &"#{to_string prefix}_#{&1}")
 
   # Warning: this depends on the fact that the test database has
   # at least two species.
