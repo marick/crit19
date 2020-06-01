@@ -57,46 +57,59 @@ defmodule Crit.Exemplars.Background do
     put(data, schema, calculation_name, addition)
   end
 
-  def procedure(data, procedure_name, opts \\ []) do 
-    opts = Enum.into(opts, %{frequency: "unlimited"})
+  def procedure(data, procedure_name, opts \\ []) do
+    ensure(data, :procedure, procedure_name, fn ->
+      opts = Enum.into(opts, %{frequency: "unlimited"})
+        
+      frequency = lazy_frequency(data, opts.frequency)   # Create as needed
+      species_id = data.species_id
 
-    frequency = lazy_frequency(data, opts.frequency)   # Create as needed
-    species_id = data.species_id
-
-    %{id: id} = Factory.sql_insert!(:procedure,
-      name: procedure_name,
-      species_id: species_id,
-      frequency_id: frequency.id)
-    addition = ProcedureApi.one_by_id(id, @institution, preload: [:frequency])
-    put(data, :procedure, procedure_name, addition)
+      Factory.sql_insert!(:procedure,
+        name: procedure_name,
+        species_id: species_id,
+        frequency_id: frequency.id)
+    end)
   end
 
-  def procedures(data, descriptors) do
-    Enum.reduce(descriptors, data, fn {key, opts}, acc ->
-      apply &procedure/3, [acc, key, opts]
+  def procedures(data, names) do
+    Enum.reduce(names, data, fn name, acc ->
+      apply &procedure/3, [acc, name, []]
     end)
   end
 
   def animal(data, animal_name, opts \\ []) do
-    opts =
-      Enum.into(opts, %{
-            available_on: @earliest_date,
-            species_id: data.species_id})
-
-    in_service_date = opts.available_on
-    span = Datespan.customary(in_service_date, @latest_date)
-
-    addition = Factory.sql_insert!(:animal,
-      name: animal_name,
-      span: span,
-      species_id: opts.species_id)
-
-    put(data, :animal, animal_name, addition)
+    ensure(data, :animal, animal_name, fn -> 
+      opts =
+        Enum.into(opts, %{
+              available_on: @earliest_date,
+              species_id: data.species_id})
+      
+      in_service_date = opts.available_on
+      span = Datespan.customary(in_service_date, @latest_date)
+      
+      Factory.sql_insert!(:animal,
+        name: animal_name,
+        span: span,
+        species_id: opts.species_id)
+    end)
   end
+
+  def animals(data, names) do
+    Enum.reduce(names, data, fn name, acc ->
+      apply &animal/3, [acc, name, []]
+    end)
+  end
+
+  
 
   def reservation_for(data, purpose, animal_names, procedure_names, opts \\ []) do
     schema = :reservation
     species_id = data.species_id
+
+    data =
+      data 
+      |> procedures(procedure_names)
+      |> animals(animal_names)
     
     addition =
       ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
@@ -147,6 +160,13 @@ defmodule Crit.Exemplars.Background do
 
   def ids(data, schema, names) do
     for name <- names, do: id(data, schema, name)
+  end
+
+  defp ensure(data, schema, name, creator) do 
+    case get(data, schema, name) do
+      nil -> put(data, schema, name, creator.())
+      _ -> data
+    end
   end
 
   defp lazy_frequency(data, calculation_name) do

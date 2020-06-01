@@ -5,7 +5,6 @@ defmodule Crit.Setup.AnimalApi do
   alias Crit.Setup.Schemas.{Animal,BulkAnimal}
   alias Ecto.ChangesetX
   use Crit.Sql.CommonSql, schema: Animal
-  import Crit.Sql.CommonSql
 
   deftypical(:all_by_species, :all, [species_id: species_id])
   deftypical(:one_by_id, :one, [id: id])

@@ -4,7 +4,6 @@ defmodule Crit.Setup.Schemas.Procedure do
   alias Crit.Ecto.TrimmedString
   alias Crit.Setup.Schemas.{Species,ProcedureFrequency}
   alias Crit.Sql
-  alias Crit.Sql
 
   schema "procedures" do
     field :name, TrimmedString

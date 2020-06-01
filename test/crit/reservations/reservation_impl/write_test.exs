@@ -14,25 +14,38 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   # Names for the data in question
   @animal__two_conflicts "service gap and use animal"   
   @animal__only_use_conflict "reserved animal"
-  @procedure_name "new procedure"
+  @procedure__used_twice "new procedure"
 
   # two conflicting reservations and a conflicting service gap
   # (Unlikely in practice)
-  
   setup do 
     b =
       background()
-      |> animal(@animal__two_conflicts)
-      |> animal(@animal__only_use_conflict)
-      |> procedure("any old procedure")
-      |> procedure(@procedure_name)
       |> reservation_for("vcm103",
                          [@animal__two_conflicts, @animal__only_use_conflict],
-                         ["any old procedure"],
-                         date: @date)
+                         ["any old procedure", @procedure__used_twice],
+                         date: @date) 
       |> service_gap_for(@animal__two_conflicts, starting: @date)
 
     [background: b]
+  end
+
+  test "create, noting conflicts", %{background: b} do
+    # act
+    desired =
+      reservation_data(b,
+        @date,
+        [@animal__two_conflicts, @animal__only_use_conflict],
+        [@procedure__used_twice])
+    assert {:ok, created, conflicts} =
+      Write.create_noting_conflicts(desired, @institution)
+
+    assert_stored_matches_desire(desired, 
+      ReservationApi.get!(created.id, @institution),
+      ReservationApi.all_used(created.id , @institution))
+
+    assert_names_are(conflicts.service_gap, [@animal__two_conflicts])
+    assert_names_are(conflicts.use, [@animal__only_use_conflict, @animal__two_conflicts])
   end
 
   def reservation_data(b, date, animal_names, procedure_names) do
@@ -51,25 +64,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
     }
   end
 
-  test "create, noting conflicts", %{background: b} do
-    # act
-    desired =
-      reservation_data(b,
-        @date,
-        [@animal__two_conflicts, @animal__only_use_conflict],
-        [@procedure_name])
-    assert {:ok, %Reservation{id: reservation_id}, conflicts} =
-      Write.create_noting_conflicts(desired, @institution)
-
-    assert_stored_matches_desire(desired, 
-      ReservationApi.get!(reservation_id, @institution),
-      ReservationApi.all_used(reservation_id, @institution))
-
-    assert_names_are(conflicts.service_gap, [@animal__two_conflicts])
-    assert_names_are(conflicts.use, [@animal__only_use_conflict, @animal__two_conflicts])
-  end
-
-  # ------------------------------------------------------------------------
+  # ----------------------------------------------------------------
 
   defp assert_stored_matches_desire(desired,
     %Reservation{} = reservation, all_used) do
@@ -83,7 +78,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
     {[animal__only_use_conflict, service_gap], [procedure]} = all_used
     assert animal__only_use_conflict.name == @animal__only_use_conflict
     assert service_gap.name == @animal__two_conflicts
-    assert procedure.name == @procedure_name
+    assert procedure.name == @procedure__used_twice
   end
 
   defp assert_names_are(actual, expected),

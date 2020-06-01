@@ -29,6 +29,7 @@ defmodule Crit.Sql.CommonSql do
 
   defmacro __using__(schema: schema) do
     quote do
+      import Crit.Sql.CommonSql
       import Ecto.Query
       defp target_schema(), do: unquote(schema)
     end

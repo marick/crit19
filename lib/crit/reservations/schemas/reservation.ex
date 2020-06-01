@@ -17,6 +17,8 @@ defmodule Crit.Reservations.Schemas.Reservation do
     timestamps()
   end
 
+  def preloads, do: [:uses]
+
   @required [:span, :date, :species_id, :timeslot_id, :responsible_person]
 
   def changeset(reservation, attrs) do
