@@ -12,18 +12,9 @@ defmodule Crit.Setup.AnimalApi do
   
 
   def updatable!(id, institution) do
-    case some(Read).one([id: id], institution) do
+    case one_by_id(id, institution, preload: Animal.preloads()) do
       nil ->
         raise KeyError, "No animal id #{id}"
-      animal ->
-        some(Read).put_updatable_fields(animal, institution)
-    end
-  end
-
-  def updatable_by(field, value, institution) do
-    case some(Read).one([{field, value}], institution) do
-      nil ->
-        nil
       animal ->
         some(Read).put_updatable_fields(animal, institution)
     end

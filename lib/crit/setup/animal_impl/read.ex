@@ -30,12 +30,6 @@ defmodule Crit.Setup.AnimalImpl.Read do
     end
   end
 
-  def one(where, institution) do
-    CommonQuery.start(Animal, where)
-    |> Query.preload_common()
-    |> Sql.one(institution)
-  end
-
   def all(institution) do
     CommonQuery.ordered_by_name(Animal)
     |> Query.preload_common()

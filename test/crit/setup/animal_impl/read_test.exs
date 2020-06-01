@@ -56,27 +56,6 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
     end
   end
 
-  describe "properties common to queries" do
-    setup do
-      animal = Factory.sql_insert!(:animal, @institution)
-
-      [from_all] = Read.all(@institution)
-      from_one = Read.one([name: animal.name], @institution)
-      [from_ids] = Read.ids_to_animals([animal.id], @institution)
-
-      assert from_all == from_one
-      assert from_one == from_ids
-
-      [fetched: from_all]
-    end
-  
-    test "the species and service gaps are loaded", %{fetched: fetched} do
-      assert Ecto.assoc_loaded?(fetched.species)
-      assert Ecto.assoc_loaded?(fetched.service_gaps)
-    end
-  end
-
-
   describe "bulk queries order by name" do
     test "... not by id order when fetching by ids" do 
       %{id: id1} = Factory.sql_insert!(:animal, [name: "ZZZ"], @institution)
@@ -106,19 +85,6 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
     end
   end
 
-  test "fetching animal by name is case independent" do
-    %{name: name} = Factory.sql_insert!(:animal, @institution)
-
-    upname = String.upcase(name)
-    downname = String.downcase(name)
-
-    assert upname != downname
-
-    up_fetched = Read.one([name: upname], @institution) 
-    down_fetched = Read.one([name: downname], @institution)
-
-    assert up_fetched == down_fetched
-  end
 
   test "when fetching ids, missing ids are silently ignored" do
     %{id: id} = Factory.sql_insert!(:animal, @institution)
