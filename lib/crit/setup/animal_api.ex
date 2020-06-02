@@ -2,7 +2,8 @@ defmodule Crit.Setup.AnimalApi do
   use Crit.Global.Constants
   import Pile.Interface
   alias Crit.Setup.AnimalImpl.{Read,BulkCreationTransaction,Write}
-  alias Crit.Setup.Schemas.{Animal,BulkAnimal}
+  alias CritWeb.ViewModels.Animal.BulkCreation
+  alias Crit.Setup.Schemas.Animal
   alias Ecto.ChangesetX
   use Crit.Sql.CommonSql, schema: Animal
 
@@ -50,12 +51,12 @@ defmodule Crit.Setup.AnimalApi do
   end
 
   def bulk_animal_creation_changeset() do
-   %BulkAnimal{
+   %BulkCreation{
      names: "",
      species_id: 0,
      in_service_datestring: @today,
      out_of_service_datestring: @never}
-     |> BulkAnimal.changeset(%{})
+     |> BulkCreation.changeset(%{})
   end
 
   def query_by_in_service_date(date, species_id),

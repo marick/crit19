@@ -1,7 +1,8 @@
-defmodule Crit.Setup.Schemas.BulkAnimal do
+defmodule CritWeb.ViewModels.Animal.BulkCreation do
   use Ecto.Schema
   import Ecto.Changeset
   import Pile.ChangesetFlow
+  alias CritWeb.ViewModels.Animal.BulkCreation
   alias Crit.FieldConverters.{ToSpan, ToNameList}
   alias Ecto.Datespan
 

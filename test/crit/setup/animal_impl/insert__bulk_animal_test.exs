@@ -1,7 +1,8 @@
 defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
   use Crit.DataCase
   alias Crit.Setup.AnimalImpl.BulkCreationTransaction 
-  alias Crit.Setup.Schemas.{Animal,BulkAnimal}
+  alias CritWeb.ViewModels.Animal.BulkCreation
+  alias Crit.Setup.Schemas.Animal
   alias Ecto.Datespan
 
   describe "breaking a valid changeset into changesets for insertion" do
@@ -14,7 +15,7 @@ defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
       base
       |> Map.put(:in_service_datestring,  in_service_string)
       |> Map.put(:out_of_service_datestring, out_of_service_string)
-      |> BulkAnimal.creation_changeset
+      |> BulkCreation.creation_changeset
       |> BulkCreationTransaction.changeset_to_changesets
     end
 

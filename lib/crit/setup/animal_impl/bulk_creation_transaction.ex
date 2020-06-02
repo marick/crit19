@@ -1,12 +1,13 @@
 defmodule Crit.Setup.AnimalImpl.BulkCreationTransaction do
   alias Crit.Sql
   import Crit.Sql.Transaction, only: [make_creation_validation_step: 1]
-  alias Crit.Setup.Schemas.{Animal,BulkAnimal}
+  alias CritWeb.ViewModels.Animal.BulkCreation
+  alias Crit.Setup.Schemas.Animal
   alias Crit.Ecto.BulkInsert
 
   def run(attrs, institution) do
     steps = [
-      make_creation_validation_step(&BulkAnimal.creation_changeset/1),
+      make_creation_validation_step(&BulkCreation.creation_changeset/1),
       &split_changeset_step/1,
       &bulk_insert_step/1,
     ]

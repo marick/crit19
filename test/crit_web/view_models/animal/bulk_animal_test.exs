@@ -1,6 +1,6 @@
-defmodule Crit.Setup.Animal.Schemas.BulkAnimalTest do
+defmodule CritWeb.ViewModels.Animal.BulkCreationTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.BulkAnimal
+  alias CritWeb.ViewModels.Animal.BulkCreation
   alias Ecto.Datespan
 
   @correct %{
@@ -14,7 +14,7 @@ defmodule Crit.Setup.Animal.Schemas.BulkAnimalTest do
   describe "changeset" do
     test "required fields are checked" do
       errors =
-        %{} |> BulkAnimal.creation_changeset |> errors_on
+        %{} |> BulkCreation.creation_changeset |> errors_on
       
       assert errors.names
       assert errors.species_id
@@ -23,7 +23,7 @@ defmodule Crit.Setup.Animal.Schemas.BulkAnimalTest do
     end
 
     test "the construction of cast and derived values" do
-      BulkAnimal.creation_changeset(@correct)
+      BulkCreation.creation_changeset(@correct)
       |> assert_valid
       |> assert_changes(species_id: 1,
                         computed_names: ["a", "b", "c"],
