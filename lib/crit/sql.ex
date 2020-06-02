@@ -60,6 +60,10 @@ defmodule Crit.Sql do
     run_using_institution_data(short_name, :one, {[queryable], opts})
   end
 
+  def one!(queryable, opts \\ [], short_name) do
+    run_using_institution_data(short_name, :one!, {[queryable], opts})
+  end
+
   def update(changeset, opts \\ [], short_name) do
     run_using_institution_data(short_name, :update, {[changeset], opts}) end
 
