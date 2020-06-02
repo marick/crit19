@@ -101,5 +101,29 @@ defmodule EnumXTest do
       assert actual == [%{id: 1}, %{id: 3}]
     end
   end
+
+  describe "pour_struct" do
+
+    defmodule Smaller do
+      defstruct common: nil
+    end
+
+    defmodule Larger do
+      defstruct common: nil, unique: "unique default"
+    end
+    
+    test "from larger to smaller" do
+      actual = EnumX.pour_into(%Larger{common: "copied"}, Smaller)
+
+      assert actual == %Smaller{common: "copied"}
+    end
+
+
+    test "from smaller to larger" do
+      actual = EnumX.pour_into(%Smaller{common: "copied"}, Larger)
+
+      assert actual == %Larger{common: "copied", unique: "unique default"}
+    end
+  end
 end
   

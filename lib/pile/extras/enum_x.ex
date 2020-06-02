@@ -57,4 +57,10 @@ defmodule EnumX do
     |> pairs(:id, value_key)
     |> Map.new
   end
+
+  @doc """
+  This allows the right-hand side to be a struct.
+  """
+  def pour_into(source, target) when is_struct(source) and is_atom(target),
+    do: struct(target, Map.from_struct(source))
 end

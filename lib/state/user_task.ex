@@ -63,7 +63,9 @@ defmodule Crit.State.UserTask do
 
   # ----------------------------------------------------------------------------
   defp store_by_task_id(task_id, %{} = new_values, extras) when is_struct(new_values) do
-    total = Enum.into(extras, Map.from_struct(new_values) |> Map.delete(:task_id))
+    total = Enum.into(
+      extras,
+      Map.from_struct(new_values) |> Map.delete(:task_id))
 
     updater = fn old ->
       {:ok, Map.merge(old, total)}
