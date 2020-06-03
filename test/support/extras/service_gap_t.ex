@@ -4,7 +4,7 @@ defmodule Crit.Extras.ServiceGapT do
   """
 
   use Crit.TestConstants
-  alias Crit.Setup.Schemas.{Animal,ServiceGap}
+  alias Crit.Setup.Schemas.{AnimalOld,ServiceGap}
   alias Crit.Sql
   alias Crit.Exemplars.Available
   alias Crit.Factory
@@ -17,13 +17,13 @@ defmodule Crit.Extras.ServiceGapT do
   end
 
   def make_changesets(animal, attrs) do
-    Animal.update_changeset(animal, attrs).changes.service_gaps
+    AnimalOld.update_changeset(animal, attrs).changes.service_gaps
   end
 
   def update_animal_for_service_gaps(animal, attrs) do 
-    {:ok, %Animal{service_gaps: gaps}} = 
+    {:ok, %AnimalOld{service_gaps: gaps}} = 
       animal
-      |> Animal.update_changeset(attrs)
+      |> AnimalOld.update_changeset(attrs)
       |> Sql.update(@institution)
     gaps
   end

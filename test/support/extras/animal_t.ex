@@ -6,7 +6,7 @@ defmodule Crit.Extras.AnimalT do
   use Crit.TestConstants
   alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
   alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
 
@@ -15,7 +15,7 @@ defmodule Crit.Extras.AnimalT do
   # would come to the controller if the user made no changes. Note
   # that the service gap array is returned as a map from (string)
   # index to the map representing the service gap.
-  def unchanged_params(%Animal{} = animal) do
+  def unchanged_params(%AnimalOld{} = animal) do
     base = 
       %{"in_service_datestring" => animal.in_service_datestring,
         "lock_version" => to_string(animal.lock_version),
@@ -51,7 +51,7 @@ defmodule Crit.Extras.AnimalT do
 
   
 
-  def service_gap_n(%Animal{service_gaps: gaps}, n), do: Enum.at(gaps, n)
+  def service_gap_n(%AnimalOld{service_gaps: gaps}, n), do: Enum.at(gaps, n)
 
   def update_for_success(id, params) do
     {:ok, new_animal} =
@@ -76,7 +76,7 @@ defmodule Crit.Extras.AnimalT do
     |> AnimalApi.updatable!(@institution)
   end
   
-  def params_except(%Animal{} = animal, overrides) do
+  def params_except(%AnimalOld{} = animal, overrides) do
     unchanged_params(animal)
     |> Map.merge(overrides)
   end

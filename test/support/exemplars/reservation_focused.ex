@@ -1,7 +1,7 @@
 defmodule Crit.Exemplars.ReservationFocused do
   use ExUnit.CaseTemplate
   use Crit.TestConstants
-  alias Crit.Setup.Schemas.{Animal, Procedure}
+  alias Crit.Setup.Schemas.{AnimalOld, Procedure}
   alias Crit.Sql
   alias Ecto.Datespan
   alias Crit.Setup.InstitutionApi
@@ -26,7 +26,7 @@ defmodule Crit.Exemplars.ReservationFocused do
 
   # These are available for any reasonable reservation date.
   def inserted_animal_ids(names, species_id) do
-    inserted_named_ids names, %Animal{
+    inserted_named_ids names, %AnimalOld{
       species_id: species_id,
       span: Datespan.inclusive_up(~D[1990-01-01])
     }
@@ -92,7 +92,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   end
 
   defp insert_or_create_animal_ids(names, species_id),
-    do: insert_or_create_x_ids(Animal, :inserted_animal_ids, names, species_id)
+    do: insert_or_create_x_ids(AnimalOld, :inserted_animal_ids, names, species_id)
           
   defp insert_or_create_procedure_ids(names, species_id),
     do: insert_or_create_x_ids(Procedure, :inserted_procedure_ids, names, species_id)

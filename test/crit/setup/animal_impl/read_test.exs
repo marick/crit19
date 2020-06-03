@@ -1,12 +1,12 @@
 defmodule Crit.Setup.AnimalImpl.ReadTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.{Animal, ServiceGap,Species}
+  alias Crit.Setup.Schemas.{AnimalOld, ServiceGap,Species}
   alias Crit.Setup.AnimalImpl.Read
   alias Ecto.Datespan
   
   describe "put_updatable_fields" do
     setup do
-      [as_fetched: %Animal{
+      [as_fetched: %AnimalOld{
           species: %Species{name: @bovine},
           span: Datespan.customary(@date_1, @date_2),
           service_gaps: [%ServiceGap{
@@ -34,7 +34,7 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
     test "basic conversions",
       %{as_fetched: fetched, new_service_gap_fields: new_service_gap_fields,
         new_animal_fields: new_animal_fields}  do
-      %Animal{service_gaps: [updatable_gap]} = updatable =
+      %AnimalOld{service_gaps: [updatable_gap]} = updatable =
         Read.put_updatable_fields(fetched, @institution)
 
       assert_fields(updatable, new_animal_fields)

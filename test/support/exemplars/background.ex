@@ -5,7 +5,7 @@ defmodule Crit.Exemplars.Background do
   import DeepMerge
   alias Crit.Factory
   alias Ecto.Datespan
-  alias Crit.Setup.Schemas.{Animal, Procedure}
+  alias Crit.Setup.Schemas.{AnimalOld, Procedure}
   alias Crit.Setup.{AnimalApi, ProcedureApi}
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
@@ -179,7 +179,7 @@ defmodule Crit.Exemplars.Background do
   defp load_completely(data, :procedure),
     do: load_completely(data, :procedure, ProcedureApi, Procedure)
   defp load_completely(data, :animal),
-    do: load_completely(data, :animal, AnimalApi, Animal)
+    do: load_completely(data, :animal, AnimalApi, AnimalOld)
   defp load_completely(data, _), do: data
 
   defp load_completely(data, schema, api, module) do

@@ -2,7 +2,7 @@ defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
   use Crit.DataCase
   alias Crit.Setup.AnimalImpl.BulkCreationTransaction 
   alias CritWeb.ViewModels.Animal.BulkCreation
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
   alias Ecto.Datespan
 
   describe "breaking a valid changeset into changesets for insertion" do
@@ -26,7 +26,7 @@ defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
       |> assert_changes(species_id: 1,
                         span: Datespan.customary(@date_1, @date_2))
       assert one_cs.changes.name == "one"
-      assert one_cs.data == %Animal{}
+      assert one_cs.data == %AnimalOld{}
 
       assert_copy(one_cs.changes, two_cs.changes, ignoring: [:name])
     end
@@ -41,8 +41,8 @@ defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
     test "the data part is an empty animal - causing creation" do
       [one_cs, two_cs] = make_changeset(@iso_date_1, @iso_date_2)
 
-      assert one_cs.data == %Animal{}
-      assert two_cs.data == %Animal{}
+      assert one_cs.data == %AnimalOld{}
+      assert two_cs.data == %AnimalOld{}
     end
     
     test "out_of_service_datestring can be never" do 

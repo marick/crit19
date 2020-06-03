@@ -3,9 +3,9 @@ defmodule Crit.Setup.AnimalApi do
   import Pile.Interface
   alias Crit.Setup.AnimalImpl.{Read,BulkCreationTransaction,Write}
   alias CritWeb.ViewModels.Animal.BulkCreation
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
   alias Ecto.ChangesetX
-  use Crit.Sql.CommonSql, schema: Animal
+  use Crit.Sql.CommonSql, schema: AnimalOld
 
   deftypical(:all_by_species, :all, [species_id: species_id])
   deftypical(:one_by_id, :one, [id: id])
@@ -13,7 +13,7 @@ defmodule Crit.Setup.AnimalApi do
   
 
   def updatable!(id, institution) do
-    case one_by_id(id, institution, preload: Animal.preloads()) do
+    case one_by_id(id, institution, preload: AnimalOld.preloads()) do
       nil ->
         raise KeyError, "No animal id #{id}"
       animal ->
@@ -33,7 +33,7 @@ defmodule Crit.Setup.AnimalApi do
     |> some(Read).put_updatable_fields(institution)
   end
 
-  def form_changeset(animal), do: Animal.form_changeset(animal)
+  def form_changeset(animal), do: AnimalOld.form_changeset(animal)
 
   def update(string_id, attrs, institution) do
     string_id

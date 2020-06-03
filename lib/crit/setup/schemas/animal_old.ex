@@ -1,4 +1,4 @@
-defmodule Crit.Setup.Schemas.Animal do
+defmodule Crit.Setup.Schemas.AnimalOld do
 
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
@@ -20,7 +20,7 @@ defmodule Crit.Setup.Schemas.Animal do
 
     # Associations
     belongs_to :species, Species
-    has_many :service_gaps, ServiceGap
+    has_many :service_gaps, ServiceGap, foreign_key: :animal_id
 
     # Virtual fields used for displays or forms presented to a human
     field :institution, :string, virtual: true

@@ -2,7 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   use Crit.TestConstants
   alias Crit.Users.Schemas.{User, PermissionList}
-  alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure,ProcedureFrequency}
+  alias Crit.Setup.Schemas.{AnimalOld,ServiceGap,Procedure,ProcedureFrequency}
   alias Crit.Sql
   alias Crit.Exemplars
   alias Ecto.Datespan
@@ -40,7 +40,7 @@ defmodule Crit.Factory do
     out_of_service = @latest_date
     span = Datespan.customary(in_service, out_of_service)
                               
-    %Animal{
+    %AnimalOld{
       name: Faker.Cat.name(),
       species_id: some_species_id(),
       span: span,

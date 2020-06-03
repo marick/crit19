@@ -1,7 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.Write do
   alias Ecto.ChangesetX
   alias Ecto.Changeset
-  alias Crit.Setup.Schemas.{Animal, ServiceGap}
+  alias Crit.Setup.Schemas.{AnimalOld, ServiceGap}
   alias Crit.Setup.AnimalApi
   alias Crit.Sql
 
@@ -23,13 +23,13 @@ defmodule Crit.Setup.AnimalImpl.Write do
 
   defp try_update(animal, attrs, institution) do
     animal
-    |> Animal.update_changeset(attrs)
+    |> AnimalOld.update_changeset(attrs)
     |> Sql.update([stale_error_field: :optimistic_lock_error], institution)
   end
 
   defp changeset_for_lock_error(id, institution) do
     AnimalApi.updatable!(id, institution)
-    |> Animal.form_changeset
+    |> AnimalOld.form_changeset
     |> Changeset.add_error(
       :optimistic_lock_error,
       "Someone else was editing the animal while you were."
@@ -47,7 +47,7 @@ defmodule Crit.Setup.AnimalImpl.Write do
           [Changeset.change(%ServiceGap{}) | only_has_service_gap_updates])
 
       :error -> 
-        %{changeset | data: Animal.prepend_empty_service_gap(changeset.data)}
+        %{changeset | data: AnimalOld.prepend_empty_service_gap(changeset.data)}
     end
   end
 end

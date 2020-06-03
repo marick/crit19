@@ -1,13 +1,13 @@
 defmodule CritWeb.Setup.AnimalViewTest do
   use CritWeb.ConnCase, async: true
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
   import Phoenix.HTML.Form
   import Phoenix.HTML
   alias CritWeb.Setup.AnimalView
 
   describe "Showing of nested service gaps in initial form" do
     defp to_form(animal) do
-      changeset = Animal.form_changeset(animal)
+      changeset = AnimalOld.form_changeset(animal)
       form = form_for(changeset, "unused")
       AnimalView.nested_service_gap_forms(form, changeset)
       |> safe_to_string

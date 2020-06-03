@@ -2,7 +2,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   use CritWeb.ConnCase
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
   alias CritWeb.Audit
   alias Crit.Exemplars
 
@@ -30,7 +30,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
     setup do
       # It's relatively easy to accidentally put persistent data into
       # the test database, so this checks for that
-      assert SqlT.all_ids(Animal) == []
+      assert SqlT.all_ids(AnimalOld) == []
       []
     end
 
@@ -40,7 +40,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       
       assert_purpose conn, displaying_animal_summaries()
 
-      assert length(SqlT.all_ids(Animal)) == length(names)
+      assert length(SqlT.all_ids(AnimalOld)) == length(names)
       assert_user_sees(conn, Enum.at(names, 0))
       assert_user_sees(conn, Enum.at(names, -1))
     end
@@ -65,7 +65,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
 
       {:ok, audit} = latest_audit_record(conn)
 
-      ids = SqlT.all_ids(Animal)
+      ids = SqlT.all_ids(AnimalOld)
 
       assert_fields(audit,
         event: Audit.events.created_animals,

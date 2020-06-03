@@ -1,7 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.UpdateInsertServiceGapTest do
   use Crit.DataCase
   alias Crit.Setup.AnimalApi
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
 
   alias Crit.Extras.{AnimalT,ServiceGapT}
 
@@ -113,7 +113,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateInsertServiceGapTest do
   end
 
   defp retrieve_update(animal) do 
-    %Animal{service_gaps: gaps} = AnimalApi.updatable!(animal.id, @institution)
+    %AnimalOld{service_gaps: gaps} = AnimalApi.updatable!(animal.id, @institution)
     gaps
   end
 end

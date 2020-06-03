@@ -2,7 +2,7 @@ defmodule Crit.Setup.AnimalImpl.BulkCreationTransaction do
   alias Crit.Sql
   import Crit.Sql.Transaction, only: [make_creation_validation_step: 1]
   alias CritWeb.ViewModels.Animal.BulkCreation
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Setup.Schemas.AnimalOld
   alias Crit.Ecto.BulkInsert
 
   def run(attrs, institution) do
@@ -21,7 +21,7 @@ defmodule Crit.Setup.AnimalImpl.BulkCreationTransaction do
                   }
     
     one_animal = fn name ->
-      Animal.from_bulk_creation_changeset(Map.put(base_attrs, :name, name))
+      AnimalOld.from_bulk_creation_changeset(Map.put(base_attrs, :name, name))
     end
 
     Enum.map(changes.computed_names, one_animal)
@@ -40,7 +40,7 @@ defmodule Crit.Setup.AnimalImpl.BulkCreationTransaction do
         institution: institution}) do
 
     changesets
-    |> BulkInsert.idlist_script(institution, schema: Animal, ids: :animal_ids)
+    |> BulkInsert.idlist_script(institution, schema: AnimalOld, ids: :animal_ids)
     |> Sql.transaction(institution)
     |> Sql.Transaction.on_ok(extract: :animal_ids)
     |> Sql.Transaction.on_error(original_changeset, name: transfer_name_error())

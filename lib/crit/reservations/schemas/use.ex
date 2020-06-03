@@ -2,7 +2,7 @@ defmodule Crit.Reservations.Schemas.Use do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
-  alias Crit.Setup.Schemas.{Animal,Procedure}
+  alias Crit.Setup.Schemas.{AnimalOld,Procedure}
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Sql
   import Ecto.Timespan
@@ -10,7 +10,7 @@ defmodule Crit.Reservations.Schemas.Use do
   alias Crit.Sql.CommonQuery
 
   schema "uses" do
-    belongs_to :animal, Animal
+    belongs_to :animal, AnimalOld
     belongs_to :procedure, Procedure
     field :reservation_id, :id
   end
@@ -42,7 +42,7 @@ defmodule Crit.Reservations.Schemas.Use do
     procedure_ids = Enum.map(uses, &(&1.procedure_id))
 
     animals =
-      (from a in Animal, where: a.id in ^animal_ids, order_by: a.name)
+      (from a in AnimalOld, where: a.id in ^animal_ids, order_by: a.name)
       |> Sql.all(institution)
 
     procedures =
