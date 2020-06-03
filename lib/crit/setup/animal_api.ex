@@ -6,11 +6,19 @@ defmodule Crit.Setup.AnimalApi do
   alias Crit.Setup.Schemas.AnimalOld
   alias Ecto.ChangesetX
   use Crit.Sql.CommonSql, schema: AnimalOld
+  alias Crit.Sql.CommonQuery
+  alias Crit.Sql
 
   deftypical(:all_by_species, :all, [species_id: species_id])
   deftypical(:one_by_id, :one, [id: id])
   def_all_by_Xs(:id)
-  
+
+  # It would be better if we only dealt with animals that are
+  # active and in service as of a particular date
+  def inadequate_all(institution, opts \\ []) do 
+    CommonQuery.typical(target_schema(), opts)
+    |> Sql.all(institution)
+  end
 
   def updatable!(id, institution) do
     case one_by_id(id, institution, preload: AnimalOld.preloads()) do

@@ -3,6 +3,7 @@ defmodule Crit.Factory do
   use Crit.TestConstants
   alias Crit.Users.Schemas.{User, PermissionList}
   alias Crit.Setup.Schemas.{AnimalOld,ServiceGap,Procedure,ProcedureFrequency}
+  alias Crit.Setup
   alias Crit.Sql
   alias Crit.Exemplars
   alias Ecto.Datespan
@@ -41,6 +42,18 @@ defmodule Crit.Factory do
     span = Datespan.customary(in_service, out_of_service)
                               
     %AnimalOld{
+      name: Faker.Cat.name(),
+      species_id: some_species_id(),
+      span: span,
+     }
+  end
+
+  def animal_new_factory() do
+    in_service = @earliest_date
+    out_of_service = @latest_date
+    span = Datespan.customary(in_service, out_of_service)
+                              
+    %Setup.Schemas.Animal{
       name: Faker.Cat.name(),
       species_id: some_species_id(),
       span: span,
