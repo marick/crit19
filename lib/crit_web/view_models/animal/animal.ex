@@ -19,6 +19,8 @@ defmodule CritWeb.ViewModels.Animal.Animal do
     # field :in_service_datestring, :string
     # field :out_of_service_datestring, :string
     field :species_name, :string
+
+    has_many :service_gaps, Schemas.ServiceGap
   end
 
   def from_ecto(sources, institution) when is_list(sources), 
