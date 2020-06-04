@@ -1,14 +1,16 @@
 defmodule CritWeb.ViewModels.Setup.Animal do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.Schemas
+  alias CritWeb.ViewModels.Setup, as: ViewModels
 #  alias Ecto.Datespan
   # import Ecto.Changeset
   # alias Crit.FieldConverters.ToSpan
   # alias Crit.Common
   alias CritWeb.ViewModels.FieldFillers.ToWeb
 
-  schema "animals" do
+  @primary_key false   # I do this to emphasize that ID not be forgotten.
+  embedded_schema do
+    field :id, :integer
     # The fields below are the true fields in the table.
     field :name, TrimmedString
     field :available, :boolean
@@ -20,7 +22,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     field :out_of_service_datestring, :string
     field :species_name, :string
 
-    has_many :service_gaps, Schemas.ServiceGap
+    field :service_gaps, {:array, ViewModels.ServiceGap}
   end
 
   def from_ecto(sources, institution) when is_list(sources), 
