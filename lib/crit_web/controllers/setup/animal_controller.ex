@@ -6,7 +6,7 @@ defmodule CritWeb.Setup.AnimalController do
   alias Crit.Setup.{AnimalApi,InstitutionApi}
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
-  alias CritWeb.ViewModels.Animal.Animal, as: AnimalVM
+  alias CritWeb.ViewModels.Setup.Animal, as: AnimalVM
   
   plug :must_be_able_to, :manage_animals
 

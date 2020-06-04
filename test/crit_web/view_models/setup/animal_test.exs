@@ -1,6 +1,6 @@
-defmodule CritWeb.ViewModels.Animal.AnimalTest do
+defmodule CritWeb.ViewModels.Setup.AnimalTest do
   use Crit.DataCase, async: true
-  alias CritWeb.ViewModels.Animal.Animal, as: ViewModel
+  alias CritWeb.ViewModels.Setup.Animal, as: ViewModel
   # alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi
   import Crit.Exemplars.Background

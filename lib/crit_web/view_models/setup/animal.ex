@@ -1,4 +1,4 @@
-defmodule CritWeb.ViewModels.Animal.Animal do
+defmodule CritWeb.ViewModels.Setup.Animal do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
   alias Crit.Setup.Schemas
