@@ -13,13 +13,11 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   @primary_key false   # I do this to emphasize that ID not be forgotten.
   embedded_schema do
     field :id, :id
-    # field :animal_id, :id
-    # field :span, Datespan
-    # field :reason, :string
+    field :reason, :string
 
-    # field :institution, :string, virtual: true 
-    # field :in_service_datestring, :string, virtual: true
-    # field :out_of_service_datestring, :string, virtual: true
-    # field :delete, :boolean, default: false, virtual: true
+    field :institution, :string, virtual: true 
+    field :in_service_datestring, :string, virtual: true
+    field :out_of_service_datestring, :string, virtual: true
+    field :delete, :boolean, default: false, virtual: true
   end
 end
