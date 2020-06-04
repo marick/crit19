@@ -6,7 +6,7 @@ defmodule CritWeb.ViewModels.Animal.Animal do
   # import Ecto.Changeset
   # alias Crit.FieldConverters.ToSpan
   # alias Crit.Common
-#  alias Crit.FieldConverters.FromSpan
+  alias CritWeb.ViewModels.FieldFillers.ToWeb
 
   schema "animals" do
     # The fields below are the true fields in the table.
@@ -15,9 +15,9 @@ defmodule CritWeb.ViewModels.Animal.Animal do
     field :lock_version, :integer
     
     # Virtual fields used for displays or forms presented to a human
-    # field :institution, :string
-    # field :in_service_datestring, :string
-    # field :out_of_service_datestring, :string
+    field :institution, :string
+    field :in_service_datestring, :string
+    field :out_of_service_datestring, :string
     field :species_name, :string
 
     has_many :service_gaps, Schemas.ServiceGap
@@ -26,11 +26,12 @@ defmodule CritWeb.ViewModels.Animal.Animal do
   def from_ecto(sources, institution) when is_list(sources), 
     do: (for s <- sources, do: from_ecto(s, institution))
 
-  def from_ecto(source, _institution) do
+  def from_ecto(source, institution) do
     %{EnumX.pour_into(source, __MODULE__) |
-      species_name: source.species.name
+      species_name: source.species.name,
+      institution: institution
     }
-        # |> FromSpan.expand
+    |> ToWeb.service_datestrings(source.span)
 
     # updatable_service_gaps = 
     #   Enum.map(target.service_gaps,

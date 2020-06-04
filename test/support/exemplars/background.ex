@@ -77,6 +77,11 @@ defmodule Crit.Exemplars.Background do
     end)
   end
 
+  defp compute_span(%Date{} = earliest_date),
+    do: Datespan.customary(earliest_date, @latest_date)
+  defp compute_span(%Datespan{} = span),
+    do: span
+
   def animal(data, animal_name, opts \\ []) do
     ensure(data, :animal, animal_name, fn -> 
       opts =
@@ -84,12 +89,9 @@ defmodule Crit.Exemplars.Background do
               available_on: @earliest_date,
               species_id: data.species_id})
       
-      in_service_date = opts.available_on
-      span = Datespan.customary(in_service_date, @latest_date)
-      
       Factory.sql_insert!(:animal,
         name: animal_name,
-        span: span,
+        span: compute_span(opts.available_on),
         species_id: opts.species_id)
     end)
   end
