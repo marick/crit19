@@ -10,7 +10,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   @primary_key false   # I do this to emphasize that ID not be forgotten.
   embedded_schema do
-    field :id, :integer
+    field :id, :id
     # The fields below are the true fields in the table.
     field :name, TrimmedString
     field :available, :boolean

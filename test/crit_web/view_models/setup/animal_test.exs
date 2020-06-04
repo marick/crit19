@@ -23,7 +23,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
     with_only_species(b.bossie.id)
     |> ViewModel.from_ecto(@institution)
-    |> assert_fields(available: true,
+    |> assert_fields(id: b.bossie.id,
+                     available: true,
                      lock_version: 1,
                      name: "Bossie",
                      species_name: @bovine,
