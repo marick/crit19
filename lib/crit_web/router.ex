@@ -55,8 +55,8 @@ IO.puts(
       get "/bulk_create", AnimalController, :bulk_create_form
       post "/bulk_create", AnimalController, :bulk_create
       get "/update_form/:animal_id", AnimalController, :update_form
-      put "/update/:animal_id", AnimalController, :update
-      post "/update/:animal_id", AnimalController, :update
+      put "/update/:animal_old_id", AnimalController, :update
+      post "/update/:animal_old_id", AnimalController, :update
       get "/", AnimalController, :index
       get "/:animal_id", AnimalController, :_show
     end

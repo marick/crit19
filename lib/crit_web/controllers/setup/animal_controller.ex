@@ -90,7 +90,7 @@ defmodule CritWeb.Setup.AnimalController do
   end
 
 
-  def update(conn, %{"animal_id" => id, "animal" => raw_params}) do
+  def update(conn, %{"animal_old_id" => id, "animal_old" => raw_params}) do
     params = 
       Testable.put_institution(raw_params, institution(conn))
 

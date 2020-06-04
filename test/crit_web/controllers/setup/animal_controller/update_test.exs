@@ -38,7 +38,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         # delete the other 
         |> put_in(["service_gaps", "2", "delete"], "true")
 
-      post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal_id)], under(:animal_old, params))
       |> assert_purpose(snippet_to_display_animal())
       # Note that service gaps are not displayed as a part of a snippet
       |> assert_user_sees("new name")
@@ -67,7 +67,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         # change a field in the animal itself so that we can see something happen
         |> Map.put("name", "new name")
 
-      post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal_id)], under(:animal_old, params))
       # There was not a failure (which renders a different snippet)
       |> assert_purpose(snippet_to_display_animal())
       
@@ -95,7 +95,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         # ... and there's an error in a service gap change.
         |> put_in(["service_gaps", "0", "out_of_service_datestring"], "nver")
 
-      post_to_action(conn, [:update, to_string(animal_id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal_id)], under(:animal_old, params))
       |> assert_purpose(form_for_editing_animal())
       |> assert_user_sees(@date_misorder_message)
       |> assert_user_sees("is invalid")
@@ -122,7 +122,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         unchanged_params
         |> put_in(["out_of_service_datestring"], @iso_date_1)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> assert_new_service_gap_form(animal)
       |> assert_existing_service_gap_form(animal, old_gap)
@@ -136,7 +136,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> put_in(["out_of_service_datestring"], @iso_date_1)
         |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> assert_new_service_gap_form(animal)
       |> assert_existing_service_gap_form(animal, old_gap)
@@ -149,7 +149,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         unchanged_params
         |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
       |> assert_existing_service_gap_form(animal, old_gap)
@@ -162,7 +162,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> put_in(["service_gaps", "0", "reason"], @iso_date_2)
         |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> assert_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
@@ -176,7 +176,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> put_in(["out_of_service_datestring"], @iso_date_1)
         |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> assert_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
@@ -190,7 +190,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> put_in(["out_of_service_datestring"], @iso_date_1)
         |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> refute_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
@@ -214,7 +214,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> put_in(["out_of_service_datestring"], @iso_date_1)
         |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> assert_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
@@ -226,7 +226,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         unchanged_params
         |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
     end
@@ -237,7 +237,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         unchanged_params
         |> put_in(["out_of_service_datestring"], @iso_date_1)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal, params))
+      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
       |> refute_user_sees(@blank_message_in_html)
       |> assert_new_service_gap_form(animal)
