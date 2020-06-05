@@ -1,5 +1,6 @@
 defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
+  alias CritWeb.ViewModels.FieldFillers.ToWeb
   # import Ecto.Changeset
   # alias Ecto.Datespan
   # use Crit.Errors
@@ -15,9 +16,20 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     field :id, :id
     field :reason, :string
 
-    field :institution, :string, virtual: true 
-    field :in_service_datestring, :string, virtual: true
-    field :out_of_service_datestring, :string, virtual: true
-    field :delete, :boolean, default: false, virtual: true
+    field :institution, :string
+    field :in_service_datestring, :string
+    field :out_of_service_datestring, :string
+    field :delete, :boolean, default: false
+  end
+
+
+  def to_web(sources, institution) when is_list(sources),
+    do: (for s <- sources, do: to_web(s, institution))
+
+  def to_web(source, institution) do
+    %{EnumX.pour_into(source, __MODULE__) |
+      institution: institution
+    }
+    |> ToWeb.service_datestrings(source.span)
   end
 end

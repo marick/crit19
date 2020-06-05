@@ -1,5 +1,4 @@
 defmodule Crit.Setup.Schemas.Animal do
-
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
   alias Crit.Setup.Schemas

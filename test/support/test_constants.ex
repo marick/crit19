@@ -30,6 +30,9 @@ defmodule Crit.TestConstants do
 
       @earliest_date @date_1
       @latest_date @date_8
+      
+      @earliest_iso_date @iso_date_1
+      @latest_iso_date @iso_date_8
     end
   end
   

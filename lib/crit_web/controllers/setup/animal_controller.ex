@@ -33,9 +33,7 @@ defmodule CritWeb.Setup.AnimalController do
 
   def index(conn, _params) do
     institution = institution(conn)
-    animals =
-      AnimalApi.inadequate_all(institution, preload: [:species])
-      |> AnimalVM.from_ecto(institution)
+    animals = AnimalVM.fetch(:all_possible, institution)
     render(conn, "index.html", animals: animals)
   end
 
