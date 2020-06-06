@@ -33,4 +33,48 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                         out_of_service_datestring: @iso_date_3)
     end
   end
+
+
+  describe "changeset for insertion" do
+    defp handle(attrs), do: ViewModels.ServiceGap.insertion_changeset(attrs)
+    
+    test "all three values are valid" do
+      given = %{in_service_datestring: @iso_date_1,
+                out_of_service_datestring: @iso_date_2,
+                institution: @institution,
+                reason: "reason"}
+      
+      handle(given)
+      |> assert_valid
+      |> assert_changes(in_service_datestring: @iso_date_1,
+                        out_of_service_datestring: @iso_date_2,
+                        reason: "reason")
+    end
+    
+
+    # Error checking
+
+    test "required fields are must be present" do
+      handle(%{})
+      |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
+    end
+
+    test "dates must be in the right order" do
+      given = %{in_service_datestring: @iso_date_1,
+                out_of_service_datestring: @iso_date_1,
+                institution: @institution,
+                reason: "reason"}
+      handle(given)
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+
+      # Other fields are available to fill form fields
+      |> assert_changes(in_service_datestring: @iso_date_1,
+                        out_of_service_datestring: @iso_date_1,
+                        reason: "reason")
+    end
+  end
+
+
+  describe "from_web" do
+  end
 end

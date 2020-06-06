@@ -33,6 +33,13 @@ defmodule Ecto.ChangesetX do
     end
   end
 
+
+  def values(changeset, keys), 
+    do: Enum.map(keys, &(Changeset.get_field(changeset, &1)))
+    
+
+  
+
   def empty_text_field?(changeset, field) do
     value = current_value(changeset, field)
     value == nil || value == ""
@@ -64,5 +71,4 @@ defmodule Ecto.ChangesetX do
   end
 
   defp path_to(field), do: [Access.key(:data), Access.key(field)]
-
 end

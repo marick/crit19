@@ -1,9 +1,10 @@
 defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
   alias CritWeb.ViewModels.FieldFillers.ToWeb
-  # import Ecto.Changeset
+  import Ecto.Changeset
+  alias Ecto.ChangesetX
   # alias Ecto.Datespan
-  # use Crit.Errors
+  use Crit.Errors
   # alias Crit.FieldConverters.ToSpan
   # alias Crit.FieldConverters.FromSpan
   # import Ecto.Query
@@ -31,5 +32,27 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
       institution: institution
     }
     |> ToWeb.service_datestrings(source.span)
+  end
+
+  @required [:reason, :in_service_datestring, :out_of_service_datestring]
+
+  def insertion_changeset(params) do
+    %__MODULE__{}
+    |> cast(params, @required)
+    |> validate_required(@required)
+    |> validate_date_order
+  end
+
+  defp validate_date_order(changeset) do
+    [in_service, out_of_service] =
+      changeset
+      |> ChangesetX.values([:in_service_datestring, :out_of_service_datestring])
+        
+    case in_service < out_of_service do  # Works: ISO8601
+      true ->
+        changeset
+      false ->
+        add_error(changeset, :out_of_service_datestring, @date_misorder_message)
+    end
   end
 end
