@@ -3,6 +3,7 @@ defmodule CritWeb.ViewModels.FieldValidators do
   alias Ecto.ChangesetX
   use Crit.Errors
 
+  def date_order(%{valid?: false} = changeset), do: changeset
   def date_order(changeset) do
     [in_service, out_of_service] =
       changeset

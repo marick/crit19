@@ -3,7 +3,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldFillers.ToWeb
   alias CritWeb.ViewModels.FieldValidators
   import Ecto.Changeset
-  alias Ecto.ChangesetX
+  # alias Ecto.ChangesetX
   # alias Ecto.Datespan
   # alias Crit.FieldConverters.ToSpan
   # alias Crit.FieldConverters.FromSpan
@@ -36,8 +36,8 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   @required [:reason, :in_service_datestring, :out_of_service_datestring]
 
-  def insertion_changeset(params) do
-    %__MODULE__{}
+  def changeset(existing, params) do
+    existing
     |> cast(params, @required)
     |> validate_required(@required)
     |> FieldValidators.date_order

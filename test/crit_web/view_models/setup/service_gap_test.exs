@@ -35,10 +35,11 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
   end
 
 
-  describe "changeset for insertion" do
-    defp handle(attrs), do: ViewModels.ServiceGap.insertion_changeset(attrs)
+  describe "changesettery" do
+    defp handle(attrs, model \\ %ViewModels.ServiceGap{}),
+      do: ViewModels.ServiceGap.changeset(model, attrs)
     
-    test "all three values are valid" do
+    test "all values are valid" do
       given = %{in_service_datestring: @iso_date_1,
                 out_of_service_datestring: @iso_date_2,
                 institution: @institution,
@@ -71,6 +72,18 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       |> assert_changes(in_service_datestring: @iso_date_1,
                         out_of_service_datestring: @iso_date_1,
                         reason: "reason")
+    end
+
+
+    test "existing changeset fields are retained if not replaced" do
+      existing = %ViewModels.ServiceGap{reason: "x", in_service_datestring: "y"}
+        
+      given = %{in_service_datestring: "REPLACE",
+                institution: @institution}
+      handle(given, existing)
+      |> assert_error(out_of_service_datestring: @blank_message)
+      |> assert_changes(in_service_datestring: "REPLACE")
+      |> assert_data(reason: "x")
     end
   end
 
