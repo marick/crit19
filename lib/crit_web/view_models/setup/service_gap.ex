@@ -2,9 +2,10 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
   alias CritWeb.ViewModels.FieldFillers.ToWeb
   alias CritWeb.ViewModels.FieldValidators
+  alias Crit.Setup.Schemas
   import Ecto.Changeset
   # alias Ecto.ChangesetX
-  # alias Ecto.Datespan
+  alias Ecto.Datespan
   # alias Crit.FieldConverters.ToSpan
   # alias Crit.FieldConverters.FromSpan
   # import Ecto.Query
@@ -12,7 +13,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   # alias Crit.Sql
   # alias Crit.Sql.CommonQuery
   
-  @primary_key false   # I do this to emphasize that ID not be forgotten.
+  @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
     field :id, :id
     field :reason, :string
@@ -38,8 +39,25 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   def changeset(existing, params) do
     existing
-    |> cast(params, @required)
+    |> cast(params, [:id | @required])
     |> validate_required(@required)
     |> FieldValidators.date_order
+  end
+
+  def from_web(changesets, animal_id) when is_list(changesets) do 
+    for c <- changesets do
+      {:ok, data} = apply_action(c, :insert)
+      span =
+        Datespan.customary(
+          Date.from_iso8601!(data.in_service_datestring),
+          Date.from_iso8601!(data.out_of_service_datestring))
+              
+      %Schemas.ServiceGap{
+        id: get_field(c, :id),
+        animal_id: animal_id,
+        reason: data.reason,
+        span: span
+      }
+    end
   end
 end

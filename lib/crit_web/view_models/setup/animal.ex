@@ -5,7 +5,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias Crit.Setup.AnimalApi
   alias CritWeb.ViewModels.FieldFillers.ToWeb
 
-  @primary_key false   # I do this to keep `id` from being forgotten.
+  @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
     field :id, :id
     # The fields below are the true fields in the table.
