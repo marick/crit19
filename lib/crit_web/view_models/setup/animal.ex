@@ -4,6 +4,8 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias CritWeb.ViewModels.Setup, as: ViewModels
   alias Crit.Setup.AnimalApi
   alias CritWeb.ViewModels.FieldFillers.ToWeb
+  import Ecto.Changeset
+  alias CritWeb.ViewModels.FieldValidators
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -20,6 +22,8 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
     field :service_gaps, {:array, ViewModels.ServiceGap}
   end
+
+  def fields(), do: __schema__(:fields)
 
   def fetch(:all_possible, institution) do
       AnimalApi.inadequate_all(institution, preload: [:species])
@@ -49,5 +53,14 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> ToWeb.service_datestrings(source.span)
     |> ToWeb.when_loaded(:service_gaps, source,
                          &(ViewModels.ServiceGap.to_web(&1, institution)))
+  end
+
+  # ----------------------------------------------------------------------------
+
+  def form_changeset(params) do
+    %__MODULE__{}
+    |> cast(params, fields())
+    |> validate_required(fields())
+    |> FieldValidators.date_order
   end
 end

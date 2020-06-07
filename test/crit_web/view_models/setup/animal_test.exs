@@ -15,7 +15,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     [background: b]
   end
 
-  def common_asserts(animal, background) do
+  def common_to_web_asserts(animal, background) do
     animal
     |> assert_fields(id: background.bossie.id,
                      lock_version: 1,
@@ -26,11 +26,11 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                      out_of_service_datestring: @latest_iso_date)
   end
 
-  describe "translation from a shallow fetch" do
+  describe "toweb: translation from a shallow fetch" do
     test "a shallow fetch (does not include service gaps)", %{background: b} do
       AnimalApi.one_by_id(b.bossie.id, @institution, preload: [:species])
       |> ViewModels.Animal.to_web(@institution)
-      |> common_asserts(b)
+      |> common_to_web_asserts(b)
       |> refute_assoc_loaded(:service_gaps)
     end
 
@@ -53,13 +53,13 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   end
 
 
-  describe "direct fetch from database" do 
+  describe "toweb: direct fetch from database" do 
     test "fetching a list of animals does not produce service gaps",
       %{background: b} do
       
       ViewModels.Animal.fetch(:all_possible, @institution)
       |> singleton_payload
-      |> common_asserts(b)
+      |> common_to_web_asserts(b)
       |> refute_assoc_loaded(:service_gaps)
     end
 
@@ -67,7 +67,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       %{background: b} do 
 
       ViewModels.Animal.fetch(:one_for_summary, b.bossie.id, @institution)
-      |> common_asserts(b)
+      |> common_to_web_asserts(b)
       |> refute_assoc_loaded(:service_gaps)
     end
 
@@ -75,8 +75,56 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       %{background: b} do 
 
       ViewModels.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
-      |> common_asserts(b)
+      |> common_to_web_asserts(b)
       |> assert_assoc_loaded(:service_gaps)
+    end
+  end
+
+  @valid_partial %{
+    "id" => "1",
+    "lock_version" => "2",
+    "name" => "Bossie",
+    "species_name" => "species name",
+    "institution" => @institution,
+    "in_service_datestring" => @earliest_iso_date,
+    "out_of_service_datestring" => @latest_iso_date,
+  }
+
+  # In actuality, there will always (currently) be service gaps
+  # but let's separate that more complicated handling.
+  @no_service_gaps Map.put(@valid_partial, "service_gaps", [])
+
+  describe "changesettery - without considering service gaps" do
+    
+    test "success" do
+      ViewModels.Animal.form_changeset(@no_service_gaps)
+      |> assert_valid
+      |> assert_changes(id: 1,
+                       lock_version: 2,
+                       name: "Bossie",
+                       species_name: "species name",
+                       institution: @institution,
+                       in_service_datestring: @earliest_iso_date,
+                       out_of_service_datestring: @latest_iso_date)
+    end
+
+    test "required fields are must be present" do
+      ViewModels.Animal.form_changeset(%{})
+      |> assert_errors(ViewModels.Animal.fields())
+    end
+
+    test "dates must be in the right order" do
+      params = %{ @no_service_gaps | 
+                  "in_service_datestring" => @iso_date_2,
+                  "out_of_service_datestring" => @iso_date_2}
+
+      ViewModels.Animal.form_changeset(params)
+      |> assert_error(out_of_service_datestring: @date_misorder_message)
+
+      # Fields are available to fill form fields
+      |> assert_changes(in_service_datestring: @iso_date_2,
+                        out_of_service_datestring: @iso_date_2,
+                        name: "Bossie")
     end
   end
 end
