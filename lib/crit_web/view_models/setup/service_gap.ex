@@ -4,14 +4,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldValidators
   alias Crit.Setup.Schemas
   import Ecto.Changeset
-  # alias Ecto.ChangesetX
   alias Ecto.Datespan
-  # alias Crit.FieldConverters.ToSpan
-  # alias Crit.FieldConverters.FromSpan
-  # import Ecto.Query
-  # import Ecto.Datespan
-  # alias Crit.Sql
-  # alias Crit.Sql.CommonQuery
   
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -24,6 +17,10 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     field :delete, :boolean, default: false
   end
 
+  def fields(), do: __schema__(:fields)
+  def required(), do: List.delete(__schema__(:fields), :id) 
+  
+  # ----------------------------------------------------------------------------
 
   def to_web(sources, institution) when is_list(sources),
     do: (for s <- sources, do: to_web(s, institution))
@@ -35,14 +32,16 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     |> ToWeb.service_datestrings(source.span)
   end
 
-  @required [:reason, :in_service_datestring, :out_of_service_datestring]
-
-  def changeset(existing, params) do
-    existing
-    |> cast(params, [:id | @required])
-    |> validate_required(@required)
+  # ----------------------------------------------------------------------------
+  
+  def form_changeset(params) do
+    %__MODULE__{}
+    |> cast(params, fields())
+    |> validate_required(required())
     |> FieldValidators.date_order
   end
+
+  # ----------------------------------------------------------------------------
 
   def from_web(changesets, animal_id) when is_list(changesets) do 
     for c <- changesets do

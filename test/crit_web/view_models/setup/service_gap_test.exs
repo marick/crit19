@@ -36,9 +36,6 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
   # ----------------------------------------------------------------------------
 
-  defp changeset(attrs, model \\ %ViewModels.ServiceGap{}),
-    do: ViewModels.ServiceGap.changeset(model, attrs)
-    
   describe "changesettery" do
     test "all values are valid" do
       params = %{"id" => "1",
@@ -47,7 +44,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                  "institution" => @institution,
                  "reason" => "reason"}
       
-      changeset(params)
+      ViewModels.ServiceGap.form_changeset(params)
       |> assert_valid
       |> assert_changes(id: 1,
                         in_service_datestring: @iso_date_1,
@@ -58,7 +55,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     # Error checking
 
     test "required fields are must be present" do
-      changeset(%{"id" => "1"})
+      ViewModels.ServiceGap.form_changeset(%{"id" => "1"})
       |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
     end
 
@@ -68,7 +65,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                  "out_of_service_datestring" => @iso_date_1,
                  "institution" => @institution,
                  "reason" => "reason"}
-      changeset(params)
+      ViewModels.ServiceGap.form_changeset(params)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
 
       # Other fields are available to fill form fields
@@ -76,22 +73,9 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                         out_of_service_datestring: @iso_date_1,
                         reason: "reason")
     end
-
-    test "existing changeset fields are retained if not replaced" do
-      existing = %ViewModels.ServiceGap{
-        id: 1,
-        reason: "x",
-        in_service_datestring: "y"}
-        
-      params = %{"id" => "1",
-                 "in_service_datestring" => "REPLACE",
-                 "institution" => @institution}
-      changeset(params, existing)
-      |> assert_error(out_of_service_datestring: @blank_message)
-      |> assert_changes(in_service_datestring: "REPLACE")
-      |> assert_data(reason: "x")
-    end
   end
+
+  # ----------------------------------------------------------------------------
 
   describe "from_web" do
     test "valid are converted" do
@@ -109,7 +93,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       }
 
       actual =
-        [changeset(view_model)]
+        [ViewModels.ServiceGap.form_changeset(view_model)]
         |> ViewModels.ServiceGap.from_web("some animal id")
         |> singleton_payload
         |> assert_shape(%Schemas.ServiceGap{})
