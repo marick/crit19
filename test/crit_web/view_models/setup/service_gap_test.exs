@@ -34,19 +34,20 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     end
   end
 
+  # ----------------------------------------------------------------------------
 
   defp changeset(attrs, model \\ %ViewModels.ServiceGap{}),
     do: ViewModels.ServiceGap.changeset(model, attrs)
     
   describe "changesettery" do
     test "all values are valid" do
-      given = %{id: "1",
-                in_service_datestring: @iso_date_1,
-                out_of_service_datestring: @iso_date_2,
-                institution: @institution,
-                reason: "reason"}
+      params = %{"id" => "1",
+                "in_service_datestring" => @iso_date_1,
+                 "out_of_service_datestring" => @iso_date_2,
+                 "institution" => @institution,
+                 "reason" => "reason"}
       
-      changeset(given)
+      changeset(params)
       |> assert_valid
       |> assert_changes(id: 1,
                         in_service_datestring: @iso_date_1,
@@ -57,17 +58,17 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     # Error checking
 
     test "required fields are must be present" do
-      changeset(%{id: "1"})
+      changeset(%{"id" => "1"})
       |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
     end
 
     test "dates must be in the right order" do
-      given = %{id: "1",
-                in_service_datestring: @iso_date_1,
-                out_of_service_datestring: @iso_date_1,
-                institution: @institution,
-                reason: "reason"}
-      changeset(given)
+      params = %{"id" => "1",
+                 "in_service_datestring" => @iso_date_1,
+                 "out_of_service_datestring" => @iso_date_1,
+                 "institution" => @institution,
+                 "reason" => "reason"}
+      changeset(params)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
 
       # Other fields are available to fill form fields
@@ -78,14 +79,14 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
     test "existing changeset fields are retained if not replaced" do
       existing = %ViewModels.ServiceGap{
-        id: "1",
+        id: 1,
         reason: "x",
         in_service_datestring: "y"}
         
-      given = %{id: "1",
-                in_service_datestring: "REPLACE",
-                institution: @institution}
-      changeset(given, existing)
+      params = %{"id" => "1",
+                 "in_service_datestring" => "REPLACE",
+                 "institution" => @institution}
+      changeset(params, existing)
       |> assert_error(out_of_service_datestring: @blank_message)
       |> assert_changes(in_service_datestring: "REPLACE")
       |> assert_data(reason: "x")
@@ -94,11 +95,11 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
   describe "from_web" do
     test "valid are converted" do
-      given = %{id: 1,
-                in_service_datestring: @iso_date_1,
-                out_of_service_datestring: @iso_date_2,
-                institution: @institution,
-                reason: "reason"}
+      view_model = %{id: 1,
+                     in_service_datestring: @iso_date_1,
+                     out_of_service_datestring: @iso_date_2,
+                     institution: @institution,
+                     reason: "reason"}
 
       expected = %Schemas.ServiceGap{
         id: 1,
@@ -108,7 +109,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       }
 
       actual =
-        [changeset(given)]
+        [changeset(view_model)]
         |> ViewModels.ServiceGap.from_web("some animal id")
         |> singleton_payload
         |> assert_shape(%Schemas.ServiceGap{})
