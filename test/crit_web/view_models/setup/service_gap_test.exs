@@ -101,4 +101,31 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       assert actual == expected
     end
   end
+
+  # ----------------------------------------------------------------------------
+
+  describe "separating requests for deletion from requests for update" do
+    no_deletion = %{"id" => "1",
+                    "in_service_datestring" => @iso_date_1,
+                    "out_of_service_datestring" => @iso_date_2,
+                    "institution" => @institution,
+                    "reason" => "reason",
+                    "delete" => "false"
+                   }
+    deletion = %{"id" => "2",
+                 "in_service_datestring" => @iso_date_1,
+                 "out_of_service_datestring" => @iso_date_2,
+                 "institution" => @institution,
+                 "reason" => "different reason reason",
+                 "delete" => "true"
+                }
+
+    assert {[only_changeset], [only_id]} = 
+      [no_deletion, deletion]
+      |> Enum.map(&ViewModels.ServiceGap.form_changeset/1)
+      |> ViewModels.ServiceGap.separate_deletions
+
+    assert get_change(only_changeset, :id) == 1
+    assert only_id == 2
+  end
 end

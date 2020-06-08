@@ -41,6 +41,14 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     |> FieldValidators.date_order
   end
 
+  def separate_deletions(changesets) do
+    %{true => deletable, false => updateable } =
+      changesets
+      |> Enum.group_by(&get_field(&1, :delete))
+
+    {updateable, Enum.map(deletable, &(get_field(&1, :id)))}
+  end
+
   # ----------------------------------------------------------------------------
 
   def from_web(changesets, animal_id) when is_list(changesets) do 
