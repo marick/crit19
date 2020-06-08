@@ -18,7 +18,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   end
 
   def fields(), do: __schema__(:fields)
-  def required(), do: List.delete(__schema__(:fields), :id) 
+  def required(), do: List.delete(__schema__(:fields), :id)
   
   # ----------------------------------------------------------------------------
 

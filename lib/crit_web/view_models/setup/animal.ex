@@ -20,7 +20,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     field :out_of_service_datestring, :string
     field :species_name, :string
 
-    field :service_gaps, {:array, ViewModels.ServiceGap}
+    field :service_gaps, {:array, :map}
   end
 
   def fields(), do: __schema__(:fields)
@@ -62,5 +62,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> cast(params, fields())
     |> validate_required(fields())
     |> FieldValidators.date_order
+    |> FieldValidators.cast_subarray(:service_gaps,
+                                     &ViewModels.ServiceGap.form_changeset/1)
   end
 end

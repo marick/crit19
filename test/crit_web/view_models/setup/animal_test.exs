@@ -5,6 +5,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   alias Crit.Setup.AnimalApi
   import Crit.Exemplars.Background
   alias Ecto.Datespan
+  alias Ecto.Changeset
 
   setup do
     span = Datespan.customary(@earliest_date, @latest_date)
@@ -15,6 +16,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     [background: b]
   end
 
+  # ----------------------------------------------------------------------------
   def common_to_web_asserts(animal, background) do
     animal
     |> assert_fields(id: background.bossie.id,
@@ -80,21 +82,22 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     end
   end
 
-  @valid_partial %{
-    "id" => "1",
-    "lock_version" => "2",
-    "name" => "Bossie",
-    "species_name" => "species name",
-    "institution" => @institution,
-    "in_service_datestring" => @earliest_iso_date,
-    "out_of_service_datestring" => @latest_iso_date,
-  }
+  # ----------------------------------------------------------------------------
+  describe "changesettery" do
 
-  # In actuality, there will always (currently) be service gaps
-  # but let's separate that more complicated handling.
-  @no_service_gaps Map.put(@valid_partial, "service_gaps", [])
-
-  describe "changesettery - without considering service gaps" do
+    @no_service_gaps %{
+      "id" => "1",
+      "lock_version" => "2",
+      "name" => "Bossie",
+      "species_name" => "species name",
+      "institution" => @institution,
+      "in_service_datestring" => @earliest_iso_date,
+      "out_of_service_datestring" => @latest_iso_date,
+      "service_gaps" => []
+    }
+    
+    # In actuality, there will always (as of 2020) be service gaps but
+    # let's separate that more complicated handling.
     
     test "success" do
       ViewModels.Animal.form_changeset(@no_service_gaps)
@@ -126,5 +129,41 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                         out_of_service_datestring: @iso_date_2,
                         name: "Bossie")
     end
+
+    defp with_service_gap(params, service_gap) do
+      %{ params | "service_gaps" => [service_gap]}
+    end
+    
+    test "changesets are produced for service gaps: error case" do
+      with_service_gap(@no_service_gaps, %{})
+      |> ViewModels.Animal.form_changeset
+      |> Changeset.get_change(:service_gaps)
+      |> singleton_payload
+      |> assert_invalid
+      |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
+    end
+
+    test "a service gap changeset infects the top-level animal service gap" do
+      with_service_gap(@no_service_gaps, %{})
+      |> ViewModels.Animal.form_changeset
+      |> assert_invalid
+    end
+
+    test "the service gap is corrrect" do
+      service_gap_params = %{
+        id: 3,
+        reason: "reason",
+        institution: @institution,
+        in_service_datestring: @iso_date_2,
+        out_of_service_datestring: @iso_date_3
+      }
+
+      with_service_gap(@no_service_gaps, service_gap_params)
+      |> ViewModels.Animal.form_changeset
+      |> assert_valid
+    end
   end
+
+  # ----------------------------------------------------------------------------
+  
 end

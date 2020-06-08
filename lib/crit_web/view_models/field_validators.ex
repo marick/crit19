@@ -16,4 +16,17 @@ defmodule CritWeb.ViewModels.FieldValidators do
         add_error(changeset, :out_of_service_datestring, @date_misorder_message)
     end
   end
+
+  # This is tested through use. See, for example, ViewModels.Setup.Animal
+  def cast_subarray(changeset, field, validator) do
+    changesets = 
+      get_change(changeset, field, [])
+      |> Enum.map(validator)
+
+    validity = Enum.all?(changesets, &(&1.valid?))
+
+    changeset
+    |> put_change(field, changesets)
+    |> Map.put(:valid?, validity)
+  end
 end
