@@ -1,6 +1,6 @@
 defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
-  alias CritWeb.ViewModels.FieldFillers.ToWeb
+  alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
   alias Crit.Setup.Schemas
   import Ecto.Changeset
@@ -54,16 +54,11 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   def from_web(changesets, animal_id) when is_list(changesets) do 
     for c <- changesets do
       {:ok, data} = apply_action(c, :insert)
-      span =
-        Datespan.customary(
-          Date.from_iso8601!(data.in_service_datestring),
-          Date.from_iso8601!(data.out_of_service_datestring))
-              
       %Schemas.ServiceGap{
         id: get_field(c, :id),
         animal_id: animal_id,
         reason: data.reason,
-        span: span
+        span: FromWeb.span(data)
       }
     end
   end
