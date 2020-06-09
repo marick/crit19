@@ -6,7 +6,7 @@ defmodule CritWeb.Setup.AnimalController do
   alias Crit.Setup.{AnimalApi,InstitutionApi}
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
-  alias CritWeb.ViewModels.Setup.Animal, as: AnimalVM
+  alias CritWeb.ViewModels.Setup, as: ViewModels
   
   plug :must_be_able_to, :manage_animals
 
@@ -33,7 +33,7 @@ defmodule CritWeb.Setup.AnimalController do
 
   def index(conn, _params) do
     institution = institution(conn)
-    animals = AnimalVM.fetch(:all_possible, institution)
+    animals = ViewModels.Animal.fetch(:all_possible, institution)
     render(conn, "index.html", animals: animals)
   end
 

@@ -10,6 +10,9 @@ defmodule CritWeb.ViewModels.FieldFillers.ToWeb do
     }
   end
 
+  @doc """
+  Convert an association (if present) into an array.
+  """
   def when_loaded(current, field, source, converter) do
     old_value = Map.get(source, field)
     new_value = 
