@@ -18,7 +18,6 @@ defmodule CritWeb.ViewModels.FieldFillers.FromWebTest do
   @timezone "America/Los_Angeles"
 
   describe "cases where there's no upper bound" do
-    @tag :skip
     test "a valid in-service date" do
       input = %__MODULE__{
         in_service_datestring: @iso_date_1,
@@ -32,7 +31,6 @@ defmodule CritWeb.ViewModels.FieldFillers.FromWebTest do
       assert actual == expected
     end
 
-    @tag :skip
     test "the special value `today`" do
       # Make sure that timezone is as expected
       assert InstitutionApi.timezone(@institution) == @timezone
@@ -65,7 +63,6 @@ defmodule CritWeb.ViewModels.FieldFillers.FromWebTest do
       
     end
 
-    @tag :skip
     test "the special value `today`" do
       # Make sure that timezone is as expected
       assert InstitutionApi.timezone(@institution) == @timezone

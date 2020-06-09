@@ -1,11 +1,25 @@
 defmodule CritWeb.ViewModels.FieldFillers.FromWeb do
-  use Ecto.Schema
+  use Crit.Global.Constants
   alias Ecto.Datespan
+  alias Crit.Setup.InstitutionApi
+  alias Pile.TimeHelper
 
   def span(data) do
-    Datespan.customary(
-      Date.from_iso8601!(data.in_service_datestring),
-      Date.from_iso8601!(data.out_of_service_datestring))
-    
+    today = fn ->
+      data.institution |> InstitutionApi.timezone |> TimeHelper.today_date
+    end
+
+    date = fn string -> Date.from_iso8601!(string) end
+
+    case {data.in_service_datestring, data.out_of_service_datestring} do
+      {@today, @never} ->
+        Datespan.inclusive_up(today.())
+      {first, @never} ->
+        Datespan.inclusive_up(date.(first))
+      {@today, last} ->
+        Datespan.customary(today.(), date.(last))
+      {first, last} ->
+        Datespan.customary(date.(first), date.(last))
+    end
   end
 end
