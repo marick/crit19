@@ -1,10 +1,10 @@
 defmodule CritWeb.ViewModels.Setup.Animal do
   use Ecto.Schema
+  import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.Setup, as: ViewModels
   alias Crit.Setup.AnimalApi
-  alias CritWeb.ViewModels.FieldFillers.ToWeb
-  import Ecto.Changeset
+  alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
 
   @primary_key false   # I do this to emphasize `id` is just another field
@@ -64,5 +64,17 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> FieldValidators.date_order
     |> FieldValidators.cast_subarray(:service_gaps,
                                      &ViewModels.ServiceGap.form_changeset/1)
+  end
+
+  # ----------------------------------------------------------------------------
+
+  def from_web(changeset) do
+    {:ok, data} = apply_action(changeset, :insert)
+    %{id: data.id,
+      name: data.name,
+      lock_version: data.lock_version,
+      span: FromWeb.span(data),
+      service_gaps: ViewModels.ServiceGap.from_web(data.service_gaps)
+    }
   end
 end

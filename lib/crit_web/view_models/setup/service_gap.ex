@@ -4,7 +4,6 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldValidators
   alias Crit.Setup.Schemas
   import Ecto.Changeset
-  alias Ecto.Datespan
   
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -51,12 +50,10 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   # ----------------------------------------------------------------------------
 
-  def from_web(changesets, animal_id) when is_list(changesets) do 
+  def from_web(changesets) when is_list(changesets) do 
     for c <- changesets do
       {:ok, data} = apply_action(c, :insert)
-      %Schemas.ServiceGap{
-        id: get_field(c, :id),
-        animal_id: animal_id,
+      %{id: data.id,
         reason: data.reason,
         span: FromWeb.span(data)
       }

@@ -110,23 +110,18 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                      institution: @institution,
                      reason: "reason"}
 
-      expected = %Schemas.ServiceGap{
+      expected = %{
         id: 1,
-        animal_id: "some animal id",
         reason: "reason",
         span: Datespan.customary(@date_1, @date_2)
       }
 
       actual =
         [ViewModels.ServiceGap.form_changeset(view_model)]
-        |> ViewModels.ServiceGap.from_web("some animal id")
+        |> ViewModels.ServiceGap.from_web
         |> singleton_payload
-        |> assert_shape(%Schemas.ServiceGap{})
 
       assert actual == expected
     end
   end
-
-  # ----------------------------------------------------------------------------
-
 end

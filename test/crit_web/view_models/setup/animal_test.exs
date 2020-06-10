@@ -1,11 +1,11 @@
 defmodule CritWeb.ViewModels.Setup.AnimalTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: ViewModels
-  alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi
   import Crit.Exemplars.Background
   alias Ecto.Datespan
   alias Ecto.Changeset
+  alias Crit.Exemplars.Background
 
   setup do
     span = Datespan.customary(@earliest_date, @latest_date)
@@ -167,16 +167,14 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   # ----------------------------------------------------------------------------
   
   describe "from_web" do
-    @tag :skip
     test "valid are converted" do
-      expected = %Schemas.Animal{
+      expected = %{
         id: 1,
         lock_version: 2,
         name: "Bossie",
         span: Datespan.customary(@earliest_date, @latest_date),
         service_gaps: [
-          %Schemas.ServiceGap{
-            id: 3,
+          %{id: 3,
             reason: "reason",
             span: Datespan.customary(@date_2, @date_3)
           }]
@@ -186,7 +184,6 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
         with_service_gap(@no_service_gaps, @service_gap_params)
         |> ViewModels.Animal.form_changeset
         |> ViewModels.Animal.from_web
-        |> assert_shape(%Schemas.Animal{})
 
       assert actual == expected
     end
