@@ -5,7 +5,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   import Crit.Exemplars.Background
   alias Ecto.Datespan
   alias Ecto.Changeset
-  alias Crit.Exemplars.Background
+  import Crit.Exemplars.Background
+  alias Crit.Sql
 
   setup do
     span = Datespan.customary(@earliest_date, @latest_date)
@@ -15,6 +16,60 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       |> shorthand
     [background: b]
   end
+
+  test "update workflow", %{background: b}  do
+    service_gap_for(b, "Bossie", starting: @earliest_date, ending: @latest_date)
+
+    animal_view = ViewModels.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
+    [service_gap_view] = animal_view.service_gaps
+
+    displayed_params =
+      animal_view
+      |> Map.from_struct
+      |> Map.put(:service_gaps, [Map.from_struct(service_gap_view)])
+
+    edited_params =
+      displayed_params
+      |> Map.put(:name, "New Bossie")
+      |> put_in([:service_gaps, Access.at(0), :out_of_service_datestring], @never)
+
+    valid_edits_changeset =
+      edited_params
+      |> ViewModels.Animal.form_changeset
+      |> assert_valid
+    
+    validated_params =
+      valid_edits_changeset
+      |> ViewModels.Animal.from_web
+
+    original_animal =
+      AnimalApi.one_by_id(b.bossie.id, @institution,
+        preload: [:species, :service_gaps])
+
+    changed_animal =
+      original_animal
+      |> change(validated_params)
+    # Only two changes to be made.
+    assert length(Map.keys(changed_animal.changes)) == 2
+    assert get_change(changed_animal, :name) == "New Bossie"
+    assert Datespan.inclusive_up(@earliest_date) ==
+      changed_animal.changes.service_gaps
+      |> singleton_payload
+      |> get_change(:span)
+    
+    {:ok, _} = Sql.update(changed_animal, @institution)
+
+    # And, finally, we see what happened...
+    new_animal =
+      AnimalApi.one_by_id(b.bossie.id, @institution,
+        preload: [:species, :service_gaps])
+    [new_service_gap] = new_animal.service_gaps
+
+    assert new_animal.name == "New Bossie"
+    assert new_service_gap.span == Datespan.inclusive_up(@earliest_date)
+  end
+  
+  
 
   # ----------------------------------------------------------------------------
   def common_to_web_asserts(animal, background) do
