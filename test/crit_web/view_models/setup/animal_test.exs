@@ -1,7 +1,7 @@
 defmodule CritWeb.ViewModels.Setup.AnimalTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: ViewModels
-  # alias Crit.Setup.Schemas
+  alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi
   import Crit.Exemplars.Background
   alias Ecto.Datespan
@@ -149,16 +149,16 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       |> assert_invalid
     end
 
-    test "the service gap is corrrect" do
-      service_gap_params = %{
-        id: 3,
-        reason: "reason",
-        institution: @institution,
-        in_service_datestring: @iso_date_2,
-        out_of_service_datestring: @iso_date_3
-      }
+    @service_gap_params %{
+      id: 3,
+      reason: "reason",
+      institution: @institution,
+      in_service_datestring: @iso_date_2,
+      out_of_service_datestring: @iso_date_3
+    }
 
-      with_service_gap(@no_service_gaps, service_gap_params)
+    test "the service gap is corrrect" do
+      with_service_gap(@no_service_gaps, @service_gap_params)
       |> ViewModels.Animal.form_changeset
       |> assert_valid
     end
@@ -166,4 +166,29 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
   # ----------------------------------------------------------------------------
   
+  describe "from_web" do
+    @tag :skip
+    test "valid are converted" do
+      expected = %Schemas.Animal{
+        id: 1,
+        lock_version: 2,
+        name: "Bossie",
+        span: Datespan.customary(@earliest_date, @latest_date),
+        service_gaps: [
+          %Schemas.ServiceGap{
+            id: 3,
+            reason: "reason",
+            span: Datespan.customary(@date_2, @date_3)
+          }]
+      }
+
+      actual = 
+        with_service_gap(@no_service_gaps, @service_gap_params)
+        |> ViewModels.Animal.form_changeset
+        |> ViewModels.Animal.from_web
+        |> assert_shape(%Schemas.Animal{})
+
+      assert actual == expected
+    end
+  end
 end

@@ -1,14 +1,30 @@
 defmodule CritWeb.ViewModels.FieldValidators do
+  use Crit.Global.Constants
+  use Crit.Errors
   import Ecto.Changeset
   alias Ecto.ChangesetX
-  use Crit.Errors
+  alias Crit.Setup.InstitutionApi
 
   def date_order(%{valid?: false} = changeset), do: changeset
   def date_order(changeset) do
-    [in_service, out_of_service] =
+    fields = [:in_service_datestring, :out_of_service_datestring]
+    
+    date_order_(changeset, ChangesetX.values(changeset, fields))
+  end
+
+  defp date_order_(changeset, [_, @never]), do: changeset
+  
+  defp date_order_(changeset, [@today, out_of_service]) do
+    iso_today =
       changeset
-      |> ChangesetX.values([:in_service_datestring, :out_of_service_datestring])
-        
+      |> fetch_field!(:institution)
+      |> InstitutionApi.today!
+      |> Date.to_iso8601
+
+    date_order_(changeset, [iso_today, out_of_service])
+  end
+  
+  defp date_order_(changeset, [in_service, out_of_service]) do
     case in_service < out_of_service do  # Works: ISO8601
       true ->
         changeset
