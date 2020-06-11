@@ -17,7 +17,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     [background: b]
   end
 
-  test "update workflow", %{background: b}  do
+  test "`update` workflow", %{background: b}  do
     service_gap_for(b, "Bossie", starting: @earliest_date, ending: @latest_date)
 
     animal_view = ViewModels.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
@@ -69,8 +69,6 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     assert new_service_gap.span == Datespan.inclusive_up(@earliest_date)
   end
   
-  
-
   # ----------------------------------------------------------------------------
   def common_to_web_asserts(animal, background) do
     animal
