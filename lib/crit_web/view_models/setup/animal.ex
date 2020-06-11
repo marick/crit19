@@ -3,7 +3,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.Setup, as: ViewModels
-  alias Crit.Setup.AnimalApi
+  alias Crit.Setup.AnimalApi2, as: AnimalApi
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
 
