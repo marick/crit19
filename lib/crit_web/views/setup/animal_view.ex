@@ -4,6 +4,11 @@ defmodule CritWeb.Setup.AnimalView do
   alias Phoenix.HTML.Form
   alias Ecto.Changeset
 
+
+  ###
+  ### These are tested within AnimalController tests.
+  ###
+  
   def animal_form_id(animal) do
     "animal_#{animal.id}"
   end
@@ -29,9 +34,7 @@ defmodule CritWeb.Setup.AnimalView do
     for {sg, index} <- indexed do
       gap_f =
         form_for(Changeset.change(sg), "no route")
-        |> Map.put(:hidden, [])
         |> Map.put(:id, "#{f.id}_service_gaps_#{index}")
-        |> Map.put(:index, index)
         |> Map.put(:name, "#{f.name}[service_gaps][#{index}]")
 
       {:safe, iodata} = one_service_gap(gap_f, unique_snippet(animal_changeset, gap_f))
@@ -55,6 +58,7 @@ defmodule CritWeb.Setup.AnimalView do
 
   def one_service_gap(gap_f, unique_snippet) do
     parts = [
+      hidden_inputs_for(gap_f),
       small_calendar(gap_f, "Unavailable starting:",
         :in_service_datestring, unique: unique_snippet),
       small_calendar(gap_f, "Back on:",

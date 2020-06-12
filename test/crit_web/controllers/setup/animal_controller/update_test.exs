@@ -1,10 +1,13 @@
 defmodule CritWeb.Setup.AnimalController.UpdateTest do
   use CritWeb.ConnCase
+  use PhoenixIntegration
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
   alias Crit.Extras.{AnimalT, ServiceGapT}
+  alias CritWeb.ViewModels.Setup, as: ViewModel
+  # alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
   import Crit.Exemplars.Background
 
@@ -26,6 +29,50 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       |> assert_purpose(form_for_editing_animal())
       |> assert_user_sees(["Bossie", @earliest_iso_date])
     end
+
+    test "details about form structure", %{conn: conn, background: b} do
+      bossie = ViewModel.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
+      bossie_gap = bossie.service_gaps |> singleton_payload
+
+      params = 
+        get_via_action(conn, :update_form, to_string(b.bossie.id))
+        |> fetch_form
+        |> animal_params
+
+      params                 |> assert_animal_form(bossie)
+      service_gap(params, 0) |> assert_empty_service_gap_form
+      service_gap(params, 1) |> assert_service_gap_form(bossie_gap)
+    end
+  end
+
+  defp assert_empty_service_gap_form(params) do
+    refute Map.has_key?(params, :id)
+    refute Map.has_key?(params, :delete)
+    assert_fields(params,
+      in_service_datestring: "",
+      out_of_service_datestring: "",
+      reason: "")
+  end
+
+  defp service_gap(container, index) do
+    container.service_gaps[index |> to_string |> String.to_atom]
+  end
+
+  defp assert_service_gap_form(params, reference_value) do
+    assert_params(params, reference_value,
+      [:id, :in_service_datestring, :out_of_service_datestring, :reason])
+  end
+
+  defp animal_params(%{inputs: %{animal_old: retval}}), do: retval
+
+  defp assert_animal_form(params, reference_animal) do
+    assert_params(params, reference_animal,
+      [:name, :lock_version, :in_service_datestring, :out_of_service_datestring])
+  end
+
+  defp assert_params(params, source, keys) do
+    expected = for k <- keys, do: {k, to_string(Map.get(source, k))}
+    assert_fields(params, expected)
   end
 
   describe "update a single animal" do
