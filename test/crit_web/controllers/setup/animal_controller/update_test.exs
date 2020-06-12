@@ -5,24 +5,27 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
   alias Crit.Extras.{AnimalT, ServiceGapT}
-  # alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
   import Crit.Exemplars.Background
 
   setup :logged_in_as_setup_manager
 
 
-  test "the update_form", %{conn: conn} do
-    b =
-      background()
-      |> animal("Bossie")
-      |> service_gap_for("Bossie", starting: @earliest_date)
-      |> shorthand()
-    [background: b]
-
-    get_via_action(conn, :update_form, to_string(b.bossie.id))
-    |> assert_purpose(form_for_editing_animal())
-    |> assert_user_sees(["Bossie", @earliest_iso_date])
+  describe "the update form" do
+    setup do 
+      b =
+        background()
+        |> animal("Bossie")
+        |> service_gap_for("Bossie", starting: @earliest_date)
+        |> shorthand()
+      [background: b]
+    end
+    
+    test "unit test", %{conn: conn, background: b} do
+      get_via_action(conn, :update_form, to_string(b.bossie.id))
+      |> assert_purpose(form_for_editing_animal())
+      |> assert_user_sees(["Bossie", @earliest_iso_date])
+    end
   end
 
   describe "update a single animal" do
