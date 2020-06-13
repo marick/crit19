@@ -34,6 +34,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       bossie = ViewModel.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
       bossie_gap = bossie.service_gaps |> singleton_payload
 
+
       params = 
         get_via_action(conn, :update_form, to_string(b.bossie.id))
         |> fetch_form
@@ -63,7 +64,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       [:id, :in_service_datestring, :out_of_service_datestring, :reason])
   end
 
-  defp animal_params(%{inputs: %{animal_old: retval}}), do: retval
+  defp animal_params(%{inputs: %{animal: retval}}), do: retval
 
   defp assert_animal_form(params, reference_animal) do
     assert_params(params, reference_animal,

@@ -2,7 +2,6 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
   alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
-  alias Crit.Setup.Schemas
   import Ecto.Changeset
   
   @primary_key false   # I do this to emphasize `id` is just another field
