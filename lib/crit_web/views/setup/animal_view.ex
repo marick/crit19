@@ -3,6 +3,7 @@ defmodule CritWeb.Setup.AnimalView do
   alias CritWeb.Setup.AnimalController
   alias Phoenix.HTML.Form
   alias Ecto.Changeset
+  alias CritWeb.ViewModels.NestedForm
 
 
   ###
@@ -26,20 +27,12 @@ defmodule CritWeb.Setup.AnimalView do
     """ |> safe_to_string
 
   def nested_service_gap_forms(f, animal_changeset) do
-    indexed =
-      Changeset.get_field(animal_changeset, :service_gaps)
-      |> Enum.with_index
-
-    [empty_form | forms] = 
-    for {sg, index} <- indexed do
-      gap_f =
-        form_for(Changeset.change(sg), "no route")
-        |> Map.put(:id, "#{f.id}_service_gaps_#{index}")
-        |> Map.put(:name, "#{f.name}[service_gaps][#{index}]")
-
-      {:safe, iodata} = one_service_gap(gap_f, unique_snippet(animal_changeset, gap_f))
-      iodata
-    end
+    [empty_form | forms] =
+      NestedForm.inputs_for(f, :service_gaps, fn subform ->
+        {:safe, iodata} =
+          one_service_gap(subform, unique_snippet(animal_changeset, subform))
+        iodata
+      end)
 
     new_with_header = 
       [@new_service_gap_header, empty_form]
@@ -53,8 +46,6 @@ defmodule CritWeb.Setup.AnimalView do
 
     {:safe, [new_with_header, editable_with_header]}
   end    
-
-
 
   def one_service_gap(gap_f, unique_snippet) do
     parts = [
@@ -81,6 +72,4 @@ defmodule CritWeb.Setup.AnimalView do
       []
     end
   end
-
-  
 end
