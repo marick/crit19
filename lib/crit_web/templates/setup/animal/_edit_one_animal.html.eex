@@ -1,7 +1,7 @@
 <!-- Purpose: <%= Purpose.form_for_editing_animal %> -->
 <td colspan="3">
 
-<%= form_for @changeset, "/not-used",
+<%= form_for @changeset, @path,
     [class: "ui fluid form",
      id: animal_form_id(@changeset.data),
      data_action: "single-animal-edit#update"], fn f -> %>

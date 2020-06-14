@@ -74,6 +74,7 @@ defmodule CritWeb.Setup.AnimalController do
     
     Common.render_for_replacement(conn,
       "_edit_one_animal.html",
+      path: path(:update, animal.id),
       changeset: AnimalApi.form_changeset(animal),
       errors: false)
       
