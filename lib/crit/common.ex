@@ -12,7 +12,19 @@ defmodule Crit.Common do
   # come as a map from (string) index to a map of subform name/entry pairs.
   # The function flattens the result to just the values of the input map,
   # just because it's easier. Changeset (`cast_assoc`) processing works with
-  # either form. 
+  # either form.
+
+  def filter_out_unstarted_forms(param_lists, unstarted_indicators) do 
+    trimmed = fn string ->
+      string |> String.trim_leading |> String.trim_trailing
+    end
+
+    empty? = fn one ->
+      Enum.all?(unstarted_indicators, &(trimmed.(one[&1]) == ""))
+    end
+
+    Enum.reject(param_lists, empty?)
+  end
 
   def filter_out_unstarted_subforms(params, subform_field, blank_indicators) do
     trimmed = fn string ->

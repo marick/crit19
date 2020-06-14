@@ -51,6 +51,32 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                         reason: "reason")
     end
 
+    test "when given a list, empty changesets are filtered out" do
+      list = [%{"id" => "",
+                "in_service_datestring" => "",
+                "out_of_service_datestring" => "",
+                "reason" => ""},
+              # these stay but they are error cases
+              %{"id" => "1",
+                "in_service_datestring" => "",
+                "out_of_service_datestring" => @iso_date_2,
+                "reason" => "reason"},              
+              %{"id" => "2",
+                "in_service_datestring" => @iso_date_1,
+                "out_of_service_datestring" => "",
+                "reason" => "reason"},
+              %{"id" => "3",
+                "in_service_datestring" => @iso_date_1,
+                "out_of_service_datestring" => @iso_date_2,
+                "reason" => ""}
+             ]
+
+      [one, two, three] = ViewModels.ServiceGap.form_changesets(list, @institution)
+      assert_error(one, :in_service_datestring)
+      assert_error(two, :out_of_service_datestring)
+      assert_error(three, :reason)
+    end
+
     # Error checking
 
     test "required fields are must be present" do

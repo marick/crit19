@@ -3,6 +3,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
   import Ecto.Changeset
+  alias Crit.Common
   
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -17,6 +18,9 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   def fields(), do: __schema__(:fields)
   def required(), do: List.delete(__schema__(:fields), :id)
+
+  @unstarted_indicators ["in_service_datestring", "out_of_service_datestring",
+                         "reason"]
   
   # ----------------------------------------------------------------------------
 
@@ -38,6 +42,12 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     |> validate_required(required())
     |> FieldValidators.date_order
   end
+
+  def form_changesets(list, institution) do
+    list
+    |> Common.filter_out_unstarted_forms(@unstarted_indicators)
+    |> Enum.map(&form_changeset(&1, institution))
+  end    
 
   def separate_deletions(changesets) do
     %{true => deletable, false => updateable } =

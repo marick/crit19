@@ -34,10 +34,10 @@ defmodule CritWeb.ViewModels.FieldValidators do
   end
 
   # This is tested through use. See, for example, ViewModels.Setup.Animal
-  def cast_subarray(changeset, field, validator) do
+  def cast_sublist(changeset, field, validator) do
     changesets = 
       get_change(changeset, field, [])
-      |> Enum.map(validator)
+      |> validator.()
 
     validity = Enum.all?(changesets, &(&1.valid?))
 

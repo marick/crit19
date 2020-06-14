@@ -68,8 +68,8 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> cast(params, fields())
     |> validate_required(required())
     |> FieldValidators.date_order
-    |> FieldValidators.cast_subarray(:service_gaps, fn changeset -> 
-          ViewModels.ServiceGap.form_changeset(changeset, institution)
+    |> FieldValidators.cast_sublist(:service_gaps, fn sublist -> 
+          ViewModels.ServiceGap.form_changesets(sublist, institution)
        end)
   end
 
