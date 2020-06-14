@@ -32,8 +32,8 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   # ----------------------------------------------------------------------------
   
-  def form_changeset(params) do
-    %__MODULE__{}
+  def form_changeset(params, institution) do
+    %__MODULE__{institution: institution}
     |> cast(params, fields())
     |> validate_required(required())
     |> FieldValidators.date_order

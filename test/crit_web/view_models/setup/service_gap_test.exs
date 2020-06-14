@@ -41,10 +41,9 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       params = %{"id" => "1",
                 "in_service_datestring" => @iso_date_1,
                  "out_of_service_datestring" => @iso_date_2,
-                 "institution" => @institution,
                  "reason" => "reason"}
       
-      ViewModels.ServiceGap.form_changeset(params)
+      ViewModels.ServiceGap.form_changeset(params, @institution)
       |> assert_valid
       |> assert_changes(id: 1,
                         in_service_datestring: @iso_date_1,
@@ -55,7 +54,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     # Error checking
 
     test "required fields are must be present" do
-      ViewModels.ServiceGap.form_changeset(%{"id" => "1"})
+      ViewModels.ServiceGap.form_changeset(%{"id" => "1"}, @institution)
       |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
     end
 
@@ -63,9 +62,8 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       params = %{"id" => "1",
                  "in_service_datestring" => @iso_date_1,
                  "out_of_service_datestring" => @iso_date_1,
-                 "institution" => @institution,
                  "reason" => "reason"}
-      ViewModels.ServiceGap.form_changeset(params)
+      ViewModels.ServiceGap.form_changeset(params, @institution)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
 
       # Other fields are available to fill form fields
@@ -79,21 +77,19 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     no_deletion = %{"id" => "1",
                     "in_service_datestring" => @iso_date_1,
                     "out_of_service_datestring" => @iso_date_2,
-                    "institution" => @institution,
                     "reason" => "reason",
                     "delete" => "false"
                    }
     deletion = %{"id" => "2",
                  "in_service_datestring" => @iso_date_1,
                  "out_of_service_datestring" => @iso_date_2,
-                 "institution" => @institution,
                  "reason" => "different reason reason",
                  "delete" => "true"
                 }
 
     assert {[only_changeset], [only_id]} = 
       [no_deletion, deletion]
-      |> Enum.map(&ViewModels.ServiceGap.form_changeset/1)
+      |> Enum.map(&(ViewModels.ServiceGap.form_changeset &1, @institution))
       |> ViewModels.ServiceGap.separate_deletions
 
     assert get_change(only_changeset, :id) == 1
@@ -104,11 +100,10 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
   describe "from_web" do
     test "valid are converted" do
-      view_model = %{id: 1,
-                     in_service_datestring: @iso_date_1,
-                     out_of_service_datestring: @iso_date_2,
-                     institution: @institution,
-                     reason: "reason"}
+      params = %{"id" => 1,
+                 "in_service_datestring" => @iso_date_1,
+                 "out_of_service_datestring" => @iso_date_2,
+                 "reason" => "reason"}
 
       expected = %{
         id: 1,
@@ -117,7 +112,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       }
 
       actual =
-        [ViewModels.ServiceGap.form_changeset(view_model)]
+        [ViewModels.ServiceGap.form_changeset(params, @institution)]
         |> ViewModels.ServiceGap.from_web
         |> singleton_payload
 
