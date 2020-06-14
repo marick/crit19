@@ -35,7 +35,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
     valid_edits_changeset =
       edited_params
-      |> ViewModels.Animal.form_changeset
+      |> ViewModels.Animal.form_changeset(@institution)
       |> assert_valid
     
     validated_params =
@@ -143,30 +143,29 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       "lock_version" => "2",
       "name" => "Bossie",
       "species_name" => "species name",
-      "institution" => @institution,
       "in_service_datestring" => @earliest_iso_date,
       "out_of_service_datestring" => @latest_iso_date,
-      "service_gaps" => []
+      "service_gaps" => %{}
     }
     
     # In actuality, there will always (as of 2020) be service gaps but
     # let's separate that more complicated handling.
     
     test "success" do
-      ViewModels.Animal.form_changeset(@no_service_gaps)
+      ViewModels.Animal.form_changeset(@no_service_gaps, @institution)
       |> assert_valid
       |> assert_changes(id: 1,
                        lock_version: 2,
                        name: "Bossie",
                        species_name: "species name",
-                       institution: @institution,
                        in_service_datestring: @earliest_iso_date,
                        out_of_service_datestring: @latest_iso_date)
     end
 
     test "required fields are must be present" do
-      ViewModels.Animal.form_changeset(%{})
-      |> assert_errors(ViewModels.Animal.fields())
+      %{"service_gaps" => %{}}
+      |> ViewModels.Animal.form_changeset(@institution)
+      |> assert_errors(ViewModels.Animal.required())
     end
 
     test "dates must be in the right order" do
@@ -174,7 +173,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                   "in_service_datestring" => @iso_date_2,
                   "out_of_service_datestring" => @iso_date_2}
 
-      ViewModels.Animal.form_changeset(params)
+      ViewModels.Animal.form_changeset(params, @institution)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
 
       # Fields are available to fill form fields
@@ -184,21 +183,21 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     end
 
     defp with_service_gap(params, service_gap) do
-      %{ params | "service_gaps" => [service_gap]}
+      %{ params | "service_gaps" => %{"0" => service_gap}}
     end
     
     test "changesets are produced for service gaps: error case" do
       with_service_gap(@no_service_gaps, %{})
-      |> ViewModels.Animal.form_changeset
+      |> ViewModels.Animal.form_changeset(@institution)
       |> Changeset.get_change(:service_gaps)
       |> singleton_payload
       |> assert_invalid
       |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
     end
 
-    test "a service gap changeset infects the top-level animal service gap" do
+    test "a service gap changeset infects the top-level animal service gap's validity" do
       with_service_gap(@no_service_gaps, %{})
-      |> ViewModels.Animal.form_changeset
+      |> ViewModels.Animal.form_changeset(@institution)
       |> assert_invalid
     end
 
@@ -212,7 +211,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
     test "the service gap is corrrect" do
       with_service_gap(@no_service_gaps, @service_gap_params)
-      |> ViewModels.Animal.form_changeset
+      |> ViewModels.Animal.form_changeset(@institution)
       |> assert_valid
     end
   end
@@ -235,7 +234,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
       actual = 
         with_service_gap(@no_service_gaps, @service_gap_params)
-        |> ViewModels.Animal.form_changeset
+        |> ViewModels.Animal.form_changeset(@institution)
         |> ViewModels.Animal.from_web
 
       assert actual == expected

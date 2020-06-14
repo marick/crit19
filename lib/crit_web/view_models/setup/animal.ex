@@ -24,6 +24,8 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   end
 
   def fields(), do: __schema__(:fields)
+  def required(),
+    do: [:name, :lock_version, :in_service_datestring, :out_of_service_datestring]
 
   def fetch(:all_possible, institution) do
       AnimalApi.inadequate_all(institution, preload: [:species])
@@ -57,13 +59,18 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
-  def form_changeset(params) do
-    %__MODULE__{}
+  def form_changeset(params, institution) do
+    params =
+      params
+      |> Map.put("service_gaps", Map.values(params["service_gaps"]))
+    
+    %__MODULE__{institution: institution}
     |> cast(params, fields())
-    |> validate_required(fields())
+    |> validate_required(required())
     |> FieldValidators.date_order
-    |> FieldValidators.cast_subarray(:service_gaps,
-                                     &ViewModels.ServiceGap.form_changeset/1)
+    |> FieldValidators.cast_subarray(:service_gaps, fn changeset -> 
+          ViewModels.ServiceGap.form_changeset(changeset, institution)
+       end)
   end
 
   # ----------------------------------------------------------------------------
