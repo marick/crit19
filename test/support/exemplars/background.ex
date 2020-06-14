@@ -122,6 +122,7 @@ defmodule Crit.Exemplars.Background do
   def service_gap_for(data, animal_name, opts \\ []) do
     opts = Enum.into(opts, %{
           starting: @earliest_date, ending: @latest_date,
+          reason: Factory.unique(:background),
           name: Factory.unique(:service_gap)})
     animal_id = id(data, :animal, animal_name)
     span = Datespan.customary(opts.starting, opts.ending)
