@@ -44,9 +44,20 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   end
 
   # ----------------------------------------------------------------------------
-  def accept_form(_params, _institution) do
+  def accept_form(params, institution) do
+    params =
+      params
+      |> Map.put("service_gaps", Map.values(params["service_gaps"]))
+    
+    %VM.Animal{institution: institution}
+    |> cast(params, fields())
+    |> validate_required(required())
+    |> FieldValidators.date_order
+    |> FieldValidators.cast_sublist(:service_gaps, fn sublist -> 
+          VM.ServiceGap.accept_forms(sublist, institution)
+       end)
   end
-  
+
   # ----------------------------------------------------------------------------
 
   def prepare_for_storage(_id, _changeset) do
@@ -74,21 +85,6 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
-  def form_changeset(params, institution) do
-    params =
-      params
-      |> Map.put("service_gaps", Map.values(params["service_gaps"]))
-    
-    %VM.Animal{institution: institution}
-    |> cast(params, fields())
-    |> validate_required(required())
-    |> FieldValidators.date_order
-    |> FieldValidators.cast_sublist(:service_gaps, fn sublist -> 
-          VM.ServiceGap.form_changesets(sublist, institution)
-       end)
-  end
-
-  # ----------------------------------------------------------------------------
 
   def update_params(changeset) do
     {:ok, data} = apply_action(changeset, :insert)

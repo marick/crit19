@@ -38,17 +38,17 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   # ----------------------------------------------------------------------------
   
-  def form_changeset(params, institution) do
+  def accept_form(params, institution) do
     %VM.ServiceGap{institution: institution}
     |> cast(params, fields())
     |> validate_required(required())
     |> FieldValidators.date_order
   end
 
-  def form_changesets(list, institution) do
+  def accept_forms(list, institution) do
     list
     |> Common.filter_out_unstarted_forms(@unstarted_indicators)
-    |> Enum.map(&form_changeset(&1, institution))
+    |> Enum.map(&accept_form(&1, institution))
   end    
 
   def separate_deletions(changesets) do
