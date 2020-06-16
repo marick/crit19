@@ -86,6 +86,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       [background: b]
     end
 
+    @tag :skip
     test "success", %{conn: conn, background: b} do
       animal_id = to_string(b.original_name.id)
 

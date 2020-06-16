@@ -3,12 +3,10 @@ defmodule CritWeb.Setup.AnimalController do
   use CritWeb.Controller.Path, :setup_animal_path
   import CritWeb.Plugs.Authorize
 
-  alias Crit.Setup.{AnimalApi,AnimalApi2,InstitutionApi}
+  alias Crit.Setup.{AnimalApi,InstitutionApi}
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
-  alias CritWeb.ViewModels.Setup, as: ViewModels
-  alias Ecto.Changeset
-  alias Crit.Sql
+  alias CritWeb.ViewModels.Setup, as: VM
   
   plug :must_be_able_to, :manage_animals
 
@@ -35,7 +33,7 @@ defmodule CritWeb.Setup.AnimalController do
 
   def index(conn, _params) do
     institution = institution(conn)
-    animals = ViewModels.Animal.fetch(:all_possible, institution)
+    animals = VM.Animal.fetch(:all_possible, institution)
     render(conn, "index.html", animals: animals)
   end
 
@@ -73,7 +71,7 @@ defmodule CritWeb.Setup.AnimalController do
 
   def update_form(conn, %{"animal_id" => id}) do
     institution = institution(conn)
-    animal = ViewModels.Animal.fetch(:one_for_edit, id, institution)
+    animal = VM.Animal.fetch(:one_for_edit, id, institution)
     
     Common.render_for_replacement(conn,
       "_edit_one_animal.html",
@@ -85,42 +83,49 @@ defmodule CritWeb.Setup.AnimalController do
 
   def _show(conn, %{"animal_id" => id}) do
     institution = institution(conn)
-    animal = ViewModels.Animal.fetch(:one_for_summary, id, institution)
+    animal = VM.Animal.fetch(:one_for_summary, id, institution)
     Common.render_for_replacement(conn,
       "_show_one_animal.html",
       animal: animal)
   end
 
   def update(conn, %{"animal_old_id" => id, "animal" => params}) do
-    changeset = ViewModels.Animal.form_changeset(params, institution(conn))
-
-    case changeset.valid? do
-      true ->
-        downward_params =
-          ViewModels.Animal.update_params(changeset)
-        current =
-          AnimalApi2.one_by_id(id, institution(conn), preload: [:species, :service_gaps])
-
-        deletable? = fn cs ->
-          Changeset.get_change(cs, :delete) == true
-        end
-        
-        {:ok, _} = 
-          Changeset.change(current, downward_params)
-          |> IO.inspect
-          |> Sql.update(institution(conn))
-
-        Changeset.get_change(changeset, :service_gaps)
-        |> Enum.filter(deletable?)
-        |> Enum.map(&(Changeset.get_field(&1, :id)))
-        |> AnimalApi2.delete_service_gaps(institution(conn))
-        
-        Common.render_for_replacement(conn,
-          "_show_one_animal.html",
-          animal: ViewModels.Animal.fetch(:one_for_summary, id, institution(conn)))
-      false -> 
-        IO.inspect "skip"
+    inst = institution(conn)
+    with(
+      {:ok, upward_changeset} <- VM.Animal.accept_form(params, inst),
+      downward_changeset = VM.Animal.prepare_for_storage(id, upward_changeset),
+      {:ok, animal} <- VM.Animal.update(downward_changeset, inst)
+    ) do
+      Common.render_for_replacement(conn,
+        "_show_one_animal.html",
+        animal: animal)
     end
+      
+
+    # case changeset.valid? do
+    #   true ->
+    #     downward_params =
+    #       VM.Animal.update_params(changeset)
+    #     current =
+    #       AnimalApi2.one_by_id(id, institution(conn), preload: [:species, :service_gaps])
+
+    #     deletable? = fn cs ->
+    #       Changeset.get_change(cs, :delete) == true
+    #     end
+        
+    #     {:ok, _} = 
+    #       Changeset.change(current, downward_params)
+    #       |> IO.inspect
+    #       |> Sql.update(institution(conn))
+
+    #     Changeset.get_change(changeset, :service_gaps)
+    #     |> Enum.filter(deletable?)
+    #     |> Enum.map(&(Changeset.get_field(&1, :id)))
+    #     |> AnimalApi2.delete_service_gaps(institution(conn))
+        
+    #   false -> 
+    #     IO.inspect "skip"
+    # end
 
     # case AnimalApi.update(id, params, institution(conn)) do
     #   {:ok, animal} ->

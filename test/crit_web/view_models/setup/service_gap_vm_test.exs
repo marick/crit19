@@ -16,10 +16,10 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     }
   end
 
-  describe "to_web" do 
+  describe "lift" do 
     test "common fields" do
       create(Datespan.customary(@date_2, @date_3))
-      |> ViewModels.ServiceGap.to_web(@institution)
+      |> ViewModels.ServiceGap.lift(@institution)
       |> assert_fields(id: @id,
                        reason: @reason,
                        institution: @institution,
@@ -28,7 +28,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
     test "datespan" do
        create(Datespan.customary(@date_2, @date_3))
-       |> ViewModels.ServiceGap.to_web(@institution)
+       |> ViewModels.ServiceGap.lift(@institution)
        |> assert_fields(in_service_datestring: @iso_date_2,
                         out_of_service_datestring: @iso_date_3)
     end

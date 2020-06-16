@@ -1,5 +1,7 @@
 defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
+  alias CritWeb.ViewModels.Setup, as: VM
+  alias Crit.Setup.Schemas
   alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
   import Ecto.Changeset
@@ -24,11 +26,11 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   
   # ----------------------------------------------------------------------------
 
-  def to_web(sources, institution) when is_list(sources),
-    do: (for s <- sources, do: to_web(s, institution))
+  def lift(sources, institution) when is_list(sources),
+    do: (for s <- sources, do: lift(s, institution))
 
-  def to_web(source, institution) do
-    %{EnumX.pour_into(source, __MODULE__) |
+  def lift(%Schemas.ServiceGap{} = source, institution) do
+    %{EnumX.pour_into(source, VM.ServiceGap) |
       institution: institution
     }
     |> ToWeb.service_datestrings(source.span)
@@ -37,7 +39,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   # ----------------------------------------------------------------------------
   
   def form_changeset(params, institution) do
-    %__MODULE__{institution: institution}
+    %VM.ServiceGap{institution: institution}
     |> cast(params, fields())
     |> validate_required(required())
     |> FieldValidators.date_order
