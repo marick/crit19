@@ -124,7 +124,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
   # ----------------------------------------------------------------------------
 
-  describe "from_web" do
+  describe "update_params" do
     test "valid are converted" do
       params = %{"id" => 1,
                  "in_service_datestring" => @iso_date_1,
@@ -139,7 +139,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
       actual =
         [ViewModels.ServiceGap.form_changeset(params, @institution)]
-        |> ViewModels.ServiceGap.from_web
+        |> ViewModels.ServiceGap.update_params
         |> singleton_payload
 
       assert actual == expected

@@ -75,13 +75,12 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
-  def from_web(changeset) do
+  def update_params(changeset) do
     {:ok, data} = apply_action(changeset, :insert)
-    %{id: data.id,
-      name: data.name,
+    %{name: data.name,
       lock_version: data.lock_version,
       span: FromWeb.span(data),
-      service_gaps: ViewModels.ServiceGap.from_web(data.service_gaps)
+      service_gaps: ViewModels.ServiceGap.update_params(data.service_gaps)
     }
   end
 end

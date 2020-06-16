@@ -34,7 +34,6 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       bossie = ViewModel.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
       bossie_gap = bossie.service_gaps |> singleton_payload
 
-
       params = 
         get_via_action(conn, :update_form, to_string(b.bossie.id))
         |> fetch_form
@@ -77,42 +76,40 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   end
 
   describe "update a single animal" do
-    setup do
-      id = Exemplars.Available.animal_id(name: "original name")
-      _will_changed = Factory.sql_insert!(:service_gap, [animal_id: id], @institution)
-      _will_vanish = Factory.sql_insert!(:service_gap, [animal_id: id], @institution)
-      
-      [animal_id: id]
+    setup do 
+      b =
+        background()
+        |> animal("original_name")
+        |> service_gap_for("original_name", reason: "will_change")
+        |> service_gap_for("original_name", reason: "won't_change")
+        |> shorthand()
+      [background: b]
     end
 
-    @tag :skip
-    test "success", %{conn: conn, animal_id: animal_id} do
-      new_service_gap = %{"in_service_datestring" => "2300-01-02",
-                          "out_of_service_datestring" => "2300-01-03",
-                          "reason" => "newly added"
-                         }
-      
-      params =
-        animal_id
-        |> AnimalApi.updatable!(@institution)
-        |> AnimalT.unchanged_params
-        # change a field in the animal itself
-        |> Map.put("name", "new name")
-        # add a service gap
-        |> put_in(["service_gaps", "0"], new_service_gap     )
-        # change a field in one of the service gaps
-        |> put_in(["service_gaps", "1", "reason"], "fixored reason")
-        # delete the other 
-        |> put_in(["service_gaps", "2", "delete"], "true")
+    test "success", %{conn: conn, background: b} do
+      animal_id = to_string(b.original_name.id)
 
-      post_to_action(conn, [:update, to_string(animal_id)], under(:animal_old, params))
+      service_gap_changes = %{
+        0 => %{"reason" => "newly added",
+               "in_service_datestring" => "2300-01-02",
+               "out_of_service_datestring" => "2300-01-03"
+              },
+        1 => %{reason: "fixored reason"},
+        2 => %{delete: "true"}
+      }
+      
+      get_via_action(conn, :update_form, animal_id)
+      |> follow_form(%{animal:
+           %{name: "new name!",
+             service_gaps: service_gap_changes
+           }})
       |> assert_purpose(snippet_to_display_animal())
       # Note that service gaps are not displayed as a part of a snippet
       |> assert_user_sees("new name")
       
       # Check that the changes propagate
-      animal = AnimalApi.updatable!(animal_id, @institution)
-      assert_field(animal, name: "new name")
+      animal = AnimalApi.one_by_id(animal_id, @institution, preload: [:service_gaps])
+      assert_field(animal, name: "new name!")
 
       [changed, added] =
         animal.service_gaps |> Enum.sort_by(fn gap -> gap.id end)

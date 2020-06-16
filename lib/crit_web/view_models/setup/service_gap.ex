@@ -59,7 +59,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   # ----------------------------------------------------------------------------
 
-  def from_web(changesets) when is_list(changesets) do 
+  def update_params(changesets) when is_list(changesets) do 
     for c <- changesets do
       {:ok, data} = apply_action(c, :insert)
       %{id: data.id,

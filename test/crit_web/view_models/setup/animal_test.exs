@@ -52,7 +52,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     
     validated_params =
       valid_edits_changeset
-      |> ViewModels.Animal.from_web
+      |> ViewModels.Animal.update_params
       |> Map.put(:id, b.bossie.id)
 
     original_animal =
@@ -228,15 +228,14 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       |> ViewModels.Animal.form_changeset(@institution)
       |> assert_invalid
     end
-
   end
 
   # ----------------------------------------------------------------------------
   
-  describe "from_web" do
+  describe "update_params" do
     test "valid are converted" do
       expected = %{
-        id: 1,
+        # Id is not included for animal update
         lock_version: 2,
         name: "Bossie",
         span: Datespan.customary(@earliest_date, @latest_date),
@@ -250,7 +249,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       actual = 
         with_service_gap(@no_service_gaps, @service_gap_params)
         |> ViewModels.Animal.form_changeset(@institution)
-        |> ViewModels.Animal.from_web
+        |> ViewModels.Animal.update_params
 
       assert actual == expected
     end

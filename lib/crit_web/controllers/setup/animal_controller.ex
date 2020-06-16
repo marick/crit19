@@ -3,10 +3,12 @@ defmodule CritWeb.Setup.AnimalController do
   use CritWeb.Controller.Path, :setup_animal_path
   import CritWeb.Plugs.Authorize
 
-  alias Crit.Setup.{AnimalApi,InstitutionApi}
+  alias Crit.Setup.{AnimalApi,AnimalApi2,InstitutionApi}
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
   alias CritWeb.ViewModels.Setup, as: ViewModels
+  alias Ecto.Changeset
+  alias Crit.Sql
   
   plug :must_be_able_to, :manage_animals
 
@@ -88,20 +90,46 @@ defmodule CritWeb.Setup.AnimalController do
       animal: animal)
   end
 
-  def update(conn, %{"animal_old_id" => id, "animal_old" => raw_params}) do
-    params = 
-      Testable.put_institution(raw_params, institution(conn))
+  def update(conn, %{"animal_old_id" => id, "animal" => params}) do
+    changeset = ViewModels.Animal.form_changeset(params, institution(conn))
 
-    case AnimalApi.update(id, params, institution(conn)) do
-      {:ok, animal} ->
+    case changeset.valid? do
+      true ->
+        downward_params =
+          ViewModels.Animal.update_params(changeset)
+        current =
+          AnimalApi2.one_by_id(id, institution(conn), preload: [:species, :service_gaps])
+
+        deletable? = fn cs ->
+          Changeset.get_change(cs, :delete) == true
+        end
+        
+        {:ok, _} = 
+          Changeset.change(current, downward_params)
+          |> IO.inspect
+          |> Sql.update(institution(conn))
+
+        Changeset.get_change(changeset, :service_gaps)
+        |> Enum.filter(deletable?)
+        |> Enum.map(&(Changeset.get_field(&1, :id)))
+        |> AnimalApi2.delete_service_gaps(institution(conn))
+        
         Common.render_for_replacement(conn,
           "_show_one_animal.html",
-          animal: animal)
-      {:error, changeset} ->
-        conn
-        |> Common.render_for_replacement("_edit_one_animal.html",
-             changeset: changeset,
-             errors: true)
+          animal: ViewModels.Animal.fetch(:one_for_summary, id, institution(conn)))
+      false -> 
+        IO.inspect "skip"
     end
+
+    # case AnimalApi.update(id, params, institution(conn)) do
+    #   {:ok, animal} ->
+    #     Common.render_for_replacement(conn,
+    #       "_show_one_animal.html",
+    #       animal: animal)
+    #   {:error, changeset} ->
+    #     conn
+    #     |> Common.render_for_replacement("_edit_one_animal.html",
+    #          changeset: changeset,
+  #          errors: true)
   end
 end
