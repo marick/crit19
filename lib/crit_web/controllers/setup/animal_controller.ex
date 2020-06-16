@@ -72,7 +72,8 @@ defmodule CritWeb.Setup.AnimalController do
   end
 
   def update_form(conn, %{"animal_id" => id}) do
-    animal = ViewModels.Animal.fetch(:one_for_edit, id, institution(conn))
+    institution = institution(conn)
+    animal = ViewModels.Animal.fetch(:one_for_edit, id, institution)
     
     Common.render_for_replacement(conn,
       "_edit_one_animal.html",
@@ -83,8 +84,8 @@ defmodule CritWeb.Setup.AnimalController do
   end
 
   def _show(conn, %{"animal_id" => id}) do
-    animal = AnimalApi.updatable!(id, institution(conn))
-
+    institution = institution(conn)
+    animal = ViewModels.Animal.fetch(:one_for_summary, id, institution)
     Common.render_for_replacement(conn,
       "_show_one_animal.html",
       animal: animal)
