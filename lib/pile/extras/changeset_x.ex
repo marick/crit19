@@ -71,4 +71,7 @@ defmodule Ecto.ChangesetX do
   end
 
   defp path_to(field), do: [Access.key(:data), Access.key(field)]
+
+  def all_valid?(list), do: Enum.all?(list, &(&1.valid?))
+  def all_valid?(top, list), do: top.valid? && all_valid?(list)
 end

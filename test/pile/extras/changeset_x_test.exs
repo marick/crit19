@@ -30,6 +30,18 @@ defmodule Ecto.ChangesetXTest do
       end)
     end
 
+    test "all_valid?" do
+      valid = %{valid?: true}
+      invalid = %{valid?: false}
+
+      assert ChangesetX.all_valid?(valid,   [])
+      refute ChangesetX.all_valid?(invalid, [])
+
+      assert ChangesetX.all_valid?(valid,   [valid,   valid])
+      refute ChangesetX.all_valid?(invalid, [valid,   valid])
+      refute ChangesetX.all_valid?(valid,   [invalid, valid])
+      refute ChangesetX.all_valid?(valid,   [valid,   invalid])
+    end
   end
 end
   
