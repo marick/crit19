@@ -51,31 +51,6 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                         reason: "reason")
     end
 
-    test "when given a list, empty changesets are filtered out" do
-      list = [%{"id" => "",
-                "in_service_datestring" => "",
-                "out_of_service_datestring" => "",
-                "reason" => ""},
-              # these stay but they are error cases
-              %{"id" => "1",
-                "in_service_datestring" => "",
-                "out_of_service_datestring" => @iso_date_2,
-                "reason" => "reason"},              
-              %{"id" => "2",
-                "in_service_datestring" => @iso_date_1,
-                "out_of_service_datestring" => "",
-                "reason" => "reason"},
-              %{"id" => "3",
-                "in_service_datestring" => @iso_date_1,
-                "out_of_service_datestring" => @iso_date_2,
-                "reason" => ""}
-             ]
-
-      [one, two, three] = ViewModels.ServiceGap.accept_forms(list, @institution)
-      assert_error(one, :in_service_datestring)
-      assert_error(two, :out_of_service_datestring)
-      assert_error(three, :reason)
-    end
 
     # Error checking
 
@@ -99,27 +74,29 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     end
   end
 
-  describe "separating requests for deletion from requests for update" do
-    no_deletion = %{"id" => "1",
-                    "in_service_datestring" => @iso_date_1,
-                    "out_of_service_datestring" => @iso_date_2,
-                    "reason" => "reason",
-                    "delete" => "false"
-                   }
-    deletion = %{"id" => "2",
-                 "in_service_datestring" => @iso_date_1,
-                 "out_of_service_datestring" => @iso_date_2,
-                 "reason" => "different reason reason",
-                 "delete" => "true"
-                }
+  test "empty changesets can be detected" do
+    list = [%{"id" => "",
+              "in_service_datestring" => "",
+              "out_of_service_datestring" => "",
+              "reason" => ""},
+            # these stay but they are error cases
+            %{"id" => "1",
+              "in_service_datestring" => "",
+              "out_of_service_datestring" => @iso_date_2,
+              "reason" => "reason"},              
+            %{"id" => "2",
+              "in_service_datestring" => @iso_date_1,
+              "out_of_service_datestring" => "",
+              "reason" => "reason"},
+            %{"id" => "3",
+              "in_service_datestring" => @iso_date_1,
+              "out_of_service_datestring" => @iso_date_2,
+              "reason" => ""}
+           ]
 
-    assert {[only_changeset], [only_id]} = 
-      [no_deletion, deletion]
-      |> Enum.map(&(ViewModels.ServiceGap.accept_form &1, @institution))
-      |> ViewModels.ServiceGap.separate_deletions
-
-    assert get_change(only_changeset, :id) == 1
-    assert only_id == 2
+    actual = Enum.map(list, &ViewModels.ServiceGap.from_empty_form?/1)
+    
+    assert [true, false, false, false] == actual
   end
 
   # ----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 defmodule CritWeb.ViewModels.Setup.Animal do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Ecto.ChangesetX
   alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.Setup, as: VM
 #  alias Crit.Setup.Schemas
@@ -44,19 +45,37 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   end
 
   # ----------------------------------------------------------------------------
+
+  # This could use cast_assoc, but it's just as easy to process the
+  # changesets separately, especially because the `institution` argument
+  # has to be dragged around.
   def accept_form(params, institution) do
     params =
       params
       |> Map.put("service_gaps", Map.values(params["service_gaps"]))
+
+    animal_changeset = 
+      %VM.Animal{institution: institution}
+      |> cast(params, fields())
+      |> validate_required(required())
+      |> FieldValidators.date_order
     
-    %VM.Animal{institution: institution}
-    |> cast(params, fields())
-    |> validate_required(required())
-    |> FieldValidators.date_order
-    |> FieldValidators.cast_sublist(:service_gaps, fn sublist -> 
-          VM.ServiceGap.accept_forms(sublist, institution)
-       end)
+    sg_changesets =
+      fetch_change!(animal_changeset, :service_gaps)
+      |> Enum.reject(&VM.ServiceGap.from_empty_form?/1)
+      |> Enum.map(&(VM.ServiceGap.accept_form &1, institution))
+
+    result = 
+      animal_changeset
+      |> put_change(:service_gaps, sg_changesets)
+      |> Map.put(:valid?, ChangesetX.all_valid?(animal_changeset, sg_changesets))
+
+    case result.valid? do
+      true -> {:ok, result}
+      false -> {:error, :form, result}
+    end
   end
+  
 
   # ----------------------------------------------------------------------------
 

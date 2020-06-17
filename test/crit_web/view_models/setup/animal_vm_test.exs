@@ -166,7 +166,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     # let's separate that more complicated handling.
     
     test "success" do
-      VM.Animal.accept_form(@no_service_gaps, @institution)
+      VM.Animal.accept_form(@no_service_gaps, @institution) |> ok_payload
       |> assert_valid
       |> assert_changes(id: 1,
                        lock_version: 2,
@@ -178,7 +178,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
     test "required fields are must be present" do
       %{"service_gaps" => %{}}
-      |> VM.Animal.accept_form(@institution)
+      |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
+      |> assert_invalid
       |> assert_errors(VM.Animal.required())
     end
 
@@ -187,7 +188,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                   "in_service_datestring" => @iso_date_2,
                   "out_of_service_datestring" => @iso_date_2}
 
-      VM.Animal.accept_form(params, @institution)
+      VM.Animal.accept_form(params, @institution) |> error2_payload(:form)
+      |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
 
       # Fields are available to fill form fields
@@ -196,43 +198,57 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                         name: "Bossie")
     end
 
-    @service_gap_params %{
+    
+    @delete_params %{
       "id" => 3,
       "reason" => "reason",
       "in_service_datestring" => @iso_date_2,
-      "out_of_service_datestring" => @iso_date_3
+      "out_of_service_datestring" => @iso_date_3,
+      "delete" => "true"
     }
 
-    @bad_service_gap_params Map.put(@service_gap_params, "reason", "")
+    @bad_params Map.put(@delete_params, "reason", "")
+    @update_params Map.delete(@delete_params, "delete")
 
-    defp with_service_gap(params, service_gap) do
-      %{ params | "service_gaps" => %{"0" => service_gap}}
+    defp with_service_gaps(top_params, gaps) do
+      param_map = 
+        gaps
+        |> Enum.with_index
+        |> Enum.map(fn {gap_params, index} -> {to_string(index), gap_params} end)
+        |> Map.new
+      %{ top_params | "service_gaps" => param_map}
     end
+
+    defp with_service_gap(top_params, service_gap),
+      do: with_service_gaps(top_params, [service_gap])
     
     test "the service gap is correct" do
-      with_service_gap(@no_service_gaps, @service_gap_params)
-      |> VM.Animal.accept_form(@institution)
-      |> assert_valid
+      with_service_gap(@no_service_gaps, @update_params)
+      |> VM.Animal.accept_form(@institution) |> ok_payload
+      |> assert_valid      
     end
 
     test "changesets are produced for service gaps: error case" do
-      with_service_gap(@no_service_gaps, @bad_service_gap_params)
-      |> VM.Animal.accept_form(@institution)
-      |> Changeset.get_change(:service_gaps)
-      |> singleton_payload
+      with_service_gap(@no_service_gaps, @bad_params)
+      |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
+      |> Changeset.get_change(:service_gaps) |> singleton_payload
       |> assert_invalid
       |> assert_error(:reason)
     end
 
     test "a service gap changeset infects the animal changeset's validity" do
-      with_service_gap(@no_service_gaps, @bad_service_gap_params)
-      |> VM.Animal.accept_form(@institution)
+      # An invalid and valid changeset checks whether ANY of them need to be
+      # invalid or ALL of them.
+      @no_service_gaps
+      |> with_service_gaps([@bad_params, @update_params])
+      |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> assert_invalid
     end
   end
 
   # ----------------------------------------------------------------------------
-  
+
+  @tag :skip
   describe "update_params" do
     test "valid are lifted" do
       expected = %{
@@ -248,9 +264,10 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       }
 
       actual = 
-        with_service_gap(@no_service_gaps, @service_gap_params)
+        with_service_gap(@no_service_gaps, @update_params)
         |> VM.Animal.accept_form(@institution)
         |> VM.Animal.update_params
+        |> ok_payload
 
       assert actual == expected
     end

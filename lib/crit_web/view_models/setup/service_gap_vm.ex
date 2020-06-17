@@ -23,8 +23,8 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   @unstarted_indicators ["in_service_datestring", "out_of_service_datestring",
                          "reason"]
-  
-  # ----------------------------------------------------------------------------
+
+ # ----------------------------------------------------------------------------
 
   def lift(sources, institution) when is_list(sources),
     do: (for s <- sources, do: lift(s, institution))
@@ -37,28 +37,34 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   end
 
   # ----------------------------------------------------------------------------
-  
-  def accept_form(params, institution) do
-    %VM.ServiceGap{institution: institution}
+  def changeset(%VM.ServiceGap{} = struct, params) do
+    struct
     |> cast(params, fields())
     |> validate_required(required())
     |> FieldValidators.date_order
   end
-
-  def accept_forms(list, institution) do
-    list
-    |> Common.filter_out_unstarted_forms(@unstarted_indicators)
-    |> Enum.map(&accept_form(&1, institution))
-  end    
-
-  def separate_deletions(changesets) do
-    %{true => deletable, false => updateable } =
-      changesets
-      |> Enum.group_by(&get_field(&1, :delete))
-
-    {updateable, Enum.map(deletable, &(get_field(&1, :id)))}
+  
+  def accept_form(params, institution) do
+    %VM.ServiceGap{institution: institution}
+    |> changeset(params)
   end
+ 
 
+
+  # ----------------------------------------------------------------------------
+
+  def from_empty_form?(%{} = params) do
+    trimmed = fn string ->
+      string |> String.trim_leading |> String.trim_trailing
+    end
+
+    empty? = fn one ->
+      Enum.all?(@unstarted_indicators, &(trimmed.(one[&1]) == ""))
+    end
+
+    empty?.(params)
+  end
+  
   # ----------------------------------------------------------------------------
 
   def update_params(changesets) when is_list(changesets) do 
