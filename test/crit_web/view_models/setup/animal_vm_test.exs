@@ -198,6 +198,11 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                         name: "Bossie")
     end
 
+    @empty_params %{
+      "reason" => "",
+      "in_service_datestring" => "",
+      "out_of_service_datestring" => "",
+    }
     
     @delete_params %{
       "id" => 3,
@@ -209,6 +214,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
     @bad_params Map.put(@delete_params, "reason", "")
     @update_params Map.delete(@delete_params, "delete")
+    @insert_params Map.delete(@delete_params, "delete") |> Map.delete("id")
+    
 
     defp with_service_gaps(top_params, gaps) do
       param_map = 
@@ -244,8 +251,36 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> assert_invalid
     end
+
+    test "empty service gaps are removed" do
+      # An invalid and valid changeset checks whether ANY of them need to be
+      # invalid or ALL of them.
+
+      [only] = 
+        @no_service_gaps
+        |> with_service_gaps([@empty_params, @update_params])
+        |> VM.Animal.accept_form(@institution) |> ok_payload
+        |> Changeset.fetch_change!(:service_gaps)
+
+      assert_change(only, reason: @update_params["reason"])
+    end
   end
 
+  # ----------------------------------------------------------------------------
+
+  describe "prepare for storage" do
+    setup do
+      view_model = 
+        @no_service_gaps
+        |> with_service_gaps([@insert_params, @update_params, @delete_params])
+        |> VM.Animal.accept_form(@institution) |> ok_payload
+
+      [view_model: view_model]
+    end
+    
+    test "changesets are constructed", %{view_model: view_model} do
+    end      
+  end
   # ----------------------------------------------------------------------------
 
   @tag :skip
