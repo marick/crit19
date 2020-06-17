@@ -35,13 +35,18 @@ defmodule Crit.Assertions.Misc do
   def assert_error({:error, _} = value), do: value
   def assert_error(value), do:  assert value == :error # failure with nice error
 
-  def ok_payload(x) do
-    assert {:ok, payload} = x
+  def ok_payload(tuple) do
+    assert {:ok, payload} = tuple
     payload
   end
 
-  def error_payload(x) do
-    assert {:error, payload} = x
+  def error_payload(tuple) do
+    assert {:error, payload} = tuple
+    payload
+  end
+
+  def error2_payload(tuple, second) do
+    assert {:error, ^second, payload} = tuple
     payload
   end
 

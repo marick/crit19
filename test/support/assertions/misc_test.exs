@@ -41,6 +41,24 @@ defmodule Crit.Assertions.MiscTest do
     end)
   end
 
+  test "error2_payload" do
+    assert "payload" == error2_payload({:error, :right, "payload"}, :right)
+    
+    assert_raise(ExUnit.AssertionError, fn ->
+      error2_payload({:error, "payload"}, :ignored)
+    end)
+    assert_raise(ExUnit.AssertionError, fn ->
+      error2_payload({:error, :wrong, "payload"}, :right)
+    end)
+
+    assert_raise(ExUnit.AssertionError, fn ->
+      error2_payload(:error, :ignored)
+    end)
+    assert_raise(ExUnit.AssertionError, fn ->
+      error2_payload({:ok, "payload"}, :ignored)
+    end)
+  end
+
   test "ok_id" do
     assert 3 == ok_id({:ok, %{id: 3}})
     assert_raise(ExUnit.AssertionError, fn ->
