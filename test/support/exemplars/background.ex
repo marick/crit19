@@ -9,7 +9,7 @@ defmodule Crit.Exemplars.Background do
   alias Crit.Setup.{AnimalApi, ProcedureApi}
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
-                     :reservation])
+                     :reservation, :service_gap])
 
   #-----------------------------------------------------------------------------
   def background(species_id \\ @bovine_id) do
@@ -38,9 +38,9 @@ defmodule Crit.Exemplars.Background do
        background.one_procedure 
   """
        
-  def shorthand(data) do 
+  def shorthand(data) do
     Enum.reduce(@valid, data, fn schema, acc ->
-      shorthand(acc, data[schema])
+      shorthand_(acc, data[schema])
     end)
   end
 
@@ -127,16 +127,13 @@ defmodule Crit.Exemplars.Background do
     animal_id = id(data, :animal, animal_name)
     span = Datespan.customary(opts.starting, opts.ending)
 
-    addition =
+    ensure(data, :service_gap, opts.name, fn ->
       Factory.sql_insert!(:service_gap, [animal_id: animal_id, span: span],
         @institution)
-    put(data, :service_gap, opts.name, addition)
+    end)
   end
 
   #-----------------------------------------------------
-
-  @valid MapSet.new([:procedure_frequency, :procedure, :animal,
-                     :reservation])
 
   def valid_schema?(key), do: MapSet.member?(@valid, key)
 
@@ -197,11 +194,10 @@ defmodule Crit.Exemplars.Background do
   end
 
   # ----------------------------------------------------------------------------
-  defp shorthand(data, nil), do: data
-  defp shorthand(data, schema_map) do 
+  defp shorthand_(data, nil), do: data
+  defp shorthand_(data, schema_map) do
     Enum.reduce(schema_map, data, fn {name, value}, acc ->
       name_atom = name |> String.downcase |> String.to_atom
-      refute Map.has_key?(acc, name_atom)
       Map.put(acc, name_atom, value)
     end)
   end
