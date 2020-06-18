@@ -100,7 +100,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
   end
 
   # ----------------------------------------------------------------------------
-
+  
   describe "update_params" do
     test "valid are converted" do
       params = %{"id" => 1,

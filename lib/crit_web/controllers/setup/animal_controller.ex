@@ -93,7 +93,7 @@ defmodule CritWeb.Setup.AnimalController do
     inst = institution(conn)
     with(
       {:ok, upward_changeset} <- VM.Animal.accept_form(params, inst),
-      downward_changeset = VM.Animal.prepare_for_storage(id, upward_changeset),
+      downward_changeset = VM.Animal.prepare_for_update(id, upward_changeset, inst),
       {:ok, animal} <- VM.Animal.update(downward_changeset, inst)
     ) do
       Common.render_for_replacement(conn,

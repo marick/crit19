@@ -4,7 +4,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias Ecto.ChangesetX
   alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.Setup, as: VM
-#  alias Crit.Setup.Schemas
+  alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi2, as: AnimalApi
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
@@ -79,7 +79,16 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
-  def prepare_for_storage(_id, _changeset) do
+  def update_params(changeset) do
+    data = apply_changes(changeset)
+    %{name: data.name,
+      lock_version: data.lock_version,
+      span: FromWeb.span(data),
+      service_gaps: VM.ServiceGap.update_params(data.service_gaps)
+    }
+  end
+  
+  def prepare_for_update(_id, _vm_changeset, _institution) do
   end
 
   # ----------------------------------------------------------------------------
@@ -105,12 +114,4 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   # ----------------------------------------------------------------------------
 
 
-  def update_params(changeset) do
-    {:ok, data} = apply_action(changeset, :insert)
-    %{name: data.name,
-      lock_version: data.lock_version,
-      span: FromWeb.span(data),
-      service_gaps: VM.ServiceGap.update_params(data.service_gaps)
-    }
-  end
 end

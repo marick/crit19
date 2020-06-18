@@ -2,13 +2,15 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi
+  alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi2
   import Crit.Exemplars.Background
   alias Ecto.Datespan
   alias Ecto.Changeset
   import Crit.Exemplars.Background
   alias Crit.Sql
-
+  alias CritWeb.ViewModels.FieldFillers.FromWeb
+  
   setup do
     span = Datespan.customary(@earliest_date, @latest_date)
     b = 
@@ -269,23 +271,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   # ----------------------------------------------------------------------------
 
   describe "prepare for storage" do
-    setup do
-      view_model = 
-        @no_service_gaps
-        |> with_service_gaps([@insert_params, @update_params, @delete_params])
-        |> VM.Animal.accept_form(@institution) |> ok_payload
 
-      [view_model: view_model]
-    end
-    
-    test "changesets are constructed", %{view_model: view_model} do
-    end      
-  end
-  # ----------------------------------------------------------------------------
-
-  @tag :skip
-  describe "update_params" do
-    test "valid are lifted" do
+    test "params have to be constructed" do
       expected = %{
         # Id is not included for animal update
         lock_version: 2,
@@ -301,10 +288,32 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       actual = 
         with_service_gap(@no_service_gaps, @update_params)
         |> VM.Animal.accept_form(@institution)
-        |> VM.Animal.update_params
         |> ok_payload
+        |> VM.Animal.update_params
 
       assert actual == expected
     end
+
+    
+    # setup do
+    #   view_model_changeset = 
+    #     @no_service_gaps
+    #     |> with_service_gaps([@insert_params, @update_params, @delete_params])
+    #     |> VM.Animal.accept_form(@institution) |> ok_payload
+
+    #   [view_model_changeset: view_model_changeset]
+    # end
+
+    test "changesets are constructed" do
+          
+    end
+
+    test "changesets are marked with their appropriate action." do
+    end
+  end
+  # ----------------------------------------------------------------------------
+
+  @tag :skip
+  describe "update_params" do
   end
 end
