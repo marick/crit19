@@ -1,6 +1,6 @@
 defmodule Crit.Setup.AnimalImpl.ReadTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.{AnimalOld, ServiceGap,Species}
+  alias Crit.Setup.Schemas.{AnimalOld, ServiceGapOld,Species}
   alias Crit.Setup.AnimalImpl.Read
   alias Ecto.Datespan
   
@@ -9,7 +9,7 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
       [as_fetched: %AnimalOld{
           species: %Species{name: @bovine},
           span: Datespan.customary(@date_1, @date_2),
-          service_gaps: [%ServiceGap{
+          service_gaps: [%ServiceGapOld{
                             span: Datespan.customary(next_day(@date_1), @date_3),
                             reason: "reason"}
                         ]

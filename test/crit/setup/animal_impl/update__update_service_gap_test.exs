@@ -1,6 +1,6 @@
 defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.ServiceGapOld
   alias Crit.Setup.AnimalApi
   alias Crit.Extras.AnimalT
   alias Ecto.Datespan
@@ -65,7 +65,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
 
       [empty, changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
       assert_no_changes(empty)
-      assert empty.data == %ServiceGap{}
+      assert empty.data == %ServiceGapOld{}
       assert_change(changed_sg, out_of_service_datestring: @iso_date_1)
       assert_no_changes(unchanged_sg)
     end
@@ -87,7 +87,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
 
       [empty, changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
       assert_no_changes(empty)
-      assert empty.data == %ServiceGap{}
+      assert empty.data == %ServiceGapOld{}
       assert_change(changed_sg, out_of_service_datestring: @iso_date_2)
       assert_no_changes(unchanged_sg)
     end
@@ -103,7 +103,7 @@ defmodule Crit.Setup.AnimalImpl.UpdateUpdateServiceGapTest do
 
       [empty, changed_sg, unchanged_sg] = error_changeset.changes.service_gaps
       assert_no_changes(empty)
-      assert empty.data == %ServiceGap{}
+      assert empty.data == %ServiceGapOld{}
       assert_change(changed_sg, out_of_service_datestring: @iso_date_1)
       assert_no_changes(unchanged_sg)
     end

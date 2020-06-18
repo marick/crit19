@@ -7,7 +7,7 @@ defmodule Crit.Extras.AnimalT do
   alias Crit.Setup.AnimalApi
   alias Crit.Exemplars
   alias Crit.Setup.Schemas.AnimalOld
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.ServiceGapOld
   alias Ecto.Datespan
 
 
@@ -25,7 +25,7 @@ defmodule Crit.Extras.AnimalT do
        }
 
     service_gaps =
-      [%ServiceGap{} | animal.service_gaps]
+      [%ServiceGapOld{} | animal.service_gaps]
       |> Enum.with_index
       |> Enum.reduce(%{}, fn {sg, i}, acc ->
           Map.put(acc, to_string(i),

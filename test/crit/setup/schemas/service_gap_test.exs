@@ -1,6 +1,6 @@
 defmodule Crit.Setup.Schemas.ServiceGapTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.ServiceGapOld
   alias Crit.Sql
 
   alias Ecto.Datespan
@@ -9,7 +9,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
   import Crit.Assertions.Changeset
 
   describe "changeset for insertion" do
-    defp handle(attrs), do: ServiceGap.changeset(%ServiceGap{}, attrs)
+    defp handle(attrs), do: ServiceGapOld.changeset(%ServiceGapOld{}, attrs)
     
     test "all three values are valid" do
       given = %{in_service_datestring: @iso_date_1,
@@ -58,7 +58,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
     setup do
       attrs = ServiceGapT.attrs(@iso_date_1, @iso_date_2, "reason")
       insertion_result = ServiceGapT.insert(attrs)
-      retrieved_gap = Sql.get(ServiceGap, insertion_result.id, @institution)
+      retrieved_gap = Sql.get(ServiceGapOld, insertion_result.id, @institution)
       [attrs: attrs, insertion_result: insertion_result, retrieved_gap: retrieved_gap]
     end
       
@@ -89,7 +89,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
 
     test "... so there's a function for that",
       %{retrieved_gap: retrieved, attrs: attrs} do
-      updatable = ServiceGap.put_updatable_fields(retrieved, @institution)
+      updatable = ServiceGapOld.put_updatable_fields(retrieved, @institution)
 
       assert updatable.in_service_datestring == @iso_date_1
       assert updatable.out_of_service_datestring == @iso_date_2
@@ -114,7 +114,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
     end
 
     test "Updating to all the same values", %{updatable: updatable, attrs: attrs} do
-      ServiceGap.changeset(updatable, attrs)
+      ServiceGapOld.changeset(updatable, attrs)
       |> assert_valid
       |> assert_unchanged([:span, :in_service_datestring, :out_of_service_datestring])
     end
@@ -122,7 +122,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
     test "the in-service date is new", %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | in_service_datestring: iso_next_day(@date_1)}
 
-      ServiceGap.changeset(updatable, new_attrs)
+      ServiceGapOld.changeset(updatable, new_attrs)
       |> assert_valid
       |> assert_changes(in_service_datestring: iso_next_day(@date_1),
                         span: Datespan.customary(next_day(@date_1), @date_2))
@@ -135,7 +135,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
       new_attrs = %{attrs | out_of_service_datestring: @iso_date_3}
 
       
-      ServiceGap.changeset(updatable, new_attrs)
+      ServiceGapOld.changeset(updatable, new_attrs)
       |> assert_valid
       |> assert_changes(out_of_service_datestring: @iso_date_3,
                         span: Datespan.customary(@date_1, @date_3))
@@ -147,7 +147,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
       %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | in_service_datestring: @iso_date_2}
       
-      ServiceGap.changeset(updatable, new_attrs)
+      ServiceGapOld.changeset(updatable, new_attrs)
       # Note that the error is always associated to the out-of-service error
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_change(in_service_datestring: @iso_date_2)
@@ -159,7 +159,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
       %{updatable: updatable, attrs: attrs} do
       new_attrs = %{attrs | out_of_service_datestring: @iso_date_1}
       
-      ServiceGap.changeset(updatable, new_attrs)
+      ServiceGapOld.changeset(updatable, new_attrs)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_change(out_of_service_datestring: @iso_date_1)
       
@@ -171,7 +171,7 @@ defmodule Crit.Setup.Schemas.ServiceGapTest do
 
       new_attrs = %{attrs | delete: true}
       
-      ServiceGap.changeset(updatable, new_attrs)
+      ServiceGapOld.changeset(updatable, new_attrs)
       |> assert_field(action: :delete)
     end
   end

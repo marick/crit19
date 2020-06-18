@@ -4,7 +4,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   alias Crit.Sql
   alias Crit.Sql.CommonQuery
   alias Crit.Setup.AnimalApi
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.ServiceGapOld
   alias Crit.Reservations.Schemas.{Reservation,Use}
 
   defmodule Query do
@@ -13,7 +13,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
 
     def rejected_at(:service_gap, desired) do
       AnimalApi.query_by_in_service_date(desired.date, desired.species_id)
-      |> ServiceGap.narrow_animal_query_by(desired.date)
+      |> ServiceGapOld.narrow_animal_query_by(desired.date)
       |> CommonQuery.ordered_by_name
     end
     
@@ -74,7 +74,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
       CommonQuery.subtract(query_so_far, make_restriction_query.(query_so_far))
     end
     
-    date_blocker = &(ServiceGap.narrow_animal_query_by(&1, date))
+    date_blocker = &(ServiceGapOld.narrow_animal_query_by(&1, date))
     timespan_blocker = &(Use.narrow_animal_query_by(&1, span))
 
     [date_blocker, timespan_blocker]

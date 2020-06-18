@@ -2,7 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   use Crit.TestConstants
   alias Crit.Users.Schemas.{User, PermissionList}
-  alias Crit.Setup.Schemas.{AnimalOld,ServiceGap,Procedure,ProcedureFrequency}
+  alias Crit.Setup.Schemas.{AnimalOld,ServiceGapOld,Procedure,ProcedureFrequency}
   alias Crit.Setup
   alias Crit.Sql
   alias Crit.Exemplars
@@ -81,7 +81,7 @@ defmodule Crit.Factory do
       Exemplars.Date.today_or_earlier,
       Exemplars.Date.later_than_today)
 
-    %ServiceGap{
+    %ServiceGapOld{
       reason: unique(:reason),
       span: span
     }

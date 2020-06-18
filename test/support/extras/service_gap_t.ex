@@ -4,15 +4,15 @@ defmodule Crit.Extras.ServiceGapT do
   """
 
   use Crit.TestConstants
-  alias Crit.Setup.Schemas.{AnimalOld,ServiceGap}
+  alias Crit.Setup.Schemas.{AnimalOld,ServiceGapOld}
   alias Crit.Sql
   alias Crit.Exemplars.Available
   alias Crit.Factory
   alias Ecto.Datespan
 
   def insert(attrs) do
-    %ServiceGap{}
-    |> ServiceGap.changeset(attrs)
+    %ServiceGapOld{}
+    |> ServiceGapOld.changeset(attrs)
     |> Sql.insert!(@institution)
   end
 
@@ -51,9 +51,9 @@ defmodule Crit.Extras.ServiceGapT do
   end
 
   def get_updatable(id) do
-    ServiceGap
+    ServiceGapOld
     |> Sql.get(id, @institution)
-    |> ServiceGap.put_updatable_fields(@institution)
+    |> ServiceGapOld.put_updatable_fields(@institution)
   end
 
   def dated(animal_id, in_service, out_of_service) do

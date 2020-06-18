@@ -110,7 +110,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       service_gap_for(b, "Bossie", starting: @date_2, ending: @date_3)
       
       fetched = 
-        AnimalApi.one_by_id(b.bossie.id, @institution,
+        AnimalApi2.one_by_id(b.bossie.id, @institution,
           preload: [:species, :service_gaps])
         |> VM.Animal.lift(@institution)
 

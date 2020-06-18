@@ -3,7 +3,7 @@ defmodule Crit.Setup.AnimalImpl.Read do
   import Ecto.Query
   alias Crit.Sql.CommonQuery
   alias Crit.Sql
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Setup.Schemas.ServiceGapOld
   alias Crit.FieldConverters.FromSpan
   import Ecto.Query
   alias Crit.Setup.Schemas.AnimalOld
@@ -56,7 +56,7 @@ defmodule Crit.Setup.AnimalImpl.Read do
   defp specific_expansions(animal, institution) do
     updatable_service_gaps = 
       Enum.map(animal.service_gaps,
-        &(ServiceGap.put_updatable_fields &1, institution))
+        &(ServiceGapOld.put_updatable_fields &1, institution))
     %{ animal |
        species_name: animal.species.name, 
        service_gaps: updatable_service_gaps,

@@ -1,7 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.Write do
   alias Ecto.ChangesetX
   alias Ecto.Changeset
-  alias Crit.Setup.Schemas.{AnimalOld, ServiceGap}
+  alias Crit.Setup.Schemas.{AnimalOld, ServiceGapOld}
   alias Crit.Setup.AnimalApi
   alias Crit.Sql
 
@@ -44,7 +44,7 @@ defmodule Crit.Setup.AnimalImpl.Write do
 
       {:ok, only_has_service_gap_updates} ->
         Changeset.put_change(changeset, :service_gaps,
-          [Changeset.change(%ServiceGap{}) | only_has_service_gap_updates])
+          [Changeset.change(%ServiceGapOld{}) | only_has_service_gap_updates])
 
       :error -> 
         %{changeset | data: AnimalOld.prepend_empty_service_gap(changeset.data)}

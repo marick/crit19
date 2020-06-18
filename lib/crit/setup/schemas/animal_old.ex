@@ -2,7 +2,7 @@ defmodule Crit.Setup.Schemas.AnimalOld do
 
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.Schemas.{ServiceGap,Species}
+  alias Crit.Setup.Schemas.{ServiceGapOld,Species}
   alias Ecto.Datespan
   import Ecto.Changeset
   alias Crit.FieldConverters.ToSpan
@@ -20,7 +20,7 @@ defmodule Crit.Setup.Schemas.AnimalOld do
 
     # Associations
     belongs_to :species, Species
-    has_many :service_gaps, ServiceGap, foreign_key: :animal_id
+    has_many :service_gaps, ServiceGapOld, foreign_key: :animal_id
 
     # Virtual fields used for displays or forms presented to a human
     field :institution, :string, virtual: true
@@ -51,7 +51,7 @@ defmodule Crit.Setup.Schemas.AnimalOld do
   end
 
   def prepend_empty_service_gap(animal) do
-    Map.put(animal, :service_gaps, [%ServiceGap{} | animal.service_gaps])
+    Map.put(animal, :service_gaps, [%ServiceGapOld{} | animal.service_gaps])
   end
     
 
@@ -60,7 +60,7 @@ defmodule Crit.Setup.Schemas.AnimalOld do
       Common.filter_out_unstarted_subforms(
         given_attrs,
         "service_gaps",
-        ServiceGap.unstarted_form_sentinels)
+        ServiceGapOld.unstarted_form_sentinels)
     required = [:name, :lock_version]
     struct
     |> cast(attrs, required)
