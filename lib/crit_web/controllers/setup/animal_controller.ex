@@ -92,9 +92,9 @@ defmodule CritWeb.Setup.AnimalController do
   def update(conn, %{"animal_old_id" => id, "animal" => params}) do
     inst = institution(conn)
     with(
-      {:ok, upward_changeset} <- VM.Animal.accept_form(params, inst),
-      downward_changeset = VM.Animal.prepare_for_update(id, upward_changeset, inst),
-      {:ok, animal} <- VM.Animal.update(downward_changeset, inst)
+      {:ok, vm_changeset} <- VM.Animal.accept_form(params, inst),
+      repo_changeset = VM.Animal.prepare_for_update(id, vm_changeset, inst),
+      {:ok, animal} <- VM.Animal.update(repo_changeset, inst)
     ) do
       Common.render_for_replacement(conn,
         "_show_one_animal.html",
