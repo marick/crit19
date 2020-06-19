@@ -8,8 +8,6 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
   alias Ecto.Datespan
   alias Ecto.Changeset
   import Crit.Exemplars.Background
-  alias Crit.Sql
-  alias CritWeb.ViewModels.FieldFillers.FromWeb
   
   setup do
     span = Datespan.customary(@earliest_date, @latest_date)
@@ -20,12 +18,35 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     [background: b]
   end
 
-  @tag :skip
+  # This mimics the actual HTTP params, where a false "reason" will be missing.
+  @empty_sg_params %{
+    "reason" => "",
+    "in_service_datestring" => "",
+    "out_of_service_datestring" => "",
+  }
+
+  @base_sg_params %{
+    "reason" => "reason",
+    "in_service_datestring" => @iso_date_2,
+    "out_of_service_datestring" => @iso_date_3,
+  }
+  
+  @delete_sg_params @base_sg_params |> Map.put("id", 3) |> Map.put("delete", "true")
+  @bad_sg_params %{@base_sg_params | "reason" => "" }
+  @update_sg_params @base_sg_params |> Map.put("id", 4)
+  @insert_sg_params @base_sg_params
+    
+  # ----------------------------------------------------------------------------
+
   test "`update` workflow", %{background: b}  do
-    service_gap_for(b, "Bossie", starting: @earliest_date, ending: @latest_date)
+    b
+    |> service_gap_for("Bossie",
+                       name: "update", starting: @earliest_date, ending: @latest_date)
+    |> service_gap_for("Bossie",
+                       name: "delete")
 
     animal_view = VM.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
-    [existing_gap] = animal_view.service_gaps
+    [update_gap, delete_gap] = animal_view.service_gaps
     
     params_as_displayed =
       %{"name" => animal_view.name,
@@ -34,55 +55,60 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                      "reason" => "",
                      "in_service_datestring" => "",
                      "out_of_service_datestring" => ""},
-            "1" => %{"id" => to_string(existing_gap.id),
-                     "reason" => existing_gap.reason,
-                     "in_service_datestring" => existing_gap.in_service_datestring,
-                     "out_of_service_datestring" => existing_gap.out_of_service_datestring}},
+            "1" => %{"id" => to_string(update_gap.id),
+                     "reason" => update_gap.reason,
+                     "in_service_datestring" => update_gap.in_service_datestring,
+                     "out_of_service_datestring" => update_gap.out_of_service_datestring},
+            "2" => %{"id" => to_string(delete_gap.id),
+                     "reason" => delete_gap.reason,
+                     "in_service_datestring" => delete_gap.in_service_datestring,
+                     "out_of_service_datestring" => delete_gap.out_of_service_datestring}},
         "lock_version" => to_string(animal_view.lock_version),
         "in_service_datestring" => @earliest_iso_date,
         "out_of_service_datestring" => @latest_iso_date
        }
-        
+
     edited_params =
       params_as_displayed
       |> Map.put("name", "New Bossie")
+      |> put_in(["service_gaps", "0"], @insert_sg_params)
       |> put_in(["service_gaps", "1", "out_of_service_datestring"], @never)
+      |> put_in(["service_gaps", "2", "delete"], "true")
 
-    valid_edits_changeset =
+    vm_changeset = 
       edited_params
       |> VM.Animal.accept_form(@institution)
+      |> ok_payload
       |> assert_valid
+
+    repo_changeset =
+      VM.Animal.prepare_for_update(b.bossie.id, vm_changeset, @institution)
+      |> assert_shape(%Changeset{})
+      |> assert_valid
+
+    repo_changeset
+    |> VM.Animal.update(@institution)
+    |> ok_payload
+    |> assert_shape(%VM.Animal{})
+    |> assert_field(name: "New Bossie")
+    |> refute_assoc_loaded(:service_gaps)
     
-    validated_params =
-      valid_edits_changeset
-      |> VM.Animal.update_params
-      |> Map.put(:id, b.bossie.id)
+    # Let's check what's on disk.
+    stored = 
+      b.bossie.id
+      |> AnimalApi2.one_by_id(@institution, preload: [:service_gaps])
+      |> assert_shape(%Schemas.Animal{})
+      |> assert_field(name: "New Bossie")
 
-    original_animal =
-      AnimalApi2.one_by_id(b.bossie.id, @institution,
-        preload: [:species, :service_gaps])
+    [updated, _deleted, inserted] = stored.service_gaps |> EnumX.sort_by_id
 
-    changed_animal =
-      original_animal
-      |> change(validated_params)
-    
-    assert length(Map.keys(changed_animal.changes)) == 2
-    assert get_change(changed_animal, :name) == "New Bossie"
-    assert Datespan.inclusive_up(@earliest_date) ==
-      changed_animal.changes.service_gaps
-      |> singleton_payload
-      |> get_change(:span)
-    
-    {:ok, _} = Sql.update(changed_animal, @institution)
 
-    # And, finally, we see what happened...
-    new_animal =
-      AnimalApi.one_by_id(b.bossie.id, @institution,
-        preload: [:species, :service_gaps])
-    [new_service_gap] = new_animal.service_gaps
-
-    assert new_animal.name == "New Bossie"
-    assert new_service_gap.span == Datespan.inclusive_up(@earliest_date)
+    inserted
+    |> assert_fields(reason: @insert_sg_params["reason"],
+                     span: Datespan.customary(@date_2, @date_3))
+    updated
+    |> assert_fields(reason: update_gap.reason,
+                     span: Datespan.inclusive_up(@earliest_date))
   end
   
   # ----------------------------------------------------------------------------
@@ -200,45 +226,17 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
                         name: "Bossie")
     end
 
-    @empty_params %{
-      "reason" => "",
-      "in_service_datestring" => "",
-      "out_of_service_datestring" => "",
-    }
-    
-    @delete_params %{
-      "id" => 3,
-      "reason" => "reason",
-      "in_service_datestring" => @iso_date_2,
-      "out_of_service_datestring" => @iso_date_3,
-      "delete" => "true"
-    }
-
-    @bad_params Map.put(@delete_params, "reason", "")
-    @update_params Map.delete(@delete_params, "delete")
-    @insert_params Map.delete(@delete_params, "delete") |> Map.delete("id")
-    
-
-    defp with_service_gaps(top_params, gaps) do
-      param_map = 
-        gaps
-        |> Enum.with_index
-        |> Enum.map(fn {gap_params, index} -> {to_string(index), gap_params} end)
-        |> Map.new
-      %{ top_params | "service_gaps" => param_map}
-    end
-
     defp with_service_gap(top_params, service_gap),
       do: with_service_gaps(top_params, [service_gap])
     
     test "the service gap is correct" do
-      with_service_gap(@no_service_gaps, @update_params)
+      with_service_gap(@no_service_gaps, @update_sg_params)
       |> VM.Animal.accept_form(@institution) |> ok_payload
       |> assert_valid      
     end
 
     test "changesets are produced for service gaps: error case" do
-      with_service_gap(@no_service_gaps, @bad_params)
+      with_service_gap(@no_service_gaps, @bad_sg_params)
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> Changeset.get_change(:service_gaps) |> singleton_payload
       |> assert_invalid
@@ -249,7 +247,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       # An invalid and valid changeset checks whether ANY of them need to be
       # invalid or ALL of them.
       @no_service_gaps
-      |> with_service_gaps([@bad_params, @update_params])
+      |> with_service_gaps([@bad_sg_params, @update_sg_params])
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> assert_invalid
     end
@@ -260,60 +258,51 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
       [only] = 
         @no_service_gaps
-        |> with_service_gaps([@empty_params, @update_params])
+        |> with_service_gaps([@empty_sg_params, @update_sg_params])
         |> VM.Animal.accept_form(@institution) |> ok_payload
         |> Changeset.fetch_change!(:service_gaps)
 
-      assert_change(only, reason: @update_params["reason"])
+      assert_change(only, reason: @update_sg_params["reason"])
     end
   end
 
   # ----------------------------------------------------------------------------
 
-  describe "prepare for storage" do
-
-    test "params have to be constructed" do
+  describe "prepare for storage" do # rest are tested through integration-ish test
+    test "helper function `update_params`" do  
       expected = %{
         # Id is not included for animal update
         lock_version: 2,
         name: "Bossie",
         span: Datespan.customary(@earliest_date, @latest_date),
         service_gaps: [
-          %{id: 3,
-            reason: "reason",
+          %{id: @update_sg_params["id"],
+            reason: @update_sg_params["reason"],
             span: Datespan.customary(@date_2, @date_3)
           }]
       }
 
+      
+
       actual = 
-        with_service_gap(@no_service_gaps, @update_params)
+        with_service_gap(@no_service_gaps, @update_sg_params)
         |> VM.Animal.accept_form(@institution)
         |> ok_payload
         |> VM.Animal.update_params
 
       assert actual == expected
     end
-
     
-    # setup do
-    #   view_model_changeset = 
-    #     @no_service_gaps
-    #     |> with_service_gaps([@insert_params, @update_params, @delete_params])
-    #     |> VM.Animal.accept_form(@institution) |> ok_payload
-
-    #   [view_model_changeset: view_model_changeset]
-    # end
-
-    test "changesets are constructed" do
-          
-    end
-
-    test "changesets are marked with their appropriate action." do
-    end
   end
-  # ----------------------------------------------------------------------------
 
-  @tag :skip
-  describe "update_params" do
+  defp with_service_gaps(top_params, gaps) do
+    param_map = 
+      gaps
+      |> Enum.with_index
+      |> Enum.map(fn {gap_params, index} -> {to_string(index), gap_params} end)
+      |> Map.new
+    %{ top_params | "service_gaps" => param_map}
   end
+
+  
 end

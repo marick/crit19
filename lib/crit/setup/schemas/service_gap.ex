@@ -11,7 +11,9 @@ defmodule Crit.Setup.Schemas.ServiceGap do
   end
 
   def fields, do: __schema__(:fields)
-  def required, do: List.delete(fields(), :id)
+
+  # :id and :animal_id are not needed for creation. 
+  def required, do: ListX.delete(fields(), [:id, :animal_id])
 
   def changeset(gap, attrs) do
     gap

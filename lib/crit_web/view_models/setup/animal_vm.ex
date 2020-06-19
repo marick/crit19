@@ -8,6 +8,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias Crit.Setup.AnimalApi2, as: AnimalApi
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
+  alias Crit.Sql
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -87,13 +88,25 @@ defmodule CritWeb.ViewModels.Setup.Animal do
       service_gaps: VM.ServiceGap.update_params(data.service_gaps)
     }
   end
+
   
-  def prepare_for_update(_id, _vm_changeset, _institution) do
+
+  def prepare_for_update(id, vm_changeset, institution) do
+    params = update_params(vm_changeset)
+    old_version = AnimalApi.one_by_id(id, institution, preload: [:service_gaps])
+    
+    Schemas.Animal.changeset(old_version, params)
   end
 
   # ----------------------------------------------------------------------------
 
-  def update(_changeset, _institution) do
+  def update(changeset, institution) do
+    result =
+      Sql.update(changeset, [stale_error_field: :optimistic_lock_error], institution)
+    case result do
+      {:ok, %{id: id}} ->
+        {:ok, fetch(:one_for_summary, id, institution)}
+    end
   end
   
   # ----------------------------------------------------------------------------

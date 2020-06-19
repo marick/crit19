@@ -3,7 +3,7 @@ defmodule Crit.Setup.Schemas.Animal do
   alias Crit.Ecto.TrimmedString
   alias Crit.Setup.Schemas
   alias Ecto.Datespan
-  # import Ecto.Changeset
+  import Ecto.Changeset
 
   schema "animals" do
     field :name, TrimmedString
@@ -16,4 +16,14 @@ defmodule Crit.Setup.Schemas.Animal do
   end
 
   def preloads, do: [:species, :service_gaps]
+  def fields(), do: __schema__(:fields)
+  def required(), do: ListX.delete(fields(), [:id, :species_id])
+
+  def changeset(%__MODULE__{} = current, attrs) do
+    current
+    |> cast(attrs, fields())
+    |> cast_assoc(:service_gaps)
+    |> validate_required(required())
+  end
+    
 end
