@@ -89,14 +89,43 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     }
   end
 
-  
+  def deletion_ids(service_gap_changesets) do
+    service_gap_changesets
+    |> Enum.filter(&(get_change(&1, :delete, false)))
+    |> Enum.map(&get_change(&1, :id))
+    |> MapSet.new
+  end
 
   def prepare_for_update(id, vm_changeset, institution) do
     params = update_params(vm_changeset)
     old_version = AnimalApi.one_by_id(id, institution, preload: [:service_gaps])
     
-    Schemas.Animal.changeset(old_version, params)
+    deletion_ignorant = Schemas.Animal.changeset(old_version, params)
+
+    to_delete =
+      vm_changeset
+      |> fetch_field!(:service_gaps)
+      |> deletion_ids
+
+    mark_deletion = fn ecto_changeset ->
+      if MapSet.member?(to_delete, fetch_field!(ecto_changeset, :id)) do
+        %{ecto_changeset | action: :delete}
+      else
+        ecto_changeset
+      end
+    end
+
+    guaranteed_changesets =
+      get_change(deletion_ignorant, :service_gaps,
+        fetch_field!(deletion_ignorant, :service_gaps)
+        |> Enum.map(&(change &1, %{})))
+
+    service_gaps_with_deletion =
+      Enum.map(guaranteed_changesets, mark_deletion)
+
+    put_change(deletion_ignorant, :service_gaps, service_gaps_with_deletion)
   end
+
 
   # ----------------------------------------------------------------------------
 
@@ -123,8 +152,4 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> ToWeb.when_loaded(:service_gaps, source,
                          &(VM.ServiceGap.lift(&1, institution)))
   end
-
-  # ----------------------------------------------------------------------------
-
-
 end

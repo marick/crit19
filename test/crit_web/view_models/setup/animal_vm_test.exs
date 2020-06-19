@@ -100,8 +100,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
       |> assert_shape(%Schemas.Animal{})
       |> assert_field(name: "New Bossie")
 
-    [updated, _deleted, inserted] = stored.service_gaps |> EnumX.sort_by_id
-
+    [updated, inserted] = stored.service_gaps |> EnumX.sort_by_id
 
     inserted
     |> assert_fields(reason: @insert_sg_params["reason"],
