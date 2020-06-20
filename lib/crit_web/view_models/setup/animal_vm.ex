@@ -1,14 +1,12 @@
 defmodule CritWeb.ViewModels.Setup.Animal do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias Ecto.ChangesetX
-  alias Crit.Ecto.TrimmedString
+  use CritWeb, :view_model
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi2, as: AnimalApi
+
+  alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
-  alias Crit.Sql
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -30,6 +28,9 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   def required(),
     do: [:name, :lock_version, :in_service_datestring, :out_of_service_datestring]
 
+
+  # ----------------------ABOUT PRODUCING A FORM: `fetch`, `lift` ----------------
+  
   def fetch(:all_possible, institution) do
       AnimalApi.inadequate_all(institution, preload: [:species])
       |> lift(institution)
@@ -45,15 +46,28 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> lift(institution)
   end
 
-  # ----------------------------------------------------------------------------
+  def lift(sources, institution) when is_list(sources), 
+    do: (for s <- sources, do: lift(s, institution))
+    
+  @spec lift(AnimalApi.t, String.t) :: Changeset.t(AnimalVM.t)
+  def lift(source, institution) do
+    %{EnumX.pour_into(source, VM.Animal) |
+      species_name: source.species.name,
+      institution: institution
+    }
+    |> ToWeb.service_datestrings(source.span)
+    |> ToWeb.when_loaded(:service_gaps, source,
+                         &(VM.ServiceGap.lift(&1, institution)))
+  end
+
+  # -----------------TURNING AN HTTP FORM INTO AN `AnimalVM` changeset -----------
 
   # This could use cast_assoc, but it's just as easy to process the
   # changesets separately, especially because the `institution` argument
   # has to be dragged around.
+  @spec accept_form(params(), String.t) :: Changeset.t
   def accept_form(params, institution) do
-    params =
-      params
-      |> Map.put("service_gaps", Map.values(params["service_gaps"]))
+    params = CritWeb.ViewModels.Common.flatten(params, "service_gaps")
 
     animal_changeset = 
       %VM.Animal{institution: institution}
@@ -76,7 +90,6 @@ defmodule CritWeb.ViewModels.Setup.Animal do
       false -> {:error, :form, result}
     end
   end
-  
 
   # ----------------------------------------------------------------------------
 
@@ -140,16 +153,4 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   
   # ----------------------------------------------------------------------------
 
-  def lift(sources, institution) when is_list(sources), 
-    do: (for s <- sources, do: lift(s, institution))
-
-  def lift(source, institution) do
-    %{EnumX.pour_into(source, VM.Animal) |
-      species_name: source.species.name,
-      institution: institution
-    }
-    |> ToWeb.service_datestrings(source.span)
-    |> ToWeb.when_loaded(:service_gaps, source,
-                         &(VM.ServiceGap.lift(&1, institution)))
-  end
 end

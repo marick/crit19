@@ -76,6 +76,17 @@ defmodule CritWeb do
     end
   end
 
+  def view_model do
+    quote do
+      use Ecto.Schema
+      use Crit.Types
+      import Ecto.Changeset
+      alias Ecto.ChangesetX
+      alias Crit.Sql
+      alias CritWeb.ViewModels.Common
+    end
+  end
+
   @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
