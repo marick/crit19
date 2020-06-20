@@ -1,9 +1,8 @@
 defmodule CritWeb.ViewModels.Setup.AnimalTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
-  alias Crit.Setup.AnimalApi
   alias Crit.Setup.Schemas
-  alias Crit.Setup.AnimalApi2
+  alias Crit.Setup.AnimalApi2, as: AnimalApi
   import Crit.Exemplars.Background
   alias Ecto.Datespan
   alias Ecto.Changeset
@@ -31,7 +30,6 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     "out_of_service_datestring" => @iso_date_3,
   }
   
-  @delete_sg_params @base_sg_params |> Map.put("id", 3) |> Map.put("delete", "true")
   @bad_sg_params %{@base_sg_params | "reason" => "" }
   @update_sg_params @base_sg_params |> Map.put("id", 4)
   @insert_sg_params @base_sg_params
@@ -96,7 +94,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
     # Let's check what's on disk.
     stored = 
       b.bossie.id
-      |> AnimalApi2.one_by_id(@institution, preload: [:service_gaps])
+      |> AnimalApi.one_by_id(@institution, preload: [:service_gaps])
       |> assert_shape(%Schemas.Animal{})
       |> assert_field(name: "New Bossie")
 
@@ -201,32 +199,6 @@ defmodule CritWeb.ViewModels.Setup.AnimalTest do
 
   # ----------------------------------------------------------------------------
 
-  describe "prepare for storage" do # rest are tested through integration-ish test
-    test "helper function `update_params`" do  
-      expected = %{
-        # Id is not included for animal update
-        lock_version: 2,
-        name: "Bossie",
-        span: Datespan.customary(@earliest_date, @latest_date),
-        service_gaps: [
-          %{id: @update_sg_params["id"],
-            reason: @update_sg_params["reason"],
-            span: Datespan.customary(@date_2, @date_3)
-          }]
-      }
-
-      
-
-      actual = 
-        with_service_gap(@no_service_gaps, @update_sg_params)
-        |> VM.Animal.accept_form(@institution)
-        |> ok_payload
-        |> VM.Animal.update_params
-
-      assert actual == expected
-    end
-    
-  end
 
   defp with_service_gaps(top_params, gaps) do
     param_map = 

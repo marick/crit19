@@ -1,7 +1,6 @@
 defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
-  import Crit.Exemplars.Background
   alias Ecto.Datespan
   alias Ecto.Changeset
 
@@ -61,6 +60,28 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
         |> Changeset.fetch_change!(:service_gaps)
 
       assert_change(only, reason: @update_sg_params["reason"])
+    end
+
+    test "helper function `update_params`" do  
+      expected = %{
+        # Id is not included for animal update
+        lock_version: 2,
+        name: "Bossie",
+        span: Datespan.customary(@earliest_date, @latest_date),
+        service_gaps: [
+          %{id: @update_sg_params["id"],
+            reason: @update_sg_params["reason"],
+            span: Datespan.customary(@date_2, @date_3)
+          }]
+      }
+
+      actual = 
+        with_service_gap(@base_animal, @update_sg_params)
+        |> VM.Animal.accept_form(@institution)
+        |> ok_payload
+        |> VM.Animal.update_params
+
+      assert actual == expected
     end
   end
 
