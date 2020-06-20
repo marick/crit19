@@ -4,6 +4,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.AnimalApi
+  alias Crit.Setup.AnimalApi2
   alias Crit.Exemplars
   alias Crit.Extras.{AnimalT, ServiceGapT}
   alias CritWeb.ViewModels.Setup, as: ViewModel
@@ -80,13 +81,13 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       b =
         background()
         |> animal("original_name")
-        |> service_gap_for("original_name", reason: "will_change")
-        |> service_gap_for("original_name", reason: "won't_change")
+        |> service_gap_for("original_name", reason: "will change")
+        |> service_gap_for("original_name", reason: "won't change")
+        |> service_gap_for("original_name", reason: "will delete")
         |> shorthand()
       [background: b]
     end
 
-    @tag :skip
     test "success", %{conn: conn, background: b} do
       animal_id = to_string(b.original_name.id)
 
@@ -95,8 +96,8 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
                "in_service_datestring" => "2300-01-02",
                "out_of_service_datestring" => "2300-01-03"
               },
-        1 => %{reason: "fixored reason"},
-        2 => %{delete: "true"}
+        1 => %{reason: "replaces: will change"},
+        3 => %{delete: "true"}
       }
       
       get_via_action(conn, :update_form, animal_id)
@@ -109,14 +110,13 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       |> assert_user_sees("new name")
       
       # Check that the changes propagate
-      animal = AnimalApi.one_by_id(animal_id, @institution, preload: [:service_gaps])
+      animal = AnimalApi2.one_by_id(animal_id, @institution, preload: [:service_gaps])
       assert_field(animal, name: "new name!")
 
-      [changed, added] =
+      [changed, _unchanged, added] =
         animal.service_gaps |> Enum.sort_by(fn gap -> gap.id end)
 
-      assert_field(changed,
-        reason: "fixored reason")
+      assert_field(changed, reason: "replaces: will change")
       assert_fields(added,
         reason: "newly added",
         span: Datespan.customary(~D[2300-01-02], ~D[2300-01-03]))
