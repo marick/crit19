@@ -128,8 +128,8 @@ defmodule Crit.Exemplars.Background do
     span = Datespan.customary(opts.starting, opts.ending)
 
     ensure(data, :service_gap, opts.name, fn ->
-      Factory.sql_insert!(:service_gap, [animal_id: animal_id, span: span],
-        @institution)
+      details = [animal_id: animal_id, span: span, reason: opts.reason]
+      Factory.sql_insert!(:service_gap, details, @institution)
     end)
   end
 
