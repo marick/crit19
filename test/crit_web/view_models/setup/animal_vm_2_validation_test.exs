@@ -62,7 +62,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       assert_change(only, reason: @update_sg_params["reason"])
     end
 
-    test "helper function `update_params`" do  
+    test "helper function `lower_to_attrs`" do  
       expected = %{
         # Id is not included for animal update
         lock_version: 2,
@@ -79,7 +79,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
         with_service_gap(@base_animal, @update_sg_params)
         |> VM.Animal.accept_form(@institution)
         |> ok_payload
-        |> VM.Animal.update_params
+        |> VM.Animal.lower_to_attrs
 
       assert actual == expected
     end

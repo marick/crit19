@@ -5,8 +5,9 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
   import Crit.Exemplars.RepoState
   import Crit.RepoState
 
-  # ----------------------------------------------------------------------------
   setup :repo_has_bossie
+
+  # These tests are all about proceding VM.Animal structs
 
   def assert_bossie(animal, id) do
     animal
@@ -23,14 +24,14 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
   # ----------------------------------------------------------------------------
 
   describe "lift" do
-    test "a shallow fetch (does not include service gaps)", %{repo: repo} do
+    test "a lifting without service gaps)", %{repo: repo} do
       AnimalApi.one_by_id(repo.bossie.id, @institution, preload: [:species])
       |> VM.Animal.lift(@institution)
       |> assert_bossie(repo.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
-    test "a deeper fetch (does include service gaps)", %{repo: repo} do
+    test "listing with service gaps", %{repo: repo} do
       service_gap_for(repo, "Bossie", starting: @date_2, ending: @date_3)
       
       fetched = 
@@ -47,6 +48,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
     end
   end
 
+  # ----------------------------------------------------------------------------
   describe "`fetch` from database" do 
     test "fetching a list of animals does not produce service gaps",
       %{repo: repo} do

@@ -5,7 +5,6 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
   import Ecto.Changeset
-  alias Crit.Common
   
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -67,7 +66,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   
   # ----------------------------------------------------------------------------
 
-  def update_params(changesets) when is_list(changesets) do 
+  def lower_to_attrs(changesets) when is_list(changesets) do 
     for c <- changesets do
       {:ok, data} = apply_action(c, :insert)
       %{id: data.id,
@@ -76,4 +75,6 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
       }
     end
   end
+
+  # ----------------------------------------------------------------------------
 end

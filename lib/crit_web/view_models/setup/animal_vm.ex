@@ -96,31 +96,12 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
-  @spec update_params(Changeset.t(VM.Animal)) :: attrs()
-  def update_params(changeset) do
-    data = apply_changes(changeset)
-    %{name: data.name,
-      lock_version: data.lock_version,
-      span: FromWeb.span(data),
-      service_gaps: VM.ServiceGap.update_params(data.service_gaps)
-    }
-  end
-
-  def deletion_ids(service_gap_changesets) do
-    service_gap_changesets
-    |> Enum.filter(&(get_change(&1, :delete, false)))
-    |> Enum.map(&get_change(&1, :id))
-    |> MapSet.new
-  end
-
   @spec lower_changeset(db_id, Changeset.t(VM.Animal), short_name())
-        :: Changeset.t(Schemas.Animal)
+  :: Changeset.t(Schemas.Animal)
         
   def lower_changeset(id, vm_changeset, institution) do
-    params = update_params(vm_changeset)
-    old_version = AnimalApi.one_by_id(id, institution, preload: [:service_gaps])
-    
-    deletion_ignorant = Schemas.Animal.changeset(old_version, params)
+    deletion_ignorant =
+      deletion_ignorant_ecto_changeset(id, vm_changeset, institution)
 
     to_delete =
       vm_changeset
@@ -145,6 +126,31 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
     put_change(deletion_ignorant, :service_gaps, service_gaps_with_deletion)
   end
+
+  @spec lower_to_attrs(Changeset.t(VM.Animal)) :: attrs()
+  def lower_to_attrs(changeset) do
+    data = apply_changes(changeset)
+    %{name: data.name,
+      lock_version: data.lock_version,
+      span: FromWeb.span(data),
+      service_gaps: VM.ServiceGap.lower_to_attrs(data.service_gaps)
+    }
+  end
+
+  def deletion_ignorant_ecto_changeset(id, form_changeset, institution) do 
+    old_version = AnimalApi.one_by_id(id, institution, preload: [:service_gaps])
+    attrs = lower_to_attrs(form_changeset)
+    
+    Schemas.Animal.changeset(old_version, attrs)
+  end
+
+  def deletion_ids(service_gap_changesets) do
+    service_gap_changesets
+    |> Enum.filter(&(get_change(&1, :delete, false)))
+    |> Enum.map(&get_change(&1, :id))
+    |> MapSet.new
+  end
+
 
   # ----------------------------------------------------------------------------
 

@@ -116,7 +116,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
       actual =
         [ViewModels.ServiceGap.accept_form(params, @institution)]
-        |> ViewModels.ServiceGap.update_params
+        |> ViewModels.ServiceGap.lower_to_attrs
         |> singleton_payload
 
       assert actual == expected
