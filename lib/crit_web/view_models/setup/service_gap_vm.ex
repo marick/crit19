@@ -77,4 +77,33 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   end
 
   # ----------------------------------------------------------------------------
+
+  @spec ensure_changesets(Changeset.t(any)) :: [Changeset.t(%__MODULE__{})]
+  def ensure_changesets(containing_changeset) do
+    case fetch_change(containing_changeset, :service_gaps) do
+      {:ok, sg_changesets} -> 
+        sg_changesets
+      :error ->
+        containing_changeset
+        |> fetch_field!(:service_gaps)
+        |> Enum.map(&(change &1, %{}))
+    end
+  end
+
+  def mark_deletions(containing_changeset, ids_to_delete) do
+    nested_changesets =
+      containing_changeset
+      |> ensure_changesets
+      |> Enum.map(&(mark_deletion &1, ids_to_delete))
+    
+    put_change(containing_changeset, :service_gaps, nested_changesets)
+  end
+
+  def mark_deletion(changeset, ids_to_delete) do 
+    if MapSet.member?(ids_to_delete, fetch_field!(changeset, :id)) do
+      %{changeset | action: :delete}
+    else
+      changeset
+    end
+  end
 end

@@ -99,32 +99,18 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   @spec lower_changeset(db_id, Changeset.t(VM.Animal), short_name())
   :: Changeset.t(Schemas.Animal)
         
-  def lower_changeset(id, vm_changeset, institution) do
-    deletion_ignorant =
-      deletion_ignorant_ecto_changeset(id, vm_changeset, institution)
-
-    to_delete =
-      vm_changeset
-      |> fetch_field!(:service_gaps)
+  def lower_changeset(id, form_changeset, institution) do
+    ids_to_delete =
+      form_changeset
+      |> fetch_field!(:service_gaps) 
       |> deletion_ids
 
-    mark_deletion = fn ecto_changeset ->
-      if MapSet.member?(to_delete, fetch_field!(ecto_changeset, :id)) do
-        %{ecto_changeset | action: :delete}
-      else
-        ecto_changeset
-      end
-    end
-
-    guaranteed_changesets =
-      get_change(deletion_ignorant, :service_gaps,
-        fetch_field!(deletion_ignorant, :service_gaps)
-        |> Enum.map(&(change &1, %{})))
-
-    service_gaps_with_deletion =
-      Enum.map(guaranteed_changesets, mark_deletion)
-
-    put_change(deletion_ignorant, :service_gaps, service_gaps_with_deletion)
+    lower_attrs = lower_to_attrs(form_changeset)
+    
+    id
+    |> AnimalApi.one_by_id(institution, preload: [:service_gaps])
+    |> Schemas.Animal.changeset(lower_attrs)
+    |> VM.ServiceGap.mark_deletions(ids_to_delete)
   end
 
   @spec lower_to_attrs(Changeset.t(VM.Animal)) :: attrs()
