@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  import Crit.Background
+  import Crit.EctoState
   alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
@@ -23,14 +23,14 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
 
-    b = 
-      background(@bovine_id)
+    ecto = 
+      empty_ecto(@bovine_id)
       |> animal("Bossie", available_on: @date)
       |> procedure("only_procedure")
       |> load_completely
       |> shorthand
     
-    [bossie: b.bossie, procedure: b.only_procedure, background: b]
+    [bossie: ecto.bossie, procedure: ecto.only_procedure, ecto: ecto]
   end
 
   test "getting the first form", %{conn: conn} do

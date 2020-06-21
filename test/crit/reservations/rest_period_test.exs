@@ -1,6 +1,6 @@
 defmodule Crit.Reservations.RestPeriodTest do
   use Crit.DataCase
-  import Crit.Background
+  import Crit.EctoState
   import Ecto.Query
   alias Crit.Reservations.RestPeriod
   alias Crit.Setup.Schemas.{AnimalOld}
@@ -13,8 +13,8 @@ defmodule Crit.Reservations.RestPeriodTest do
   @friday    ~D[2020-06-19]
   @saturday  ~D[2020-06-20]
 
-  defp common_background(frequency) do 
-    background()
+  defp common_ecto(frequency) do 
+    empty_ecto()
     |> procedure_frequency(frequency)
     |> procedure("used procedure", frequency: frequency)
     |> animal("bossie")
@@ -29,7 +29,7 @@ defmodule Crit.Reservations.RestPeriodTest do
   end
 
   defp attempt(existing, proposed, frequency) do 
-    common_background(frequency)
+    common_ecto(frequency)
     |> put_reservation(existing) 
     |> t_unavailable_by(proposed)
   end
@@ -80,7 +80,7 @@ defmodule Crit.Reservations.RestPeriodTest do
     end
 
     test "Monday / Wednesday / Friday is prohibited" do
-      common_background("twice per week")
+      common_ecto("twice per week")
       |> put_reservation(@monday)
       |> put_reservation(@wednesday)
       
@@ -96,7 +96,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       # See previous test first.
       different = "different procedure"
       
-      common_background("twice per week")
+      common_ecto("twice per week")
       |> put_reservation(@monday)
 
       |> procedure(different, frequency: "twice per week")
@@ -108,8 +108,8 @@ defmodule Crit.Reservations.RestPeriodTest do
     end
 
     test "Week boundaries" do
-      background = 
-        common_background("twice per week")
+      ecto = 
+        common_ecto("twice per week")
         |> put_reservation(@monday)
         |> put_reservation(@wednesday)
 
@@ -118,7 +118,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       # This also tests what happens when there's a conflict
       # for two reasons. It's kind to show them both.
       [first_reason, second_reason] = 
-        t_unavailable_by(background, @sunday)
+        t_unavailable_by(ecto, @sunday)
 
       assert_fields(first_reason,
         animal_name: "bossie",
@@ -131,12 +131,12 @@ defmodule Crit.Reservations.RestPeriodTest do
         dates: [@monday, @wednesday])
 
       # The day before sunday is in a new week.
-      background
+      ecto
       |> t_unavailable_by(Date.add(@sunday, -1))
       |> assert_empty
 
       # Saturday is the end of the week
-      background
+      ecto
       |> t_unavailable_by(@saturday)
       |> singleton_payload
       |> assert_fields(animal_name: "bossie",
@@ -144,7 +144,7 @@ defmodule Crit.Reservations.RestPeriodTest do
                        dates: [@monday, @wednesday])
 
       # Next sunday is next week
-      background
+      ecto
       |> t_unavailable_by(Date.add(@saturday, 1))
       |> assert_empty
     end
@@ -152,7 +152,7 @@ defmodule Crit.Reservations.RestPeriodTest do
 
   describe "the unlimited frequency" do
     test "never returns a conflict" do
-      common_background("unlimited")
+      common_ecto("unlimited")
       |> put_reservation(@monday)
       |> t_unavailable_by(@monday)
       |> assert_empty

@@ -93,49 +93,12 @@ defmodule CritWeb.Setup.AnimalController do
     inst = institution(conn)
     with(
       {:ok, vm_changeset} <- VM.Animal.accept_form(params, inst),
-      repo_changeset = VM.Animal.prepare_for_update(id, vm_changeset, inst),
+      repo_changeset = VM.Animal.lower_changeset(id, vm_changeset, inst),
       {:ok, animal} <- VM.Animal.update(repo_changeset, inst)
     ) do
       Common.render_for_replacement(conn,
         "_show_one_animal.html",
         animal: animal)
     end
-      
-
-    # case changeset.valid? do
-    #   true ->
-    #     downward_params =
-    #       VM.Animal.update_params(changeset)
-    #     current =
-    #       AnimalApi2.one_by_id(id, institution(conn), preload: [:species, :service_gaps])
-
-    #     deletable? = fn cs ->
-    #       Changeset.get_change(cs, :delete) == true
-    #     end
-        
-    #     {:ok, _} = 
-    #       Changeset.change(current, downward_params)
-    #       |> IO.inspect
-    #       |> Sql.update(institution(conn))
-
-    #     Changeset.get_change(changeset, :service_gaps)
-    #     |> Enum.filter(deletable?)
-    #     |> Enum.map(&(Changeset.get_field(&1, :id)))
-    #     |> AnimalApi2.delete_service_gaps(institution(conn))
-        
-    #   false -> 
-    #     IO.inspect "skip"
-    # end
-
-    # case AnimalApi.update(id, params, institution(conn)) do
-    #   {:ok, animal} ->
-    #     Common.render_for_replacement(conn,
-    #       "_show_one_animal.html",
-    #       animal: animal)
-    #   {:error, changeset} ->
-    #     conn
-    #     |> Common.render_for_replacement("_edit_one_animal.html",
-    #          changeset: changeset,
-  #          errors: true)
   end
 end

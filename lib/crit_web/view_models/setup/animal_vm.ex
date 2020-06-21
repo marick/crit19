@@ -31,6 +31,8 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------ABOUT PRODUCING A FORM: `fetch`, `lift` ----------------
   
+  @spec fetch(:atom, short_name()) :: Changeset.t(VM.Animal)
+  
   def fetch(:all_possible, institution) do
       AnimalApi.inadequate_all(institution, preload: [:species])
       |> lift(institution)
@@ -46,10 +48,11 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> lift(institution)
   end
 
+  
   def lift(sources, institution) when is_list(sources), 
     do: (for s <- sources, do: lift(s, institution))
     
-  @spec lift(AnimalApi.t, String.t) :: Changeset.t(AnimalVM.t)
+  @spec lift(AnimalApi.t, short_name()) :: Changeset.t(VM.Animal)
   def lift(source, institution) do
     %{EnumX.pour_into(source, VM.Animal) |
       species_name: source.species.name,
@@ -65,7 +68,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   # This could use cast_assoc, but it's just as easy to process the
   # changesets separately, especially because the `institution` argument
   # has to be dragged around.
-  @spec accept_form(params(), String.t) :: Changeset.t
+  @spec accept_form(params(), short_name()) :: Changeset.t(VM.Animal)
   def accept_form(params, institution) do
     params = CritWeb.ViewModels.Common.flatten(params, "service_gaps")
 
@@ -93,6 +96,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
+  @spec update_params(Changeset.t(VM.Animal)) :: attrs()
   def update_params(changeset) do
     data = apply_changes(changeset)
     %{name: data.name,
@@ -109,7 +113,10 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     |> MapSet.new
   end
 
-  def prepare_for_update(id, vm_changeset, institution) do
+  @spec lower_changeset(db_id, Changeset.t(VM.Animal), short_name())
+        :: Changeset.t(Schemas.Animal)
+        
+  def lower_changeset(id, vm_changeset, institution) do
     params = update_params(vm_changeset)
     old_version = AnimalApi.one_by_id(id, institution, preload: [:service_gaps])
     
@@ -139,9 +146,9 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     put_change(deletion_ignorant, :service_gaps, service_gaps_with_deletion)
   end
 
-
   # ----------------------------------------------------------------------------
 
+  @spec update(Changeset.t(Schemas.Animal), short_name()) :: nary_error()
   def update(changeset, institution) do
     result =
       Sql.update(changeset, [stale_error_field: :optimistic_lock_error], institution)

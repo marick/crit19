@@ -2,11 +2,11 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi2, as: AnimalApi
-  import Crit.Exemplars.Background
-  import Crit.Background
+  import Crit.Exemplars.EctoState
+  import Crit.EctoState
 
   # ----------------------------------------------------------------------------
-  setup :background_bossie
+  setup :ecto_has_bossie
 
   def assert_bossie(animal, id) do
     animal
@@ -23,21 +23,21 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
   # ----------------------------------------------------------------------------
 
   describe "lift" do
-    test "a shallow fetch (does not include service gaps)", %{background: b} do
-      AnimalApi.one_by_id(b.bossie.id, @institution, preload: [:species])
+    test "a shallow fetch (does not include service gaps)", %{ecto: ecto} do
+      AnimalApi.one_by_id(ecto.bossie.id, @institution, preload: [:species])
       |> VM.Animal.lift(@institution)
-      |> assert_bossie(b.bossie.id)
+      |> assert_bossie(ecto.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
-    test "a deeper fetch (does include service gaps)", %{background: b} do
+    test "a deeper fetch (does include service gaps)", %{ecto: ecto} do
       service_gap_for(b, "Bossie", starting: @date_2, ending: @date_3)
       
       fetched = 
-        AnimalApi.one_by_id(b.bossie.id, @institution,
+        AnimalApi.one_by_id(ecto.bossie.id, @institution,
           preload: [:species, :service_gaps])
         |> VM.Animal.lift(@institution)
-        |> assert_bossie(b.bossie.id)
+        |> assert_bossie(ecto.bossie.id)
 
       fetched.service_gaps
       |> singleton_payload
@@ -49,27 +49,27 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
 
   describe "`fetch` from database" do 
     test "fetching a list of animals does not produce service gaps",
-      %{background: b} do
+      %{ecto: ecto} do
       
       VM.Animal.fetch(:all_possible, @institution)
       |> singleton_payload
-      |> assert_bossie(b.bossie.id)
+      |> assert_bossie(ecto.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
     test "fetching an animal for a summary does not produce a service gap",
-      %{background: b} do 
+      %{ecto: ecto} do 
 
-      VM.Animal.fetch(:one_for_summary, b.bossie.id, @institution)
-      |> assert_bossie(b.bossie.id)
+      VM.Animal.fetch(:one_for_summary, ecto.bossie.id, @institution)
+      |> assert_bossie(ecto.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
     test "fetching an animal for editing does include service gaps",
-      %{background: b} do 
+      %{ecto: ecto} do 
 
-      VM.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
-      |> assert_bossie(b.bossie.id)
+      VM.Animal.fetch(:one_for_edit, ecto.bossie.id, @institution)
+      |> assert_bossie(ecto.bossie.id)
       |> assert_assoc_loaded(:service_gaps)
     end
   end

@@ -10,33 +10,33 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias CritWeb.ViewModels.Setup, as: ViewModel
   # alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
-  import Crit.Background
-  import Crit.Exemplars.Background
+  import Crit.EctoState
+  import Crit.Exemplars.EctoState
 
   setup :logged_in_as_setup_manager
 
 
   describe "the update form" do
     setup do 
-      b =
-        background_bossie()
+      ecto =
+        ecto_has_bossie()
         |> service_gap_for("Bossie", starting: @earliest_date)
         |> shorthand()
-      [background: b]
+      [ecto: ecto]
     end
     
-    test "unit test", %{conn: conn, background: b} do
-      get_via_action(conn, :update_form, to_string(b.bossie.id))
+    test "unit test", %{conn: conn, ecto: ecto} do
+      get_via_action(conn, :update_form, to_string(ecto.bossie.id))
       |> assert_purpose(form_for_editing_animal())
       |> assert_user_sees(["Bossie", @earliest_iso_date])
     end
 
-    test "details about form structure", %{conn: conn, background: b} do
-      bossie = ViewModel.Animal.fetch(:one_for_edit, b.bossie.id, @institution)
+    test "details about form structure", %{conn: conn, ecto: ecto} do
+      bossie = ViewModel.Animal.fetch(:one_for_edit, ecto.bossie.id, @institution)
       bossie_gap = bossie.service_gaps |> singleton_payload
 
       params = 
-        get_via_action(conn, :update_form, to_string(b.bossie.id))
+        get_via_action(conn, :update_form, to_string(ecto.bossie.id))
         |> fetch_form
         |> animal_params
 
@@ -78,18 +78,18 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
 
   describe "update a single animal" do
     setup do 
-      b =
-        background()
+      ecto =
+        empty_ecto()
         |> animal("original_name")
         |> service_gap_for("original_name", reason: "will change")
         |> service_gap_for("original_name", reason: "won't change")
         |> service_gap_for("original_name", reason: "will delete")
         |> shorthand()
-      [background: b]
+      [ecto: ecto]
     end
 
-    test "success", %{conn: conn, background: b} do
-      animal_id = to_string(b.original_name.id)
+    test "success", %{conn: conn, ecto: ecto} do
+      animal_id = to_string(ecto.original_name.id)
 
       service_gap_changes = %{
         0 => %{"reason" => "newly added",
