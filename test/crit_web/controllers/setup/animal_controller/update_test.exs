@@ -11,6 +11,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   # alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
   import Crit.Background
+  import Crit.Exemplars.Background
 
   setup :logged_in_as_setup_manager
 
@@ -18,8 +19,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   describe "the update form" do
     setup do 
       b =
-        background()
-        |> animal("Bossie")
+        background_bossie()
         |> service_gap_for("Bossie", starting: @earliest_date)
         |> shorthand()
       [background: b]
