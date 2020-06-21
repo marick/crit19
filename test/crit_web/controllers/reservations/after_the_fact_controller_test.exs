@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  import Crit.Exemplars.Background
+  import Crit.Background
   alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory

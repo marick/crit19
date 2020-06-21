@@ -1,4 +1,4 @@
-defmodule Crit.Exemplars.Background do
+defmodule Crit.Background do
   use ExUnit.CaseTemplate
   use Crit.TestConstants
   alias Crit.Exemplars.ReservationFocused

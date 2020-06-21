@@ -6,7 +6,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Setup.InstitutionApi
   alias Crit.Exemplars.ReservationFocused
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  import Crit.Exemplars.Background
+  import Crit.Background
 
   @date @date_3
   @timeslot_id ReservationFocused.morning_timeslot

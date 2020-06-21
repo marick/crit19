@@ -10,7 +10,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias CritWeb.ViewModels.Setup, as: ViewModel
   # alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
-  import Crit.Exemplars.Background
+  import Crit.Background
 
   setup :logged_in_as_setup_manager
 

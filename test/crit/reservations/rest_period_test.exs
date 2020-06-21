@@ -1,6 +1,6 @@
 defmodule Crit.Reservations.RestPeriodTest do
   use Crit.DataCase
-  import Crit.Exemplars.Background
+  import Crit.Background
   import Ecto.Query
   alias Crit.Reservations.RestPeriod
   alias Crit.Setup.Schemas.{AnimalOld}
