@@ -1,4 +1,4 @@
-defmodule Crit.EctoState do
+defmodule Crit.RepoState do
   use ExUnit.CaseTemplate
   use Crit.TestConstants
   alias Crit.Exemplars.ReservationFocused
@@ -12,7 +12,7 @@ defmodule Crit.EctoState do
                      :reservation, :service_gap])
 
   #-----------------------------------------------------------------------------
-  def empty_ecto(species_id \\ @bovine_id) do
+  def empty_repo(species_id \\ @bovine_id) do
     %{species_id: species_id}
   end
 
@@ -30,12 +30,12 @@ defmodule Crit.EctoState do
   @doc """
   Make the atom-ized name a key on the map. This allows:
 
-       ecto = ...
+       repo = ...
          |> procedure("one_procedure")
          |> shorthand
 
        ...
-       ecto.one_procedure 
+       repo.one_procedure 
   """
        
   def shorthand(data) do
@@ -122,7 +122,7 @@ defmodule Crit.EctoState do
   def service_gap_for(data, animal_name, opts \\ []) do
     opts = Enum.into(opts, %{
           starting: @earliest_date, ending: @latest_date,
-          reason: Factory.unique(:ecto_state),
+          reason: Factory.unique(:repo_state),
           name: Factory.unique(:service_gap)})
     animal_id = id(data, :animal, animal_name)
     span = Datespan.customary(opts.starting, opts.ending)

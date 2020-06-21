@@ -6,7 +6,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Setup.InstitutionApi
   alias Crit.Exemplars.ReservationFocused
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  import Crit.EctoState
+  import Crit.RepoState
 
   @date @date_3
   @timeslot_id ReservationFocused.morning_timeslot
@@ -19,21 +19,21 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   # two conflicting reservations and a conflicting service gap
   # (Unlikely in practice)
   setup do 
-    ecto =
-      empty_ecto()
+    repo =
+      empty_repo()
       |> reservation_for("vcm103",
                          [@animal__two_conflicts, @animal__only_use_conflict],
                          ["any old procedure", @procedure__used_twice],
                          date: @date) 
       |> service_gap_for(@animal__two_conflicts, starting: @date)
 
-    [ecto: ecto]
+    [repo: repo]
   end
 
-  test "create, noting conflicts", %{ecto: ecto} do
+  test "create, noting conflicts", %{repo: repo} do
     # act
     desired =
-      reservation_data(ecto,
+      reservation_data(repo,
         @date,
         [@animal__two_conflicts, @animal__only_use_conflict],
         [@procedure__used_twice])
@@ -48,18 +48,18 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
     assert_names_are(conflicts.use, [@animal__only_use_conflict, @animal__two_conflicts])
   end
 
-  def reservation_data(ecto, date, animal_names, procedure_names) do
+  def reservation_data(repo, date, animal_names, procedure_names) do
     %TaskMemory{
       # When the reservation is
       date:  date,
       timeslot_id: @timeslot_id, 
       span: InstitutionApi.timespan(date, @timeslot_id, @institution),
 
-      chosen_animal_ids: ids(ecto, :animal, animal_names),
-      chosen_procedure_ids: ids(ecto, :procedure, procedure_names),
+      chosen_animal_ids: ids(repo, :animal, animal_names),
+      chosen_procedure_ids: ids(repo, :procedure, procedure_names),
 
       # Not important but required
-      species_id: ecto.species_id,
+      species_id: repo.species_id,
       responsible_person: "anyone"
     }
   end

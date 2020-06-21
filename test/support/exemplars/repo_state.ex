@@ -1,14 +1,14 @@
-defmodule Crit.Exemplars.EctoState do
+defmodule Crit.Exemplars.RepoState do
   use Crit.TestConstants
-  import Crit.EctoState
+  import Crit.RepoState
   alias Ecto.Datespan
 
-  def ecto_has_bossie do 
+  def repo_has_bossie do 
     span = Datespan.customary(@earliest_date, @latest_date)
-    empty_ecto(@bovine_id)
+    empty_repo(@bovine_id)
     |> animal("Bossie", available_on: span)
     |> shorthand
   end
 
-  def ecto_has_bossie(_), do: [ecto: ecto_has_bossie()]
+  def repo_has_bossie(_), do: [repo: repo_has_bossie()]
 end
