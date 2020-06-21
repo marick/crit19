@@ -3,20 +3,10 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi2, as: AnimalApi
   import Crit.Exemplars.Background
-  alias Ecto.Datespan
-  import Crit.Exemplars.Background
+  import Crit.Background
 
   # ----------------------------------------------------------------------------
-  def bossie_on_disk(_) do 
-    span = Datespan.customary(@earliest_date, @latest_date)
-    b = 
-      background(@bovine_id)
-      |> animal("Bossie", available_on: span)
-      |> shorthand
-    [background: b]
-  end
-
-  setup :bossie_on_disk
+  setup :background_bossie
 
   def assert_bossie(animal, id) do
     animal
