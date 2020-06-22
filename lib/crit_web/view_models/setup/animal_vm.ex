@@ -8,6 +8,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
   alias Ecto.ChangesetX
+  import Pile.Deftestable
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -50,11 +51,11 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   end
 
   
-  def lift(sources, institution) when is_list(sources), 
+  deftestable lift(sources, institution) when is_list(sources), 
     do: (for s <- sources, do: lift(s, institution))
     
   @spec lift(AnimalApi.t, short_name()) :: Changeset.t(VM.Animal)
-  def lift(source, institution) do
+  deftestable lift(source, institution) do
     %{EnumX.pour_into(source, VM.Animal) |
       species_name: source.species.name,
       institution: institution
@@ -84,18 +85,13 @@ defmodule CritWeb.ViewModels.Setup.Animal do
       |> Enum.reject(&VM.ServiceGap.from_empty_form?/1)
       |> Enum.map(&(VM.ServiceGap.accept_form &1, institution))
 
-    result = 
-      animal_changeset
-      |> put_change(:service_gaps, sg_changesets)
-      |> Map.put(:valid?, ChangesetX.all_valid?(animal_changeset, sg_changesets))
-
-    case result.valid? do
-      true -> {:ok, result}
-      false -> {:error, :form, result}
-    end
+    animal_changeset
+    |> put_change(:service_gaps, sg_changesets)
+    |> Map.put(:valid?, ChangesetX.all_valid?(animal_changeset, sg_changesets))
+    |> ChangesetX.tag_result(error_subtype: :form)
   end
 
-  # ----------------------------------------------------------------------------
+  # ---------Changeset for Schemas Version ---------------------------------------
 
   @spec lower_changeset(db_id, Changeset.t(VM.Animal), short_name())
   :: Changeset.t(Schemas.Animal)
@@ -111,20 +107,13 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   end
 
   @spec lower_to_attrs(Changeset.t(VM.Animal)) :: attrs()
-  def lower_to_attrs(changeset) do
+  deftestable lower_to_attrs(changeset) do
     data = apply_changes(changeset)
     %{name: data.name,
       lock_version: data.lock_version,
       span: FromWeb.span(data),
       service_gaps: VM.ServiceGap.lower_to_attrs(data.service_gaps)
     }
-  end
-
-  def deletion_ignorant_ecto_changeset(id, form_changeset, institution) do 
-    old_version = AnimalApi.one_by_id(id, institution, preload: [:service_gaps])
-    attrs = lower_to_attrs(form_changeset)
-    
-    Schemas.Animal.changeset(old_version, attrs)
   end
 
   # ----------------------------------------------------------------------------
