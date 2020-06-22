@@ -1,5 +1,6 @@
 defmodule Ecto.ChangesetX do
   alias Ecto.Changeset
+  use Crit.Types
 
   # Phoenix `form_for` only displays errors when the `action` field
   # is non-nil.
@@ -74,4 +75,13 @@ defmodule Ecto.ChangesetX do
 
   def all_valid?(list), do: Enum.all?(list, &(&1.valid?))
   def all_valid?(top, list), do: top.valid? && all_valid?(list)
+
+  @spec ids_to_delete_from(Changeset.t, :atom) :: MapSet.t(db_id())
+  def ids_to_delete_from(container, list_field) do
+      container
+      |> Changeset.fetch_field!(list_field)
+      |> Enum.filter(&(Changeset.get_change(&1, :delete, false)))
+      |> Enum.map(&Changeset.get_field(&1, :id))
+      |> MapSet.new
+  end
 end

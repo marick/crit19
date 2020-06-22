@@ -43,5 +43,40 @@ defmodule Ecto.ChangesetXTest do
       refute ChangesetX.all_valid?(valid,   [valid,   invalid])
     end
   end
+
+  defmodule Deletable do
+    use Ecto.Schema
+    @primary_key false
+    embedded_schema do
+      field :id, :id
+      field :delete, :boolean
+    end
+
+    def changeset(%__MODULE__{} = struct, attrs) do
+      struct
+      |> cast(attrs, [:id, :delete])
+    end
+  end
+
+  defmodule Container do
+    use Ecto.Schema
+    embedded_schema do
+      field :many, {:array, Deletable}
+    end
+  end
+
+  test "delection of deletable ids from a nested association." do
+    nested =
+    for {id, delete} <- [{1, false}, {2, true}],
+      do: Deletable.changeset(%Deletable{id: id}, %{delete: delete})
+
+    actual =
+      change(%Container{})
+      |> put_change(:many, nested)
+      |> ChangesetX.ids_to_delete_from(:many)
+
+    assert actual == MapSet.new([2])
+
+  end    
 end
   

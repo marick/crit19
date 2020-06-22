@@ -7,6 +7,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
+  alias Ecto.ChangesetX
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -100,12 +101,8 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   :: Changeset.t(Schemas.Animal)
         
   def lower_changeset(id, form_changeset, institution) do
-    ids_to_delete =
-      form_changeset
-      |> fetch_field!(:service_gaps) 
-      |> deletion_ids
-
     lower_attrs = lower_to_attrs(form_changeset)
+    ids_to_delete = ChangesetX.ids_to_delete_from(form_changeset, :service_gaps)
     
     id
     |> AnimalApi.one_by_id(institution, preload: [:service_gaps])
@@ -129,14 +126,6 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     
     Schemas.Animal.changeset(old_version, attrs)
   end
-
-  def deletion_ids(service_gap_changesets) do
-    service_gap_changesets
-    |> Enum.filter(&(get_change(&1, :delete, false)))
-    |> Enum.map(&get_change(&1, :id))
-    |> MapSet.new
-  end
-
 
   # ----------------------------------------------------------------------------
 
