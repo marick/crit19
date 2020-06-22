@@ -5,7 +5,7 @@ defmodule Crit.RepoState do
   import DeepMerge
   alias Crit.Factory
   alias Ecto.Datespan
-  alias Crit.Setup.Schemas.{AnimalOld, Procedure}
+  alias Crit.Setup.Schemas.{Animal, Procedure}
   alias Crit.Setup.{AnimalApi, ProcedureApi}
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
@@ -179,11 +179,13 @@ defmodule Crit.RepoState do
   defp load_completely(data, :procedure),
     do: load_completely(data, :procedure, ProcedureApi, Procedure)
   defp load_completely(data, :animal),
-    do: load_completely(data, :animal, AnimalApi, AnimalOld)
+    do: load_completely(data, :animal, AnimalApi, Animal)
   defp load_completely(data, _), do: data
 
   defp load_completely(data, schema, api, module) do
-    Enum.reduce(Map.keys(data[schema]), data, fn name, acc ->
+    keys = Map.keys(data[schema] || %{})
+    
+    Enum.reduce(keys, data, fn name, acc ->
       new = 
         acc
         |> id(schema, name)
