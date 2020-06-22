@@ -84,4 +84,12 @@ defmodule Ecto.ChangesetX do
       |> Enum.map(&Changeset.get_field(&1, :id))
       |> MapSet.new
   end
+
+
+  def tag_result(changeset, [error_subtype: error_tag]) do
+    case changeset.valid? do
+      true ->  {:ok,               changeset}
+      false -> {:error, error_tag, changeset}
+    end
+  end
 end
