@@ -1,4 +1,4 @@
-defmodule CritWeb.ViewModels.Setup.AnimalVM.FromEctoTest do
+defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi2, as: AnimalApi
