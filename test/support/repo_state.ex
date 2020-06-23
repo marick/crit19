@@ -86,12 +86,12 @@ defmodule Crit.RepoState do
     ensure(data, :animal, animal_name, fn -> 
       opts =
         Enum.into(opts, %{
-              available_on: @earliest_date,
+              available: @earliest_date,
               species_id: data.species_id})
       
       Factory.sql_insert!(:animal,
         name: animal_name,
-        span: compute_span(opts.available_on),
+        span: compute_span(opts.available),
         species_id: opts.species_id)
     end)
   end

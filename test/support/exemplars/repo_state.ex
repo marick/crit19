@@ -3,10 +3,13 @@ defmodule Crit.Exemplars.RepoState do
   import Crit.RepoState
   alias Ecto.Datespan
 
+  def maximum_customary_span do
+    span = Datespan.customary(@earliest_date, @latest_date)    
+  end
+
   def repo_has_bossie do 
-    span = Datespan.customary(@earliest_date, @latest_date)
     empty_repo(@bovine_id)
-    |> animal("Bossie", available_on: span)
+    |> animal("Bossie", available: maximum_customary_span)
     |> shorthand
   end
 

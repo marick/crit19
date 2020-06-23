@@ -9,6 +9,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias CritWeb.ViewModels.FieldValidators
   alias Ecto.ChangesetX
   import Pile.Deftestable
+  use ExContract
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -118,16 +119,23 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------------------------------------------------------------
 
+  # Note: This goes to the trouble of reloading the updated animal.
+  # This is safest in the face of future changes, and it avoids awkwarness
+  # like having to drag around the species data even though that can
+  # never be updated.
+
   @spec update(Changeset.t(Schemas.Animal), short_name()) :: nary_error()
   def update(changeset, institution) do
+    check changeset.valid?
+    
     result =
       Sql.update(changeset, [stale_error_field: :optimistic_lock_error], institution)
     case result do
       {:ok, %{id: id}} ->
         {:ok, fetch(:one_for_summary, id, institution)}
+      {:error, changeset} ->
+        {:error, :constraint, changeset}
     end
   end
   
-  # ----------------------------------------------------------------------------
-
 end
