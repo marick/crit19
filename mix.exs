@@ -57,7 +57,8 @@ defmodule Crit.MixProject do
       {:recase, "~> 0.6.0"},
       {:conjunction, "~> 1.0.2"},       
       {:phoenix_integration, "~> 0.8", only: :test},
-      {:deep_merge, "~> 1.0"}
+      {:deep_merge, "~> 1.0"},
+      {:ex_contract, "~> 0.1.1"}
     ]
   end
 
