@@ -2,7 +2,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
-  import Crit.Exemplars.RepoState
+  import Crit.Exemplars.Bossie
   import Crit.RepoState
   alias Ecto.Changeset
   alias Crit.Setup.AnimalApi2, as: AnimalApi

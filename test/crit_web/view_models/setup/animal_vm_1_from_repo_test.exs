@@ -2,24 +2,12 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi2, as: AnimalApi
-  import Crit.Exemplars.RepoState
+  import Crit.Exemplars.Bossie
   import Crit.RepoState
 
   setup :repo_has_bossie
 
   # These tests are all about proceding VM.Animal structs
-
-  def assert_bossie(animal, id) do
-    animal
-    |> assert_shape(%VM.Animal{})
-    |> assert_fields(id: id,
-                     lock_version: 1,
-                     name: "Bossie",
-                     species_name: @bovine,
-                     institution: @institution,
-                     in_service_datestring: @earliest_iso_date,
-                     out_of_service_datestring: @latest_iso_date)
-  end
 
   # ----------------------------------------------------------------------------
 

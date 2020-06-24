@@ -8,10 +8,9 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias Crit.Exemplars
   alias Crit.Extras.{AnimalT, ServiceGapT}
   alias CritWeb.ViewModels.Setup, as: ViewModel
-  # alias Crit.Setup.Schemas.ServiceGap
   alias Ecto.Datespan
   import Crit.RepoState
-  import Crit.Exemplars.RepoState
+  import Crit.Exemplars.Bossie
 
   setup :logged_in_as_setup_manager
 
