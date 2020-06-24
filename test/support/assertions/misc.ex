@@ -62,4 +62,11 @@ defmodule Crit.Assertions.Misc do
   defchain assert_empty(value) do
     assert Enum.empty?(value)
   end
+
+  def using_singleton_in(container, field, f) do
+    container
+    |> Map.get(field)
+    |> singleton_payload
+    |> f.()
+  end
 end
