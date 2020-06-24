@@ -3,6 +3,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
   alias CritWeb.ViewModels.Setup, as: VM
   alias Ecto.Datespan
   alias Ecto.Changeset
+  alias Crit.Exemplars.Params
 
   @base_animal %{
       "id" => "1",
@@ -55,7 +56,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
 
       [only] = 
         @base_animal
-        |> with_service_gaps([@empty_sg_params, @update_sg_params])
+        |> Params.put_nested("service_gaps", [@empty_sg_params, @update_sg_params])
         |> VM.Animal.accept_form(@institution) |> ok_payload
         |> Changeset.fetch_change!(:service_gaps)
 
@@ -75,8 +76,9 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
           }]
       }
 
-      actual = 
-        with_service_gap(@base_animal, @update_sg_params)
+      actual =
+        @base_animal
+        |> Params.put_nested("service_gaps", [@update_sg_params])
         |> VM.Animal.accept_form(@institution)
         |> ok_payload
         |> VM.Animal.lower_to_attrs
@@ -109,13 +111,15 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
     end
 
     test "the service gap is correct" do
-      with_service_gap(@base_animal, @update_sg_params)
+      @base_animal
+      |> Params.put_nested("service_gaps", [@update_sg_params])
       |> VM.Animal.accept_form(@institution) |> ok_payload
       |> assert_valid      
     end
 
     test "changesets are produced for service gaps: error case" do
-      with_service_gap(@base_animal, @bad_sg_params)
+      @base_animal
+      |> Params.put_nested("service_gaps", [@bad_sg_params])
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> Changeset.get_change(:service_gaps) |> singleton_payload
       |> assert_invalid
@@ -126,22 +130,9 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       # An invalid and valid changeset checks whether ANY of them need to be
       # invalid or ALL of them.
       @base_animal
-      |> with_service_gaps([@bad_sg_params, @update_sg_params])
+      |> Params.put_nested("service_gaps", [@bad_sg_params, @update_sg_params])
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> assert_invalid
     end
   end
-
-  # ----------------------------------------------------------------------------
-  defp with_service_gaps(top_params, gaps) when is_list(gaps) do
-    param_map = 
-      gaps
-      |> Enum.with_index
-      |> Enum.map(fn {gap_params, index} -> {to_string(index), gap_params} end)
-      |> Map.new
-    %{ top_params | "service_gaps" => param_map}
-  end
-
-  defp with_service_gap(top_params, service_gap),
-    do: with_service_gaps(top_params, [service_gap])
 end
