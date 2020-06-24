@@ -3,6 +3,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
   import Crit.Exemplars.Bossie
+  alias Crit.Exemplars, as: Ex
   import Crit.RepoState
   alias Ecto.Changeset
   alias Crit.Setup.AnimalApi2, as: AnimalApi
@@ -10,8 +11,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
   setup do
     repo =
       empty_repo(@bovine_id)
-      |> animal("Bossie", available: maximum_customary_span())
-      |> animal("Not_bossie", available: maximum_customary_span())
+      |> animal("Bossie", available: Ex.Datespan.named(:widest_finite))
+      |> animal("Not_bossie", available: Ex.Datespan.named(:widest_finite))
       |> shorthand
     [repo: repo]
   end

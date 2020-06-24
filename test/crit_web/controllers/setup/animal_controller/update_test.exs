@@ -10,7 +10,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias CritWeb.ViewModels.Setup, as: ViewModel
   alias Ecto.Datespan
   import Crit.RepoState
-  import Crit.Exemplars.Bossie
+  alias Crit.Exemplars.Bossie
 
   setup :logged_in_as_setup_manager
 
@@ -18,7 +18,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   describe "the update form" do
     setup do 
       repo =
-        repo_has_bossie()
+        Bossie.create
         |> service_gap_for("Bossie", starting: @earliest_date)
         |> shorthand()
       [repo: repo]

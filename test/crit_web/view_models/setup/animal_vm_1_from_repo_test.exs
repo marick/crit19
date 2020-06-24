@@ -2,8 +2,8 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi2, as: AnimalApi
-  import Crit.Exemplars.Bossie
-  import Crit.RepoState
+  import Crit.Exemplars.Bossie, only: [repo_has_bossie: 1]
+  alias Crit.Exemplars, as: Ex
 
   setup :repo_has_bossie
 
@@ -13,26 +13,26 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
 
   describe "lift" do
     test "a lifting without service gaps)", %{repo: repo} do
-      AnimalApi.one_by_id(repo.bossie.id, @institution, preload: [:species])
+      repo.bossie.id
+      |> AnimalApi.one_by_id(@institution, preload: [:species])
       |> VM.Animal.lift(@institution)
-      |> assert_bossie(repo.bossie.id)
+      |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
-    test "listing with service gaps", %{repo: repo} do
-      service_gap_for(repo, "Bossie", starting: @date_2, ending: @date_3)
-      
-      fetched = 
-        AnimalApi.one_by_id(repo.bossie.id, @institution,
-          preload: [:species, :service_gaps])
-        |> VM.Animal.lift(@institution)
-        |> assert_bossie(repo.bossie.id)
+    test "lifting with service gaps", %{repo: repo} do
+      Ex.Bossie.put_service_gap(repo, span: :first)
 
-      fetched.service_gaps
-      |> singleton_payload
-      |> assert_shape(%VM.ServiceGap{})
-      |> assert_fields(in_service_datestring: @iso_date_2,
-                       out_of_service_datestring: @iso_date_3)
+      repo.bossie.id
+      |> AnimalApi.one_by_id(@institution, preload: [:species, :service_gaps])
+      |> VM.Animal.lift(@institution)
+      
+      |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
+      |> Ex.Bossie.with_only_service_gap(fn sg ->
+           sg
+           |> assert_shape(%VM.ServiceGap{})      
+           |> Ex.Datespan.assert_datestrings(:first)
+         end)
     end
   end
 
@@ -43,7 +43,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
       
       VM.Animal.fetch(:all_possible, @institution)
       |> singleton_payload
-      |> assert_bossie(repo.bossie.id)
+      |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
@@ -51,7 +51,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
       %{repo: repo} do 
 
       VM.Animal.fetch(:one_for_summary, repo.bossie.id, @institution)
-      |> assert_bossie(repo.bossie.id)
+      |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
     end
 
@@ -59,7 +59,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
       %{repo: repo} do 
 
       VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
-      |> assert_bossie(repo.bossie.id)
+      |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
       |> assert_assoc_loaded(:service_gaps)
     end
   end
