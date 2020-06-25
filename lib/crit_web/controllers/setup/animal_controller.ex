@@ -93,7 +93,7 @@ defmodule CritWeb.Setup.AnimalController do
     inst = institution(conn)
     with(
       {:ok, vm_changeset} <- VM.Animal.accept_form(params, inst),
-      repo_changeset = VM.Animal.lower_changeset(id, vm_changeset, inst),
+      repo_changeset = VM.Animal.lower_changeset(vm_changeset, id, inst),
       {:ok, animal} <- VM.Animal.update(repo_changeset, inst)
     ) do
       Common.render_for_replacement(conn,

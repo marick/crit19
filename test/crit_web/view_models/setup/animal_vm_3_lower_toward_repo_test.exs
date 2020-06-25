@@ -19,23 +19,23 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
   end
 
   describe "converting to a lowered changeset" do
-    test "a changeset with no changes", %{repo: repo, no_changes: start} do
+    test "a changeset with no changes", %{repo: repo, no_changes: no_changes} do
 
-      actual = 
-        VM.Animal.lower_changeset(repo.bossie.id, start, @institution)
-      # The main result is a changeset for the lowered type with no changes at all
-      # to the top-level fields.
-      actual 
-      |> assert_unchanged([:name, :lock_version, :span, :service_gaps])
-      |> assert_data(id: repo.bossie.id,
-                     name: repo.bossie.name,
-                     lock_version: repo.bossie.lock_version)
+      actual =
+        no_changes
+        |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
+        # The main result is a changeset for the lowered type with no
+        # changes at all to the top-level fields.
+        |> assert_unchanged([:name, :lock_version, :span, :service_gaps])
+        |> assert_data(id: repo.bossie.id,
+                       name: repo.bossie.name,
+                       lock_version: repo.bossie.lock_version)
 
       # We have the right type.
       Changeset.apply_changes(actual)      
       |> assert_shape(%Schemas.Animal{})
       
-      # There's no service-gap changesets. But the data has been converted
+      # There are no service-gap changesets. But the data has been converted
       # to the lower type.
       with_singleton(actual, :fetch_field!, :service_gaps)
          |> assert_shape(%Schemas.ServiceGap{})
@@ -44,25 +44,25 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
                          span: repo.only_sg.span)
     end
 
-    test "top level changes are used", %{repo: repo, no_changes: start} do
-      actual = 
-        VM.Animal.lower_changeset(repo.bossie.id,
-          Changeset.put_change(start, :out_of_service_datestring, @never),
-          @institution)
+    test "top level changes are used", %{repo: repo, no_changes: no_changes} do
+      actual =
+        no_changes
+        |> Changeset.put_change(:out_of_service_datestring, @never)
+        |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
 
-      new_span =
+      expected_span =
         repo.bossie.span.first
         |> Datespan.inclusive_up
 
       actual
-      |> assert_change(span: new_span)
+      |> assert_change(span: expected_span)
       |> assert_unchanged([:name, :lock_version, :service_gaps])
     end
     
-    test "service gap changes are used", %{repo: repo, no_changes: start} do
-      VM.Animal.lower_changeset(repo.bossie.id,
-        put_service_gap_field(start, :reason, "!!!!"),
-        @institution)
+    test "service gap changes are used", %{repo: repo, no_changes: no_changes} do
+      no_changes
+      |> only_service_gap_change(:reason, "!!!!")
+      |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
 
       |> assert_change(:service_gaps)
       |> assert_unchanged([:name, :lock_version, :span])
@@ -74,10 +74,10 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
          |> assert_unchanged([:id, :span])
     end
     
-    test "deletion of service gaps", %{repo: repo, no_changes: start} do
-      VM.Animal.lower_changeset(repo.bossie.id,
-        put_service_gap_field(start, :delete, true),
-        @institution)
+    test "deletion of service gaps", %{repo: repo, no_changes: no_changes} do
+      no_changes
+      |> only_service_gap_change(:delete, true)
+      |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
 
       |> with_singleton(:fetch_change!, :service_gaps)
          |> assert_unchanged([:id, :span, :reason])
@@ -97,15 +97,11 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
     Changeset.put_change(top, :service_gaps, lower)
   end
 
-  def the_single_service_gap(actual, fetch_how) do
-    apply(Changeset, fetch_how, [actual, :service_gaps])
-    |> singleton_payload
-  end
-
-  def put_service_gap_field(animal_changeset, field, value) do
+  def only_service_gap_change(animal_changeset, field, value) do
     new_service_gap =
       animal_changeset
-      |> the_single_service_gap(:fetch_field!)
+      |> Changeset.fetch_field!(:service_gaps)
+      |> singleton_payload
       |> Changeset.put_change(field, value)
     
     Changeset.put_change(animal_changeset, :service_gaps, [new_service_gap])

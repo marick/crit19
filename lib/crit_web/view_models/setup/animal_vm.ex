@@ -94,10 +94,10 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ---------Changeset for Schemas Version ---------------------------------------
 
-  @spec lower_changeset(db_id, Changeset.t(VM.Animal), short_name())
+  @spec lower_changeset(Changeset.t(VM.Animal), db_id, short_name())
   :: Changeset.t(Schemas.Animal)
         
-  def lower_changeset(id, form_changeset, institution) do
+  def lower_changeset(form_changeset, id, institution) do
     lower_attrs = lower_to_attrs(form_changeset)
     ids_to_delete = ChangesetX.ids_to_delete_from(form_changeset, :service_gaps)
     
