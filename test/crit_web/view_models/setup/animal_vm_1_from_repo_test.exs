@@ -28,11 +28,10 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
       |> VM.Animal.lift(@institution)
       
       |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
-      |> using_singleton_in(:service_gaps, fn sg ->
-           sg
-           |> assert_shape(%VM.ServiceGap{})      
-           |> Ex.Datespan.assert_datestrings(:first)
-         end)
+       
+      |> with_singleton(:service_gaps)
+         |> assert_shape(%VM.ServiceGap{})
+         |> Ex.Datespan.assert_datestrings(:first)
     end
   end
 

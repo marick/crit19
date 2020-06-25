@@ -34,12 +34,8 @@ defmodule Ecto.ChangesetX do
     end
   end
 
-
   def values(changeset, keys), 
     do: Enum.map(keys, &(Changeset.get_field(changeset, &1)))
-    
-
-  
 
   def empty_text_field?(changeset, field) do
     value = current_value(changeset, field)
@@ -84,7 +80,6 @@ defmodule Ecto.ChangesetX do
       |> Enum.map(&Changeset.get_field(&1, :id))
       |> MapSet.new
   end
-
 
   def tag_result(changeset, [error_subtype: error_tag]) do
     case changeset.valid? do

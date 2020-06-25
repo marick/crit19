@@ -1,9 +1,11 @@
 defmodule Crit.Exemplars.Bossie do
   use Crit.TestConstants
+  use ExContract
   import Crit.RepoState
   alias CritWeb.ViewModels.Setup, as: VM
   import Crit.Assertions.Map
   alias Crit.Exemplars, as: Ex
+  alias Crit.Factory
 
   @bossie "Bossie"
 
@@ -25,10 +27,15 @@ defmodule Crit.Exemplars.Bossie do
     empty_repo(@bovine_id) |> put
   end
 
-  def put_service_gap(repo, [span: description]) do
-    starting = Ex.Datespan.in_service(description)
-    ending = Ex.Datespan.out_of_service(description)
-    service_gap_for(repo, "Bossie", starting: starting, ending: ending)
+  def put_service_gap(repo, opts) do
+    opts = Enum.into(opts, %{name: Factory.unique(:service_gap)})
+    check Map.has_key?(opts, :span)
+    
+    starting = Ex.Datespan.in_service(opts.span)
+    ending = Ex.Datespan.out_of_service(opts.span)
+    repo 
+    |> service_gap_for("Bossie", name: opts.name, starting: starting, ending: ending)
+    |> shorthand
   end
 
   # ----------------------------------------------------------------------------
