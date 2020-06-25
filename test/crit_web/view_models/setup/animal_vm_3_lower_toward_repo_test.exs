@@ -2,15 +2,15 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
-  alias Crit.Exemplars.Bossie
+  alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
   alias Ecto.Datespan
 
 
   setup do
     repo =
-      Bossie.create
-      |> Bossie.put_service_gap(span: :first, name: "only_sg")
+      Ex.Bossie.create
+      |> Ex.Bossie.put_service_gap(span: :first, name: "only_sg")
     no_changes =
       VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
       |> recursive_change
@@ -45,17 +45,11 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
     end
 
     test "top level changes are used", %{repo: repo, no_changes: no_changes} do
-      actual =
-        no_changes
-        |> Changeset.put_change(:out_of_service_datestring, @never)
-        |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
+      no_changes
+      |> Changeset.put_change(:out_of_service_datestring, @never)
+      |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
 
-      expected_span =
-        repo.bossie.span.first
-        |> Datespan.inclusive_up
-
-      actual
-      |> assert_change(span: expected_span)
+      |> assert_change(span: Datespan.inclusive_up(repo.bossie.span.first))
       |> assert_unchanged([:name, :lock_version, :service_gaps])
     end
     

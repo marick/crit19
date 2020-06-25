@@ -2,7 +2,6 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
   use Crit.DataCase, async: true
   alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
-  import Crit.Exemplars.Bossie
   alias Crit.Exemplars, as: Ex
   import Crit.RepoState
   alias Ecto.Changeset
@@ -10,10 +9,10 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
 
   setup do
     repo =
-      empty_repo(@bovine_id)
-      |> animal("Bossie", available: Ex.Datespan.named(:widest_finite))
-      |> animal("Not_bossie", available: Ex.Datespan.named(:widest_finite))
+      Ex.Bossie.create
+      |> animal("Not_bossie")
       |> shorthand
+
     [repo: repo]
   end
 
@@ -37,18 +36,16 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
     assert_error(changeset, name: @already_taken)
   end
 
-
   test "conflicting updates", %{repo: repo} do
-    first = changeset_with_change(repo.bossie.id, :name, "first")
-    second = changeset_with_change(repo.bossie.id, :name, "second")
+    change_first = changeset_with_change(repo.bossie.id, :name, "first")
+    change_second = changeset_with_change(repo.bossie.id, :name, "second")
 
-    {:ok, _} = VM.Animal.update(first, @institution)
+    assert {:ok, _} = VM.Animal.update(change_first, @institution)
     
     assert {:error, :constraint, changeset} = 
-      VM.Animal.update(second, @institution)
+      VM.Animal.update(change_second, @institution)
 
     assert_error(changeset, :optimistic_lock_error)
-    
   end
 
   # ----------------------------------------------------------------------------
