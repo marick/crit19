@@ -28,13 +28,16 @@ defmodule Crit.Exemplars.Bossie do
   end
 
   def put_service_gap(repo, opts) do
-    opts = Enum.into(opts, %{name: Factory.unique(:service_gap)})
-    check Map.has_key?(opts, :span)
+    opts = Enum.into(opts, %{
+          name: Factory.unique(:service_gap),
+          reason: Factory.unique(:reason),
+          span: :first})
     
     starting = Ex.Datespan.in_service(opts.span)
     ending = Ex.Datespan.out_of_service(opts.span)
+    opts = [name: opts.name, reason: opts.reason, starting: starting, ending: ending]
     repo 
-    |> service_gap_for("Bossie", name: opts.name, starting: starting, ending: ending)
+    |> service_gap_for("Bossie", opts)
     |> shorthand
   end
 

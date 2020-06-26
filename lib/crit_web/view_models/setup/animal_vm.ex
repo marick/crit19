@@ -7,6 +7,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   alias Crit.Ecto.TrimmedString
   alias CritWeb.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritWeb.ViewModels.FieldValidators
+  alias Ecto.Changeset
   alias Ecto.ChangesetX
   import Pile.Deftestable
   use ExContract
@@ -34,7 +35,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
   # ----------------------ABOUT PRODUCING A FORM: `fetch`, `lift` ----------------
   
-  @spec fetch(:atom, short_name()) :: Changeset.t(VM.Animal)
+  @spec fetch(:atom, short_name()) :: VM.Animal | [VM.Animal]
   
   def fetch(:all_possible, institution) do
       AnimalApi.inadequate_all(institution, preload: [:species])
@@ -50,12 +51,19 @@ defmodule CritWeb.ViewModels.Setup.Animal do
     AnimalApi.one_by_id(id, institution, preload: [:species, :service_gaps])
     |> lift(institution)
   end
+  
+  @spec fresh_form_changeset(VM.Animal) :: Changeset.t(VM.Animal)
+  def fresh_form_changeset(animal) do
+    animal
+    |> Map.update!(:service_gaps, &([%VM.ServiceGap{} | &1]))
+    |> Changeset.change
+  end
 
   
   deftestable lift(sources, institution) when is_list(sources), 
     do: (for s <- sources, do: lift(s, institution))
     
-  @spec lift(AnimalApi.t, short_name()) :: Changeset.t(VM.Animal)
+  @spec lift(AnimalApi.t, short_name()) :: VM.Animal
   deftestable lift(source, institution) do
     %{EnumX.pour_into(source, VM.Animal) |
       species_name: source.species.name,

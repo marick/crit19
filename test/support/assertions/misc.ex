@@ -77,4 +77,10 @@ defmodule Crit.Assertions.Misc do
     |> Map.get(field)
     |> singleton_payload
   end
+
+  def sorted_by_id(container, field) do
+    container
+    |> Map.get(field)
+    |> EnumX.sort_by_id
+  end
 end

@@ -69,6 +69,14 @@ defmodule CritWeb.Setup.AnimalController do
     Audit.created_animals(conn, audit_data)
   end
 
+  def _show(conn, %{"animal_id" => id}) do
+    institution = institution(conn)
+    animal = VM.Animal.fetch(:one_for_summary, id, institution)
+    Common.render_for_replacement(conn,
+      "_show_one_animal.html",
+      animal: animal)
+  end
+
   def update_form(conn, %{"animal_id" => id}) do
     institution = institution(conn)
     animal = VM.Animal.fetch(:one_for_edit, id, institution)
@@ -76,17 +84,8 @@ defmodule CritWeb.Setup.AnimalController do
     Common.render_for_replacement(conn,
       "_edit_one_animal.html",
       path: path(:update, animal.id),
-      changeset: AnimalApi.form_changeset(animal),
+      changeset: VM.Animal.fresh_form_changeset(animal),
       errors: false)
-      
-  end
-
-  def _show(conn, %{"animal_id" => id}) do
-    institution = institution(conn)
-    animal = VM.Animal.fetch(:one_for_summary, id, institution)
-    Common.render_for_replacement(conn,
-      "_show_one_animal.html",
-      animal: animal)
   end
 
   def update(conn, %{"animal_old_id" => id, "animal" => params}) do
@@ -99,6 +98,13 @@ defmodule CritWeb.Setup.AnimalController do
       Common.render_for_replacement(conn,
         "_show_one_animal.html",
         animal: animal)
+    else
+      {:error, :form, changeset} ->
+        Common.render_for_replacement(conn,
+          "_edit_one_animal.html",
+          path: path(:update, id),
+          changeset: changeset,
+          errors: true)
     end
   end
 end
