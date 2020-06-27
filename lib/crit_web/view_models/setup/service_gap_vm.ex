@@ -9,12 +9,12 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
     field :id, :id
-    field :reason, :string
+    field :reason, :string,                    default: ""
 
     field :institution, :string
-    field :in_service_datestring, :string
-    field :out_of_service_datestring, :string
-    field :delete, :boolean, default: false
+    field :in_service_datestring, :string,     default: ""
+    field :out_of_service_datestring, :string, default: ""
+    field :delete, :boolean,                   default: false
   end
 
   def fields(), do: __schema__(:fields)

@@ -70,9 +70,9 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
       |> VM.Animal.fresh_form_changeset
       |> assert_no_changes
       |> with_singleton(:fetch_field!, :service_gaps)
-         |> assert_fields(reason: nil,
-                          in_service_datestring: nil,
-                          out_of_service_datestring: nil)
+         |> assert_fields(reason: "",
+                          in_service_datestring: "",
+                          out_of_service_datestring: "")
     end
 
     test "fresh form changeset - a service gap", %{repo: repo} do
@@ -86,9 +86,9 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.FromRepoTest do
       [empty, only] = Changeset.fetch_field!(animal, :service_gaps)
 
       empty
-      |> assert_fields(reason: nil,
-                       in_service_datestring: nil,
-                       out_of_service_datestring: nil)
+      |> assert_fields(reason: "",
+                       in_service_datestring: "",
+                       out_of_service_datestring: "")
 
       only
       |> assert_field(reason: "exists")
