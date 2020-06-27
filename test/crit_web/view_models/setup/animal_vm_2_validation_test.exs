@@ -31,7 +31,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
   }
   
   @bad_sg_params %{@base_sg_params | "reason" => "" }
-  @update_sg_params @base_sg_params |> Map.put("id", 4)
+  @update_sg_params @base_sg_params |> Map.put("id", "4")
     
   # ----------------------------------------------------------------------------
   describe "successful form validation" do
@@ -70,7 +70,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
         name: "Bossie",
         span: Datespan.customary(@earliest_date, @latest_date),
         service_gaps: [
-          %{id: @update_sg_params["id"],
+          %{id: @update_sg_params["id"] |> String.to_integer,
             reason: @update_sg_params["reason"],
             span: Datespan.customary(@date_2, @date_3)
           }]
