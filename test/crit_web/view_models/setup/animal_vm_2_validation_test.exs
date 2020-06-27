@@ -50,17 +50,18 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
                        out_of_service_datestring: @latest_iso_date)
     end
 
-    test "empty service gaps are removed, not subject to validation" do
-      # An invalid and valid changeset checks whether ANY of them need to be
-      # invalid or ALL of them.
-
-      [only] = 
+    test "empty insertion params are not subject to validation" do
+      [empty, only] = 
         @base_animal
         |> Params.put_nested("service_gaps", [@empty_sg_params, @update_sg_params])
         |> VM.Animal.accept_form(@institution) |> ok_payload
         |> Changeset.fetch_change!(:service_gaps)
 
-      assert_change(only, reason: @update_sg_params["reason"])
+      empty
+      |> assert_no_changes
+
+      only
+      |> assert_change(reason: @update_sg_params["reason"])
     end
 
     test "helper function `lower_to_attrs`" do  

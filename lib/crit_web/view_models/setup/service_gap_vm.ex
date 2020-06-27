@@ -21,8 +21,9 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   def fields(), do: __schema__(:fields)
   def required(), do: List.delete(__schema__(:fields), :id)
 
-  @unstarted_indicators ["in_service_datestring", "out_of_service_datestring",
-                         "reason"]
+  @unstarted_atom_keys [:in_service_datestring, :out_of_service_datestring,
+                        :reason]
+  @unstarted_string_keys Enum.map(@unstarted_atom_keys, &to_string/1)
 
  # ----------------------------------------------------------------------------
 
@@ -63,29 +64,41 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   # ----------------------------------------------------------------------------
 
-  deftestable from_empty_form?(%{} = params) do
+  deftestable from_empty_form?(%VM.ServiceGap{} = struct),
+    do: from_empty_form?(struct, @unstarted_atom_keys)
+
+  deftestable from_empty_form?(%{} = params),
+    do: from_empty_form?(params, @unstarted_string_keys)
+  
+  def from_empty_form?(map, keys) do
     trimmed = fn string ->
       string |> String.trim_leading |> String.trim_trailing
     end
 
     empty? = fn one ->
-      Enum.all?(@unstarted_indicators, &(trimmed.(one[&1]) == ""))
+      Enum.all?(keys, fn key ->
+        value = Map.get(one, key) |> trimmed.()
+        value == ""
+      end)
     end
 
-    empty?.(params)
+    empty?.(map)
   end
-  
 
   # ----------------------------------------------------------------------------
 
-  def lower_to_attrs(changesets) when is_list(changesets) do 
-    for c <- changesets do
-      {:ok, data} = apply_action(c, :insert)
-      %{id: data.id,
-        reason: data.reason,
-        span: FromWeb.span(data)
-      }
+  def lower_to_attrs(changesets) when is_list(changesets) do
+    make_vm = fn changeset -> 
+      {:ok, data} = apply_action(changeset, :insert)
+      data
     end
+
+    make_attrs = &(%{id: &1.id, reason: &1.reason, span: FromWeb.span(&1)})
+
+    changesets
+    |> Enum.map(make_vm)
+    |> Enum.reject(&from_empty_form?/1)
+    |> Enum.map(make_attrs)
   end
 
   # ----------------------------------------------------------------------------

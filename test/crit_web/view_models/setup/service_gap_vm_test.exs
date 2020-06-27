@@ -1,6 +1,6 @@
 defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
   use Crit.DataCase, async: true
-  alias CritWeb.ViewModels.Setup, as: ViewModels
+  alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
   alias Ecto.Datespan
 
@@ -19,7 +19,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
   describe "lift" do 
     test "common fields" do
       create(Datespan.customary(@date_2, @date_3))
-      |> ViewModels.ServiceGap.lift(@institution)
+      |> VM.ServiceGap.lift(@institution)
       |> assert_fields(id: @id,
                        reason: @reason,
                        institution: @institution,
@@ -28,7 +28,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
     test "datespan" do
        create(Datespan.customary(@date_2, @date_3))
-       |> ViewModels.ServiceGap.lift(@institution)
+       |> VM.ServiceGap.lift(@institution)
        |> assert_fields(in_service_datestring: @iso_date_2,
                         out_of_service_datestring: @iso_date_3)
     end
@@ -43,7 +43,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                  "out_of_service_datestring" => @iso_date_2,
                  "reason" => "reason"}
       
-      ViewModels.ServiceGap.accept_form(params, @institution)
+      VM.ServiceGap.accept_form(params, @institution)
       |> assert_valid
       |> assert_changes(id: 1,
                         in_service_datestring: @iso_date_1,
@@ -57,7 +57,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
         "out_of_service_datestring" => "",
         "reason" => "        "  # Note this will be shown as a change
       }
-      ViewModels.ServiceGap.accept_form(params, @institution)
+      VM.ServiceGap.accept_form(params, @institution)
       |> assert_data(reason: "",
                      in_service_datestring: "",
                      out_of_service_datestring: "")
@@ -71,7 +71,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                  "in_service_datestring" => @iso_date_1,
                  "out_of_service_datestring" => @iso_date_1,
                  "reason" => "reason"}
-      ViewModels.ServiceGap.accept_form(params, @institution)
+      VM.ServiceGap.accept_form(params, @institution)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
 
       # Other fields are available to fill form fields
@@ -81,31 +81,58 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
     end
   end
 
-  test "empty changesets can be detected" do
-    list = [%{"id" => "",
-              "in_service_datestring" => "",
-              "out_of_service_datestring" => "",
-              "reason" => ""},
-            # these stay but they are error cases
-            %{"id" => "1",
-              "in_service_datestring" => "",
-              "out_of_service_datestring" => @iso_date_2,
-              "reason" => "reason"},              
-            %{"id" => "2",
-              "in_service_datestring" => @iso_date_1,
-              "out_of_service_datestring" => "",
-              "reason" => "reason"},
-            %{"id" => "3",
-              "in_service_datestring" => @iso_date_1,
-              "out_of_service_datestring" => @iso_date_2,
-              "reason" => ""}
-           ]
-
-    actual = Enum.map(list, &ViewModels.ServiceGap.from_empty_form?/1)
+  describe "empty forms and their results can be detected" do
+    test "empty params can be detected" do
+      list = [%{"id" => "",
+                "in_service_datestring" => "",
+                "out_of_service_datestring" => "",
+                "reason" => ""},
+              # these stay but they are error cases
+              %{"id" => "1",
+                "in_service_datestring" => "",
+                "out_of_service_datestring" => @iso_date_2,
+                "reason" => "reason"},              
+              %{"id" => "2",
+                "in_service_datestring" => @iso_date_1,
+                "out_of_service_datestring" => "",
+                "reason" => "reason"},
+              %{"id" => "3",
+                "in_service_datestring" => @iso_date_1,
+                "out_of_service_datestring" => @iso_date_2,
+                "reason" => ""}
+             ]
+      
+      actual = Enum.map(list, &VM.ServiceGap.from_empty_form?/1)
     
-    assert [true, false, false, false] == actual
+      assert [true, false, false, false] == actual
+    end
+    
+    test "empty service gaps can be detected" do
+      list = [%VM.ServiceGap{
+                 in_service_datestring: "",
+                 out_of_service_datestring: "",
+                 reason: ""},
+              # these stay but they are error cases
+              %VM.ServiceGap{id: 1,
+                in_service_datestring: "",
+                out_of_service_datestring: @iso_date_2,
+                reason: "reason"},              
+              %VM.ServiceGap{id: 2,
+                in_service_datestring: @iso_date_1,
+                out_of_service_datestring: "",
+                reason: "reason"},
+              %VM.ServiceGap{id: 3,
+                in_service_datestring: @iso_date_1,
+                out_of_service_datestring: @iso_date_2,
+                reason: ""}
+             ]
+      
+      actual = Enum.map(list, &VM.ServiceGap.from_empty_form?/1)
+    
+      assert [true, false, false, false] == actual
+    end
   end
-
+  
   # ----------------------------------------------------------------------------
   
   describe "lower_to_attrs" do
@@ -122,11 +149,23 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
       }
 
       actual =
-        [ViewModels.ServiceGap.accept_form(params, @institution)]
-        |> ViewModels.ServiceGap.lower_to_attrs
+        [VM.ServiceGap.accept_form(params, @institution)]
+        |> VM.ServiceGap.lower_to_attrs
         |> singleton_payload
 
       assert actual == expected
+    end
+
+    test "empty insertions are not included" do
+      params = %{"in_service_datestring" => "",
+                 "out_of_service_datestring" => "",
+                 "reason" => ""}
+
+      actual =
+        [VM.ServiceGap.unchecked_empty_changeset(params)]
+        |> VM.ServiceGap.lower_to_attrs
+
+      assert actual == []
     end
   end
 end
