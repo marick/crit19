@@ -101,7 +101,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
     end
 
     @tag :skip
-    test "validation failures produce appropriate annotations",
+    test "validation failures produce appropriate messages in the HTML",
       %{conn: conn, repo: repo} do
 
       changes = %{in_service_datestring: @iso_date_2,
