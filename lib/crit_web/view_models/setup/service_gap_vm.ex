@@ -5,6 +5,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
   import Ecto.Changeset
+  import Pile.Deftestable
   
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -43,16 +44,26 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     |> FieldValidators.date_order
   end
   
-  def accept_form(params, institution) do
-    %VM.ServiceGap{institution: institution}
-    |> changeset(params)
+  def accept_form(params, institution) do 
+    case {VM.ServiceGap.from_empty_form?(params),
+          describe_insertion?(params)} do
+      {true, true} ->
+        # Display, error free, if other forms have errors.
+        VM.ServiceGap.unchecked_empty_changeset(params)
+      _ ->
+        # Look for errors.
+        changeset(%VM.ServiceGap{institution: institution}, params)
+    end
   end
- 
 
+  deftestable unchecked_empty_changeset(params),
+    do: cast(%VM.ServiceGap{}, params, fields())
+
+  defp describe_insertion?(params), do: not Map.has_key?(params, "id")
 
   # ----------------------------------------------------------------------------
 
-  def from_empty_form?(%{} = params) do
+  deftestable from_empty_form?(%{} = params) do
     trimmed = fn string ->
       string |> String.trim_leading |> String.trim_trailing
     end
@@ -64,6 +75,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     empty?.(params)
   end
   
+
   # ----------------------------------------------------------------------------
 
   def lower_to_attrs(changesets) when is_list(changesets) do 

@@ -88,11 +88,11 @@ defmodule CritWeb.ViewModels.Setup.Animal do
       |> cast(params, fields())
       |> validate_required(required())
       |> FieldValidators.date_order
-    
-    sg_changesets =
-      fetch_change!(animal_changeset, :service_gaps)
-      |> Enum.reject(&VM.ServiceGap.from_empty_form?/1)
-      |> Enum.map(&(VM.ServiceGap.accept_form &1, institution))
+
+    sg_changesets = 
+      for sg_params <- fetch_change!(animal_changeset, :service_gaps) do
+        VM.ServiceGap.accept_form(sg_params, institution)
+      end
 
     animal_changeset
     |> put_change(:service_gaps, sg_changesets)

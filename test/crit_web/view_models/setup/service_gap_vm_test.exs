@@ -51,13 +51,20 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                         reason: "reason")
     end
 
+    test "an empty service gap is OK" do
+      params = %{
+        "in_service_datestring" =>     "",
+        "out_of_service_datestring" => "",
+        "reason" => "        "  # Note this will be shown as a change
+      }
+      ViewModels.ServiceGap.accept_form(params, @institution)
+      |> assert_data(reason: "",
+                     in_service_datestring: "",
+                     out_of_service_datestring: "")
+      |> assert_change(reason: "        ")
+    end
 
     # Error checking
-
-    test "required fields are must be present" do
-      ViewModels.ServiceGap.accept_form(%{"id" => "1"}, @institution)
-      |> assert_errors([:in_service_datestring, :out_of_service_datestring, :reason])
-    end
 
     test "dates must be in the right order" do
       params = %{"id" => "1",
@@ -101,7 +108,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
 
   # ----------------------------------------------------------------------------
   
-  describe "update_params" do
+  describe "lower_to_attrs" do
     test "valid are converted" do
       params = %{"id" => 1,
                  "in_service_datestring" => @iso_date_1,
