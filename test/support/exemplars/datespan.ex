@@ -10,6 +10,12 @@ defmodule Crit.Exemplars.Datespan do
       strings: {@earliest_iso_date, @latest_iso_date}
       
     },
+
+    widest_infinite: %{
+      named: Datespan.inclusive_up(@earliest_date),
+      strings: {@earliest_iso_date, @never}
+    },
+    
     first: %{
       named: Datespan.customary(@date_2, @date_3),
       strings: {@iso_date_2, @iso_date_3}
@@ -17,21 +23,19 @@ defmodule Crit.Exemplars.Datespan do
     }
   }
 
-  def named(description) do
+  defp get_top(description, key) do
     check Map.has_key?(@spans, description)
-    @spans[description].named
-  end
- 
-  def in_service(description) do
-    check Map.has_key?(@spans, description)
-    named(description).first
-  end
-  
-  def out_of_service(description) do
-    check Map.has_key?(@spans, description)
-    named(description).last
+    @spans[description] |> Map.get(key)
   end
 
+  def named(description), do: get_top(description, :named)
+  def strings(description), do: get_top(description, :strings)
+ 
+  def in_service(description), do: named(description).first
+  def out_of_service(description), do: named(description).last
+
+  def in_service_datestring(description), do: strings(description) |> elem(0)
+  def out_of_service_datestring(description), do: strings(description) |> elem(1)
 
   # ----------------------------------------------------------------------------
 

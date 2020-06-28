@@ -60,6 +60,18 @@ defmodule Crit.Factory do
      }
   end
 
+  def animal_vm_factory() do
+    in_service = @earliest_date
+    out_of_service = @latest_date
+    span = Datespan.customary(in_service, out_of_service)
+                              
+    %Setup.Schemas.Animal{
+      name: Faker.Cat.name(),
+      species_id: some_species_id(),
+      span: span,
+     }
+  end
+
   def procedure_frequency_factory() do
     %ProcedureFrequency{
       name: unique(:procedure_frequency_name),
