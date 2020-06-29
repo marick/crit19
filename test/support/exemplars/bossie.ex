@@ -27,7 +27,7 @@ defmodule Crit.Exemplars.Bossie do
     empty_repo(@bovine_id) |> put
   end
 
-  def put_service_gap(repo, opts) do
+  def put_service_gap(repo, opts \\ []) do
     opts = Enum.into(opts, %{
           name: Factory.unique(:service_gap),
           reason: Factory.unique(:reason),

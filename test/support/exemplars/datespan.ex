@@ -37,6 +37,13 @@ defmodule Crit.Exemplars.Datespan do
   def in_service_datestring(description), do: strings(description) |> elem(0)
   def out_of_service_datestring(description), do: strings(description) |> elem(1)
 
+  def put_datestrings(map, description) do
+    Map.merge(map, %{
+          "in_service_datestring" => in_service_datestring(description),
+          "out_of_service_datestring" => out_of_service_datestring(description)
+          })
+  end 
+
   # ----------------------------------------------------------------------------
 
   def assert_datestrings(container, description) do
