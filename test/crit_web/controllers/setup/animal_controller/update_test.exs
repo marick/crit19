@@ -5,7 +5,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.AnimalApi
   # alias Crit.Setup.AnimalApi2
-  alias Crit.Extras.{AnimalT, ServiceGapT}
+  alias Crit.Extras.AnimalT
   alias CritWeb.ViewModels.Setup, as: VM
   # alias Ecto.Datespan
   import Crit.RepoState
@@ -112,7 +112,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       |> follow_form(%{animal: changes})
       |> assert_purpose(form_for_editing_animal())
       |> assert_user_sees(@date_misorder_message)
-      # |> assert_user_sees(@blank_message_in_html)
+      |> assert_user_sees(@blank_message_in_html)
     end
   end
 
@@ -121,26 +121,27 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
     # is displayed than that the more-complex changeset structure is filled out
     # correctly.
     setup do
-      %{id: animal_id} = AnimalT.dated(@iso_date_1, @never)
-      old_gap = ServiceGapT.dated(animal_id, @iso_date_2, @iso_date_3)
-      animal = AnimalApi.updatable!(animal_id, @institution)
-      params = AnimalT.unchanged_params(animal)
+      repo =
+        empty_repo(@equine_id)
+        |> animal("Jake", available: Ex.Datespan.named(:widest_infinite))
+        |> service_gap_for("Jake", name: "original_sg", span: :first)
+        |> shorthand
 
-      [animal: animal, params: params, old_gap: old_gap]
+      [repo: repo]
     end
 
     @tag :skip
-    test "only an error in the animal part",
-      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
+    test "only an error in the animal part", %{conn: conn, repo: repo} do
+      same_as_in_service = Ex.Datespan.in_service_datestring(:widest_infinite)
+      changes = %{out_of_service_datestring: same_as_in_service}
 
-      params =
-        unchanged_params
-        |> put_in(["out_of_service_datestring"], @iso_date_1)
+      get_via_action(conn, :update_form, repo.jake.id)
+      |> follow_form(%{animal: changes})
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
       |> assert_user_sees(@date_misorder_message)
-      |> assert_new_service_gap_form(animal)
-      |> assert_existing_service_gap_form(animal, old_gap)
+      |> fetch_form # |> IO.inspect
+      # |> assert_new_service_gap_form(animal)
+      # |> assert_existing_service_gap_form(animal, old_gap)
     end
 
     @tag :skip
