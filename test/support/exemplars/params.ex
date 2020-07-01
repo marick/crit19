@@ -1,5 +1,7 @@
 defmodule Crit.Exemplars.Params do
   use ExContract
+  use Crit.TestConstants
+  alias Crit.Exemplars, as: Ex
 
   def put_nested(top_params, field, nary) when is_list(nary) do
     check is_binary(field)
@@ -9,5 +11,35 @@ defmodule Crit.Exemplars.Params do
       |> Enum.map(fn {lower_params, index} -> {to_string(index), lower_params} end)
       |> Map.new
     %{ top_params | field => param_map}
+  end
+
+
+  @base_vm_animal %{
+      "id" => "1",
+      "lock_version" => "2",
+      "name" => "Bossie",
+      "species_name" => "species name",
+      "service_gaps" => %{}
+  } |> Ex.Datespan.put_datestrings(:widest_finite)
+
+  @service_gaps %{
+    empty: %{
+      "reason" => "",
+      "in_service_datestring" => "",
+      "out_of_service_datestring" => "",
+    }, 
+
+    first: Ex.Datespan.put_datestrings(%{"reason" => "first reason"}, :first)
+  }
+    
+  def vm_animal(service_gap_descriptors) do
+    service_gaps = 
+      service_gap_descriptors
+      |> Enum.with_index
+      |> Enum.reduce(%{}, fn {descriptor, index}, acc ->
+           Map.put(acc, to_string(index), @service_gaps[descriptor])
+         end)
+
+      Map.put(@base_vm_animal, "service_gaps", service_gaps)
   end
 end
