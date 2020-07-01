@@ -6,7 +6,7 @@ defmodule Crit.RepoState do
   alias Crit.Factory
   alias Ecto.Datespan
   alias Crit.Setup.Schemas.{Animal, Procedure}
-  alias Crit.Setup.{AnimalApi, ProcedureApi}
+  alias Crit.Setup.{AnimalApi, ProcedureApi, AnimalApi2}
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
                      :reservation, :service_gap])
@@ -89,7 +89,7 @@ defmodule Crit.RepoState do
               available: @earliest_date,
               species_id: data.species_id})
       
-      Factory.sql_insert!(:animal,
+      Factory.sql_insert!(:animal_new,
         name: animal_name,
         span: compute_span(opts.available),
         species_id: opts.species_id)
@@ -101,8 +101,6 @@ defmodule Crit.RepoState do
       apply &animal/3, [acc, name, []]
     end)
   end
-
-  
 
   def reservation_for(data, purpose, animal_names, procedure_names, opts \\ []) do
     schema = :reservation
@@ -179,12 +177,12 @@ defmodule Crit.RepoState do
   defp load_completely(data, :procedure),
     do: load_completely(data, :procedure, ProcedureApi, Procedure)
   defp load_completely(data, :animal),
-    do: load_completely(data, :animal, AnimalApi, Animal)
+    do: load_completely(data, :animal, AnimalApi2, Animal)
   defp load_completely(data, _), do: data
 
   defp load_completely(data, schema, api, module) do
     keys = Map.keys(data[schema] || %{})
-    
+
     Enum.reduce(keys, data, fn name, acc ->
       new = 
         acc
