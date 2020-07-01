@@ -1,6 +1,8 @@
 defmodule CritWeb.ViewModels.Setup.Animal do
   use CritWeb, :view_model
   alias CritWeb.ViewModels.Setup, as: VM
+  import CritWeb.ViewModels.Common, only: [flatten_numbered_sublist: 2,
+                                           summarize_validation: 3]
   alias Crit.Setup.Schemas
   alias Crit.Setup.AnimalApi2, as: AnimalApi
 
@@ -81,7 +83,7 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   # has to be dragged around.
   @spec accept_form(params(), short_name()) :: Changeset.t(VM.Animal)
   def accept_form(params, institution) do
-    params = CritWeb.ViewModels.Common.flatten(params, "service_gaps")
+    params = flatten_numbered_sublist(params, "service_gaps")
 
     animal_changeset = 
       %VM.Animal{institution: institution}
@@ -96,8 +98,9 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
     animal_changeset
     |> put_change(:service_gaps, sg_changesets)
-    |> Map.put(:valid?, ChangesetX.all_valid?(animal_changeset, sg_changesets))
-    |> ChangesetX.tag_result(error_subtype: :form)
+    |> summarize_validation(
+          ChangesetX.all_valid?(animal_changeset, sg_changesets),
+          error_subtype: :form)
   end
 
   # ---------Changeset for Schemas Version ---------------------------------------

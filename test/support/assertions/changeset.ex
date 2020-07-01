@@ -185,4 +185,19 @@ defmodule Crit.Assertions.Changeset do
       eval_once
     end
   end
+
+  # ----------------------------------------------------------------------------
+
+  @doc """
+
+  Assert that the changeset will cause `error_tag` and friends to show
+  errors. This happens automatically when the changeset comes from an
+  Ecto function, but that doesn't happen with view models.
+  """
+  defchain assert_form_will_display_errors(changeset),
+    do: assert changeset.action != nil
+
+  defchain refute_form_will_display_errors(changeset),
+    do: assert changeset.action == nil
+  
 end

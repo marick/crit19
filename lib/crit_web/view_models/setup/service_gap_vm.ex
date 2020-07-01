@@ -6,6 +6,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   alias CritWeb.ViewModels.FieldValidators
   import Ecto.Changeset
   import Pile.Deftestable
+  import CritWeb.ViewModels.Common, only: [summarize_validation: 1]
   
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -20,7 +21,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
 
   def fields(), do: __schema__(:fields)
   def required(), do: List.delete(__schema__(:fields), :id)
-
+      
   @unstarted_atom_keys [:in_service_datestring, :out_of_service_datestring,
                         :reason]
   @unstarted_string_keys Enum.map(@unstarted_atom_keys, &to_string/1)
@@ -38,6 +39,8 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   end
 
   # ----------------------------------------------------------------------------
+
+  # Note: you probably want `accept_form`, not this.
   def changeset(%VM.ServiceGap{} = struct, params) do
     struct
     |> cast(params, fields())
@@ -54,6 +57,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
       _ ->
         # Look for errors.
         changeset(%VM.ServiceGap{institution: institution}, params)
+        |> summarize_validation
     end
   end
 

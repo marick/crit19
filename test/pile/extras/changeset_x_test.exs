@@ -76,7 +76,6 @@ defmodule Ecto.ChangesetXTest do
       |> ChangesetX.ids_to_delete_from(:many)
 
     assert actual == MapSet.new([2])
-
-  end    
+  end
 end
   

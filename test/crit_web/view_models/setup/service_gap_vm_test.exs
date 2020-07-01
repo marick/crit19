@@ -49,6 +49,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                         in_service_datestring: @iso_date_1,
                         out_of_service_datestring: @iso_date_2,
                         reason: "reason")
+      |> refute_form_will_display_errors
     end
 
     test "an empty service gap is OK" do
@@ -62,6 +63,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                      in_service_datestring: "",
                      out_of_service_datestring: "")
       |> assert_change(reason: "        ")
+      |> refute_form_will_display_errors
     end
 
     # Error checking
@@ -73,6 +75,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGapTest do
                  "reason" => "reason"}
       VM.ServiceGap.accept_form(params, @institution)
       |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_form_will_display_errors
 
       # Other fields are available to fill form fields
       |> assert_changes(in_service_datestring: @iso_date_1,

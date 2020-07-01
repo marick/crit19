@@ -59,9 +59,11 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
 
       empty
       |> assert_no_changes
+      |> refute_form_will_display_errors
 
       only
       |> assert_change(reason: @update_sg_params["reason"])
+      |> refute_form_will_display_errors
     end
 
     test "helper function `lower_to_attrs`" do  
@@ -94,6 +96,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> assert_invalid
       |> assert_errors(VM.Animal.required())
+      |> assert_form_will_display_errors
     end
 
     test "dates must be in the right order" do
@@ -104,6 +107,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       VM.Animal.accept_form(params, @institution) |> error2_payload(:form)
       |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
+      |> assert_form_will_display_errors
 
       # Fields are available to fill form fields
       |> assert_changes(in_service_datestring: @iso_date_2,
@@ -116,6 +120,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       |> Params.put_nested("service_gaps", [@update_sg_params])
       |> VM.Animal.accept_form(@institution) |> ok_payload
       |> assert_valid      
+      |> refute_form_will_display_errors
     end
 
     test "changesets are produced for service gaps: error case" do
@@ -125,6 +130,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       |> Changeset.get_change(:service_gaps) |> singleton_payload
       |> assert_invalid
       |> assert_error(:reason)
+      |> assert_form_will_display_errors
     end
 
     test "a service gap changeset infects the animal changeset's validity" do
@@ -134,6 +140,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.ValidationTest do
       |> Params.put_nested("service_gaps", [@bad_sg_params, @update_sg_params])
       |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
       |> assert_invalid
+      |> assert_form_will_display_errors
     end
   end
 end
