@@ -3,8 +3,6 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   use PhoenixIntegration
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Setup.AnimalApi
-  alias Crit.Extras.AnimalT
   alias CritWeb.ViewModels.Setup, as: VM
   import Crit.RepoState
   alias Crit.Exemplars, as: Ex
@@ -195,7 +193,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> assert_user_sees(@date_misorder_message)
         |> assert_user_sees(@blank_message_in_html)
         |> form_inputs(:animal)
-        |> assert_field(out_of_service_datestring: @iso_sg_start)
+        |> assert_field(out_of_service_datestring: @earliest_iso_date)
 
       service_gap(inputs, 0)
       |> assert_empty_service_gap_form(except: changes.service_gaps[0])
@@ -203,68 +201,69 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       service_gap(inputs, 1) |> assert_unchanged_service_gap_form(repo.sg)
     end
 
-    @tag :skip
-    test "an error in the old service gap and animal",
-      %{animal: animal, params: unchanged_params, old_gap: old_gap, conn: conn} do
-      params =
-        unchanged_params
-        |> put_in(["out_of_service_datestring"], @iso_date_1)
-        |> put_in(["service_gaps", "1", "out_of_service_datestring"], @iso_date_2)
+    test "an error in the old service gap and animal", %{conn: conn, repo: repo} do
+      changes =
+        %{out_of_service_datestring: @earliest_iso_date, 
+          service_gaps: %{1 => %{out_of_service_datestring: @iso_sg_start}}}
+      
+      inputs =
+        incorrect_update(conn, repo.jake, changing: changes)
+        |> assert_user_sees(@date_misorder_message)
+        |> form_inputs(:animal)
+        |> assert_field(out_of_service_datestring: @earliest_iso_date)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
-      |> assert_user_sees(@date_misorder_message)
-      |> refute_user_sees(@blank_message_in_html)
-      |> assert_new_service_gap_form(animal)
-      |> assert_existing_service_gap_form(animal, old_gap)
+      service_gap(inputs, 0) |> assert_empty_service_gap_form
+      service_gap(inputs, 1)
+      |> assert_unchanged_service_gap_form(repo.sg, except: changes.service_gaps[1])
     end
   end
 
   describe "the common case where there is no existing service gap" do 
     setup do
-      %{id: animal_id} = AnimalT.dated(@iso_date_1, @never)
-      animal = AnimalApi.updatable!(animal_id, @institution)
-      params = AnimalT.unchanged_params(animal)
+      repo = Ex.Bossie.create
 
-      [animal: animal, params: params]
+      [repo: repo]
     end
     
-    @tag :skip
-    test "an error in the new service gap and animal",
-      %{animal: animal, params: unchanged_params, conn: conn} do
-      params =
-        unchanged_params
-        |> put_in(["out_of_service_datestring"], @iso_date_1)
-        |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
+    test "an error in the new service gap and animal", %{conn: conn, repo: repo} do
+      changes =
+        %{out_of_service_datestring: @earliest_iso_date, 
+          service_gaps: %{0 => %{out_of_service_datestring: @iso_sg_start}}}
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
-      |> assert_user_sees(@date_misorder_message)
-      |> assert_user_sees(@blank_message_in_html)
-      |> assert_new_service_gap_form(animal)
+      inputs =
+        incorrect_update(conn, repo.bossie, changing: changes)
+        |> assert_user_sees(@date_misorder_message)
+        |> assert_user_sees(@blank_message_in_html)
+        |> form_inputs(:animal)
+        |> assert_field(out_of_service_datestring: @earliest_iso_date)
+
+      service_gap(inputs, 0)
+      |> assert_empty_service_gap_form(except: changes.service_gaps[0])
     end
-          
-    @tag :skip
-    test "an error in just the new service gap",
-      %{animal: animal, params: unchanged_params, conn: conn} do
-      params =
-        unchanged_params
-        |> put_in(["service_gaps", "0", "out_of_service_datestring"], @iso_date_2)
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
-      |> assert_user_sees(@blank_message_in_html)
-      |> assert_new_service_gap_form(animal)
+    test "an error in just the new service gap", %{conn: conn, repo: repo} do
+      changes =
+        %{service_gaps: %{0 => %{out_of_service_datestring: @iso_sg_start}}}
+
+      inputs =
+        incorrect_update(conn, repo.bossie, changing: changes)
+        |> assert_user_sees(@blank_message_in_html)
+        |> form_inputs(:animal)
+
+      service_gap(inputs, 0)
+      |> assert_empty_service_gap_form(except: changes.service_gaps[0])
     end
     
-    @tag :skip
-    test "an error in just the animal",
-      %{animal: animal, params: unchanged_params, conn: conn} do
-      params =
-        unchanged_params
-        |> put_in(["out_of_service_datestring"], @iso_date_1)
+    test "an error in just the animal", %{conn: conn, repo: repo} do
+      changes = %{out_of_service_datestring: @earliest_iso_date}
 
-      post_to_action(conn, [:update, to_string(animal.id)], under(:animal_old, params))
-      |> assert_user_sees(@date_misorder_message)
-      |> refute_user_sees(@blank_message_in_html)
-      |> assert_new_service_gap_form(animal)
+      inputs =
+        incorrect_update(conn, repo.bossie, changing: changes)
+        |> assert_user_sees(@date_misorder_message)
+        |> form_inputs(:animal)
+        |> assert_field(out_of_service_datestring: @earliest_iso_date)
+
+      service_gap(inputs, 0) |> assert_empty_service_gap_form
     end
   end
 
@@ -311,15 +310,14 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
 
     assert_form_matches(inputs, view_model: expected, in: keys)
   end
-  
 
-  def assert_empty_service_gap_form(inputs),
+  defp assert_empty_service_gap_form(inputs),
     do: assert_empty_service_gap_form(inputs, except: [])
 
-  def assert_empty_service_gap_form(inputs, [except: changes]) when is_map(changes),
+  defp assert_empty_service_gap_form(inputs, [except: changes]) when is_map(changes),
     do: assert_empty_service_gap_form(inputs, except: Keyword.new(changes))
   
-  def assert_empty_service_gap_form(inputs, [except: changes]) do 
+  defp assert_empty_service_gap_form(inputs, [except: changes]) do 
     refute Map.has_key?(inputs, :id)
     refute Map.has_key?(inputs, :delete)
 
