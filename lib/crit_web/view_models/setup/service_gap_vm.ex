@@ -1,6 +1,5 @@
 defmodule CritWeb.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
-  alias CritWeb.ViewModels.Setup, as: VM
   alias Crit.Setup.Schemas
   alias CritWeb.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritWeb.ViewModels.FieldValidators
@@ -32,7 +31,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
     do: (for s <- sources, do: lift(s, institution))
 
   def lift(%Schemas.ServiceGap{} = source, institution) do
-    %{EnumX.pour_into(source, VM.ServiceGap) |
+    %{EnumX.pour_into(source, __MODULE__) |
       institution: institution
     }
     |> ToWeb.service_datestrings(source.span)
@@ -41,7 +40,7 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   # ----------------------------------------------------------------------------
 
   # Note: you probably want `accept_form`, not this.
-  def changeset(%VM.ServiceGap{} = struct, params) do
+  def changeset(%__MODULE__{} = struct, params) do
     struct
     |> cast(params, fields())
     |> validate_required(required())
@@ -49,26 +48,26 @@ defmodule CritWeb.ViewModels.Setup.ServiceGap do
   end
   
   def accept_form(params, institution) do 
-    case {VM.ServiceGap.from_empty_form?(params),
+    case {from_empty_form?(params),
           describe_insertion?(params)} do
       {true, true} ->
         # Display, error free, if other forms have errors.
-        VM.ServiceGap.unchecked_empty_changeset(params)
+        unchecked_empty_changeset(params)
       _ ->
         # Look for errors.
-        changeset(%VM.ServiceGap{institution: institution}, params)
+        changeset(%__MODULE__{institution: institution}, params)
         |> summarize_validation
     end
   end
 
   deftestable unchecked_empty_changeset(params),
-    do: cast(%VM.ServiceGap{}, params, fields())
+    do: cast(%__MODULE__{}, params, fields())
 
   defp describe_insertion?(params), do: not Map.has_key?(params, "id")
 
   # ----------------------------------------------------------------------------
 
-  deftestable from_empty_form?(%VM.ServiceGap{} = struct),
+  deftestable from_empty_form?(%__MODULE__{} = struct),
     do: from_empty_form?(struct, @unstarted_atom_keys)
 
   deftestable from_empty_form?(%{} = params),
