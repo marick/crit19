@@ -6,7 +6,7 @@ defmodule Crit.RepoState do
   alias Crit.Factory
   alias Ecto.Datespan
   alias Crit.Setup.Schemas.{Animal, Procedure}
-  alias Crit.Setup.{AnimalApi, ProcedureApi, AnimalApi2}
+  alias Crit.Setup.{ProcedureApi, AnimalApi2}
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
                      :reservation, :service_gap])
