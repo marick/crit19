@@ -3,7 +3,7 @@ defmodule Crit.Setup.AnimalApi2 do
 #  import Pile.Interface
   # alias Crit.Setup.AnimalImpl.{BulkCreationTransaction,Write, Read}
 #  alias CritWeb.ViewModels.Setup.BulkAnimal
-  alias Crit.Setup.Schemas.{Animal,ServiceGapOld}
+  alias Crit.Setup.Schemas.{Animal,ServiceGap}
 #  alias Ecto.ChangesetX
   use Crit.Sql.CommonSql, schema: Animal
   alias Crit.Sql.CommonQuery
@@ -22,7 +22,7 @@ defmodule Crit.Setup.AnimalApi2 do
 
   def delete_service_gaps(ids, institution) do
     query =
-      from s in ServiceGapOld, where: s.id in ^ids
+      from s in ServiceGap, where: s.id in ^ids
 
     expected = length(ids)
     {^expected, _} = Sql.delete_all(query, institution)

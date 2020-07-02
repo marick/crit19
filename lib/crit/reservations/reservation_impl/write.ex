@@ -1,5 +1,5 @@
 defmodule Crit.Reservations.ReservationImpl.Write do
-  alias Crit.Setup.Schemas.ServiceGapOld
+  alias Crit.Setup.Schemas.ServiceGap
   alias Crit.Reservations.Schemas.{Reservation,Use}
   alias Crit.Reservations.RestPeriod
   alias Crit.Sql
@@ -14,7 +14,7 @@ defmodule Crit.Reservations.ReservationImpl.Write do
     animals_query = AnimalApi.ids_to_query(struct.chosen_animal_ids)
 
     service_gap_animals_fn = fn _repo, _so_far ->
-      {:ok, ServiceGapOld.unavailable_by(animals_query, struct.date, institution)}
+      {:ok, ServiceGap.unavailable_by(animals_query, struct.date, institution)}
     end
 
     use_animals_fn = fn _repo, _so_far ->
