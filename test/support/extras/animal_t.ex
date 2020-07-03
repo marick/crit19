@@ -51,31 +51,6 @@ defmodule Crit.Extras.AnimalT do
 
   
 
-  def service_gap_n(%AnimalOld{service_gaps: gaps}, n), do: Enum.at(gaps, n)
-
-  def update_for_success(id, params) do
-    {:ok, new_animal} =
-      AnimalApi.update(to_string(id), params, @institution)
-    new_animal
-  end
-
-  def update_for_error_changeset(id, params) do
-    {:error, changeset} = AnimalApi.update(id, params, @institution)
-    changeset
-  end
-
-  def updatable_animal_named(name) do
-    id = Exemplars.Available.animal_id(name: name)
-    AnimalApi.updatable!(id, @institution)
-  end
-
-  def dated(in_service, out_of_service) do
-    [in_service_datestring: in_service,
-     out_of_service_datestring: out_of_service]
-    |> Exemplars.Available.animal_id
-    |> AnimalApi.updatable!(@institution)
-  end
-  
   def params_except(%AnimalOld{} = animal, overrides) do
     unchanged_params(animal)
     |> Map.merge(overrides)

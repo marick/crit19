@@ -1,6 +1,8 @@
 defmodule Crit.Setup.AnimalApi.BulkCreationTest do
   use Crit.DataCase
   alias Crit.Setup.AnimalApi
+  alias Crit.Setup.AnimalApi2
+  alias Ecto.Datespan
 
   @basic_params %{
     "species_id" => @bovine_id,
@@ -14,12 +16,11 @@ defmodule Crit.Setup.AnimalApi.BulkCreationTest do
     {:ok, [bossie, jake]} = AnimalApi.create_animals(@basic_params, @institution)
 
     check_animal_properties_inserted = fn returned ->
-      AnimalApi.updatable!(returned.id, @institution)
+      AnimalApi2.one_by_id(returned.id, @institution)
       |> assert_fields(id: returned.id,
                        name: returned.name,
-                       in_service_datestring: @iso_date_1,
-                       out_of_service_datestring: @never,
-                       species_name: @bovine)
+                       span: Datespan.inclusive_up(@date_1),
+                       species_id: @bovine_id)
     end
 
     check_animal_properties_inserted.(bossie)
