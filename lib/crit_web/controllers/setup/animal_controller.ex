@@ -7,7 +7,6 @@ defmodule CritWeb.Setup.AnimalController do
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
   alias CritWeb.ViewModels.Setup, as: VM
-  alias Ecto.Changeset
   alias Ecto.ChangesetX
   
   plug :must_be_able_to, :manage_animals
@@ -102,29 +101,25 @@ defmodule CritWeb.Setup.AnimalController do
         animal: animal)
     else
       {:error, :form, vm_changeset} ->
-        Common.render_for_replacement(conn,
-          "_edit_one_animal.html",
-          path: path(:update, id),
-          changeset: vm_changeset,
-          errors: true)
+        render_edit_form(conn, id, vm_changeset)
         
       {:error, :constraint, schema_changeset} ->
         # vm_changeset from above is not in scope. Blah.
         {:ok, original_vm_changeset} = VM.Animal.accept_form(params, inst)
               
         vm_changeset_with_errors =
-          Enum.reduce(schema_changeset.errors,
-            original_vm_changeset,
-            fn {field, {message, keyword_list}}, acc ->
-              Changeset.add_error(acc, field, message, keyword_list)
-            end)
-            |> ChangesetX.ensure_forms_display_errors
+          ChangesetX.merge_only_errors(original_vm_changeset, schema_changeset)
 
-        Common.render_for_replacement(conn,
-          "_edit_one_animal.html",
-          path: path(:update, id),
-          changeset: vm_changeset_with_errors,
-          errors: true)
+        render_edit_form(conn, id, vm_changeset_with_errors)
     end
   end
+
+  defp render_edit_form(conn, id, changeset) do 
+    Common.render_for_replacement(conn,
+      "_edit_one_animal.html",
+      path: path(:update, id),
+      changeset: changeset,
+      errors: not changeset.valid?)
+  end
+  
 end

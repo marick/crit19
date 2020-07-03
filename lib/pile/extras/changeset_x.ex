@@ -80,4 +80,16 @@ defmodule Ecto.ChangesetX do
       |> Enum.map(&Changeset.get_field(&1, :id))
       |> MapSet.new
   end
+
+  # Note: the `to` field may be a changeset that doesn't
+  # show errors (has a `nil` action). `Changeset.add_error` automatically
+  # makes the changeset invalid, but we explicitly force it to
+  # display an error.
+  def merge_only_errors(to, from) do
+    from.errors
+    |> Enum.reduce(to, fn {field, {message, keyword_list}}, acc ->
+         Changeset.add_error(acc, field, message, keyword_list)
+       end)
+    |> ensure_forms_display_errors
+  end
 end
