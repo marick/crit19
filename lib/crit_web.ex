@@ -80,6 +80,7 @@ defmodule CritWeb do
     quote do
       use Ecto.Schema
       use Crit.Types
+      use Crit.Errors
       import Ecto.Changeset
       alias Ecto.ChangesetX
       alias Crit.Sql

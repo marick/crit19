@@ -145,8 +145,22 @@ defmodule CritWeb.ViewModels.Setup.Animal do
       {:ok, %{id: id}} ->
         {:ok, fetch(:one_for_summary, id, institution)}
       {:error, changeset} ->
-        {:error, :constraint, changeset}
+        {:error, :constraint, adjust_errors(changeset)}
     end
   end
-  
+
+  defp adjust_errors(changeset) do
+    update_lock_error = fn  -> 
+      Keyword.update!(changeset.errors, :optimistic_lock_error,
+        fn {_msg, opts} -> {@animal_optimistic_lock, opts} end
+      )
+    end
+    
+    case Keyword.has_key?(changeset.errors, :optimistic_lock_error) do
+      true ->
+        %{changeset | errors: update_lock_error.()}
+      false ->
+        changeset
+    end
+  end
 end

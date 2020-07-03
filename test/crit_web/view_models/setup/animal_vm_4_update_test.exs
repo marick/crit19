@@ -45,7 +45,7 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
     assert {:error, :constraint, changeset} = 
       VM.Animal.update(change_second, @institution)
 
-    assert_error(changeset, :optimistic_lock_error)
+    assert_error(changeset, optimistic_lock_error: @animal_optimistic_lock)
   end
 
   # ----------------------------------------------------------------------------
