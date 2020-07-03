@@ -90,7 +90,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
     end
 
     test "validation failures produce appropriate messages in the HTML",
-      %{conn: conn, repo: repo} do
+      %{conn: conn, repo: repo} do      
 
       changes = %{in_service_datestring: @iso_date_2,
                   out_of_service_datestring: @iso_date_1,
@@ -99,6 +99,14 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       incorrect_update(conn, repo.bossie, changing: changes)
       |> assert_user_sees(@date_misorder_message)
       |> assert_user_sees(@blank_message_in_html)
+    end
+
+    test "constraint errors are reported", %{conn: conn, repo: repo} do
+      animal(repo, "Jake")
+
+      changes = %{name: "Jake"}
+      incorrect_update(conn, repo.bossie, changing: changes)
+      |> assert_user_sees(@already_taken)
     end
   end
 

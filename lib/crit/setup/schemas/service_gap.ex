@@ -25,7 +25,7 @@ defmodule Crit.Setup.Schemas.ServiceGap do
     |> validate_required(required())
   end
 
-  # ----------------------------------------------------------------------------
+  # ------------Database-----------------------------------------------------------
   def narrow_animal_query_by(query, %Date{} = date) do
     from a in query,
       join: sg in __MODULE__, on: sg.animal_id == a.id,
