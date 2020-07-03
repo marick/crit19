@@ -111,24 +111,26 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
 
 
     test "optimistic lock constraint error is reported", %{conn: conn, repo: repo} do
-      changes = %{name: "Jake"}
-
+      first_in_changes = %{name: "This is the new name"}
+      second_in_changes = %{name: "Jake"}
 
       conn = get_via_action(conn, :update_form, repo.bossie.id)
 
       # First try.
       conn
-      |> follow_form(%{animal: changes})
+      |> follow_form(%{animal: first_in_changes})
       |> assert_purpose(snippet_to_display_animal())    # success
 
       # First try with same lock value.
       conn 
-      |> follow_form(%{animal: changes})
+      |> follow_form(%{animal: second_in_changes})
       |> assert_purpose(form_for_editing_animal())      # fail
       |> assert_user_sees(@animal_optimistic_lock)
+
+      # And the animal is updated with new values.
+      |> assert_user_sees(first_in_changes.name)
     end
   end
-
 
   # ----------------------------------------------------------------------------
   describe "handling of the 'add a new service gap' field when there are form errors" do

@@ -8,6 +8,7 @@ defmodule CritWeb.Setup.AnimalController do
   alias CritWeb.Controller.Common
   alias CritWeb.ViewModels.Setup, as: VM
   alias Ecto.ChangesetX
+  alias Ecto.Changeset
   
   plug :must_be_able_to, :manage_animals
 
@@ -111,6 +112,15 @@ defmodule CritWeb.Setup.AnimalController do
           ChangesetX.merge_only_errors(original_vm_changeset, schema_changeset)
 
         render_edit_form(conn, id, vm_changeset_with_errors)
+        
+      {:error, :optimistic_lock, id} ->
+        new_changeset = 
+          VM.Animal.fetch(:one_for_edit, id, inst)
+          |> VM.Animal.fresh_form_changeset
+          |> Changeset.add_error(:optimistic_lock_error, @animal_optimistic_lock)
+          |> ChangesetX.ensure_forms_display_errors
+
+        render_edit_form(conn, id, new_changeset)
     end
   end
 

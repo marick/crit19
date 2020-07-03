@@ -37,15 +37,15 @@ defmodule CritWeb.ViewModels.Setup.AnimalVM.UpdateTest do
   end
 
   test "conflicting updates", %{repo: repo} do
-    change_first = changeset_with_change(repo.bossie.id, :name, "first")
-    change_second = changeset_with_change(repo.bossie.id, :name, "second")
+    change_first = changeset_with_change(repo.bossie.id, :name, "first change")
+    change_second = changeset_with_change(repo.bossie.id, :name, "blocked")
 
     assert {:ok, _} = VM.Animal.update(change_first, @institution)
     
-    assert {:error, :constraint, changeset} = 
+    assert {:error, :optimistic_lock, id} = 
       VM.Animal.update(change_second, @institution)
 
-    assert_error(changeset, optimistic_lock_error: @animal_optimistic_lock)
+    assert id == repo.bossie.id
   end
 
   # ----------------------------------------------------------------------------

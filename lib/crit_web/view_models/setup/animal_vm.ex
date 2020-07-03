@@ -141,16 +141,18 @@ defmodule CritWeb.ViewModels.Setup.Animal do
 
     stale_error_handling = [
       stale_error_field: :optimistic_lock_error,
-      stale_error_message: @animal_optimistic_lock
+      # There is no need to set the message, as it will be overridden below.
     ]
     
-    result =
-      Sql.update(changeset, stale_error_handling, institution)
-    case result do
+    case Sql.update(changeset, stale_error_handling, institution) do
       {:ok, %{id: id}} ->
         {:ok, fetch(:one_for_summary, id, institution)}
       {:error, changeset} ->
-        {:error, :constraint, changeset}
+        if Keyword.has_key?(changeset.errors, :optimistic_lock_error) do
+          {:error, :optimistic_lock, Changeset.get_field(changeset, :id)}
+        else
+          {:error, :constraint, changeset}
+        end
     end
   end
 end
