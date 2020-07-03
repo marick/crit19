@@ -138,29 +138,19 @@ defmodule CritWeb.ViewModels.Setup.Animal do
   @spec update(Changeset.t(Schemas.Animal), short_name()) :: nary_error()
   def update(changeset, institution) do
     check changeset.valid?
+
+    stale_error_handling = [
+      stale_error_field: :optimistic_lock_error,
+      stale_error_message: @animal_optimistic_lock
+    ]
     
     result =
-      Sql.update(changeset, [stale_error_field: :optimistic_lock_error], institution)
+      Sql.update(changeset, stale_error_handling, institution)
     case result do
       {:ok, %{id: id}} ->
         {:ok, fetch(:one_for_summary, id, institution)}
       {:error, changeset} ->
-        {:error, :constraint, adjust_errors(changeset)}
-    end
-  end
-
-  defp adjust_errors(changeset) do
-    update_lock_error = fn  -> 
-      Keyword.update!(changeset.errors, :optimistic_lock_error,
-        fn {_msg, opts} -> {@animal_optimistic_lock, opts} end
-      )
-    end
-    
-    case Keyword.has_key?(changeset.errors, :optimistic_lock_error) do
-      true ->
-        %{changeset | errors: update_lock_error.()}
-      false ->
-        changeset
+        {:error, :constraint, changeset}
     end
   end
 end
