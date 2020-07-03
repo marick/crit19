@@ -1,61 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.ReadTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.{AnimalOld, ServiceGapOld,Species}
   alias Crit.Setup.AnimalImpl.Read
-  alias Ecto.Datespan
   
-  describe "put_updatable_fields" do
-    setup do
-      [as_fetched: %AnimalOld{
-          species: %Species{name: @bovine},
-          span: Datespan.customary(@date_1, @date_2),
-          service_gaps: [%ServiceGapOld{
-                            span: Datespan.customary(next_day(@date_1), @date_3),
-                            reason: "reason"}
-                        ]
-       },
-       
-       new_animal_fields: %{
-         species_name: @bovine,
-         in_service_datestring: @iso_date_1,
-         out_of_service_datestring: @iso_date_2,
-         institution: @institution
-       },
-
-       # Note: it's valid for fields to be Date structures rather than
-       # strings because EEX knows how to render them.
-       new_service_gap_fields: %{
-         in_service_datestring: iso_next_day(@date_1),
-         out_of_service_datestring: @iso_date_3
-       },
-      ]
-    end
-
-    test "basic conversions",
-      %{as_fetched: fetched, new_service_gap_fields: new_service_gap_fields,
-        new_animal_fields: new_animal_fields}  do
-      %AnimalOld{service_gaps: [updatable_gap]} = updatable =
-        Read.put_updatable_fields(fetched, @institution)
-
-      assert_fields(updatable, new_animal_fields)
-      assert_fields(updatable_gap, new_service_gap_fields)
-    end
-
-    test "with an infinite-up span", %{as_fetched: fetched} do
-      fetched
-      |> Map.put(:span, Datespan.inclusive_up(@date_1))
-      |> Read.put_updatable_fields(@institution)
-      |> assert_field(in_service_datestring: @iso_date_1,
-                      out_of_service_datestring: @never)
-    end
-    
-    test "put_updatable_fields can take a list argument", %{as_fetched: fetched} do
-      [updatable] = Read.put_updatable_fields([fetched], @institution)
-      # It's enough to confirm a single conversion.
-      assert_field(updatable, species_name: @bovine)
-    end
-  end
-
   describe "bulk queries order by name" do
     test "... not by id order when fetching by ids" do 
       %{id: id1} = Factory.sql_insert!(:animal, [name: "ZZZ"], @institution)
