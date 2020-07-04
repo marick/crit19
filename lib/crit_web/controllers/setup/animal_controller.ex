@@ -19,6 +19,15 @@ defmodule CritWeb.Setup.AnimalController do
     render(conn, "index.html", animals: animals)
   end
 
+  def _show(conn, %{"animal_id" => id}) do
+    institution = institution(conn)
+    animal = VM.Animal.fetch(:one_for_summary, id, institution)
+    Common.render_for_replacement(conn,
+      "_show_one_animal.html",
+      animal: animal)
+  end
+
+  # ----------------------------------------------------------------------------
   def bulk_create_form(conn, _params,
     changeset \\ AnimalApi.bulk_animal_creation_changeset()
   ) do 
@@ -42,23 +51,7 @@ defmodule CritWeb.Setup.AnimalController do
     end
   end
 
-  defp bulk_create_audit(conn, animals, params) do
-    audit_data = %{ids: EnumX.ids(animals),
-                   names: Map.fetch!(params, "names"),
-                   put_in_service: Map.fetch!(params, "in_service_datestring"),
-                   leaves_service: Map.fetch!(params, "out_of_service_datestring"),
-                  }
-    Audit.created_animals(conn, audit_data)
-  end
-
-  def _show(conn, %{"animal_id" => id}) do
-    institution = institution(conn)
-    animal = VM.Animal.fetch(:one_for_summary, id, institution)
-    Common.render_for_replacement(conn,
-      "_show_one_animal.html",
-      animal: animal)
-  end
-
+  # ----------------------------------------------------------------------------
   def update_form(conn, %{"animal_id" => id}) do
     institution = institution(conn)
     animal = VM.Animal.fetch(:one_for_edit, id, institution)
@@ -105,7 +98,6 @@ defmodule CritWeb.Setup.AnimalController do
   end
 
   # ----------------------------------------------------------------------------
-  
 
   defp render_edit_form(conn, id, changeset) do 
     Common.render_for_replacement(conn,
@@ -134,5 +126,16 @@ defmodule CritWeb.Setup.AnimalController do
           Map.put(top, "service_gaps", lower)
       end
     end
+  end
+  
+  # ----------------------------------------------------------------------------
+
+  defp bulk_create_audit(conn, animals, params) do
+    audit_data = %{ids: EnumX.ids(animals),
+                   names: Map.fetch!(params, "names"),
+                   put_in_service: Map.fetch!(params, "in_service_datestring"),
+                   leaves_service: Map.fetch!(params, "out_of_service_datestring"),
+                  }
+    Audit.created_animals(conn, audit_data)
   end
 end
