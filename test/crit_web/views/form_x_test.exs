@@ -1,12 +1,12 @@
-defmodule CritBiz.ViewModels.NestedFormTest do
+defmodule CritWeb.Views.FormXTest do
   use Crit.DataCase
-  alias CritBiz.ViewModels.NestedForm
+  alias CritWeb.FormX
   # Note: the following two can't be aliased with `as:` 
   alias Phoenix.HTML.Form
   alias Phoenix.HTML.FormData
   alias Ecto.Changeset
 
-  # Behavior of NestedForm is to be like that of corresponding
+  # Behavior of `inputs_for` is to be like that of corresponding
   # functions in PhoenixHtml.{Form,FormData} except that it doesn't
   # barf when given a plain array rather than an assoc - because view
   # model fields can't be defined with `has_many` fields. (Other
@@ -92,7 +92,7 @@ defmodule CritBiz.ViewModels.NestedFormTest do
       params
       |> New.Container.accept_form
       |> Form.form_for("action")
-      |> NestedForm.inputs_for(:nesteds, &(&1))
+      |> FormX.inputs_for(:nesteds, &(&1))
     end
     
   end
@@ -143,7 +143,7 @@ defmodule CritBiz.ViewModels.NestedFormTest do
 
       [crit_empty, crit_existing] =
         top_form.(New.Container, New.Assoc)
-        |> NestedForm.inputs_for(:nesteds, &(&1))
+        |> FormX.inputs_for(:nesteds, &(&1))
 
       assert_equivalent(phoenix_empty, crit_empty)
       assert_equivalent(phoenix_existing, crit_existing)

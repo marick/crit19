@@ -1,7 +1,6 @@
-defmodule CritBiz.ViewModels.NestedForm do 
+defmodule CritWeb.FormX do 
   use CritWeb, :view
   alias Ecto.Changeset
-
 
   def inputs_for(containing_form, field, builder) do
     %Changeset{} = form_changeset = containing_form.source

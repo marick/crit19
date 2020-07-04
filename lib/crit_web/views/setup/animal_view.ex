@@ -2,7 +2,7 @@ defmodule CritWeb.Setup.AnimalView do
   use CritWeb, :view
   alias CritWeb.Setup.AnimalController
   alias Phoenix.HTML.Form
-  alias CritBiz.ViewModels.NestedForm
+  alias CritWeb.FormX
 
 
   ###
@@ -27,7 +27,7 @@ defmodule CritWeb.Setup.AnimalView do
 
   def nested_service_gap_forms(f, animal_changeset) do
     [empty_form | forms] =
-      NestedForm.inputs_for(f, :service_gaps, fn subform ->
+      FormX.inputs_for(f, :service_gaps, fn subform ->
         {:safe, iodata} =
           one_service_gap(subform, unique_snippet(animal_changeset, subform))
         iodata
