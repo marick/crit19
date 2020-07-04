@@ -18,6 +18,15 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       |> assert_user_sees(@never)
       |> assert_user_sees(@bovine)
     end
+
+    test "details about form structure", %{conn: conn} do
+      get_via_action(conn, :bulk_create_form)
+      |> form_inputs(:bulk_animal_new)
+      |> assert_fields(in_service_datestring: @today,
+                       out_of_service_datestring: @never,
+                       species_id: to_string(@bovine_id),
+                       names: "\n")
+    end
   end
 
   describe "bulk create animals" do
@@ -35,6 +44,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       []
     end
 
+    @tag :skip
     test "success case", %{conn: conn, act: act} do
       {names, params} = bulk_creation_params()
       conn = act.(conn, params)
@@ -46,6 +56,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       assert_user_sees(conn, Enum.at(names, -1))
     end
 
+    @tag :skip
     test "renders errors when data is invalid", %{conn: conn, act: act} do
       {_names, params} = bulk_creation_params()
 
@@ -60,6 +71,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       |> assert_user_sees(bad_params["names"])
     end
 
+    @tag :skip
     test "an audit record is created", %{conn: conn, act: act} do
       {_names, params} = bulk_creation_params()
       conn = act.(conn, params)
