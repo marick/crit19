@@ -2,7 +2,7 @@ defmodule Crit.Exemplars.Bossie do
   use Crit.TestConstants
   use ExContract
   import Crit.RepoState
-  alias CritWeb.ViewModels.Setup, as: VM
+  alias CritBiz.ViewModels.Setup, as: VM
   import Crit.Assertions.Map
   alias Crit.Exemplars, as: Ex
   alias Crit.Factory

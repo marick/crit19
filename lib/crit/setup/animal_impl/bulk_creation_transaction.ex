@@ -1,7 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.BulkCreationTransaction do
   alias Crit.Sql
   import Crit.Sql.Transaction, only: [make_creation_validation_step: 1]
-  alias CritWeb.ViewModels.Setup.BulkAnimal
+  alias CritBiz.ViewModels.Setup.BulkAnimal
   alias Crit.Setup.Schemas.AnimalOld
   alias Crit.Ecto.BulkInsert
 

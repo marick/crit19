@@ -1,7 +1,7 @@
 defmodule Crit.Setup.AnimalImpl.InsertBulkAnimalTest do
   use Crit.DataCase
   alias Crit.Setup.AnimalImpl.BulkCreationTransaction 
-  alias CritWeb.ViewModels.Setup.BulkAnimal
+  alias CritBiz.ViewModels.Setup.BulkAnimal
   alias Crit.Setup.Schemas.AnimalOld
   alias Ecto.Datespan
 

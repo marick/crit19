@@ -85,7 +85,7 @@ defmodule CritWeb do
       import Ecto.Changeset
       alias Ecto.ChangesetX
       alias Crit.Sql
-      alias CritWeb.ViewModels.Common
+      alias CritBiz.ViewModels.Common
     end
   end
 

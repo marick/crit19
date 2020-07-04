@@ -1,10 +1,6 @@
 defmodule Crit.Setup.AnimalApi2 do
   use Crit.Global.Constants
-#  import Pile.Interface
-  # alias Crit.Setup.AnimalImpl.{BulkCreationTransaction,Write, Read}
-#  alias CritWeb.ViewModels.Setup.BulkAnimal
   alias Crit.Setup.Schemas.{Animal,ServiceGap}
-#  alias Ecto.ChangesetX
   use Crit.Sql.CommonSql, schema: Animal
   alias Crit.Sql.CommonQuery
   alias Crit.Sql

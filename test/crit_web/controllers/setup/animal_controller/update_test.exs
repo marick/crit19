@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   use PhoenixIntegration
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias CritWeb.ViewModels.Setup, as: VM
+  alias CritBiz.ViewModels.Setup, as: VM
   import Crit.RepoState
   alias Crit.Exemplars, as: Ex
   

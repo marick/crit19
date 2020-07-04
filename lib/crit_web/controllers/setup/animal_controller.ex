@@ -6,7 +6,7 @@ defmodule CritWeb.Setup.AnimalController do
   alias Crit.Setup.{AnimalApi,InstitutionApi}
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
-  alias CritWeb.ViewModels.Setup, as: VM
+  alias CritBiz.ViewModels.Setup, as: VM
   alias Ecto.ChangesetX
   alias Ecto.Changeset
   

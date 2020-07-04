@@ -4,7 +4,7 @@ defmodule CritWeb.Reservations.ReservationControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.ReservationFocused
   alias Crit.Setup.InstitutionApi
-  alias CritWeb.ViewModels.Reservation.CalendarEntry
+  alias CritBiz.ViewModels.Reservation.CalendarEntry
 
   setup :logged_in_as_reservation_manager
 

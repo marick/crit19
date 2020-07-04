@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.ProcedureController do
   use CritWeb.Controller.Path, :setup_procedure_path
   import CritWeb.Plugs.Authorize
   alias Crit.Setup.InstitutionApi
-  alias CritWeb.ViewModels.Procedure.{Creation,Show}
+  alias CritBiz.ViewModels.Procedure.{Creation,Show}
   alias Ecto.Changeset
   # alias CritWeb.Audit
   # alias CritWeb.Controller.Common

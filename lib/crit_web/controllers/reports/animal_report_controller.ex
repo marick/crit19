@@ -5,7 +5,7 @@ defmodule CritWeb.Reports.AnimalReportController do
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan
   alias Crit.SqlRows.Reservation
-  alias CritWeb.ViewModels.Reports.Animal
+  alias CritBiz.ViewModels.Reports.Animal
 
   IO.puts "need to create new permissions"
   plug :must_be_able_to, :make_reservations

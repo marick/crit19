@@ -2,9 +2,9 @@ defmodule CritWeb.Reservations.ReservationController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :reservation_path
   import CritWeb.Plugs.Authorize
-  alias CritWeb.ViewModels.Reservation
+  alias CritBiz.ViewModels.Reservation
   alias Crit.Reservations.{ReservationApi}
-  alias CritWeb.ViewModels.DateOrDates
+  alias CritBiz.ViewModels.DateOrDates
   alias Pile.TimeHelper
   alias Crit.Setup.InstitutionApi
   

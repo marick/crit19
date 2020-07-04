@@ -1,6 +1,6 @@
 defmodule CritWeb.Setup.AnimalViewTest do
   use CritWeb.ConnCase, async: true
-  alias CritWeb.ViewModels.Setup, as: VM
+  alias CritBiz.ViewModels.Setup, as: VM
   import Phoenix.HTML.Form
   import Phoenix.HTML
   alias CritWeb.Setup.AnimalView

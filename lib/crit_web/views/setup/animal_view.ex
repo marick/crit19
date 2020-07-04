@@ -2,7 +2,7 @@ defmodule CritWeb.Setup.AnimalView do
   use CritWeb, :view
   alias CritWeb.Setup.AnimalController
   alias Phoenix.HTML.Form
-  alias CritWeb.ViewModels.NestedForm
+  alias CritBiz.ViewModels.NestedForm
 
 
   ###
