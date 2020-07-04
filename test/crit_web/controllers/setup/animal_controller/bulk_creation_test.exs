@@ -1,5 +1,6 @@
 defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   use CritWeb.ConnCase
+  use PhoenixIntegration
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.Schemas.AnimalOld
