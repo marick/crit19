@@ -28,14 +28,8 @@ defmodule CritWeb.Setup.AnimalController do
   end
 
   # ----------------------------------------------------------------------------
-  def bulk_create_form(conn, _params,
-    changeset \\ AnimalApi.bulk_animal_creation_changeset()
-  ) do 
-    render(conn, "bulk_creation.html",
-      changeset: changeset,
-      path: path(:bulk_create),
-      options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name))
-  end
+  def bulk_create_form(conn, _params),
+    do: render_bulk_create_form(conn, VM.BulkAnimalNew.fresh_form_changeset())
 
   def bulk_create(conn, %{"bulk_animal" => raw_params}) do
     params = Testable.put_institution(raw_params, institution(conn))
@@ -47,7 +41,7 @@ defmodule CritWeb.Setup.AnimalController do
         |> render("index.html",
                   animals: animals)
       {:error, %Ecto.Changeset{} = changeset} ->
-        bulk_create_form(conn, [], changeset)
+        render_bulk_create_form(conn, changeset)
     end
   end
 
@@ -98,6 +92,13 @@ defmodule CritWeb.Setup.AnimalController do
   end
 
   # ----------------------------------------------------------------------------
+
+  def render_bulk_create_form(conn, changeset) do 
+    render(conn, "bulk_creation.html",
+      changeset: changeset,
+      path: path(:bulk_create),
+      options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name))
+  end
 
   defp render_edit_form(conn, id, changeset) do 
     Common.render_for_replacement(conn,
