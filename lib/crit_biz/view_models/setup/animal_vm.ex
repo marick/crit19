@@ -17,7 +17,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
     field :id, :id
-    # The fields below are the true fields in the table.
+    # The fields below are the true fields in the underlying table.
     field :name, TrimmedString
     field :lock_version, :integer
     

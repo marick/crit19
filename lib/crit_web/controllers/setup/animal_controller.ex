@@ -9,29 +9,9 @@ defmodule CritWeb.Setup.AnimalController do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Ecto.ChangesetX
   alias Ecto.Changeset
+  alias CritWeb.Setup.AnimalController.Testable   # Local
   
   plug :must_be_able_to, :manage_animals
-
-  defmodule Testable do
-    def put_institution(params, institution) do
-      add = fn kws ->
-        Map.put(kws, "institution", institution)
-      end
-
-      top = add.(params)
-
-      case Map.get(top, "service_gaps") do
-        nil ->
-          top
-        gaps ->
-          lower = 
-            gaps
-            |> Enum.map(fn {key, gap} -> { key, add.(gap) } end)
-            |> Map.new
-          Map.put(top, "service_gaps", lower)
-      end
-    end
-  end
 
   def index(conn, _params) do
     institution = institution(conn)
@@ -124,6 +104,9 @@ defmodule CritWeb.Setup.AnimalController do
     end
   end
 
+  # ----------------------------------------------------------------------------
+  
+
   defp render_edit_form(conn, id, changeset) do 
     Common.render_for_replacement(conn,
       "_edit_one_animal.html",
@@ -132,4 +115,24 @@ defmodule CritWeb.Setup.AnimalController do
       errors: not changeset.valid?)
   end
   
+  defmodule Testable do
+    def put_institution(params, institution) do
+      add = fn kws ->
+        Map.put(kws, "institution", institution)
+      end
+
+      top = add.(params)
+
+      case Map.get(top, "service_gaps") do
+        nil ->
+          top
+        gaps ->
+          lower = 
+            gaps
+            |> Enum.map(fn {key, gap} -> { key, add.(gap) } end)
+            |> Map.new
+          Map.put(top, "service_gaps", lower)
+      end
+    end
+  end
 end

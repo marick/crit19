@@ -9,6 +9,7 @@ defmodule CritBiz do
       use Ecto.Schema
       use Crit.Types
       use Crit.Errors
+      use Crit.Global.Constants
       import Ecto.Changeset
       alias Ecto.ChangesetX
       alias Crit.Sql
