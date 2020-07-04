@@ -1,5 +1,5 @@
 defmodule CritBiz.ViewModels.Setup.Animal do
-  use CritWeb, :view_model
+  use CritBiz, :view_model
   alias CritBiz.ViewModels.Setup, as: VM
   import CritBiz.ViewModels.Common, only: [flatten_numbered_sublist: 2,
                                            summarize_validation: 3]
