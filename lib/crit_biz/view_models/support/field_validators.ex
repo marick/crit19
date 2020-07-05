@@ -5,11 +5,13 @@ defmodule CritBiz.ViewModels.FieldValidators do
   alias Ecto.ChangesetX
   alias Crit.Setup.InstitutionApi
   alias Pile.Namelist
+  use ExContract
 
   def date_order(%{valid?: false} = changeset), do: changeset
   def date_order(changeset) do
+    check fetch_field!(changeset, :institution) != nil
     fields = [:in_service_datestring, :out_of_service_datestring]
-    
+
     date_order_(changeset, ChangesetX.values(changeset, fields))
   end
 
