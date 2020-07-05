@@ -125,5 +125,11 @@ defmodule EnumXTest do
       assert actual == %Larger{common: "copied", unique: "unique default"}
     end
   end
+
+
+  test "has duplicates" do
+    refute EnumX.has_duplicates?([1, 2, 3])
+    assert EnumX.has_duplicates?([1, 2, 1])
+  end
 end
   

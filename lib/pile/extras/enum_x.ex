@@ -63,4 +63,8 @@ defmodule EnumX do
   """
   def pour_into(source, target) when is_struct(source) and is_atom(target),
     do: struct(target, Map.from_struct(source))
+
+  def has_duplicates?(value) do
+    length(Enum.uniq(value)) != length(value)
+  end
 end

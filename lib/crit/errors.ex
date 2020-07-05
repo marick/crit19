@@ -29,6 +29,7 @@ defmodule Crit.Errors do
       @at_least_one_species "You must choose at least one species"
       @already_taken "has already been taken"
       @animal_optimistic_lock "Someone else was editing the animal while you were."
+      @duplicate_name "repeats a name"
     end
   end
 end
