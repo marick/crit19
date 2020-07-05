@@ -9,6 +9,7 @@ defmodule CritBiz.ViewModels.FieldValidatorsTest do
     field :in_service_datestring, :string
     field :out_of_service_datestring, :string
     field :institution, :string
+    field :names, :string
   end
 
   @timezone "America/Los_Angeles"
@@ -89,5 +90,44 @@ defmodule CritBiz.ViewModels.FieldValidatorsTest do
       |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
     end
+  end
+
+  describe "namelists" do
+    defp namelist(value), do: cast(%__MODULE__{}, %{names: value}, [:names])
+
+    test "success case" do
+      namelist("a, b")
+      |> FieldValidators.namelist(:names)
+      |> assert_valid
+    end
+    
+    test "an empty string is invalid" do
+      namelist("")
+      |> FieldValidators.namelist(:names)
+      |> assert_invalid
+      |> assert_error(names: @no_valid_names_message)
+    end
+
+    test "not fooled by a bunch of blanks" do
+      namelist("     \t   ")
+      |> FieldValidators.namelist(:names)
+      |> assert_invalid
+      |> assert_error(names: @no_valid_names_message)
+    end
+    
+    test "not fooled by comma-separated nothingness" do
+      namelist("    , \t   ")
+      |> FieldValidators.namelist(:names)
+      |> assert_invalid
+      |> assert_error(names: @no_valid_names_message)
+    end
+    
+    test "does not like duplicate names" do
+      namelist("a, b, a")
+      |> FieldValidators.namelist(:names)
+      |> assert_invalid
+      |> assert_error(names: @duplicate_name)
+    end
+    
   end
 end

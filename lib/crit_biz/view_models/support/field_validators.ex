@@ -4,6 +4,7 @@ defmodule CritBiz.ViewModels.FieldValidators do
   import Ecto.Changeset
   alias Ecto.ChangesetX
   alias Crit.Setup.InstitutionApi
+  alias Pile.Namelist
 
   def date_order(%{valid?: false} = changeset), do: changeset
   def date_order(changeset) do
@@ -45,4 +46,20 @@ defmodule CritBiz.ViewModels.FieldValidators do
     |> put_change(field, changesets)
     |> Map.put(:valid?, validity)
   end
+
+
+  def namelist(changeset, field) do
+    string = get_change(changeset, field, "")
+    case Namelist.to_list(string) do
+      [] -> 
+        add_error(changeset, field, @no_valid_names_message)
+      list ->
+        if EnumX.has_duplicates?(list) do
+          add_error(changeset, field, @duplicate_name)
+        else
+          changeset
+        end
+    end
+  end
+  
 end

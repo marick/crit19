@@ -13,17 +13,4 @@ defmodule Pile.Namelist do
     |> Enum.reject(fn s -> s == "" end)
   end
 
-  def validate(changeset, field) do
-    string = Changeset.get_change(changeset, field, "")
-    case to_list(string) do
-      [] -> 
-        Changeset.add_error(changeset, field, @no_valid_names_message)
-      list ->
-        if EnumX.has_duplicates?(list) do
-          Changeset.add_error(changeset, field, @duplicate_name)
-        else
-          changeset
-        end
-    end
-  end
 end
