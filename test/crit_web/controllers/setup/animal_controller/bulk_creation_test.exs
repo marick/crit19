@@ -31,13 +31,6 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
 
   describe "bulk create animals" do
     setup do
-      act = fn conn, params ->
-        post_to_action(conn, :bulk_create, under(:bulk_animal, params))
-      end
-      [act: act]
-    end
-
-    setup do
       # It's relatively easy to accidentally put persistent data into
       # the test database, so this checks for that
       assert SqlT.all_ids(Schemas.Animal) == []
@@ -57,18 +50,16 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
     end
 
     @tag :skip
-    test "renders errors when data is invalid", %{conn: conn, act: act} do
-      {_names, params} = bulk_creation_params()
-
-      bad_params = Map.put(params, "names", " ,     ,")
-
-      act.(conn, bad_params)
-      |> assert_purpose(form_for_creating_new_animal())
-
-      # error messages
+    test "renders errors when data is invalid", %{conn: conn} do
+      changes = %{names: " ,     ,"}
+      
+      incorrect_creation(conn, changing: changes)
       |> assert_user_sees(@no_valid_names_message)
-      # Fields retain their old values.
-      |> assert_user_sees(bad_params["names"])
+      |> form_inputs(:bulk_animal_new)
+      |> assert_fields(in_service_datestring: @today,
+                       out_of_service_datestring: @never,
+                       species_id: to_string(@bovine_id),
+                       names: changes.names)
     end
 
     @tag :skip
@@ -106,5 +97,21 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
 
     {namelist, params}
   end
+
+  # ----------------------------------------------------------------------------
+
+  defp follow_creation_form(conn, [changing: changes]) do
+    get_via_action(conn, :bulk_create_form)
+    |> follow_form(%{bulk_animal_new: changes})
+  end
   
+  defp correct_creation(conn, opts) do
+    follow_creation_form(conn, opts)
+    |> assert_purpose(displaying_animal_summaries())
+  end
+  
+  defp incorrect_creation(conn, opts) do
+    follow_creation_form(conn, opts)
+    |> assert_purpose(form_for_creating_new_animal())
+  end
 end

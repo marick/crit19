@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.AnimalController do
   use CritWeb.Controller.Path, :setup_animal_path
   import CritWeb.Plugs.Authorize
 
-  alias Crit.Setup.{AnimalApi,InstitutionApi}
+  alias Crit.Setup.InstitutionApi
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
   alias CritBiz.ViewModels.Setup, as: VM
@@ -45,9 +45,23 @@ defmodule CritWeb.Setup.AnimalController do
   #   end
   # end
 
-  def bulk_create(conn, %{"bulk_animal" => raw_params}) do
-    _params = Testable.put_institution(raw_params, institution(conn))
-    conn
+  def bulk_create(conn, %{"bulk_animal_new" => params}) do
+    inst = institution(conn)
+    with(
+      {:ok, vm_changeset} <- VM.BulkAnimalNew.accept_form(params, inst),
+      repo_changesets = VM.BulkAnimalNew.lower_changeset(vm_changeset, inst),
+      {:ok, animals} <- VM.BulkAnimalNew.create(repo_changesets, inst)
+    ) do
+        conn
+        |> bulk_create_audit(animals, params)
+        |> put_flash(:info, "Success!")
+        |> render("index.html", animals: animals)
+    else
+      {:error, :form, vm_changeset} ->
+        render_bulk_create_form(conn, vm_changeset)
+      {:error, :constraint, x} ->
+        render_bulk_create_form(conn, x)
+    end
   end
 
   # ----------------------------------------------------------------------------
