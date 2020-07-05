@@ -1,9 +1,11 @@
 defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   use CritBiz, :view_model
-#  import Pile.ChangesetFlow
-  # alias Crit.FieldConverters.{ToSpan, ToNameList}
-#  alias Ecto.Datespan
+  # alias Ecto.Datespan
+  import CritBiz.ViewModels.Common, only: [summarize_validation: 3]
+  # alias CritBiz.ViewModels.FieldFillers.ToWeb
+  alias CritBiz.ViewModels.FieldValidators
 
+  @primary_key false
   embedded_schema do
     # user-supplied fields
     field :names, :string,                      default: ""
@@ -13,27 +15,30 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
     # The institution is needed to determine the timezone to see
     # what day "today" is.
     field :institution, :string
-
-    # computed fields
-    field :computed_names, {:array, :string},   default: []
   end
 
   def fields(), do: __schema__(:fields)
   def required(),
-    do: ListX.delete(fields(), [:institution, :computed_names])
+    do: ListX.delete(fields(), [:institution, :names]) # names checked differently
 
   def fresh_form_changeset(), do: changeset(%__MODULE__{}, %{})
 
   def changeset(struct, attrs) do
     struct
-    |> cast(attrs, required())
+    |> cast(attrs, fields())
     |> validate_required(required())
   end
 
   # ----------------------------------------------------------------------------
 
   @spec accept_form(params(), short_name()) :: Changeset.t(VM.BulkAnimalNew)
-  def accept_form(_params, _institution) do
+  def accept_form(params, institution) do
+    changeset = 
+      %__MODULE__{institution: institution}
+      |> changeset(params)
+      |> FieldValidators.date_order
+      |> FieldValidators.namelist(:names)
+    summarize_validation(changeset, changeset.valid?, error_subtype: :form)
   end
 
   # ----------------------------------------------------------------------------
