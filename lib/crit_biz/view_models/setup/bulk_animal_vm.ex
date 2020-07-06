@@ -7,6 +7,8 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   alias Crit.Setup.Schemas
   alias Ecto.Changeset
   alias Pile.Namelist
+  alias Crit.Ecto.BulkInsert
+  alias Crit.Sql
 
   @primary_key false
   embedded_schema do
@@ -61,7 +63,19 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
 
   # ----------------------------------------------------------------------------
 
-  @spec create([Changeset.t(Schemas.Animal)], short_name()) :: nary_error()
-  def create(_changeset, _institution) do
+  @spec insert_all([Schemas.Animal], short_name()) :: nary_error()
+  def insert_all(animals, institution) do
+    result = 
+      animals
+      |> BulkInsert.insertion_script(institution, schema: Animal)
+      |> Sql.transaction(institution)
+    case result do
+      {:ok, map} ->
+        {:ok, Map.values(map)}
+    end
+    
+    # |> Sql.Transaction.on_ok(extract: :animal_ids)
+    # |> Sql.Transaction.on_error(original_changeset, name: transfer_name_error())
+    
   end
 end
