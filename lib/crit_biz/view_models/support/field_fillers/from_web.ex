@@ -2,7 +2,11 @@ defmodule CritBiz.ViewModels.FieldFillers.FromWeb do
   use Crit.Global.Constants
   alias Ecto.Datespan
   alias Crit.Setup.InstitutionApi
+  alias Ecto.Changeset
 
+  def span(%Changeset{} = changeset),
+    do: changeset |> Changeset.apply_changes |> span
+  
   def span(%{} = data) do
     date = fn string -> Date.from_iso8601!(string) end
     today = fn -> InstitutionApi.today!(data.institution) end

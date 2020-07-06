@@ -49,7 +49,7 @@ defmodule CritWeb.Setup.AnimalController do
     inst = institution(conn)
     with(
       {:ok, vm_changeset} <- VM.BulkAnimalNew.accept_form(params, inst),
-      repo_changesets = VM.BulkAnimalNew.lower_changeset(vm_changeset, inst),
+      repo_changesets = VM.BulkAnimalNew.lower_changeset(vm_changeset),
       {:ok, animals} <- VM.BulkAnimalNew.create(repo_changesets, inst)
     ) do
         conn

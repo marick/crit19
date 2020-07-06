@@ -2,8 +2,11 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   use CritBiz, :view_model
   # alias Ecto.Datespan
   import CritBiz.ViewModels.Common, only: [summarize_validation: 3]
-  # alias CritBiz.ViewModels.FieldFillers.ToWeb
+  alias CritBiz.ViewModels.FieldFillers.FromWeb
   alias CritBiz.ViewModels.FieldValidators
+  alias Crit.Setup.Schemas
+  alias Ecto.Changeset
+  alias Pile.Namelist
 
   @primary_key false
   embedded_schema do
@@ -43,11 +46,17 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
 
   # ----------------------------------------------------------------------------
 
-  @spec lower_changeset(Changeset.t(VM.BulkAnimalNew), short_name())
-  :: [Changeset.t(Schemas.Animal)]
-
-  def lower_changeset(_vm_changeset, _institution) do
-    
+  @spec lower_changeset(Changeset.t(VM.BulkAnimalNew))
+  :: [Schemas.Animal]
+  def lower_changeset(vm_changeset) do
+    for name <- Namelist.to_list(Changeset.fetch_change!(vm_changeset, :names)) do
+      %Schemas.Animal{
+        id: nil,  # for insertion
+        name: name,
+        span: FromWeb.span(vm_changeset),
+        species_id: Changeset.fetch_field!(vm_changeset, :species_id)
+      }
+    end
   end
 
   # ----------------------------------------------------------------------------
