@@ -62,11 +62,11 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   end
 
   
-  deftestable lift(sources, institution) when is_list(sources), 
+  def lift(sources, institution) when is_list(sources), 
     do: (for s <- sources, do: lift(s, institution))
     
   @spec lift(AnimalApi.t, short_name()) :: VM.Animal
-  deftestable lift(source, institution) do
+  def lift(source, institution) do
     %{EnumX.pour_into(source, VM.Animal) |
       species_name: source.species.name,
       institution: institution
