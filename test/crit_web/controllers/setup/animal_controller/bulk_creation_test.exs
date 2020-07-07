@@ -6,6 +6,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   alias Crit.Setup.Schemas
   alias CritWeb.Audit
   alias Crit.Exemplars
+  alias Crit.Setup.AnimalApi2, as: AnimalApi
 
   setup :logged_in_as_setup_manager
 
@@ -30,23 +31,16 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   end
 
   describe "bulk create animals" do
-    setup do
-      # It's relatively easy to accidentally put persistent data into
-      # the test database, so this checks for that
-      assert SqlT.all_ids(Schemas.Animal) == []
-      :ok
-    end
+    test "success case", %{conn: conn} do
+      changes = %{names: "bad ass animal, animal of bliss"}
 
-    @tag :skip
-    test "success case", %{conn: conn, act: act} do
-      {names, params} = bulk_creation_params()
-      conn = act.(conn, params)
-      
-      assert_purpose conn, displaying_animal_summaries()
+      correct_creation(conn, changing: changes)
+      |> assert_purpose(displaying_animal_summaries())
+      |> assert_user_sees("animal of bliss")
+      |> assert_user_sees("bad ass animal")
 
-      assert length(SqlT.all_ids(Schemas.Animal)) == length(names)
-      assert_user_sees(conn, Enum.at(names, 0))
-      assert_user_sees(conn, Enum.at(names, -1))
+      names = AnimalApi.inadequate_all(@institution) |> EnumX.names
+      assert names == ["animal of bliss", "bad ass animal"]
     end
 
     @tag :skip
