@@ -92,4 +92,10 @@ defmodule Ecto.ChangesetX do
        end)
     |> ensure_forms_display_errors
   end
+
+  def add_as_visible_error(changeset, field, message) do
+    changeset
+    |> Changeset.add_error(field, message)
+    |> ensure_forms_display_errors
+  end
 end

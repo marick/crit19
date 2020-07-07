@@ -31,20 +31,6 @@ defmodule CritWeb.Setup.AnimalController do
   def bulk_create_form(conn, _params),
     do: render_bulk_create_form(conn, VM.BulkAnimalNew.fresh_form_changeset())
 
-  # def bulk_create__old(conn, %{"bulk_animal" => raw_params}) do
-  #   params = Testable.put_institution(raw_params, institution(conn))
-  #   case AnimalApi.create_animals(params, institution(conn)) do
-  #     {:ok, animals} ->
-  #       conn
-  #       |> bulk_create_audit(animals, params)
-  #       |> put_flash(:info, "Success!")
-  #       |> render("index.html",
-  #                 animals: animals)
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       render_bulk_create_form(conn, changeset)
-  #   end
-  # end
-
   def bulk_create(conn, %{"bulk_animal_new" => params}) do
     inst = institution(conn)
     with(
@@ -59,8 +45,13 @@ defmodule CritWeb.Setup.AnimalController do
     else
       {:error, :form, vm_changeset} ->
         render_bulk_create_form(conn, vm_changeset)
-      {:error, :constraint, x} ->
-        render_bulk_create_form(conn, x)
+      {:error, :constraint, %{duplicate_name: name}} ->
+        # vm_changeset from above is not in scope. Blah.
+        {:ok, vm_changeset} = VM.BulkAnimalNew.accept_form(params, inst)
+        message = ~s[An animal named "#{name}" is already in service]
+        render_bulk_create_form(
+          conn,
+          ChangesetX.add_as_visible_error(vm_changeset, :names, message))
     end
   end
 

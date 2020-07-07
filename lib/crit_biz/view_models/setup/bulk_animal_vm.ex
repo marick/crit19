@@ -10,7 +10,6 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   alias Pile.Namelist
   alias Crit.Ecto.BulkInsert
   alias Crit.Sql
-  alias Crit.Setup.AnimalApi2, as: AnimalApi
 
   @primary_key false
   embedded_schema do
@@ -67,13 +66,17 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
 
   @spec insert_all([Schemas.Animal], short_name()) :: nary_error(VM.Animal)
   def insert_all(animals, institution) do
-    case script(animals, institution) |> run_script(institution) do
+    insertion_result = 
+      (for animal <- animals, do: Schemas.Animal.constrained(animal))
+      |> script(institution)
+      |> run_script(institution)
+    
+    case insertion_result do
       {:ok, animal_ids} -> 
         {:ok, VM.Animal.fetch(:all_for_summary_list, animal_ids, institution)}
+      {:error, :name, failing_name} ->
+        {:error, :constraint, %{duplicate_name: failing_name}}
     end
-    
-    # |> Sql.Transaction.on_error(original_changeset, name: transfer_name_error())
-    
   end
 
   defp script(animals, institution) do 
@@ -85,5 +88,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
     script
     |> Sql.transaction(institution)
     |> Sql.Transaction.on_ok(extract: :animal_ids)
+    |> Sql.Transaction.on_error(failing_changeset: :name)
+    
   end
 end

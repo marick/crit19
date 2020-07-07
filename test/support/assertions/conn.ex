@@ -66,6 +66,8 @@ defmodule CritWeb.Assertions.Conn do
 
   ### Rendered HTML
 
+  def html_quoted(string), do: Regex.replace(~r/"/, string, "&quot;")
+
   defchain assert_purpose(conn, purpose) do
     assert(html_response(conn, 200) =~
       ~r/Purpose:[[:space:]]+#{Regex.escape(purpose)}/)

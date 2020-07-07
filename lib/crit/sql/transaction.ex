@@ -3,6 +3,7 @@ defmodule Crit.Sql.Transaction do
   alias Crit.Errors
   alias Ecto.Changeset
   alias Ecto.ChangesetX
+  use ExContract
 
 
   defmodule State do 
@@ -65,6 +66,7 @@ defmodule Crit.Sql.Transaction do
     {:ok, tx_result[key]}
   end
 
+
   def on_error({:ok, _} = fall_through, _, _), do: fall_through
   def on_error({:error, _step, failing_changeset, _so_far},
     changeset_for_errors, handlers) do
@@ -83,6 +85,14 @@ defmodule Crit.Sql.Transaction do
      Enum.reduce(failing_changeset.errors, changeset_for_errors, reducer)
     }
   end
+
+  def on_error({:ok, _} = fall_through, _), do: fall_through
+  def on_error({:error, _step, failing_changeset, _so_far},
+               [failing_changeset: field]) do
+    check Keyword.has_key?(failing_changeset.errors, field)
+    {:error, field, Changeset.fetch_field!(failing_changeset, field)}
+  end
+  
 
   @doc """
   Used when the original changeset had no errors but a derived changeset suffered

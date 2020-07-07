@@ -5,7 +5,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Setup.Schemas
   alias CritWeb.Audit
-  alias Crit.Exemplars
+  alias Crit.Exemplars, as: Ex
   alias Crit.Setup.AnimalApi2, as: AnimalApi
 
   setup :logged_in_as_setup_manager
@@ -61,6 +61,17 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       # before the text the user types. So this test trims.
       assert String.trim(inputs.names) == String.trim(changes.names)
     end
+
+
+    test "rejects duplicate names", %{conn: conn} do
+      Ex.Bossie.create
+      changes = %{names: "Bossie"}
+      expected = html_quoted(~s[An animal named "Bossie" is already in service])
+
+      incorrect_creation(conn, changing: changes)
+      |> assert_user_sees(expected)
+    end
+    
 
     # This test no longer works because `follow_form` doesn't preserve
     # the audit record pid that's stashed in the `conn`. However, that

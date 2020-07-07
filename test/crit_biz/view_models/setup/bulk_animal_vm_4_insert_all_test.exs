@@ -34,15 +34,11 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
     end
   end
 
-  @tag :skip
-  test "animals are returned sorted in alphabetical order" do
-    # daisy_to_insert = Factory.build(:animal_new, name: "Daisy")
-    # jake_in = Factory.build(:animal_new, name: "Jake")
-    # {:ok, [daisy, jake]} = 
-    #   VM.BulkAnimalNew.insert_all([daisy_to_insert, jake_in], @institution)
+  test "trying to rename an animal to an existing animal", %{daisy_vm: daisy_vm} do
+    assert {:error, :constraint, %{duplicate_name: duplicate_name}} = 
+      VM.BulkAnimalNew.insert_all([@daisy_to_insert], @institution)
+
+    assert duplicate_name == daisy_vm.name
   end
-
-  @tag :skip
-  test "trying to rename an animal to an existing animal" 
-
+  
 end
