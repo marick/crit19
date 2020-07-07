@@ -1,6 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   use CritBiz, :view_model
   # alias Ecto.Datespan
+  alias CritBiz.ViewModels.Setup, as: VM
   import CritBiz.ViewModels.Common, only: [summarize_validation: 3]
   alias CritBiz.ViewModels.FieldFillers.FromWeb
   alias CritBiz.ViewModels.FieldValidators
@@ -9,6 +10,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   alias Pile.Namelist
   alias Crit.Ecto.BulkInsert
   alias Crit.Sql
+  alias Crit.Setup.AnimalApi2, as: AnimalApi
 
   @primary_key false
   embedded_schema do
@@ -63,19 +65,29 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
 
   # ----------------------------------------------------------------------------
 
-  @spec insert_all([Schemas.Animal], short_name()) :: nary_error()
+  @spec insert_all([Schemas.Animal], short_name()) :: nary_error(VM.Animal)
   def insert_all(animals, institution) do
-    result = 
-      animals
-      |> BulkInsert.insertion_script(institution, schema: Animal)
-      |> Sql.transaction(institution)
-    case result do
-      {:ok, map} ->
-        {:ok, Map.values(map)}
+    case script(animals, institution) |> run_script(institution) do
+      {:ok, animal_ids} -> 
+        vm_animals =
+          animal_ids
+          |> AnimalApi.all_by_ids(institution, preload: [:species])
+          |> VM.Animal.lift(institution)
+        {:ok, vm_animals}
     end
     
-    # |> Sql.Transaction.on_ok(extract: :animal_ids)
     # |> Sql.Transaction.on_error(original_changeset, name: transfer_name_error())
     
+  end
+
+  defp script(animals, institution) do 
+    animals
+    |> BulkInsert.idlist_script(institution, schema: Schemas.Animal, ids: :animal_ids)
+  end
+
+  defp run_script(script, institution) do
+    script
+    |> Sql.transaction(institution)
+    |> Sql.Transaction.on_ok(extract: :animal_ids)
   end
 end

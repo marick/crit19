@@ -12,7 +12,8 @@ defmodule Crit.Types do
       @type short_name() :: String.t   # usually named `institution`.
 
 
-      @type nary_error :: {:ok, any()} | {:error, :atom, any()}
+      @type nary_error(success_type) ::
+        {:ok, success_type} | {:error, :atom, any()}
     end
   end
 end
