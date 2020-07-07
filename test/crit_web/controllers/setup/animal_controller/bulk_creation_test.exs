@@ -43,17 +43,23 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       assert names == ["animal of bliss", "bad ass animal"]
     end
 
-    @tag :skip
     test "renders errors when data is invalid", %{conn: conn} do
       changes = %{names: " ,     ,"}
-      
-      incorrect_creation(conn, changing: changes)
-      |> assert_user_sees(@no_valid_names_message)
-      |> form_inputs(:bulk_animal_new)
+
+      inputs = 
+        incorrect_creation(conn, changing: changes)
+        |> assert_user_sees(@no_valid_names_message)
+        |> form_inputs(:bulk_animal_new)
+
+
+      inputs
       |> assert_fields(in_service_datestring: @today,
                        out_of_service_datestring: @never,
-                       species_id: to_string(@bovine_id),
-                       names: changes.names)
+                       species_id: to_string(@bovine_id))
+
+      # Because names are collected in a text area, there can be whitespace
+      # before the text the user types. So this test trims.
+      assert String.trim(inputs.names) == String.trim(changes.names)
     end
 
     @tag :skip
