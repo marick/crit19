@@ -88,20 +88,6 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
     end
   end
 
-  defp bulk_creation_params() do
-    {in_service_datestring, out_of_service_datestring} = Exemplars.Date.date_pair()
-    namelist = Factory.unique_names()
-
-    params = %{"names" => Factory.names_to_input_string(namelist),
-               "species_id" => Factory.some_species_id,
-               "in_service_datestring" => in_service_datestring,
-               "out_of_service_datestring" => out_of_service_datestring,
-               "institution" => @institution
-              }
-
-    {namelist, params}
-  end
-
   # ----------------------------------------------------------------------------
 
   defp follow_creation_form(conn, [changing: changes]) do
