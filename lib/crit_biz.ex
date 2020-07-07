@@ -14,6 +14,7 @@ defmodule CritBiz do
       alias Ecto.ChangesetX
       alias Crit.Sql
       alias CritBiz.ViewModels.Common
+      import Pile.OkError
     end
   end
 
