@@ -44,6 +44,11 @@ defmodule CritBiz.ViewModels.Setup.Animal do
       |> lift(institution)
   end
 
+  def fetch(:all_for_summary_list, idlist, institution) when is_list(idlist) do
+    AnimalApi.all_by_ids(idlist,institution, preload: [:species])
+    |> VM.Animal.lift(institution)
+  end
+
   def fetch(:one_for_summary, id, institution) do
     AnimalApi.one_by_id(id, institution, preload: [:species])
     |> lift(institution)
@@ -135,7 +140,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   # like having to drag around the species data even though that can
   # never be updated.
 
-  @spec update(Changeset.t(Schemas.Animal), short_name()) :: nary_error()
+  @spec update(Changeset.t(Schemas.Animal), short_name()) :: nary_error(VM.Animal)
   def update(changeset, institution) do
     check changeset.valid?
 

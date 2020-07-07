@@ -3,6 +3,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Setup.AnimalApi2, as: AnimalApi
   import Crit.Exemplars.Bossie, only: [repo_has_bossie: 1]
+  alias Crit.RepoState
   alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
 
@@ -47,6 +48,15 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
       |> refute_assoc_loaded(:service_gaps)
     end
 
+    test "fetching a list of specific animals does not produce service gaps",
+      %{repo: repo} do
+      
+      VM.Animal.fetch(:all_for_summary_list, [repo.bossie.id], @institution)
+      |> singleton_payload
+      |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
+      |> refute_assoc_loaded(:service_gaps)
+    end
+
     test "fetching an animal for a summary does not produce a service gap",
       %{repo: repo} do 
 
@@ -61,6 +71,15 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
       VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
       |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
       |> assert_assoc_loaded(:service_gaps)
+    end
+
+    test "fetching is in alphabetical order", %{repo: repo} do
+      ["bz", "b", "a"] |> Enum.map(&RepoState.animal(repo, &1))
+
+      actual = 
+        VM.Animal.fetch(:all_possible, @institution) |> EnumX.names
+
+      assert actual == ["a", "b", "Bossie", "bz"]
     end
   end
 

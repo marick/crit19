@@ -69,10 +69,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
   def insert_all(animals, institution) do
     case script(animals, institution) |> run_script(institution) do
       {:ok, animal_ids} -> 
-        animal_ids
-        |> AnimalApi.all_by_ids(institution, preload: [:species])
-        |> VM.Animal.lift(institution)
-        |> mark_ok
+        {:ok, VM.Animal.fetch(:all_for_summary_list, animal_ids, institution)}
     end
     
     # |> Sql.Transaction.on_error(original_changeset, name: transfer_name_error())
