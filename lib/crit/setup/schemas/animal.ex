@@ -24,9 +24,14 @@ defmodule Crit.Setup.Schemas.Animal do
     |> cast(attrs, fields())
     |> cast_assoc(:service_gaps)
     |> validate_required(required())
-    |> constraint_on_name()
-    |> optimistic_lock(:lock_version)
+    |> constrained
   end
+
+  def constrained(%__MODULE__{} = animal),
+    do: change(animal) |> constrained
+
+  def constrained(changeset),
+    do: changeset |> constraint_on_name |> optimistic_lock(:lock_version)
 
   defp constraint_on_name(changeset),
     do: unique_constraint(changeset, :name, name: "unique_available_names")
