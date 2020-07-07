@@ -62,13 +62,17 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       assert String.trim(inputs.names) == String.trim(changes.names)
     end
 
+    # This test no longer works because `follow_form` doesn't preserve
+    # the audit record pid that's stashed in the `conn`. However, that
+    # pid should probably be per-institution anyway, to be accessed
+    # via the InstitutionApi.
     @tag :skip
-    test "an audit record is created", %{conn: conn, act: act} do
-      {_names, params} = bulk_creation_params()
-      conn = act.(conn, params)
+    test "an audit record is created", %{conn: conn} do
+      changes = %{names: "bad ass animal, animal of bliss"}
+
+      correct_creation(conn, changing: changes)
 
       {:ok, audit} = latest_audit_record(conn)
-
       ids = SqlT.all_ids(Schemas.Animal)
 
       assert_fields(audit,
@@ -77,9 +81,9 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
 
       assert_fields(audit.data,
         ids: ids,
-        names: params["names"],
-        put_in_service: params["in_service_datestring"],
-        leaves_service: params["out_of_service_datestring"]
+        names: changes.names
+        # put_in_service: params["in_service_datestring"],
+        # leaves_service: params["out_of_service_datestring"]
       )        
     end
   end
