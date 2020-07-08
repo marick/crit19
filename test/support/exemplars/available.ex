@@ -12,7 +12,7 @@ defmodule Crit.Exemplars.Available do
   use Crit.TestConstants
   use Crit.TestConstants
   alias Crit.Factory
-  alias Crit.Setup.AnimalApi
+  alias Crit.Setup.AnimalApiOld
   alias Crit.Exemplars
   alias Crit.Factory
   alias Ecto.Datespan

@@ -1,4 +1,4 @@
-defmodule Crit.Setup.AnimalApi do
+defmodule Crit.Setup.AnimalApiOld do
   use Crit.Global.Constants
   alias Crit.Setup.AnimalImpl.{Read}
   alias Crit.Setup.Schemas.AnimalOld
