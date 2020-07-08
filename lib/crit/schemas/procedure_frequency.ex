@@ -1,4 +1,4 @@
-defmodule Crit.Setup.Schemas.ProcedureFrequency do
+defmodule Crit.Schemas.ProcedureFrequency do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
 

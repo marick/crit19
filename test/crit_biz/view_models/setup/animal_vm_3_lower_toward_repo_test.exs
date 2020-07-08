@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
   alias Ecto.Datespan

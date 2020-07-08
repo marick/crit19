@@ -2,8 +2,7 @@ defmodule Crit.Factory do
   use ExMachina.Ecto, repo: Crit.Repo
   use Crit.TestConstants
   alias Crit.Users.Schemas.{User, PermissionList}
-  alias Crit.Setup.Schemas.{Animal,ServiceGap,Procedure,ProcedureFrequency}
-  alias Crit.Setup
+  alias Crit.Schemas
   alias Crit.Sql
   alias Crit.Exemplars
   alias Ecto.Datespan
@@ -41,31 +40,7 @@ defmodule Crit.Factory do
     out_of_service = @latest_date
     span = Datespan.customary(in_service, out_of_service)
                               
-    %Animal{
-      name: Faker.Cat.name(),
-      species_id: some_species_id(),
-      span: span,
-     }
-  end
-
-  def animal_new_factory() do
-    in_service = @earliest_date
-    out_of_service = @latest_date
-    span = Datespan.customary(in_service, out_of_service)
-                              
-    %Setup.Schemas.Animal{
-      name: Faker.Cat.name(),
-      species_id: some_species_id(),
-      span: span,
-     }
-  end
-
-  def animal_vm_factory() do
-    in_service = @earliest_date
-    out_of_service = @latest_date
-    span = Datespan.customary(in_service, out_of_service)
-                              
-    %Setup.Schemas.Animal{
+    %Schemas.Animal{
       name: Faker.Cat.name(),
       species_id: some_species_id(),
       span: span,
@@ -73,7 +48,7 @@ defmodule Crit.Factory do
   end
 
   def procedure_frequency_factory() do
-    %ProcedureFrequency{
+    %Schemas.ProcedureFrequency{
       name: unique(:procedure_frequency_name),
       calculation_name: "unlimited",
       description: "a procedure frequency"
@@ -81,7 +56,7 @@ defmodule Crit.Factory do
   end
 
   def procedure_factory() do
-    %Procedure{
+    %Schemas.Procedure{
       name: unique(:procedure),
       species_id: some_species_id(),
       frequency_id: @unlimited_frequency_id
@@ -93,7 +68,7 @@ defmodule Crit.Factory do
       Exemplars.Date.today_or_earlier,
       Exemplars.Date.later_than_today)
 
-    %ServiceGap{
+    %Schemas.ServiceGap{
       reason: unique(:reason),
       span: span
     }

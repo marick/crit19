@@ -1,6 +1,6 @@
 defmodule CritBiz.ViewModels.Reservation.CalendarEntry do
   use Ecto.Schema
-  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Schemas.Reservation
   alias Crit.Reservations.ReservationApi
   alias CritWeb.Reservations.ReservationView
 

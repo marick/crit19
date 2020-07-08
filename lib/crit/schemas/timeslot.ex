@@ -1,4 +1,4 @@
-defmodule Crit.Setup.Schemas.Timeslot do
+defmodule Crit.Schemas.Timeslot do
   use Ecto.Schema
   
   schema "timeslots" do

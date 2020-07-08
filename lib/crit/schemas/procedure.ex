@@ -1,8 +1,8 @@
-defmodule Crit.Setup.Schemas.Procedure do
+defmodule Crit.Schemas.Procedure do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.Schemas.{Species,ProcedureFrequency}
+  alias Crit.Schemas.{Species,ProcedureFrequency}
   alias Crit.Sql
 
   schema "procedures" do

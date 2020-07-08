@@ -5,7 +5,7 @@ defmodule Crit.RepoState do
   import DeepMerge
   alias Crit.Factory
   alias Ecto.Datespan
-  alias Crit.Setup.Schemas.{Animal, Procedure}
+  alias Crit.Schemas.{Animal, Procedure}
   alias Crit.Setup.{ProcedureApi}
   alias CritBiz.Setup.AnimalApi
 
@@ -90,7 +90,7 @@ defmodule Crit.RepoState do
               available: @earliest_date,
               species_id: data.species_id})
       
-      Factory.sql_insert!(:animal_new,
+      Factory.sql_insert!(:animal,
         name: animal_name,
         span: compute_span(opts.available),
         species_id: opts.species_id)

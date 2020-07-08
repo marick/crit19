@@ -1,9 +1,9 @@
-defmodule Crit.Reservations.Schemas.Use do
+defmodule Crit.Schemas.Use do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
-  alias Crit.Setup.Schemas.{Animal,Procedure}
-  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Schemas.{Animal,Procedure}
+  alias Crit.Schemas.Reservation
   alias Crit.Sql
   import Ecto.Timespan
   alias Ecto.Timespan

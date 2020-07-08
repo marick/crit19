@@ -1,5 +1,5 @@
 alias Crit.Sql
-alias Crit.Setup.Schemas.{Species,ProcedureFrequency}
+alias Crit.Schemas.{Species,ProcedureFrequency}
 alias Crit.Global.Constants
 alias Crit.Global.SeedConstants
 

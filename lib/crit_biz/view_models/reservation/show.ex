@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Reservation.Show do
   use Ecto.Schema
   alias Crit.Setup.InstitutionApi
-  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Schemas.Reservation
   alias Crit.Reservations.ReservationApi
   alias Pile.TimeHelper
 

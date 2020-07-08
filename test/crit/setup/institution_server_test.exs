@@ -1,6 +1,6 @@
 defmodule Crit.Setup.InstitutionServerTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.Institution
+  alias Crit.Schemas.Institution
   alias Ecto.Changeset
   import Crit.Setup.InstitutionServer, only: [server: 1]
 

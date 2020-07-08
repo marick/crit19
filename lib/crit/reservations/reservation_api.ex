@@ -1,7 +1,7 @@
 defmodule Crit.Reservations.ReservationApi do 
   use Crit.Global.Constants
   alias Crit.Reservations.ReservationImpl.{Read,Write}
-  alias Crit.Reservations.Schemas.{Use, Reservation}
+  alias Crit.Schemas.{Use, Reservation}
   use Crit.Sql.CommonSql, schema: Reservation
 
   deftypical(:one_by_id, :one, [id: id])

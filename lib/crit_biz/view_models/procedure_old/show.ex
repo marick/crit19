@@ -1,6 +1,6 @@
 defmodule CritBiz.ViewModels.Procedure.Show do
   use Ecto.Schema
-  alias Crit.Setup.Schemas.Procedure
+  alias Crit.Schemas.Procedure
   alias Crit.Setup.InstitutionApi
 
   embedded_schema do

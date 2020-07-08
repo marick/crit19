@@ -1,8 +1,8 @@
-defmodule Crit.Reservations.Schemas.Reservation do
+defmodule Crit.Schemas.Reservation do
   use Ecto.Schema
   import Ecto.Changeset
   alias Ecto.Timespan
-  alias Crit.Reservations.Schemas.Use
+  alias Crit.Schemas.Use
 
   # The date could be extracted from the `span`, but making it explicit
   # is more convenient for some uses.

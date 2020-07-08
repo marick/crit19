@@ -1,6 +1,6 @@
 defmodule Crit.Setup.ProcedureApi do
   use Crit.Global.Constants
-  alias Crit.Setup.Schemas.Procedure
+  alias Crit.Schemas.Procedure
   use Crit.Sql.CommonSql, schema: Procedure
   import Crit.Sql.CommonSql
 

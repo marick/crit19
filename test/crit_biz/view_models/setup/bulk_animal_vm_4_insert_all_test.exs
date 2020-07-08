@@ -1,10 +1,10 @@
 defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias CritBiz.Setup.AnimalApi
 
-  @daisy_to_insert Factory.build(:animal_new, name: "Daisy")
+  @daisy_to_insert Factory.build(:animal, name: "Daisy")
 
   setup do
     {:ok, [daisy_vm]} = 

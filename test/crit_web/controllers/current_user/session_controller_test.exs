@@ -5,7 +5,7 @@ defmodule CritWeb.CurrentUser.SessionControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
   alias CritWeb.PublicController
-  alias Crit.Setup.Schemas.{Institution}
+  alias Crit.Schemas.{Institution}
   use Crit.Errors
 
   describe "handling login fields" do

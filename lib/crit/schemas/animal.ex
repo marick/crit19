@@ -1,7 +1,7 @@
-defmodule Crit.Setup.Schemas.Animal do
+defmodule Crit.Schemas.Animal do
   use Ecto.Schema
   alias Crit.Ecto.TrimmedString
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias Ecto.Datespan
   import Ecto.Changeset
 

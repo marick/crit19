@@ -1,6 +1,6 @@
 defmodule Crit.Reservations.ReservationImpl.ReadTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.Animal
+  alias Crit.Schemas.Animal
   alias Crit.Reservations.ReservationImpl.Read
   alias Ecto.Datespan
   alias Crit.Exemplars.{Available, ReservationFocused}

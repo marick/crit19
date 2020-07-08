@@ -1,7 +1,7 @@
 defmodule Crit.Setup.InstitutionServer do
   use GenServer
   alias Crit.Sql.RouteToSchema
-  alias Crit.Setup.Schemas.{Species,ProcedureFrequency, Institution, Timeslot}
+  alias Crit.Schemas.{Species,ProcedureFrequency, Institution, Timeslot}
   alias Crit.Sql.CommonQuery
   alias Crit.Repo
   

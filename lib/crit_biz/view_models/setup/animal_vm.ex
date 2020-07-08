@@ -3,7 +3,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   alias CritBiz.ViewModels.Setup, as: VM
   import CritBiz.ViewModels.Common, only: [flatten_numbered_sublist: 2,
                                            summarize_validation: 3]
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias CritBiz.Setup.AnimalApi
 
   alias Crit.Ecto.TrimmedString

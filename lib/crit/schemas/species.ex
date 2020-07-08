@@ -1,4 +1,4 @@
-defmodule Crit.Setup.Schemas.Species do
+defmodule Crit.Schemas.Species do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Ecto.TrimmedString

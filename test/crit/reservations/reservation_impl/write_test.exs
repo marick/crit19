@@ -2,7 +2,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   use Crit.DataCase
   alias Crit.Reservations.ReservationImpl.Write
   alias Crit.Reservations.ReservationApi
-  alias Crit.Reservations.Schemas.Reservation
+  alias Crit.Schemas.Reservation
   alias Crit.Setup.InstitutionApi
   alias Crit.Exemplars.ReservationFocused
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory

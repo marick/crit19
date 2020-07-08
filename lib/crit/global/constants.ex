@@ -1,7 +1,7 @@
 
 defmodule Crit.Global.Constants do
   alias Crit.Global.Constants
-  alias Crit.Setup.Schemas.Institution
+  alias Crit.Schemas.Institution
   
   # The rather curious duplication of this and below is because `@attributes`
   # can only be used in modules, which seed scripts are not.

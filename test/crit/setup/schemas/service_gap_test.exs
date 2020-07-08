@@ -1,6 +1,6 @@
-defmodule Crit.Setup.Schemas.ServiceGapTest do
+defmodule Crit.Schemas.ServiceGapTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.ServiceGap
+  alias Crit.Schemas.ServiceGap
   alias Crit.Exemplars, as: Ex
 
   describe "changeset for insertion" do

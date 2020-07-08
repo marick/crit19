@@ -1,7 +1,7 @@
 defmodule Crit.Sql.CommonSqlTest do
   use Crit.DataCase
   alias Crit.Sql.CommonSql
-  alias Crit.Setup.Schemas.Procedure
+  alias Crit.Schemas.Procedure
   alias Crit.Setup.ProcedureApi
 
   setup do

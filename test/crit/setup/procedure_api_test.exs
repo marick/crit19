@@ -1,6 +1,6 @@
 defmodule Crit.Setup.ProcedureApiTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.{Procedure}
+  alias Crit.Schemas.{Procedure}
   alias Crit.Setup.ProcedureApi
 
   setup do

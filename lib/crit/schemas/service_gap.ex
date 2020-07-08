@@ -1,4 +1,4 @@
-defmodule Crit.Setup.Schemas.ServiceGap do
+defmodule Crit.Schemas.ServiceGap do
   use Ecto.Schema
   import Ecto.Changeset
   use Crit.Errors

@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.LowerTowardRepoTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias Ecto.Datespan
 
   @params %{"names" => "animal 1, b, c ",

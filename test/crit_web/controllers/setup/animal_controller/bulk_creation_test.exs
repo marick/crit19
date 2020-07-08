@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   use PhoenixIntegration
   alias CritWeb.Setup.AnimalController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias CritWeb.Audit
   alias Crit.Exemplars, as: Ex
   alias CritBiz.Setup.AnimalApi

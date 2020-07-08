@@ -1,5 +1,5 @@
 defmodule Crit.Sql.Router do
-  alias Crit.Setup.Schemas.Institution
+  alias Crit.Schemas.Institution
 
   @type arg :: any
 

@@ -1,6 +1,6 @@
 defmodule CritBiz.ViewModels.Setup.ServiceGap do
   use Ecto.Schema
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias CritBiz.ViewModels.FieldFillers.{FromWeb,ToWeb}
   alias CritBiz.ViewModels.FieldValidators
   import Ecto.Changeset

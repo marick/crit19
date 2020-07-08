@@ -4,12 +4,12 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   alias Crit.Sql
   alias Crit.Sql.CommonQuery
   alias CritBiz.Setup.AnimalApi
-  alias Crit.Setup.Schemas.ServiceGap
-  alias Crit.Reservations.Schemas.{Reservation,Use}
+  alias Crit.Schemas.ServiceGap
+  alias Crit.Schemas.{Reservation,Use}
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Reservations.Schemas.Reservation
+    alias Crit.Schemas.Reservation
 
     def rejected_at(:service_gap, desired) do
       AnimalApi.Query.query_by_in_service_date(desired.date, desired.species_id)

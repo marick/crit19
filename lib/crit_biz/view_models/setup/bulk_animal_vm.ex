@@ -5,7 +5,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimal do
   import CritBiz.ViewModels.Common, only: [summarize_validation: 3]
   alias CritBiz.ViewModels.FieldFillers.FromWeb
   alias CritBiz.ViewModels.FieldValidators
-  alias Crit.Setup.Schemas
+  alias Crit.Schemas
   alias Ecto.Changeset
   alias Pile.Namelist
   alias Crit.Ecto.BulkInsert
