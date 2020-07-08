@@ -1,7 +1,5 @@
 defmodule Pile.Namelist do
-  alias Ecto.Changeset
   use Crit.Errors
-  
 
   @type t() :: String.t
 
