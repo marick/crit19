@@ -3,7 +3,7 @@ defmodule Crit.Reservations.RestPeriodTest do
   import Crit.RepoState
   import Ecto.Query
   alias Crit.Reservations.RestPeriod
-  alias Crit.Setup.Schemas.{AnimalOld}
+  alias Crit.Setup.Schemas.Animal
 
   @sunday    ~D[2020-06-14]
   @monday    ~D[2020-06-15]
@@ -173,7 +173,7 @@ defmodule Crit.Reservations.RestPeriodTest do
   def fetch_these_animals(data) do
     animal_ids = data[:animal] |> Map.values |> EnumX.ids
 
-    from a in AnimalOld, where: a.id in ^animal_ids
+    from a in Animal, where: a.id in ^animal_ids
   end
   
   defp put_reservation(data, date) do

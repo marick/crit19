@@ -23,4 +23,21 @@ defmodule CritBiz.Setup.AnimalApi do
     expected = length(ids)
     {^expected, _} = Sql.delete_all(query, institution)
   end
+
+  defmodule Query do 
+    import Ecto.Query
+    import Ecto.Datespan
+
+    def query_by_in_service_date(date, species_id) do
+      from a in Animal,
+        where: a.species_id == ^species_id,
+        where: a.available == true,
+        where: contains_point_fragment(a.span, ^date)
+    end
+    
+    def ids_to_query(ids) do
+      from a in Animal,
+        where: a.id in ^ids
+    end
+  end
 end

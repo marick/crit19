@@ -1,6 +1,6 @@
 defmodule Crit.Reservations.ReservationImpl.ReadTest do
   use Crit.DataCase
-  alias Crit.Setup.Schemas.{AnimalOld}
+  alias Crit.Setup.Schemas.Animal
   alias Crit.Reservations.ReservationImpl.Read
   alias Ecto.Datespan
   alias Crit.Exemplars.{Available, ReservationFocused}
@@ -83,7 +83,7 @@ defmodule Crit.Reservations.ReservationImpl.ReadTest do
   end
 
   def assert_only(actual, name), 
-    do: assert [%AnimalOld{name: ^name}] = actual
+    do: assert [%Animal{name: ^name}] = actual
 
 
   defp animals_that_will_never_be_returned(_) do 

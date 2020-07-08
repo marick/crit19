@@ -3,7 +3,7 @@ defmodule Crit.SqlRows.Reservation do
   import Ecto.Query
   alias Crit.Sql
   alias Crit.Reservations.Schemas.{Reservation,Use}
-  alias Crit.Setup.Schemas.{AnimalOld, Procedure}
+  alias Crit.Setup.Schemas.{Animal, Procedure}
   import Ecto.Timespan
 
 
@@ -12,7 +12,7 @@ defmodule Crit.SqlRows.Reservation do
     
     query = 
       from r in Reservation,
-      join: a in AnimalOld, as: :animal,
+      join: a in Animal, as: :animal,
       join: u in Use,
       join: p in Procedure, as: :procedure,
       where: overlaps_fragment(r.span, ^ps_range),
