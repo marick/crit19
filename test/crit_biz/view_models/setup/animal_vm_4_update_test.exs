@@ -5,7 +5,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.UpdateTest do
   alias Crit.Exemplars, as: Ex
   import Crit.RepoState
   alias Ecto.Changeset
-  alias Crit.Setup.AnimalApi2, as: AnimalApi
+  alias CritBiz.Setup.AnimalApi
 
   setup do
     repo =

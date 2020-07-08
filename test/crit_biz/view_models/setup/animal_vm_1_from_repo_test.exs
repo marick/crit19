@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Crit.Setup.AnimalApi2, as: AnimalApi
+  alias CritBiz.Setup.AnimalApi
   import Crit.Exemplars.Bossie, only: [repo_has_bossie: 1]
   alias Crit.RepoState
   alias Crit.Exemplars, as: Ex

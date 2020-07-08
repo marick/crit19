@@ -4,7 +4,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   import CritBiz.ViewModels.Common, only: [flatten_numbered_sublist: 2,
                                            summarize_validation: 3]
   alias Crit.Setup.Schemas
-  alias Crit.Setup.AnimalApi2, as: AnimalApi
+  alias CritBiz.Setup.AnimalApi
 
   alias Crit.Ecto.TrimmedString
   alias CritBiz.ViewModels.FieldFillers.{FromWeb, ToWeb}

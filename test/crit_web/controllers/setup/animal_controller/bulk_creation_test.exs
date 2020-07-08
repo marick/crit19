@@ -6,7 +6,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   alias Crit.Setup.Schemas
   alias CritWeb.Audit
   alias Crit.Exemplars, as: Ex
-  alias Crit.Setup.AnimalApi2, as: AnimalApi
+  alias CritBiz.Setup.AnimalApi
 
   setup :logged_in_as_setup_manager
 

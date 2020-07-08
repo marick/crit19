@@ -2,7 +2,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Setup.{InstitutionApi,AnimalApi2, ProcedureApi}
+  alias Crit.Setup.{InstitutionApi, ProcedureApi}
+  alias CritBiz.Setup.AnimalApi
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
   alias CritWeb.Reservations.AfterTheFactStructs.ActionData
@@ -31,7 +32,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   defp got_valid(conn, %ActionData.Animals{} = action_data) do
     header =
       action_data.chosen_animal_ids
-      |> AnimalApi2.all_by_ids(institution(conn))
+      |> AnimalApi.all_by_ids(institution(conn))
       |> View.animals_header
     
     task_memory = UserTask.remember_relevant(action_data, task_header: header)

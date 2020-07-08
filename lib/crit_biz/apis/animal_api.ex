@@ -1,4 +1,4 @@
-defmodule Crit.Setup.AnimalApi2 do
+defmodule CritBiz.Setup.AnimalApi do
   use Crit.Global.Constants
   alias Crit.Setup.Schemas.{Animal,ServiceGap}
   use Crit.Sql.CommonSql, schema: Animal
