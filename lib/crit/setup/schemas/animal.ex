@@ -35,5 +35,4 @@ defmodule Crit.Setup.Schemas.Animal do
 
   defp constraint_on_name(changeset),
     do: unique_constraint(changeset, :name, name: "unique_available_names")
-
 end
