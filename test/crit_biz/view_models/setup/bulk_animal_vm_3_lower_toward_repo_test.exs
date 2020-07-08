@@ -11,9 +11,9 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.LowerTowardRepoTest do
   
 
   test "converting to a list of insertable animals" do
-    {:ok, changeset} = VM.BulkAnimalNew.accept_form(@params, @institution)
+    {:ok, changeset} = VM.BulkAnimal.accept_form(@params, @institution)
     
-    [a, b, c] = VM.BulkAnimalNew.lower_changeset(changeset)
+    [a, b, c] = VM.BulkAnimal.lower_changeset(changeset)
 
     assert_as_expected(a, "animal 1")
     assert_as_expected(b, "b")

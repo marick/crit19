@@ -10,7 +10,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
 
   setup do
     {:ok, [daisy_vm]} = 
-      VM.BulkAnimalNew.insert_all([@daisy_to_insert], @institution)
+      VM.BulkAnimal.insert_all([@daisy_to_insert], @institution)
     
     [daisy_vm: daisy_vm]
   end
@@ -36,7 +36,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
 
   test "trying to rename an animal to an existing animal", %{daisy_vm: daisy_vm} do
     assert {:error, :constraint, %{duplicate_name: duplicate_name}} = 
-      VM.BulkAnimalNew.insert_all([@daisy_to_insert], @institution)
+      VM.BulkAnimal.insert_all([@daisy_to_insert], @institution)
 
     assert duplicate_name == daisy_vm.name
   end

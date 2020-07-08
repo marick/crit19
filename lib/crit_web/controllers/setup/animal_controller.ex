@@ -29,14 +29,14 @@ defmodule CritWeb.Setup.AnimalController do
 
   # ----------------------------------------------------------------------------
   def bulk_create_form(conn, _params),
-    do: render_bulk_create_form(conn, VM.BulkAnimalNew.fresh_form_changeset())
+    do: render_bulk_create_form(conn, VM.BulkAnimal.fresh_form_changeset())
 
-  def bulk_create(conn, %{"bulk_animal_new" => params}) do
+  def bulk_create(conn, %{"bulk_animal" => params}) do
     inst = institution(conn)
     with(
-      {:ok, vm_changeset} <- VM.BulkAnimalNew.accept_form(params, inst),
-      proposed_animals = VM.BulkAnimalNew.lower_changeset(vm_changeset),
-      {:ok, animals} <- VM.BulkAnimalNew.insert_all(proposed_animals, inst)
+      {:ok, vm_changeset} <- VM.BulkAnimal.accept_form(params, inst),
+      proposed_animals = VM.BulkAnimal.lower_changeset(vm_changeset),
+      {:ok, animals} <- VM.BulkAnimal.insert_all(proposed_animals, inst)
     ) do
         conn
         |> bulk_create_audit(animals, params)
@@ -47,7 +47,7 @@ defmodule CritWeb.Setup.AnimalController do
         render_bulk_create_form(conn, vm_changeset)
       {:error, :constraint, %{duplicate_name: name}} ->
         # vm_changeset from above is not in scope. Blah.
-        {:ok, vm_changeset} = VM.BulkAnimalNew.accept_form(params, inst)
+        {:ok, vm_changeset} = VM.BulkAnimal.accept_form(params, inst)
         message = ~s[An animal named "#{name}" is already in service]
         render_bulk_create_form(
           conn,

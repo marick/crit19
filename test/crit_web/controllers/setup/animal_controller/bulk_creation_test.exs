@@ -22,7 +22,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
 
     test "details about form structure", %{conn: conn} do
       get_via_action(conn, :bulk_create_form)
-      |> form_inputs(:bulk_animal_new)
+      |> form_inputs(:bulk_animal)
       |> assert_fields(in_service_datestring: @today,
                        out_of_service_datestring: @never,
                        species_id: to_string(@bovine_id),
@@ -49,7 +49,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       inputs = 
         incorrect_creation(conn, changing: changes)
         |> assert_user_sees(@no_valid_names_message)
-        |> form_inputs(:bulk_animal_new)
+        |> form_inputs(:bulk_animal)
 
 
       inputs
@@ -103,7 +103,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
 
   defp follow_creation_form(conn, [changing: changes]) do
     get_via_action(conn, :bulk_create_form)
-    |> follow_form(%{bulk_animal_new: changes})
+    |> follow_form(%{bulk_animal: changes})
   end
   
   defp correct_creation(conn, opts) do

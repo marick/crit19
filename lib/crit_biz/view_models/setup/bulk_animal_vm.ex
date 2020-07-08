@@ -1,4 +1,4 @@
-defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
+defmodule CritBiz.ViewModels.Setup.BulkAnimal do
   use CritBiz, :view_model
   # alias Ecto.Datespan
   alias CritBiz.ViewModels.Setup, as: VM
@@ -37,7 +37,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
 
   # ----------------------------------------------------------------------------
 
-  @spec accept_form(params(), short_name()) :: Changeset.t(VM.BulkAnimalNew)
+  @spec accept_form(params(), short_name()) :: Changeset.t(VM.BulkAnimal)
   def accept_form(params, institution) do
     changeset = 
       %__MODULE__{institution: institution}
@@ -49,7 +49,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalNew do
 
   # ----------------------------------------------------------------------------
 
-  @spec lower_changeset(Changeset.t(VM.BulkAnimalNew))
+  @spec lower_changeset(Changeset.t(VM.BulkAnimal))
   :: [Schemas.Animal]
   def lower_changeset(vm_changeset) do
     for name <- Namelist.to_list(Changeset.fetch_change!(vm_changeset, :names)) do
