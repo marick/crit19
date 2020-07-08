@@ -3,10 +3,10 @@ defmodule Integration.Reservations.AfterTheFactTest do
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.State.UserTask
-  alias Crit.Exemplars.Available
   alias Crit.Reservations.ReservationApi
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan
+  import Crit.RepoState
 
   setup :logged_in_as_reservation_manager
 
@@ -20,10 +20,14 @@ defmodule Integration.Reservations.AfterTheFactTest do
     given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
 
-    picked_animal = Available.bovine("Bossie", @date)
-    _not_picked = Available.bovine("Unchecked", @date)
-    picked_procedure = Available.bovine_procedure("only procedure")
-    [picked_animal: picked_animal, picked_procedure: picked_procedure]
+    repo =
+      empty_repo(@bovine_id)
+      |> animal("picked_animal", available: @date)
+      |> animal("not picked", available: @date)
+      |> procedure("picked_procedure")
+      |> shorthand()
+    
+    [picked_animal: repo.picked_animal, picked_procedure: repo.picked_procedure]
   end
 
 

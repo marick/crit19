@@ -1,7 +1,7 @@
 defmodule Crit.Reservations.RestPeriod do
   import Ecto.Query
   alias Crit.Sql
-  alias Crit.Setup.Schemas.{AnimalOld,Procedure}
+  alias Crit.Setup.Schemas.{Animal,Procedure}
   alias Crit.Reservations.Schemas.Use
   alias Crit.Reservations.Schemas.Reservation
   alias Crit.Setup.ProcedureApi
@@ -20,7 +20,7 @@ defmodule Crit.Reservations.RestPeriod do
 
     [first | rest] = 
     for {animal_id, procedure} <- pairs do
-      query = (from a in AnimalOld, where: [id: ^animal_id])
+      query = (from a in Animal, where: [id: ^animal_id])
       one_procedure_uses(query, procedure.frequency.calculation_name, struct.date, procedure.id)
     end
 
