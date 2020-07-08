@@ -1,7 +1,7 @@
 defmodule Crit.Sql.TransactionTest do
   use Crit.DataCase
   alias Crit.Sql.Transaction
-  alias CritBiz.ViewModels.Setup.BulkAnimal
+  alias CritBiz.ViewModels.Setup.BulkAnimalNew
   alias Crit.Setup.Schemas.Species
   alias Ecto.Changeset
 
@@ -24,7 +24,7 @@ defmodule Crit.Sql.TransactionTest do
     end      
 
     test "on_error operates on fields in the failing changeset" do
-      original_changeset = Changeset.change(%BulkAnimal{})
+      original_changeset = Changeset.change(%BulkAnimalNew{})
       assert original_changeset.errors == []
 
       # I'm using species for the source of messages because it's a simple schema.
