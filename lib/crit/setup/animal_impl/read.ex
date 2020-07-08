@@ -36,13 +36,6 @@ defmodule Crit.Setup.AnimalImpl.Read do
     |> Sql.all(institution)
   end
   
-  def ids_to_animals(ids, institution) do
-    CommonQuery.ordered_by_name(AnimalOld)
-    |> CommonQuery.narrow_to_ids(ids)
-    |> Query.preload_common
-    |> Sql.all(institution)
-  end
-
   def put_updatable_fields(animals, institution) when is_list(animals) do
     Enum.map(animals, &(put_updatable_fields &1, institution))
   end

@@ -3,18 +3,6 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
   alias Crit.Setup.AnimalImpl.Read
   
   describe "bulk queries order by name" do
-    test "... not by id order when fetching by ids" do 
-      %{id: id1} = Factory.sql_insert!(:animal, [name: "ZZZ"], @institution)
-      %{id: id3} = Factory.sql_insert!(:animal, [name: "m"], @institution)
-      %{id: id2} = Factory.sql_insert!(:animal, [name: "aaaaa"], @institution)
-
-      ordering = 
-        Read.ids_to_animals([id1, id2, id3], @institution)
-        |> EnumX.names
-
-      assert ordering == ["aaaaa", "m", "ZZZ"]
-    end
-
     test "when using `all`" do
       # This might not fail on a bug, since the animals could happen to be generated
       # in sorted order. But note that the names are different for each run of
@@ -29,12 +17,5 @@ defmodule Crit.Setup.AnimalImpl.ReadTest do
 
       assert as_read == sorted
     end
-  end
-
-
-  test "when fetching ids, missing ids are silently ignored" do
-    %{id: id} = Factory.sql_insert!(:animal, @institution)
-
-    [%{id: ^id}] = Read.ids_to_animals([id * 2000, id * 4000, id], @institution)
   end
 end
