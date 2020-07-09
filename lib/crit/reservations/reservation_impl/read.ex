@@ -3,23 +3,20 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   import Ecto.Query
   alias Crit.Sql
   alias Crit.Sql.CommonQuery
-  alias Crit.Schemas.ServiceGap
-  alias Crit.Schemas.{Reservation,Use}
   alias Crit.Schemas
 
   defmodule Query do
     import Ecto.Query
-    alias Crit.Schemas.Reservation
 
     def rejected_at(:service_gap, desired) do
       Schemas.Animal.Query.by_in_service_date(desired.date, desired.species_id)
-      |> ServiceGap.narrow_animal_query_by(desired.date)
+      |> Schemas.ServiceGap.narrow_animal_query_by(desired.date)
       |> CommonQuery.ordered_by_name
     end
     
     def rejected_at(:uses, desired) do
       Schemas.Animal.Query.by_in_service_date(desired.date, desired.species_id)
-      |> Use.narrow_animal_query_by(desired.span)
+      |> Schemas.Use.narrow_animal_query_by(desired.span)
       |> CommonQuery.ordered_by_name
     end
   end  
@@ -40,14 +37,14 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   
   def by_id(id, institution) do
     query =
-      from r in Reservation, where: r.id == ^id
+      from r in Schemas.Reservation, where: r.id == ^id
     
     Sql.one(query, institution)
   end
 
   def on_dates(inclusive_first, inclusive_last, institution) do
     query = 
-      from r in Reservation,
+      from r in Schemas.Reservation,
       where: r.date >= ^inclusive_first,
       where: r.date <= ^inclusive_last
 
@@ -74,8 +71,8 @@ defmodule Crit.Reservations.ReservationImpl.Read do
       CommonQuery.subtract(query_so_far, make_restriction_query.(query_so_far))
     end
     
-    date_blocker = &(ServiceGap.narrow_animal_query_by(&1, date))
-    timespan_blocker = &(Use.narrow_animal_query_by(&1, span))
+    date_blocker = &(Schemas.ServiceGap.narrow_animal_query_by(&1, date))
+    timespan_blocker = &(Schemas.Use.narrow_animal_query_by(&1, span))
 
     [date_blocker, timespan_blocker]
     |> Enum.reduce(base_query, reducer)

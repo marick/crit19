@@ -1,7 +1,5 @@
 defmodule Crit.Reservations.ReservationImpl.Write do
-  alias Crit.Schemas.ServiceGap
   alias Crit.Schemas
-  alias Crit.Schemas.{Reservation,Use}
   alias Crit.Reservations.RestPeriod
   alias Crit.Sql
   alias Ecto.Multi
@@ -15,11 +13,11 @@ defmodule Crit.Reservations.ReservationImpl.Write do
     animals_query = CommonQuery.start_by_ids(Schemas.Animal, struct.chosen_animal_ids)
 
     service_gap_animals_fn = fn _repo, _so_far ->
-      {:ok, ServiceGap.unavailable_by(animals_query, struct.date, institution)}
+      {:ok, Schemas.ServiceGap.unavailable_by(animals_query, struct.date, institution)}
     end
 
     use_animals_fn = fn _repo, _so_far ->
-      {:ok, Use.unavailable_by(animals_query, struct.span, institution)}
+      {:ok, Schemas.Use.unavailable_by(animals_query, struct.span, institution)}
     end
 
     rest_periods_fn = fn _repo, _so_far ->
@@ -49,7 +47,7 @@ defmodule Crit.Reservations.ReservationImpl.Write do
 
   defp struct_to_changeset(struct) do
     uses = 
-      Use.cross_product(
+      Schemas.Use.cross_product(
         struct.chosen_animal_ids,
         struct.chosen_procedure_ids)
     
@@ -57,7 +55,6 @@ defmodule Crit.Reservations.ReservationImpl.Write do
       Map.from_struct(struct)
       |> Map.put(:uses, uses)
 
-    Reservation.changeset(%Reservation{}, attrs)
+    Schemas.Reservation.changeset(%Schemas.Reservation{}, attrs)
   end
-    
 end
