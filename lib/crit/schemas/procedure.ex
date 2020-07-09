@@ -13,7 +13,7 @@ defmodule Crit.Schemas.Procedure do
     timestamps()
   end
 
-  def preloads, do: [:species, :frequency]
+  def associations, do: __schema__(:associations)
 
   @required [:name, :species_id, :frequency_id]
 

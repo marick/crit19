@@ -17,7 +17,7 @@ defmodule Crit.Schemas.Reservation do
     timestamps()
   end
 
-  def preloads, do: [:uses]
+  def associations, do: __schema__(:associations)
 
   @required [:span, :date, :species_id, :timeslot_id, :responsible_person]
 

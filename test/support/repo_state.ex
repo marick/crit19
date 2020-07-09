@@ -187,7 +187,7 @@ defmodule Crit.RepoState do
       new = 
         acc
         |> id(schema, name)
-        |> api.one_by_id(@institution, preload: module.preloads())
+        |> api.one_by_id(@institution, preload: module.associations())
 
       put(acc, schema, name, new)
     end)

@@ -15,7 +15,7 @@ defmodule Crit.Schemas.Animal do
     timestamps()
   end
 
-  def preloads, do: [:species, :service_gaps]
+  def associations, do: __schema__(:associations)
   def fields(), do: __schema__(:fields)
   def required(), do: ListX.delete(fields(), [:id, :species_id])
 
