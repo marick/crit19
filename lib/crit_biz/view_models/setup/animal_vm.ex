@@ -4,7 +4,6 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   import CritBiz.ViewModels.Common, only: [flatten_numbered_sublist: 2,
                                            summarize_validation: 3]
   alias Crit.Schemas
-  alias CritBiz.Setup.AnimalApi
 
   alias Crit.Ecto.TrimmedString
   alias CritBiz.ViewModels.FieldFillers.{FromWeb, ToWeb}
@@ -40,22 +39,22 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   @spec fetch(:atom, short_name()) :: VM.Animal | [VM.Animal]
   
   def fetch(:all_possible, institution) do
-      AnimalApi.inadequate_all(institution, preload: [:species])
+      Schemas.Animal.Get.inadequate_all(institution, preload: [:species])
       |> lift(institution)
   end
 
   def fetch(:all_for_summary_list, idlist, institution) when is_list(idlist) do
-    AnimalApi.all_by_ids(idlist,institution, preload: [:species])
+    Schemas.Animal.Get.all_by_ids(idlist,institution, preload: [:species])
     |> VM.Animal.lift(institution)
   end
 
   def fetch(:one_for_summary, id, institution) do
-    AnimalApi.one_by_id(id, institution, preload: [:species])
+    Schemas.Animal.Get.one_by_id(id, institution, preload: [:species])
     |> lift(institution)
   end
 
   def fetch(:one_for_edit, id, institution) do
-    AnimalApi.one_by_id(id, institution, preload: [:species, :service_gaps])
+    Schemas.Animal.Get.one_by_id(id, institution, preload: [:species, :service_gaps])
     |> lift(institution)
   end
   
@@ -70,7 +69,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   def lift(sources, institution) when is_list(sources), 
     do: (for s <- sources, do: lift(s, institution))
     
-  @spec lift(AnimalApi.t, short_name()) :: VM.Animal
+  @spec lift(Schemas.Animal.t, short_name()) :: VM.Animal
   def lift(source, institution) do
     %{EnumX.pour_into(source, VM.Animal) |
       species_name: source.species.name,
@@ -118,7 +117,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
     ids_to_delete = ChangesetX.ids_to_delete_from(form_changeset, :service_gaps)
     
     id
-    |> AnimalApi.one_by_id(institution, preload: [:service_gaps])
+    |> Schemas.Animal.Get.one_by_id(institution, preload: [:service_gaps])
     |> Schemas.Animal.changeset(lower_attrs)
     |> VM.ServiceGap.mark_deletions(ids_to_delete)
   end

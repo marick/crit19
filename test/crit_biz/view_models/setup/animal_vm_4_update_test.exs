@@ -5,7 +5,6 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.UpdateTest do
   alias Crit.Exemplars, as: Ex
   import Crit.RepoState
   alias Ecto.Changeset
-  alias CritBiz.Setup.AnimalApi
 
   setup do
     repo =
@@ -51,7 +50,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.UpdateTest do
   # ----------------------------------------------------------------------------
 
   defp changeset_with_change(id, field, value) do
-    AnimalApi.one_by_id(id, @institution, preloads: [:service_gaps])
+    Schemas.Animal.Get.one_by_id(id, @institution, preloads: [:service_gaps])
     |> Schemas.Animal.changeset(%{})
     |> Changeset.put_change(field, value)
   end

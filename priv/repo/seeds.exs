@@ -14,7 +14,6 @@ alias Crit.Users.PasswordApi
 alias Crit.Users.Schemas.User
 alias Crit.Users.Schemas.PermissionList
 alias Crit.Sql
-alias Crit.Setup.AnimalApi
 alias Crit.Schemas.{ServiceGap,Procedure,Species,ProcedureFrequency}
 alias Crit.Global.Constants
 alias Crit.Global.SeedConstants

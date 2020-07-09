@@ -7,7 +7,6 @@ defmodule Crit.RepoState do
   alias Ecto.Datespan
   alias Crit.Schemas.{Animal, Procedure}
   alias Crit.Setup.{ProcedureApi}
-  alias CritBiz.Setup.AnimalApi
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
                      :reservation, :service_gap])
@@ -178,7 +177,7 @@ defmodule Crit.RepoState do
   defp load_completely(data, :procedure),
     do: load_completely(data, :procedure, ProcedureApi, Procedure)
   defp load_completely(data, :animal),
-    do: load_completely(data, :animal, AnimalApi, Animal)
+    do: load_completely(data, :animal, Animal.Get, Animal)
   defp load_completely(data, _), do: data
 
   defp load_completely(data, schema, api, module) do

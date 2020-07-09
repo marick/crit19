@@ -6,7 +6,6 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   alias Crit.Schemas
   alias CritWeb.Audit
   alias Crit.Exemplars, as: Ex
-  alias CritBiz.Setup.AnimalApi
 
   setup :logged_in_as_setup_manager
 
@@ -39,7 +38,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       |> assert_user_sees("animal of bliss")
       |> assert_user_sees("bad ass animal")
 
-      names = AnimalApi.inadequate_all(@institution) |> EnumX.names
+      names = Schemas.Animal.Get.inadequate_all(@institution) |> EnumX.names
       assert names == ["animal of bliss", "bad ass animal"]
     end
 

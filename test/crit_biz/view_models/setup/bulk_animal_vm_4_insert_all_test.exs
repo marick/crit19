@@ -2,7 +2,6 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
-  alias CritBiz.Setup.AnimalApi
 
   @daisy_to_insert Factory.build(:animal, name: "Daisy")
 
@@ -15,7 +14,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
   
   describe "success" do
     test "what the on-disk version looks like", %{daisy_vm: daisy_vm} do
-      AnimalApi.one_by_id(daisy_vm.id, @institution)
+      Schemas.Animal.Get.one_by_id(daisy_vm.id, @institution)
       |> assert_shape(%Schemas.Animal{})
       |> assert_schema_copy(@daisy_to_insert, ignoring: [:id, :lock_version])
 

@@ -3,22 +3,22 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   import Ecto.Query
   alias Crit.Sql
   alias Crit.Sql.CommonQuery
-  alias CritBiz.Setup.AnimalApi
   alias Crit.Schemas.ServiceGap
   alias Crit.Schemas.{Reservation,Use}
+  alias Crit.Schemas
 
   defmodule Query do
     import Ecto.Query
     alias Crit.Schemas.Reservation
 
     def rejected_at(:service_gap, desired) do
-      AnimalApi.Query.query_by_in_service_date(desired.date, desired.species_id)
+      Schemas.Animal.Query.by_in_service_date(desired.date, desired.species_id)
       |> ServiceGap.narrow_animal_query_by(desired.date)
       |> CommonQuery.ordered_by_name
     end
     
     def rejected_at(:uses, desired) do
-      AnimalApi.Query.query_by_in_service_date(desired.date, desired.species_id)
+      Schemas.Animal.Query.by_in_service_date(desired.date, desired.species_id)
       |> Use.narrow_animal_query_by(desired.span)
       |> CommonQuery.ordered_by_name
     end
@@ -55,7 +55,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   end
 
   def in_service(desired, institution) do
-    AnimalApi.Query.query_by_in_service_date(desired.date, desired.species_id)
+    Schemas.Animal.Query.by_in_service_date(desired.date, desired.species_id)
     |> CommonQuery.ordered_by_name
     |> Sql.all(institution)
   end
@@ -68,7 +68,7 @@ defmodule Crit.Reservations.ReservationImpl.Read do
   def before_the_fact_animals(%{species_id: species_id, date: date, span: span},
     institution) do
     
-    base_query = AnimalApi.Query.query_by_in_service_date(date, species_id)
+    base_query = Schemas.Animal.Query.by_in_service_date(date, species_id)
 
     reducer = fn make_restriction_query, query_so_far ->
       CommonQuery.subtract(query_so_far, make_restriction_query.(query_so_far))

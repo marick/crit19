@@ -4,6 +4,8 @@ defmodule Crit.Sql.CommonQuery do
   def start(schema) when is_atom(schema),        do: from x in schema
   def start(schema, where) when is_atom(schema), do: from x in schema, where: ^where
 
+  def start_by_ids(schema, ids), do: from x in schema, where: x.id in ^ids
+  
   def ordered_by_name(%Ecto.Query{} = query) do
     query
     |> distinct([x], x.name)
@@ -17,7 +19,6 @@ defmodule Crit.Sql.CommonQuery do
   def narrow_to_ids(query, ids) do
     query |> where([x], x.id in ^ids)
   end
-
 
   def typical(schema, where, opts) when is_atom(schema) and is_list(opts) do
     preloads = Keyword.get(opts, :preload, [])

@@ -1,17 +1,18 @@
 defmodule Crit.Reservations.ReservationImpl.Write do
   alias Crit.Schemas.ServiceGap
+  alias Crit.Schemas
   alias Crit.Schemas.{Reservation,Use}
   alias Crit.Reservations.RestPeriod
   alias Crit.Sql
   alias Ecto.Multi
-  alias CritBiz.Setup.AnimalApi
+  alias Crit.Sql.CommonQuery
 
   def create(struct, institution) do
     struct_to_changeset(struct) |> Sql.insert(institution)
   end
 
   def create_noting_conflicts(struct, institution) do
-    animals_query = AnimalApi.Query.ids_to_query(struct.chosen_animal_ids)
+    animals_query = CommonQuery.start_by_ids(Schemas.Animal, struct.chosen_animal_ids)
 
     service_gap_animals_fn = fn _repo, _so_far ->
       {:ok, ServiceGap.unavailable_by(animals_query, struct.date, institution)}

@@ -1,11 +1,11 @@
 defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-  alias CritBiz.Setup.AnimalApi
   import Crit.Exemplars.Bossie, only: [repo_has_bossie: 1]
   alias Crit.RepoState
   alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
+  alias Crit.Schemas
 
   setup :repo_has_bossie
 
@@ -16,7 +16,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   describe "lift" do
     test "a lifting without service gaps)", %{repo: repo} do
       repo.bossie.id
-      |> AnimalApi.one_by_id(@institution, preload: [:species])
+      |> Schemas.Animal.Get.one_by_id(@institution, preload: [:species])
       |> VM.Animal.lift(@institution)
       |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
       |> refute_assoc_loaded(:service_gaps)
@@ -26,7 +26,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
       Ex.Bossie.put_service_gap(repo, span: :first)
 
       repo.bossie.id
-      |> AnimalApi.one_by_id(@institution, preload: [:species, :service_gaps])
+      |> Schemas.Animal.Get.one_by_id(@institution, preload: [:species, :service_gaps])
       |> VM.Animal.lift(@institution)
       
       |> Ex.Bossie.assert_view_model_for(id: repo.bossie.id)
