@@ -50,7 +50,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.UpdateTest do
   # ----------------------------------------------------------------------------
 
   defp changeset_with_change(id, field, value) do
-    Schemas.Animal.Sql.one_by_id(id, @institution, preloads: [:service_gaps])
+    Schemas.Animal.Get.one_by_id(id, @institution, preloads: [:service_gaps])
     |> Schemas.Animal.changeset(%{})
     |> Changeset.put_change(field, value)
   end

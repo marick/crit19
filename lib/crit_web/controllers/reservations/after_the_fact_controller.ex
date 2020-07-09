@@ -32,7 +32,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   defp got_valid(conn, %ActionData.Animals{} = action_data) do
     header =
       action_data.chosen_animal_ids
-      |> Schemas.Animal.Sql.all_by_ids(institution(conn))
+      |> Schemas.Animal.Get.all_by_ids(institution(conn))
       |> View.animals_header
     
     task_memory = UserTask.remember_relevant(action_data, task_header: header)
