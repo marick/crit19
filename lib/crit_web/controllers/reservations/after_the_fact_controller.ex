@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Setup.{InstitutionApi, ProcedureApi}
+  alias Crit.Setup.InstitutionApi
   alias Crit.Schemas
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
@@ -115,7 +115,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   defp render_form_for_next_step(conn, :put_procedures, task_memory) do
     procedures =
-      ProcedureApi.all_by_species(task_memory.species_id, institution(conn))
+      Schemas.Procedure.Get.all_by_species(task_memory.species_id, institution(conn))
     render_form_for_next_step(conn, :put_procedures, task_memory, procedures: procedures)
   end
 

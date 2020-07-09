@@ -2,7 +2,7 @@ defmodule Integration.Setup.ProcedureCreationTest do
   use CritWeb.IntegrationCase
   alias CritWeb.Setup.ProcedureController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Setup.ProcedureApi
+  alias Crit.Schemas
 
   setup :logged_in_as_setup_manager
 
@@ -22,7 +22,7 @@ defmodule Integration.Setup.ProcedureCreationTest do
     # ----------------------------------------------------------------------------
     |> assert_purpose(displaying_procedure_summaries())
 
-    assert [p1, p2] = ProcedureApi.all_by_species(@bovine_id, @institution)
+    assert [p1, p2] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
     assert_fields(p1,
       name: "procedure #1",
       frequency_id: @once_per_week_frequency_id
@@ -32,7 +32,7 @@ defmodule Integration.Setup.ProcedureCreationTest do
       frequency_id: @unlimited_frequency_id
     )
 
-    assert [ep2] = ProcedureApi.all_by_species(@equine_id, @institution)
+    assert [ep2] = Schemas.Procedure.Get.all_by_species(@equine_id, @institution)
     assert_fields(ep2,
       name: "procedure #2",
       frequency_id: @unlimited_frequency_id

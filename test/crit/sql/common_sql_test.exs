@@ -1,8 +1,8 @@
 defmodule Crit.Sql.CommonSqlTest do
   use Crit.DataCase
+  alias Crit.Sql
   alias Crit.Sql.CommonSql
   alias Crit.Schemas.Procedure
-  alias Crit.Setup.ProcedureApi
 
   setup do
     f = &insert/3
@@ -63,6 +63,8 @@ defmodule Crit.Sql.CommonSqlTest do
 
   def insert(name, species_id, frequency_id) do
     attrs = %{name: name, species_id: species_id, frequency_id: frequency_id}
-    ProcedureApi.insert(attrs, @institution)
+    %Procedure{}
+    |> Procedure.changeset(attrs)
+    |> Sql.insert(@institution)
   end
 end

@@ -2,7 +2,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
   use CritWeb.ConnCase
   alias CritWeb.Setup.ProcedureController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Setup.ProcedureApi
+  alias Crit.Schemas
 
   setup :logged_in_as_setup_manager
 
@@ -21,7 +21,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_purpose(displaying_procedure_summaries())
 
       
-      assert [only] = ProcedureApi.all_by_species(@bovine_id, @institution)
+      assert [only] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
     end
 
     test "an empty row is ignored", %{conn: conn} do
@@ -30,7 +30,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       post_to_action(conn, :bulk_create, under(:procedures, params))
       |> assert_purpose(displaying_procedure_summaries())
 
-      assert [only] = ProcedureApi.all_by_species(@bovine_id, @institution)
+      assert [only] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
     end
 
     test "typical case", %{conn: conn} do
@@ -46,9 +46,9 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_user_sees("once per week")
 
       assert [%{name: "proc1"}, %{name: "proc2"}] = 
-        ProcedureApi.all_by_species(@bovine_id, @institution)
+        Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
       assert [%{name: "proc1"}] = 
-        ProcedureApi.all_by_species(@equine_id, @institution)
+        Schemas.Procedure.Get.all_by_species(@equine_id, @institution)
     end
 
     test "no species chosen", %{conn: conn} do
@@ -61,7 +61,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
       |> assert_user_sees(@at_least_one_species)
       # Correct one not added.
-      assert [] = ProcedureApi.all_by_species(@bovine_id, @institution)
+      assert [] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
     end
 
     test "duplicate name", %{conn: conn} do
@@ -88,7 +88,7 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_user_sees(@already_taken)
 
       assert [%{name: "duplicate"}] =
-        ProcedureApi.all_by_species(@bovine_id, @institution)
+        Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
     end
 
     test "only one error message for a two-species procedure",
@@ -134,9 +134,9 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
       |> assert_purpose(displaying_procedure_summaries())
 
       assert [%{name: "duplicate"}] =
-        ProcedureApi.all_by_species(@bovine_id, @institution)
+        Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
       assert [%{name: "duplicate"}] =
-        ProcedureApi.all_by_species(@equine_id, @institution)
+        Schemas.Procedure.Get.all_by_species(@equine_id, @institution)
     end
   end
 

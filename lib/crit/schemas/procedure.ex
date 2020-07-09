@@ -24,6 +24,14 @@ defmodule Crit.Schemas.Procedure do
     |> unique_constraint(:name, name: "unique_to_species")
   end
 
+  defmodule Get do
+    use Crit.Sql.CommonSql, schema: Crit.Schemas.Procedure
+
+    deftypical(:all_by_species, :all, species_id: species_id)
+    deftypical(:one_by_id, :one, id: id)
+    def_all_by_Xs(:id)
+  end
+
   def insert(attrs, institution) do
     %__MODULE__{}
     |> changeset(attrs)

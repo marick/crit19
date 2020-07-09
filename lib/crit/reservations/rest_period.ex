@@ -1,17 +1,14 @@
 defmodule Crit.Reservations.RestPeriod do
   import Ecto.Query
   alias Crit.Sql
-  alias Crit.Schemas.{Animal,Procedure}
-  alias Crit.Schemas.Use
-  alias Crit.Schemas.Reservation
-  alias Crit.Setup.ProcedureApi
+  alias Crit.Schemas.{Animal,Procedure, Use, Reservation}
   alias Ecto.Datespan
   import Ecto.Datespan  # This has to be imported for query construction.
   
  
   def unavailable_by(_query, struct, institution) do
     chosen_procedures =
-      ProcedureApi.all_by_ids(struct.chosen_procedure_ids,
+      Procedure.Get.all_by_ids(struct.chosen_procedure_ids,
         institution,
         preload: [:frequency])
     
