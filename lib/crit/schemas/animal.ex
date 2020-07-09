@@ -37,7 +37,7 @@ defmodule Crit.Schemas.Animal do
     do: unique_constraint(changeset, :name, name: "unique_available_names")
 
 
-  defmodule Get do
+  defmodule Sql do
     alias Crit.Sql
     use Crit.Sql.CommonSql, schema: Crit.Schemas.Animal
 

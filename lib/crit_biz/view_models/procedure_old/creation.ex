@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Procedure.Creation do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Crit.Setup.ProcedureApi
+  alias Crit.Schemas
   alias Ecto.Multi
   alias Crit.Sql
   use Crit.Errors
@@ -72,7 +72,7 @@ defmodule CritBiz.ViewModels.Procedure.Creation do
     reducer = fn attrs, multi ->
       Multi.insert(multi,
         {attrs.name, attrs.species_id},
-        ProcedureApi.changeset(attrs),
+        Schemas.Procedure.changeset(%Schemas.Procedure{}, attrs),
         Sql.multi_opts(institution))
     end
 

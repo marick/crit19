@@ -177,7 +177,7 @@ defmodule Crit.RepoState do
   defp load_completely(data, :procedure),
     do: load_completely(data, :procedure, ProcedureApi, Procedure)
   defp load_completely(data, :animal),
-    do: load_completely(data, :animal, Animal.Get, Animal)
+    do: load_completely(data, :animal, Animal.Sql, Animal)
   defp load_completely(data, _), do: data
 
   defp load_completely(data, schema, api, module) do

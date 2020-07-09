@@ -38,7 +38,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       |> assert_user_sees("animal of bliss")
       |> assert_user_sees("bad ass animal")
 
-      names = Schemas.Animal.Get.inadequate_all(@institution) |> EnumX.names
+      names = Schemas.Animal.Sql.inadequate_all(@institution) |> EnumX.names
       assert names == ["animal of bliss", "bad ass animal"]
     end
 

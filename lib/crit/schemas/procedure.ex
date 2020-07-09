@@ -17,7 +17,7 @@ defmodule Crit.Schemas.Procedure do
 
   @required [:name, :species_id, :frequency_id]
 
-  def changeset(procedure, attrs) do
+  def changeset(%__MODULE__{} = procedure, attrs) do
     procedure
     |> cast(attrs, @required)
     |> validate_required(@required)
