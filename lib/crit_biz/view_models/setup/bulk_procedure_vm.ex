@@ -1,4 +1,4 @@
-defmodule CritBiz.ViewModels.Procedure.Creation do
+defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   use Ecto.Schema
   import Ecto.Changeset
   alias Crit.Schemas
