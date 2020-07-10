@@ -36,12 +36,12 @@ defmodule CritWeb.Setup.AnimalController do
     with(
       {:ok, vm_changeset} <- VM.BulkAnimal.accept_form(params, inst),
       proposed_animals = VM.BulkAnimal.lower_changeset(vm_changeset),
-      {:ok, animals} <- VM.BulkAnimal.insert_all(proposed_animals, inst)
+      {:ok, vm_animals} <- VM.BulkAnimal.insert_all(proposed_animals, inst)
     ) do
         conn
-        |> bulk_create_audit(animals, params)
+        |> bulk_create_audit(vm_animals, params)
         |> put_flash(:info, "Success!")
-        |> render("index.html", animals: animals)
+        |> render("index.html", animals: vm_animals)
     else
       {:error, :form, vm_changeset} ->
         render_bulk_create_form(conn, vm_changeset)

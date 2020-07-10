@@ -61,7 +61,7 @@ defmodule Crit.Sql.CommonSqlTest do
     end
   end
 
-  def insert(name, species_id, frequency_id) do
+  defp insert(name, species_id, frequency_id) do
     attrs = %{name: name, species_id: species_id, frequency_id: frequency_id}
     %Procedure{}
     |> Procedure.changeset(attrs)
