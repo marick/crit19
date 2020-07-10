@@ -8,41 +8,54 @@ defmodule Ecto.ChangesetXTest do
     field :field, :integer
   end
 
-  describe "fetching the original (underlying) value" do
-    setup do
-      [changeset: change(%__MODULE__{field: 1})]
-    end
+  def data(value), do: %__MODULE__{field: value}
 
-    test "fetches the value", %{changeset: changeset} do
-      assert ChangesetX.fetch_original!(changeset, :field) == 1
-    end
 
-    test "fetches a change", %{changeset: changeset} do
-      changed = put_change(changeset, :field, 3)
-      assert ChangesetX.fetch_original!(changed, :field) == 1
-    end
+  # -------------Fields and Changes ------------------------------------------------
 
-    test "error when value does not exist", %{changeset: changeset} do
-      msg =
-        "key :missing not found in: %Ecto.ChangesetXTest{field: 1, id: nil}"
-      assert_raise(KeyError, msg, fn -> 
-        ChangesetX.fetch_original!(changeset, :missing)
-      end)
-    end
-
-    test "all_valid?" do
-      valid = %{valid?: true}
-      invalid = %{valid?: false}
-
-      assert ChangesetX.all_valid?(valid,   [])
-      refute ChangesetX.all_valid?(invalid, [])
-
-      assert ChangesetX.all_valid?(valid,   [valid,   valid])
-      refute ChangesetX.all_valid?(invalid, [valid,   valid])
-      refute ChangesetX.all_valid?(valid,   [invalid, valid])
-      refute ChangesetX.all_valid?(valid,   [valid,   invalid])
-    end
+  test "Working with no change" do
+    cs = change(data("old"))
+    
+    assert ChangesetX.old!(cs, :field) == "old"
+    assert_raise KeyError, fn -> ChangesetX.new!(cs, :field) end
+    assert ChangesetX.newest!(cs, :field) == "old"
   end
+
+  test "Working with a change" do
+    cs = change(data("old"), field: "new")
+    
+    assert ChangesetX.old!(cs, :field) == "old"
+    assert ChangesetX.new!(cs, :field) == "new"
+    assert ChangesetX.newest!(cs, :field) == "new"
+  end
+
+  test "Working with a bad field" do
+    cs = change(data("old"), field: "new")
+    
+    assert_raise KeyError, fn -> ChangesetX.old!(cs, :bad_field) end
+    assert_raise KeyError, fn -> ChangesetX.new!(cs, :bad_field) end
+    assert_raise KeyError, fn -> ChangesetX.newest!(cs, :bad_field) end
+  end
+  
+  
+  # --------Errors ---------------------------------------------
+
+  test "all_valid?" do
+    valid = %{valid?: true}
+    invalid = %{valid?: false}
+    
+    assert ChangesetX.all_valid?(valid,   [])
+    refute ChangesetX.all_valid?(invalid, [])
+    
+    assert ChangesetX.all_valid?(valid,   [valid,   valid])
+    refute ChangesetX.all_valid?(invalid, [valid,   valid])
+    refute ChangesetX.all_valid?(valid,   [invalid, valid])
+    refute ChangesetX.all_valid?(valid,   [valid,   invalid])
+  end
+
+  
+  # ------------Groups of changesets--------------------
+  # ------------Misc-------------------------------------
 
   defmodule Deletable do
     use Ecto.Schema
@@ -73,7 +86,7 @@ defmodule Ecto.ChangesetXTest do
     actual =
       change(%Container{})
       |> put_change(:many, nested)
-      |> ChangesetX.ids_to_delete_from(:many)
+      |> ChangesetX.ids_marked_for_deletion(:many)
 
     assert actual == MapSet.new([2])
   end

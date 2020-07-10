@@ -114,7 +114,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
         
   def lower_changeset(form_changeset, id, institution) do
     lower_attrs = lower_to_attrs(form_changeset)
-    ids_to_delete = ChangesetX.ids_to_delete_from(form_changeset, :service_gaps)
+    ids_to_delete = ChangesetX.ids_marked_for_deletion(form_changeset, :service_gaps)
     
     id
     |> Schemas.Animal.Get.one_by_id(institution, preload: [:service_gaps])

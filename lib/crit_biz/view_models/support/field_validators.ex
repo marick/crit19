@@ -12,7 +12,7 @@ defmodule CritBiz.ViewModels.FieldValidators do
     check fetch_field!(changeset, :institution) != nil
     fields = [:in_service_datestring, :out_of_service_datestring]
 
-    date_order_(changeset, ChangesetX.values(changeset, fields))
+    date_order_(changeset, ChangesetX.newest!(changeset, fields))
   end
 
   defp date_order_(changeset, [_, @never]), do: changeset
