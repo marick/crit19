@@ -1,6 +1,7 @@
 defmodule CritWeb.Fomantic.Helpers do
   use Phoenix.HTML
   alias Ecto.Changeset
+  alias Ecto.ChangesetX
 
   def input_list_name(f, field), do: input_name(f, field) <> "[]"
 
@@ -29,11 +30,8 @@ defmodule CritWeb.Fomantic.Helpers do
     |> String.to_atom
   end
 
-  def atomizer(%Changeset{} = changeset, key) do
-    changeset
-    |> Changeset.fetch_field!(key)
-    |> atomizer
-  end
+  def atomizer(%Changeset{} = changeset, key), 
+    do: atomizer ChangesetX.newest!(changeset, key)
 
   def safe(x), do: {:safe, x}
   

@@ -67,7 +67,7 @@
       <%= for changeset <- @changesets do %>
           <%= inputs_for(f, atomizer(changeset, :index), fn fp -> %>
           <tr>
-            <%= hidden_input(fp, :index, value: changeset.changes.index) %>
+            <%= hidden_input(fp, :index, value: ChangesetX.newest!(changeset, :index)) %>
             <%= [td(field(procedure_input(fp, changeset))),
                  td(species_chooser(fp, @species_pairs, changeset)),
                  td(frequency_chooser(fp, @frequencies))
