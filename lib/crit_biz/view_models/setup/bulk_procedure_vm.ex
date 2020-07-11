@@ -1,16 +1,18 @@
 defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   use CritBiz, :view_model
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Crit.Schemas
-  alias Ecto.Multi
   alias CritBiz.ViewModels.Common
+  alias Crit.Schemas
+  alias Crit.Ecto.TrimmedString
+  
+  alias Ecto.Multi
 
   # The index is used to give each element of the array its own unique id.
   # That may not be necessary, but it doesn't hurt and is arguably clearer.
   @primary_key false
   embedded_schema do
     field :index, :integer
-    field :name, :string, default: ""
+    field :name, TrimmedString, default: ""
     field :species_ids, {:array, :id}, default: []
     field :frequency_id, :integer
     

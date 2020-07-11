@@ -55,6 +55,16 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
                        species_ids: [@bovine_id],
                        frequency_id: 32)
     end
+
+    test "procedure names are trimmed" do
+      params = [Map.put(@valid_entry, "name", " proc  ")] |> make_params
+      assert [only] = VM.BulkProcedure.accept_form(params) |> ok_payload
+
+      only
+      |> assert_valid
+      |> assert_change(name: "proc")
+    end
+    
   end
 
   describe "errors" do
@@ -109,9 +119,5 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> assert_change(index: 2)
       |> assert_unchanged(:name)
     end
-
-
-    @tag :skip
-    test "procedure names are trimmed"
   end
 end
