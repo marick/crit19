@@ -31,6 +31,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       params = make_params([@valid_entry])
 
       [only] = VM.BulkProcedure.accept_form(params) |> ok_payload
+
       only
       |> assert_valid
       |> assert_change(name: "haltering",
@@ -69,8 +70,48 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> assert_error(name: @blank_message)
 
     end
+    
+    test "species_ids must be present" do
+      params = [Map.delete(@valid_entry, "species_ids")] |> make_params
+      assert [only] = VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
+
+      only
+      |> assert_invalid
+      |> assert_change(name: "haltering",
+                       frequency_id: 32,
+                       index: 0)
+      |> assert_error(species_ids: @at_least_one_species)
+    end
+
+    test "blank fields are retained when there are errors" do
+      params = make_params([
+        @blank_entry,
+        Map.put(@valid_entry, "name", ""),
+        @blank_entry
+      ])
+
+      assert [blank1, only, blank2] =
+        VM.BulkProcedure.accept_form(params)
+        |> error2_payload(:form)
+
+      only
+      |> assert_invalid
+      |> assert_error(name: @blank_message)
+      |> assert_change(species_ids: [@bovine_id], index: 1)
+
+      blank1
+      |> assert_valid
+      |> assert_change(index: 0)
+      |> assert_unchanged(:name)
+      
+      blank2
+      |> assert_valid
+      |> assert_change(index: 2)
+      |> assert_unchanged(:name)
+    end
+
 
     @tag :skip
-    test "blank fields are retained when there are errors"
+    test "procedure names are trimmed"
   end
 end
