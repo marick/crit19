@@ -6,7 +6,7 @@ defmodule CritBiz.ViewModels.Procedure.CreationTest do
   describe "checking form attributes" do
     test "both name and species id means validity" do 
       %BulkProcedure{}
-      |> BulkProcedure.changeset(%{"name"=>"x", "species_ids" => ["0"]})
+      |> BulkProcedure.changeset(%{"name"=>"x", "species_ids" => [0]})
       |> assert_valid
     end
     

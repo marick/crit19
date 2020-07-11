@@ -45,6 +45,9 @@ defmodule Ecto.ChangesetX do
     |> ensure_forms_display_errors
   end
 
+  def has_error?(changeset, field),
+    do: Keyword.has_key?(changeset.errors, field)
+
   # ------------Groups of changesets--------------------
 
   def all_valid?(list), do: Enum.all?(list, &(&1.valid?))

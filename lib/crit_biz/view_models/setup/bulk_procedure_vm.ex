@@ -3,8 +3,7 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
   alias Ecto.Multi
-  import CritBiz.ViewModels.Common, only: [flatten_numbered_list: 1,
-                                           summarize_validation: 3]
+  alias CritBiz.ViewModels.Common
 
   # The index is used to give each element of the array its own unique id.
   # That may not be necessary, but it doesn't hurt and is arguably clearer.
@@ -14,9 +13,13 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
     field :name, :string, default: ""
     field :species_ids, {:array, :id}, default: []
     field :frequency_id, :integer
+    
+    field :blank?, :boolean, default: false, virtual: true
   end
 
-  @required [:name, :species_ids, :index, :frequency_id]
+  def fields(), do: __schema__(:fields)
+  # `:name` and `:species_id` may be absent, if absent together.
+  def required(), do: fields() |> ListX.delete([:name, :species_ids])
 
   def fresh_form_changesets() do
     for i <- 0..9 do 
@@ -24,22 +27,56 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
     end
   end
 
-
   # ----------------------------------------------------------------------------
 
   @spec accept_form(params()) :: nary_error([Changeset.t(VM.BulkProcedure)])
   def accept_form(params) do
-    flatten_numbered_list(params)
-    |> changesets
+    params = Common.flatten_to_list(params)
+    changesets = Enum.map(params, &fresh_changeset/1)
+
+    for_blank_form? = fn changeset ->
+      ChangesetX.newest!(changeset, :blank?)
+    end
     
-    
-    # changeset = 
-    #   %__MODULE__{institution: institution}
-    #   |> changeset(params)
-    #   |> FieldValidators.date_order
-    #   |> FieldValidators.namelist(:names)
-    # summarize_validation(changeset, changeset.valid?, error_subtype: :form)
+    case Enum.all?(changesets, &(&1.valid?)) do
+      true ->
+        {:ok, Enum.reject(changesets, for_blank_form?) }
+      false ->
+        {:error, :form, changesets}
+    end
   end
+
+  def fresh_changeset(attrs) do
+    cast(%__MODULE__{}, attrs, fields())
+    |> validate_name_and_species
+    |> validate_required(required())
+  end
+
+
+  defp validate_name_and_species(original) do
+    #Need to find a way to get access to inner workings of validation
+    blank_name =
+      original
+      |> validate_required([:name])
+      |> ChangesetX.has_error?(:name)
+    
+    blank_species =
+      ChangesetX.newest!(original, :species_ids) == []
+
+    case {blank_name, blank_species}  do
+      {true, true} ->
+        put_change(original, :blank?, true)
+      {true, _} ->
+        validate_required(original, [:name]) # sets the error.
+      {_, true} ->
+        add_error(original, :species_ids, @at_least_one_species)
+      {_, _} ->
+        original
+    end
+  end
+
+  
+  
 
   # ----------------------------------------------------------------------------
 
@@ -70,11 +107,11 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
 
   def starting_changeset() do
     %__MODULE__{}
-    |> cast(%{}, @required)
+    |> cast(%{}, fields())
   end
 
   def changeset(%__MODULE__{} = struct, attrs) do
-    start = cast(struct, attrs, @required)
+    start = cast(struct, attrs, fields())
     case {fetch_change(start, :name), fetch_change(start, :species_ids)} do
       {:error, :error} -> start
       {:error, _} -> start
