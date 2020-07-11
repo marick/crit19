@@ -4,7 +4,6 @@ defmodule CritWeb.Setup.ProcedureController do
   import CritWeb.Plugs.Authorize
   alias Crit.Setup.InstitutionApi
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Ecto.Changeset
 
   IO.puts "Need a new permission"
   plug :must_be_able_to, :manage_animals 

@@ -3,6 +3,8 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
   alias Ecto.Multi
+  import CritBiz.ViewModels.Common, only: [flatten_numbered_list: 1,
+                                           summarize_validation: 3]
 
   # The index is used to give each element of the array its own unique id.
   # That may not be necessary, but it doesn't hurt and is arguably clearer.
@@ -25,8 +27,12 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
 
   # ----------------------------------------------------------------------------
 
-  @spec accept_form(params(), short_name()) :: [Changeset.t(VM.BulkProcedure)]
-  def accept_form(_params, _institution) do
+  @spec accept_form(params()) :: nary_error([Changeset.t(VM.BulkProcedure)])
+  def accept_form(params) do
+    flatten_numbered_list(params)
+    |> changesets
+    
+    
     # changeset = 
     #   %__MODULE__{institution: institution}
     #   |> changeset(params)

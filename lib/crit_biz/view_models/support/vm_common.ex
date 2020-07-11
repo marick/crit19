@@ -4,6 +4,9 @@ defmodule CritBiz.ViewModels.Common do
   def flatten_numbered_sublist(top, name),
     do: Map.put(top, name, Map.values(top[name]))
 
+  def flatten_numbered_list(top) when is_list(top),
+    do: Enum.flat_map(top, &Map.values/1)
+
   
   # Because view models don't pass changesets through the Repo
   # functions like `update`, they don't automatically get their
