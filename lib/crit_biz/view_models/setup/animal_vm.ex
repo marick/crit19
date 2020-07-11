@@ -1,11 +1,10 @@
 defmodule CritBiz.ViewModels.Setup.Animal do
   use CritBiz, :view_model
   alias CritBiz.ViewModels.Setup, as: VM
-  import CritBiz.ViewModels.Common, only: [flatten_numbered_sublist: 2,
-                                           summarize_validation: 3]
+  alias CritBiz.ViewModels.Common
   alias Crit.Schemas
-
   alias Crit.Ecto.TrimmedString
+
   alias CritBiz.ViewModels.FieldFillers.{FromWeb, ToWeb}
   alias CritBiz.ViewModels.FieldValidators
   alias Ecto.Changeset
@@ -87,7 +86,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
   # has to be dragged around.
   @spec accept_form(params(), short_name()) :: Changeset.t(VM.Animal)
   def accept_form(params, institution) do
-    params = flatten_numbered_sublist(params, "service_gaps")
+    params = Common.flatten_numbered_sublist(params, "service_gaps")
 
     animal_changeset = 
       %VM.Animal{institution: institution}
@@ -102,7 +101,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
 
     animal_changeset
     |> put_change(:service_gaps, sg_changesets)
-    |> summarize_validation(
+    |> Common.summarize_validation(
           ChangesetX.all_valid?(animal_changeset, sg_changesets),
           error_subtype: :form)
   end
