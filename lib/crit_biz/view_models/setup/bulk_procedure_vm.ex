@@ -34,7 +34,7 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   @spec accept_form(params()) :: nary_error([Changeset.t(VM.BulkProcedure)])
   def accept_form(params) do
     params = Common.flatten_to_list(params)
-    changesets = Enum.map(params, &fresh_changeset/1)
+    changesets = Enum.map(params, &fresh_individual_changeset/1)
 
     for_blank_form? = fn changeset ->
       ChangesetX.newest!(changeset, :blank?)
@@ -48,7 +48,7 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
     end
   end
 
-  def fresh_changeset(attrs) do
+  defp fresh_individual_changeset(attrs) do
     cast(%__MODULE__{}, attrs, fields())
     |> validate_name_and_species
     |> validate_required(required())
