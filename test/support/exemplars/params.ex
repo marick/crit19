@@ -66,6 +66,13 @@ defmodule Crit.Exemplars.Params do
         }
       }
     }
+
+
+    defp only([descriptor, opts]) do
+      only(descriptor)
+      |> Map.merge(exceptions(opts))
+      |> Map.drop(deleted_keys(opts))
+    end
     
     defp only(descriptor), do: @bulk_procedures[descriptor].params
 
@@ -109,15 +116,7 @@ defmodule Crit.Exemplars.Params do
     end
 
     def bulk(descriptor), do: bulk([descriptor])
-    
-    def bulk(descriptor, opts) do
-      entry =
-        only(descriptor)
-        |> Map.merge(exceptions(opts))
-        |> Map.drop(deleted_keys(opts))
-        |> Map.put("index", "0")
 
-      %{"0" => entry}
-    end
+    def bulk(descriptor, opts), do: bulk([[descriptor, opts]])
   end
 end

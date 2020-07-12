@@ -1,110 +1,67 @@
 defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-
-  @valid_entry %{
-    "name" => "haltering",
-    "species_ids" => [to_string(@bovine_id)],
-    "frequency_id" => "32"
-  }
-
-  @blank_entry %{
-    "name" => "",
-    # no value for this parameter will be sent by the browser.
-    "frequency_id" => "32"
-  }
-
-  defp make_params(entries) do
-    entries
-    |> Enum.with_index
-    |> Enum.map(fn {entry, index} ->
-         key = to_string(index)
-         value = Map.put(entry, "index", to_string(index))
-         {key, value}
-       end)
-   |> Map.new
-  end
+  alias Crit.Exemplars.Params.BulkProcedures, as: Params
 
   # ----------------------------------------------------------------------------
   describe "successful form validation" do
     test "validation of one procedure" do
-      params = make_params([@valid_entry])
-
-      [only] = VM.BulkProcedure.accept_form(params) |> ok_payload
-
-      only
-      |> assert_valid
-      |> assert_change(name: "haltering",
-                       species_ids: [@bovine_id],
-                       frequency_id: 32)
+      Params.bulk(:valid)
+      |> becomes_correct_singleton
+      |> assert_changes(Params.as_cast(:valid))
     end
 
-    test "an empty procedure doesn't turn into a changeset" do
-      params = make_params([@blank_entry])
-
-      assert [] = VM.BulkProcedure.accept_form(params) |> ok_payload
+    test "an empty subform doesn't turn into a changeset" do
+      params = Params.bulk(:blank)
+      assert VM.BulkProcedure.accept_form(params) == {:ok, []}
     end
 
     test "the empty procedure doesn't have to be at the end" do
-      params = make_params([@blank_entry, @valid_entry])
+      params = Params.bulk([:blank, :valid])
 
-      assert [only] = VM.BulkProcedure.accept_form(params) |> ok_payload
-      only
-      |> assert_valid
-      |> assert_change(name: "haltering",
-                       species_ids: [@bovine_id],
-                       frequency_id: 32)
+      assert [only] = becomes_correct(params)
+      assert_change(only, Params.as_cast(:valid))
     end
 
     test "procedure names are trimmed" do
-      params = [Map.put(@valid_entry, "name", " proc  ")] |> make_params
-      assert [only] = VM.BulkProcedure.accept_form(params) |> ok_payload
+      params = Params.bulk(:valid,      except: %{"name" => " proc  "})
+      expected = Params.as_cast(:valid, except: %{name:      "proc"})
 
-      only
-      |> assert_valid
-      |> assert_change(name: "proc")
+      params
+      |> becomes_correct_singleton
+      |> assert_change(expected)
     end
-    
   end
 
   describe "errors" do
     test "name must be present" do
-      params = [Map.put(@valid_entry, "name", "   ")] |> make_params
-      assert [only] = VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
-
-      only
-      |> assert_invalid
-      |> assert_change(species_ids: [@bovine_id],
-                       frequency_id: 32,
-                       index: 0)
+      Params.bulk(:valid, except: %{"name" => "   "})
+      |> becomes_incorrect_singleton
+      |> assert_unchanged(:name)  # the string is trimmed to its original "" value
       |> assert_error(name: @blank_message)
 
+      |> assert_change(Params.as_cast(:valid, without: [:name]))
     end
     
     test "species_ids must be present" do
-      params = [Map.delete(@valid_entry, "species_ids")] |> make_params
-      assert [only] = VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
-
-      only
-      |> assert_invalid
-      |> assert_change(name: "haltering",
-                       frequency_id: 32,
-                       index: 0)
+      Params.bulk(:valid, deleting: ["species_ids"])
+      |> becomes_incorrect_singleton
       |> assert_error(species_ids: @at_least_one_species)
+
+      |> assert_change(Params.as_cast(:valid, without: [:species_ids]))
     end
 
+    @tag :skip
     test "blank fields are retained when there are errors" do
-      params = make_params([
-        @blank_entry,
-        Map.put(@valid_entry, "name", ""),
-        @blank_entry
-      ])
+      params = Params.bulk([
+        :blank,
+        [:valid, except: [name: ""]],
+         :blank
+        ])
 
-      assert [blank1, only, blank2] =
-        VM.BulkProcedure.accept_form(params)
-        |> error2_payload(:form)
+      assert [blank1, wrong, blank2] = becomes_incorrect(params)
 
-      only
+      wrong
       |> assert_invalid
       |> assert_error(name: @blank_message)
       |> assert_change(species_ids: [@bovine_id], index: 1)
@@ -119,5 +76,26 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> assert_change(index: 2)
       |> assert_unchanged(:name)
     end
+  end
+
+  # ----------------------------------------------------------------------------
+
+  defp becomes_correct(params) do 
+    changesets = VM.BulkProcedure.accept_form(params) |> ok_payload
+    for c <- changesets, do: assert_valid(c)
+    changesets
+  end
+
+  defp becomes_correct_singleton(params),
+    do: becomes_correct(params) |> singleton_payload
+
+  def becomes_incorrect(params) do
+    VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
+  end
+
+  def becomes_incorrect_singleton(params) do
+    becomes_incorrect(params)
+    |> singleton_payload
+    |> assert_invalid
   end
 end
