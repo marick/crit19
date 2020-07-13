@@ -1,5 +1,6 @@
 defmodule Crit.Exemplars.Params do
   alias Crit.Exemplars, as: Ex
+  
 
   def put_nested(top_params, field, nary) when is_list(nary) do
     param_map = 
@@ -57,21 +58,28 @@ defmodule Crit.Exemplars.Params do
         "2" => %{"frequency_id" => "32", "index" => "2", "name" => ""}
       }
     """
-
-    
     use Crit.TestConstants
-    alias CritBiz.ViewModels.Setup.BulkProcedure
     alias Ecto.Changeset
+    alias CritBiz.ViewModels.Setup, as: VM
 
   
-    @bulk_procedures %{
+    @options %{
       valid: %{
         params: %{
           "name" => "haltering",
           "species_ids" => [to_string(@bovine_id)],
           "frequency_id" => "32"},
         to_cast: [:name, :species_ids, :frequency_id]
-      }, 
+      },
+
+      two_species: %{
+        params: %{
+          "name" => "haltering",
+          "species_ids" => [to_string(@bovine_id),
+                            to_string(@equine_id)],
+          "frequency_id" => "32"},
+        to_cast: [:name, :species_ids, :frequency_id]
+      },
       
       blank: %{
         params: %{
@@ -89,14 +97,14 @@ defmodule Crit.Exemplars.Params do
       |> Map.drop(deleted_keys(opts))
     end
     
-    defp only(descriptor), do: @bulk_procedures[descriptor].params
+    defp only(descriptor), do: @options[descriptor].params
 
     defp exceptions(opts), do: Keyword.get(opts, :except, %{})
     defp without(opts), do: Keyword.get(opts, :without, [])
     defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
 
     defp fields_to_check(descriptor, opts) do
-      pure_fields = @bulk_procedures[descriptor].to_cast
+      pure_fields = @options[descriptor].to_cast
       extras = exceptions(opts) |> Map.keys
 
       pure_fields
@@ -105,13 +113,12 @@ defmodule Crit.Exemplars.Params do
     end
     
     def as_cast(descriptor, opts \\ []) do
-      exceptions = exceptions(opts)
-      
       cast_value = 
-        %BulkProcedure{}
-        |> Changeset.cast(only(descriptor), BulkProcedure.fields())
+        %VM.BulkProcedure{}
+        |> Changeset.cast(only(descriptor), VM.BulkProcedure.fields())
         |> Changeset.apply_changes
-        |> Map.merge(exceptions)
+        |> Map.merge(exceptions(opts))
+        |> Map.drop(without(opts))
 
 
       for field <- fields_to_check(descriptor, opts), 
@@ -132,6 +139,15 @@ defmodule Crit.Exemplars.Params do
 
     def that_are(descriptor), do: that_are([descriptor])
 
-    def that_are(descriptor, opts), do: that_are([[descriptor, opts]])
+    def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
+
+
+    def accept_form(descriptor),
+      do: that_are(descriptor) |> VM.BulkProcedure.accept_form
+
+    def lower_changesets(descriptor) do
+      {:ok, vm_changesets} = accept_form(descriptor)
+      VM.BulkProcedure.lower_changesets(vm_changesets)
+    end
   end
 end

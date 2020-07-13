@@ -24,7 +24,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
     end
 
     test "procedure names are trimmed" do
-      params = Params.that_are(:valid,      except: %{"name" => " proc  "})
+      params = Params.that_are(:valid,  except: %{"name" => " proc  "})
       expected = Params.as_cast(:valid, except: %{name:      "proc"})
 
       params
@@ -53,11 +53,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
     test "blank fields are retained when there are errors" do
       params = Params.that_are([
-        :blank,
-        [:valid, except: %{"name" => ""}],
-         :blank
-        ])
-      IO.inspect params
+        :blank,    [:valid, except: %{"name" => ""}],    :blank   ])
 
       assert [blank1, wrong, blank2] = become_incorrect(params)
 

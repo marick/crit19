@@ -83,20 +83,19 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   # ----------------------------------------------------------------------------
 
   @spec lower_changesets([Changeset.t(VM.BulkProcedure)]) :: [Schemas.Procedure]
-  def lower_changesets(changesets) do
-    for c <- changesets, do: lower_changeset(c)
-  end
+  def lower_changesets(changesets),
+    do: Enum.flat_map(changesets, &lower_changeset/1)
   
   @spec lower_changeset(Changeset.t(VM.BulkProcedure)) :: Schemas.Procedure
-  def lower_changeset(_vm_changeset) do
-    # for name <- Namelist.to_list(Changeset.fetch_change!(vm_changeset, :names)) do
-    #   %Schemas.Animal{
-    #     id: nil,  # for insertion
-    #     name: name,
-    #     span: FromWeb.span(vm_changeset),
-    #     species_id: Changeset.fetch_field!(vm_changeset, :species_id)
-    #   }
-    # end
+  def lower_changeset(vm_changeset) do
+    view_model = apply_changes(vm_changeset)
+    for species_id <- view_model.species_ids do
+      %Schemas.Procedure{
+        name: view_model.name,
+        frequency_id: view_model.frequency_id,
+        species_id: species_id
+      }
+    end
   end
 
   # ----------------------------------------------------------------------------
