@@ -44,10 +44,25 @@ defmodule Crit.Exemplars.Params do
 
   # ---------Bulk procedure forms ----------------------------------------------
 
-  defmodule BulkProcedures do 
+  defmodule BulkProcedures do
+    @moduledoc """
+      %{
+        "0" => %{"frequency_id" => "32", "index" => "0", "name" => ""},
+        "1" => %{
+          "frequency_id" => "32",
+          "index" => "1",
+          "name" => "",
+          "species_ids" => ["1"]
+        },
+        "2" => %{"frequency_id" => "32", "index" => "2", "name" => ""}
+      }
+    """
+
+    
     use Crit.TestConstants
     alias CritBiz.ViewModels.Setup.BulkProcedure
     alias Ecto.Changeset
+
   
     @bulk_procedures %{
       valid: %{
@@ -68,7 +83,7 @@ defmodule Crit.Exemplars.Params do
     }
 
 
-    defp only([descriptor, opts]) do
+    defp only([descriptor | opts]) do
       only(descriptor)
       |> Map.merge(exceptions(opts))
       |> Map.drop(deleted_keys(opts))
@@ -103,7 +118,7 @@ defmodule Crit.Exemplars.Params do
         do: {field, Map.get(cast_value, field)}
     end
 
-    def bulk(descriptors) when is_list(descriptors) do
+    def that_are(descriptors) when is_list(descriptors) do
       descriptors
       |> Enum.map(&only/1)
       |> Enum.with_index
@@ -115,8 +130,8 @@ defmodule Crit.Exemplars.Params do
       |> Map.new
     end
 
-    def bulk(descriptor), do: bulk([descriptor])
+    def that_are(descriptor), do: that_are([descriptor])
 
-    def bulk(descriptor, opts), do: bulk([[descriptor, opts]])
+    def that_are(descriptor, opts), do: that_are([[descriptor, opts]])
   end
 end
