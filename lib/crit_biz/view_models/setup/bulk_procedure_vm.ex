@@ -6,6 +6,8 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   alias Crit.Ecto.TrimmedString
   
   alias Ecto.Multi
+  alias Crit.Ecto.BulkInsert
+  
 
   # The index is used to give each element of the array its own unique id.
   # That may not be necessary, but it doesn't hurt and is arguably clearer.
@@ -100,10 +102,28 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
 
   # ----------------------------------------------------------------------------
 
+  @spec insert_all([Schemas.Procedure], short_name()) :: [VM.Procedure]
+  def insert_all(procedures, institution) do
+    insertion_result = 
+      (for p <- procedures, do: Schemas.Procedure.constrained(p))
+      |> BulkInsert.insertion_script(institution, schema: Schemas.Procedure)
+      |> run_script(institution)
+    
+    case insertion_result do
+      {:ok, procedures} -> 
+        {:ok, VM.Procedure.lift(procedures, institution)}
+      {:error, :name, failing_name} ->
+        {:error, :constraint, %{duplicate_name: failing_name}}
+    end
+  end
+
+  defp run_script(script, institution) do
+    script
+    |> Sql.transaction(institution)
+    |> Sql.Transaction.on_ok(:return_inserted_values)
+    |> Sql.Transaction.on_error(failing_changeset: :name)
+  end
   
-
-
-
   #### OLD
 
   def starting_changeset() do

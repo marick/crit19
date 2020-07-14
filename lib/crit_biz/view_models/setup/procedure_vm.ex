@@ -3,6 +3,7 @@ defmodule CritBiz.ViewModels.Setup.Procedure do
   alias Crit.Schemas
   alias Crit.Setup.InstitutionApi
   alias Crit.Ecto.TrimmedString
+  alias CritBiz.ViewModels.Setup, as: VM
 
   @primary_key false   # I do this to emphasize `id` is just another field
   embedded_schema do
@@ -21,15 +22,18 @@ defmodule CritBiz.ViewModels.Setup.Procedure do
     |> lift(institution)
   end
 
+  def lift(sources, institution) when is_list(sources), 
+    do: (for s <- sources, do: lift(s, institution))
+
   def lift(source, institution) do
     species_name =
       InstitutionApi.species_name(source.species_id, institution)
     frequency_name =
       InstitutionApi.procedure_frequency_name(source.frequency_id, institution)
 
-    %{EnumX.pour_into(source, VM.Animal) |
-      species_name: source.species.name,
-      institution: institution
+    %{EnumX.pour_into(source, VM.Procedure) |
+      species_name: species_name,
+      frequency_name: frequency_name
     }
   end
 

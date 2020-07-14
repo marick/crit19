@@ -62,9 +62,10 @@ defmodule Crit.Sql.Transaction do
 
   # Handle return value from an Sql.transaction.
   def on_ok({:error, _, _, _} = fall_through, _), do: fall_through
-  def on_ok({:ok, tx_result}, [extract: key]) do
-    {:ok, tx_result[key]}
-  end
+  def on_ok({:ok, tx_result}, [extract: key]),
+    do: {:ok, tx_result[key]}
+  def on_ok({:ok, tx_result}, :return_inserted_values),
+    do: {:ok, Map.values(tx_result)}
 
 
   def on_error({:ok, _} = fall_through, _, _), do: fall_through

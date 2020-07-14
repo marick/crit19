@@ -21,8 +21,17 @@ defmodule Crit.Schemas.Procedure do
     procedure
     |> cast(attrs, @required)
     |> validate_required(@required)
-    |> unique_constraint(:name, name: "unique_to_species")
+    |> constrained
   end
+
+  def constrained(%__MODULE__{} = procedure),
+    do: change(procedure) |> constrained
+
+  def constrained(changeset),
+    do: changeset |> constraint_on_name
+
+  defp constraint_on_name(changeset),
+    do: unique_constraint(changeset, :name, name: "unique_to_species")
 
   defmodule Get do
     use Crit.Sql.CommonSql, schema: Crit.Schemas.Procedure
