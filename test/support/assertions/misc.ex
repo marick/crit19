@@ -83,4 +83,7 @@ defmodule Crit.Assertions.Misc do
     |> Map.get(field)
     |> EnumX.sort_by_id
   end
+
+  defchain assert_equal(x, y), do: assert x == y
+  def assert_equals(x, y), do: assert_equal(x, y)
 end
