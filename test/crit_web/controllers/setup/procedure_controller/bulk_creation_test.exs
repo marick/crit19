@@ -1,5 +1,6 @@
 defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
   use CritWeb.ConnCase
+  use PhoenixIntegration
   alias CritWeb.Setup.ProcedureController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Schemas
@@ -15,35 +16,17 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
   end
 
   describe "handle bulk creation" do
-    test "successful creation of one procedure", %{conn: conn} do
-      params = params([{"procedure", [@bovine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      |> assert_purpose(displaying_procedure_summaries())
-
-      
-      assert [only] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
-    end
-
-    test "an empty row is ignored", %{conn: conn} do
-      params = params([{"procedure", [@bovine_id]},
-                       {"", []}])
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      |> assert_purpose(displaying_procedure_summaries())
-
-      assert [only] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
-    end
-
     test "typical case", %{conn: conn} do
-      params = params([{"proc1", [@bovine_id, @equine_id]},
-                       {"proc2", [@bovine_id]},
-                       {"", []},
-                       {"", []},
-                       {"", []}])
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      |> assert_purpose(displaying_procedure_summaries())
+      changes = %{0 => %{name: "proc1",
+                         species_ids: [@bovine_id, @equine_id],
+                         frequency_id: @once_per_week_frequency_id
+                        },
+                  3 => %{name: "proc2",
+                         species_ids: [@bovine_id]}}
+      correct_creation(conn, changing: changes)
       |> assert_purpose(snippet_to_display_procedure())
       |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
-      |> assert_user_sees("once per week")
+      |> assert_user_sees(["once per week", "unlimited"])
 
       assert [%{name: "proc1"}, %{name: "proc2"}] = 
         Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
@@ -52,86 +35,78 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
     end
 
     test "no species chosen", %{conn: conn} do
-      params = %{"0" => %{"name" => "proc1", "index" => "0"},
-                 "1" => %{"name" => "proc2", "index" => "1",
-                                     "species_ids" => [to_string @bovine_id]},
-                 "2" => %{"name" => "", "index" => "2"}}
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      |> assert_purpose(show_procedure_creation_form())   # again
-      |> assert_user_sees(["proc1", "proc2", @bovine, @equine])
+      changes = %{0 => %{name: "proc1",
+                         species_ids: [@bovine_id, @equine_id],
+                         frequency_id: @once_per_week_frequency_id
+                        },
+                  3 => %{name: "proc2"}}
+      
+      incorrect_creation(conn, changing: changes)
+      |> assert_user_sees(["proc1", "proc2", @bovine, @equine]) # changes retained
       |> assert_user_sees(@at_least_one_species)
       # Correct one not added.
       assert [] = Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
     end
 
     test "duplicate name", %{conn: conn} do
-      params = params([{"procedure", [@bovine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      |> assert_purpose(displaying_procedure_summaries())
-
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      |> assert_purpose(show_procedure_creation_form())
-      |> assert_user_sees(@already_taken)
+      Factory.sql_insert!(:procedure, name: "procedure", species_id: @bovine_id)
+      msg = "A procedure named &quot;procedure&quot; already exists for species bovine"
+      changes = %{0 => %{name: "procedure",
+                         species_ids: [@bovine_id, @equine_id],
+                         frequency_id: @once_per_week_frequency_id
+                        }}
+      incorrect_creation(conn, changing: changes)
+      |> assert_user_sees(msg)
     end
 
     test "a duplicate prevents valid procedures from being inserted",
       %{conn: conn} do
-      
-      first_params = params([{"duplicate", [@bovine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, first_params))
-      |> assert_purpose(displaying_procedure_summaries())
+      Factory.sql_insert!(:procedure, name: "duplicate", species_id: @bovine_id)
 
-      second_params = params([{"duplicate", [@bovine_id]},
-                              {"non-duplicate", [@bovine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, second_params))
-      |> assert_purpose(show_procedure_creation_form())
-      |> assert_user_sees(@already_taken)
+      changes = %{0 => %{name: "duplicate",
+                         species_ids: [@bovine_id, @equine_id],
+                         frequency_id: @once_per_week_frequency_id
+                        },
+                  1 => %{name: "non-duplicate",
+                         species_ids: [@bovine_id],
+                         frequency_id: @unlimited_frequency_id
+                        }}
 
+      incorrect_creation(conn, changing: changes)
       assert [%{name: "duplicate"}] =
         Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
+      assert [] =
+        Schemas.Procedure.Get.all_by_species(@equine_id, @institution)
     end
 
-    test "only one error message for a two-species procedure",
-      %{conn: conn} do
+    test "only one error message for a two-species procedure", %{conn: conn} do
+      # This is an unfortunate consequence of the insertion being transactional.
+      # The view model is split into two schema values, and the transaction fails
+      # for the first one.
 
-      params = params([{"duplicate", [@bovine_id, @equine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      
-      html =
-        post_to_action(conn, :bulk_create, under(:procedures, params))
-        |> html_response(200)
+      Factory.sql_insert!(:procedure, name: "duplicate", species_id: @bovine_id)
+      Factory.sql_insert!(:procedure, name: "duplicate", species_id: @equine_id)
 
-      assert [[@already_taken]] == Regex.scan(Regex.compile!(@already_taken), html)
+      changes = %{0 => %{name: "duplicate",
+                         species_ids: [@bovine_id, @equine_id],
+                         frequency_id: @once_per_week_frequency_id
+                        }}
+
+      incorrect_creation(conn, changing: changes)
+      |> assert_user_sees("already exists for species bovine")
+      |> refute_user_sees("already exists for species equine")
     end
 
-    test "two duplicate names in same form", 
-    %{conn: conn} do
+    test "it is OK if the duplicate name is for a different species", %{conn: conn} do
 
-      params = params([{"duplicate 1", [@bovine_id, @equine_id]},
-                       {"duplicate 2", [@bovine_id, @equine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, params))
-      
-      html =
-        post_to_action(conn, :bulk_create, under(:procedures, params))
-        |> html_response(200)
+      Factory.sql_insert!(:procedure, name: "duplicate", species_id: @bovine_id)
 
-      # Because the error is caught by a database constraint, the error
-      # message only appears in the first form.
+      changes = %{0 => %{name: "duplicate",
+                         species_ids: [@equine_id],
+                         frequency_id: @once_per_week_frequency_id
+                        }}
 
-      regex = Regex.compile!(@already_taken <> ".*duplicate 2", "s")
-      assert [[_]] = Regex.scan(regex, html)
-    end
-
-    test "it is OK if the duplicate name is for a different species",
-      %{conn: conn} do
-
-      first_params = params([{"duplicate", [@bovine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, first_params))
-      |> assert_purpose(displaying_procedure_summaries())
-
-      second_params = params([{"duplicate", [@equine_id]}])
-      post_to_action(conn, :bulk_create, under(:procedures, second_params))
-      |> assert_purpose(displaying_procedure_summaries())
+      correct_creation(conn, changing: changes)
 
       assert [%{name: "duplicate"}] =
         Schemas.Procedure.Get.all_by_species(@bovine_id, @institution)
@@ -140,23 +115,21 @@ defmodule CritWeb.Setup.ProcedureController.BulkCreationTest do
     end
   end
 
-  defp params(list) do
-    one_param = fn name, index_string, species_id_strings -> 
-      %{"name" => name,
-        "index" => index_string,
-        "frequency_id" => @once_per_week_frequency_id,
-        "species_ids" => species_id_strings}
-    end
+  # ----------------------------------------------------------------------------
 
-    map_entry = fn {{name, species_ids}, index} ->
-      species_id_strings = Enum.map(species_ids, &to_string/1)
-      index_string = to_string(index)
-      {index_string, one_param.(name, index_string, species_id_strings)}
-    end
-    
-    list
-    |> Enum.with_index
-    |> Enum.map(map_entry)
-    |> Map.new
+  defp follow_creation_form(conn, [changing: changes]) do
+    get_via_action(conn, :bulk_creation_form)
+    |> follow_form(%{procedures: changes})
   end
+  
+  defp correct_creation(conn, opts) do
+    follow_creation_form(conn, opts)
+    |> assert_purpose(displaying_procedure_summaries())
+  end
+  
+  defp incorrect_creation(conn, opts) do
+    follow_creation_form(conn, opts)
+    |> assert_purpose(show_procedure_creation_form())
+  end
+  
 end
