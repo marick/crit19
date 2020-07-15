@@ -33,11 +33,17 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedureVM.InsertAllTest do
   test "trying to rename a procedure to an existing procedure",
     %{procedure: procedure} do
 
+    # Existing procedure
     assert {:ok, _} = VM.BulkProcedure.insert_all([procedure], @institution)
 
-    assert {:error, :constraint, %{duplicate_name: duplicate_name}} = 
-      VM.BulkProcedure.insert_all([procedure], @institution)
+    # Let's not have the first procedure be the one with the problem.
+    ok_procedure = Factory.build(:procedure, name: "ok name")
 
-    assert duplicate_name == procedure.name
+    assert {:error, :constraint, description} = 
+      VM.BulkProcedure.insert_all([ok_procedure, procedure], @institution)
+
+    description
+    |> assert_fields(duplicate_name: 1,
+                     message: "A procedure named \"#{procedure.name}\" already exists for species bovine")
   end
 end

@@ -5,6 +5,18 @@ defmodule Crit.Sql.Transaction do
   alias Ecto.ChangesetX
   use ExContract
 
+  
+  def simplify_result({:ok, tx_result}, :return_inserted_values),
+    do: {:ok, Map.values(tx_result)}
+
+  def simplify_result({:error, _, _, _} = tx_result, _) do
+    {_, {_, index}, failing_changeset, _} = tx_result
+    {:error, index, failing_changeset}
+  end
+
+  ###### OLD
+
+  
 
   defmodule State do 
     defstruct attrs: nil, institution: nil, # Must be supplied
@@ -87,7 +99,9 @@ defmodule Crit.Sql.Transaction do
     }
   end
 
+
   def on_error({:ok, _} = fall_through, _), do: fall_through
+
   def on_error({:error, _step, failing_changeset, _so_far},
                [failing_changeset: field]) do
     check Keyword.has_key?(failing_changeset.errors, field)

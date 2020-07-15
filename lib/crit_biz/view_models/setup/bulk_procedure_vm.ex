@@ -1,5 +1,6 @@
 defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   use CritBiz, :view_model
+  use ExContract
   alias CritBiz.ViewModels.Setup, as: VM
   alias CritBiz.ViewModels.Common
   alias Crit.Schemas
@@ -7,6 +8,9 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   
   alias Ecto.Multi
   alias Crit.Ecto.BulkInsert
+  alias Ecto.Changeset
+  alias Ecto.ChangesetX
+  alias Crit.Setup.InstitutionApi
   
 
   # The index is used to give each element of the array its own unique id.
@@ -79,9 +83,6 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
     end
   end
 
-  
-  
-
   # ----------------------------------------------------------------------------
 
   @spec lower_changesets([Changeset.t(VM.BulkProcedure)]) :: [Schemas.Procedure]
@@ -107,23 +108,26 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
     insertion_result = 
       (for p <- procedures, do: Schemas.Procedure.constrained(p))
       |> BulkInsert.insertion_script(institution, schema: Schemas.Procedure)
-      |> run_script(institution)
+      |> Sql.transaction(institution)
+      |> Sql.Transaction.simplify_result(:return_inserted_values)
     
     case insertion_result do
       {:ok, procedures} -> 
         {:ok, VM.Procedure.lift(procedures, institution)}
-      {:error, :name, failing_name} ->
-        {:error, :constraint, %{duplicate_name: failing_name}}
+      {:error, index, changeset} ->
+        check Keyword.has_key?(changeset.errors, :name)
+        message = duplicate_name_message(changeset, institution)
+        {:error, :constraint, %{duplicate_name: index, message: message}}
     end
   end
 
-  defp run_script(script, institution) do
-    script
-    |> Sql.transaction(institution)
-    |> Sql.Transaction.on_ok(:return_inserted_values)
-    |> Sql.Transaction.on_error(failing_changeset: :name)
+
+  defp duplicate_name_message(changeset, institution) do
+    data = Changeset.apply_changes(changeset)
+    "A procedure named \"" <> data.name <> "\" already exists for species " <>
+      InstitutionApi.species_name(data.species_id, institution)
   end
-  
+
   #### OLD
 
   def starting_changeset() do

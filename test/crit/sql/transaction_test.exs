@@ -5,6 +5,29 @@ defmodule Crit.Sql.TransactionTest do
   alias Crit.Schemas.Species
   alias Ecto.Changeset
 
+  describe "simplifying transaction results" do
+    test "all errors are simplified the same way" do
+      failing_changeset = %Changeset{}  # nothing is done with the inside
+      index = 1
+
+      {:error, {Any.Old.Schema, index}, failing_changeset, :_result_so_far}
+      |> Transaction.simplify_result(:ignored_second_argument)
+      |> assert_equals({:error, index, failing_changeset})
+    end
+
+    test "the results can be extracted" do
+      {:ok, %{{Any.Old.Schema, 0} => :schema_value}}
+      |> Transaction.simplify_result(:return_inserted_values)
+      |> assert_equals({:ok, [:schema_value]})
+    end
+
+    @tag :skip
+    test "the results are in the same order as they were entered" do
+    end
+  end
+
+  
+
   describe "handling transaction results" do
     test "on_ok ignores transaction errors" do
       transaction_error = {:error, :_step_key, :_failing_changeset, :_result_so_far}
@@ -21,7 +44,7 @@ defmodule Crit.Sql.TransactionTest do
     test "on_error ignores previous successes" do
       assert {:ok, "done"} =
         Transaction.on_error({:ok, "done"}, :_destination_changeset, :_handlers)
-    end      
+    end
 
     test "on_error operates on fields in the failing changeset" do
       original_changeset = Changeset.change(%BulkAnimal{})
