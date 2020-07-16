@@ -62,6 +62,7 @@ defmodule Crit.Exemplars.Params do
     alias Ecto.Changeset
     alias CritBiz.ViewModels.Setup, as: VM
 
+    @default_cast_fields [:name, :species_ids, :frequency_id]
   
     @options %{
       valid: %{
@@ -69,8 +70,7 @@ defmodule Crit.Exemplars.Params do
           "name" => "haltering",
           "species_ids" => [to_string(@bovine_id)],
           "frequency_id" => "32"},
-        to_cast: [:name, :species_ids, :frequency_id]
-      },
+        },
 
       two_species: %{
         params: %{
@@ -78,13 +78,23 @@ defmodule Crit.Exemplars.Params do
           "species_ids" => [to_string(@bovine_id),
                             to_string(@equine_id)],
           "frequency_id" => "32"},
-        to_cast: [:name, :species_ids, :frequency_id]
       },
       
-      blank: %{
+      all_blank: %{
         params: %{
           "name" => "",
           # no value for species_id will be sent by the browser.
+          "frequency_id" => "32"
+        }
+      },
+
+      # Because there's a "click here to select this species in
+      # all subforms button, it's valid to have a species chosen,
+      # but not a name. But those create nothing in the database.
+      blank_with_species: %{
+        params: %{
+          "name" => "",
+          "species_ids" => [to_string(@bovine_id)],
           "frequency_id" => "32"
         }
       }
@@ -104,14 +114,14 @@ defmodule Crit.Exemplars.Params do
     defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
 
     defp fields_to_check(descriptor, opts) do
-      pure_fields = @options[descriptor].to_cast
+      pure_fields = Map.get(@options[descriptor], :to_cast, @default_cast_fields)
       extras = exceptions(opts) |> Map.keys
 
       pure_fields
       |> Enum.concat(extras)
       |> ListX.delete(without(opts))
     end
-    
+
     def as_cast(descriptor, opts \\ []) do
       cast_value = 
         %VM.BulkProcedure{}
@@ -119,8 +129,7 @@ defmodule Crit.Exemplars.Params do
         |> Changeset.apply_changes
         |> Map.merge(exceptions(opts))
         |> Map.drop(without(opts))
-
-
+      
       for field <- fields_to_check(descriptor, opts), 
         do: {field, Map.get(cast_value, field)}
     end

@@ -12,12 +12,12 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
     end
 
     test "an empty subform doesn't turn into a changeset" do
-      params = Params.that_are(:blank)
+      params = Params.that_are(:all_blank)
       assert VM.BulkProcedure.accept_form(params) == {:ok, []}
     end
 
     test "the empty procedure doesn't have to be at the end" do
-      params = Params.that_are([:blank, :valid])
+      params = Params.that_are([:all_blank, :valid])
 
       assert [only] = become_correct(params)
       assert_change(only, Params.as_cast(:valid))
@@ -25,11 +25,11 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
     test "procedure names are trimmed" do
       params = Params.that_are(:valid,  except: %{"name" => " proc  "})
-      expected = Params.as_cast(:valid, except: %{name:      "proc"})
+      as_cast = Params.as_cast(:valid, except: %{name:      "proc"})
 
       params
       |> become_correct_singleton
-      |> assert_change(expected)
+      |> assert_change(as_cast)
     end
   end
 
@@ -42,52 +42,47 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> assert_change(Params.as_cast(:valid, without: [:species_ids]))
     end
 
-    @tag :skip
     test "the name can be missing if the species id is present" do  #
       # ... so that a single button can select a species for N procedures"
-      Params.that_are(:valid, except: %{"name" => ""})
-      |> become_correct_singleton
-      |> assert_change(Params.as_cast(:valid, without: [:name]))
+      Params.that_are(:blank_with_species)
+      |> become_correct
+      |> assert_equal([])  # Blank forms are filtered out.
     end
 
-    @tag :skip
     test "blank fields are retained when there are errors" do
-      params = Params.that_are([
-        :blank,
-        [:valid,  except: %{"name" => "different name"}],
-        [:valid, except: %{"name" => ""}],
-        [:valid, deleting: ["species_ids"]],
-        :blank
-      ])
+      actual =
+        Params.that_are([
+          :all_blank,
+          :blank_with_species,
+          :valid,
+          [:valid, deleting: ["species_ids"]],
+        ])
+        |> become_incorrect
+      
 
-      assert [blank1, valid, wrong, partly_blank, blank2] = become_incorrect(params)
+      assert [all_blank, blank_with_species, valid, invalid_only_name] = actual
 
-      blank1
+      all_blank
       |> assert_valid
-      |> assert_unchanged(:name)
+      |> assert_unchanged([:name, :species_ids])
       |> assert_change(index: 0)
 
-      valid
+      blank_with_species
       |> assert_valid
-      |> assert_change(species_id: [@bovine_id], name: "different name")
+      |> assert_unchanged(:name)
+      |> assert_changes(Params.as_cast(:blank_with_species, without: [:name]))
       |> assert_change(index: 1)
       
-      wrong
-      |> assert_invalid
-      |> assert_error(name: @blank_message)
-      |> assert_change(species_ids: [@bovine_id])
+      valid
+      |> assert_valid
+      |> assert_changes(Params.as_cast(:valid))
       |> assert_change(index: 2)
 
-      partly_blank
-      |> assert_valid
-      |> assert_change(species_id: [@bovine_id])
-      |> assert_unchanged(:name)
+      invalid_only_name
+      |> assert_invalid
+      |> assert_unchanged(:species_ids)
+      |> assert_change(name: "haltering")
       |> assert_change(index: 3)
-
-      blank2
-      |> assert_valid
-      |> assert_unchanged(:name)
-      |> assert_change(index: 4)
     end
   end
 

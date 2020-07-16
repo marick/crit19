@@ -61,26 +61,30 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
 
 
   defp validate_name_and_species(original) do
-    #Need to find a way to get access to inner workings of validation
-    blank_name =
-      original
-      |> validate_required([:name])
-      |> ChangesetX.has_error?(:name)
-    
-    blank_species =
-      ChangesetX.newest!(original, :species_ids) == []
-
-    case {blank_name, blank_species}  do
-      {true, true} ->
-        put_change(original, :blank?, true)
-      {true, _} ->
-        validate_required(original, [:name]) # sets the error.
-      {_, true} ->
-        add_error(original, :species_ids, @at_least_one_species)
-      {_, _} ->
+    case {classify_name(original), classify_species(original)}  do
+      {:filled, :filled} ->
         original
+      {:filled, :blank} -> 
+        add_error(original, :species_ids, @at_least_one_species)
+      {:blank, _} ->
+        put_change(original, :blank?, true)
     end
   end
+
+  defp classify_name(changeset) do
+    changeset
+    |> validate_required([:name])
+    |> ChangesetX.has_error?(:name)
+    |> boolean_to_atom
+  end
+
+  defp classify_species(changeset) do
+    (ChangesetX.newest!(changeset, :species_ids) == [])
+    |> boolean_to_atom
+  end
+
+  defp boolean_to_atom(false), do: :filled
+  defp boolean_to_atom(true), do: :blank
 
   # ----------------------------------------------------------------------------
 
