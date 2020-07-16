@@ -33,17 +33,8 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
     end
   end
 
-  describe "errors" do
-    test "name must be present" do
-      Params.that_are(:valid, except: %{"name" => "   "})
-      |> become_incorrect_singleton
-      |> assert_unchanged(:name)  # the string is trimmed to its original "" value
-      |> assert_error(name: @blank_message)
-
-      |> assert_change(Params.as_cast(:valid, without: [:name]))
-    end
-    
-    test "species_ids must be present" do
+  describe "errors" do     # name ^ not species
+    test "species_ids must be present if the name is" do
       Params.that_are(:valid, deleting: ["species_ids"])
       |> become_incorrect_singleton
       |> assert_error(species_ids: @at_least_one_species)
@@ -51,26 +42,52 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> assert_change(Params.as_cast(:valid, without: [:species_ids]))
     end
 
+    @tag :skip
+    test "the name can be missing if the species id is present" do  #
+      # ... so that a single button can select a species for N procedures"
+      Params.that_are(:valid, except: %{"name" => ""})
+      |> become_correct_singleton
+      |> assert_change(Params.as_cast(:valid, without: [:name]))
+    end
+
+    @tag :skip
     test "blank fields are retained when there are errors" do
       params = Params.that_are([
-        :blank,    [:valid, except: %{"name" => ""}],    :blank   ])
+        :blank,
+        [:valid,  except: %{"name" => "different name"}],
+        [:valid, except: %{"name" => ""}],
+        [:valid, deleting: ["species_ids"]],
+        :blank
+      ])
 
-      assert [blank1, wrong, blank2] = become_incorrect(params)
-
-      wrong
-      |> assert_invalid
-      |> assert_error(name: @blank_message)
-      |> assert_change(species_ids: [@bovine_id], index: 1)
+      assert [blank1, valid, wrong, partly_blank, blank2] = become_incorrect(params)
 
       blank1
       |> assert_valid
-      |> assert_change(index: 0)
       |> assert_unchanged(:name)
+      |> assert_change(index: 0)
+
+      valid
+      |> assert_valid
+      |> assert_change(species_id: [@bovine_id], name: "different name")
+      |> assert_change(index: 1)
       
+      wrong
+      |> assert_invalid
+      |> assert_error(name: @blank_message)
+      |> assert_change(species_ids: [@bovine_id])
+      |> assert_change(index: 2)
+
+      partly_blank
+      |> assert_valid
+      |> assert_change(species_id: [@bovine_id])
+      |> assert_unchanged(:name)
+      |> assert_change(index: 3)
+
       blank2
       |> assert_valid
-      |> assert_change(index: 2)
       |> assert_unchanged(:name)
+      |> assert_change(index: 4)
     end
   end
 
