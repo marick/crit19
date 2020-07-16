@@ -1,8 +1,6 @@
 defmodule Crit.Sql.TransactionTest do
   use Crit.DataCase
   alias Crit.Sql.Transaction
-  alias CritBiz.ViewModels.Setup.BulkAnimal
-  alias Crit.Schemas.Species
   alias Ecto.Changeset
 
   describe "simplifying transaction results" do
@@ -15,65 +13,22 @@ defmodule Crit.Sql.TransactionTest do
       |> assert_equals({:error, index, failing_changeset})
     end
 
-    test "the results can be extracted" do
-      {:ok, %{{Any.Old.Schema, 0} => :schema_value}}
-      |> Transaction.simplify_result(:return_inserted_values)
-      |> assert_equals({:ok, [:schema_value]})
-    end
-
-    @tag :skip
-    test "the results are in the same order as they were entered" do
-    end
-  end
-
-  
-
-  describe "handling transaction results" do
-    test "on_ok ignores transaction errors" do
-      transaction_error = {:error, :_step_key, :_failing_changeset, :_result_so_far}
-
-      assert Transaction.on_ok(transaction_error, :_ok_action) == transaction_error
-    end
-
-    test "on_ok can return a specific key from the transaction result" do
-      actual = {:ok, %{desired: "some value"} }
-
-      assert Transaction.on_ok(actual, extract: :desired) == {:ok, "some value"}
-    end
-
-    test "on_error ignores previous successes" do
-      assert {:ok, "done"} =
-        Transaction.on_error({:ok, "done"}, :_destination_changeset, :_handlers)
-    end
-
-    test "on_error operates on fields in the failing changeset" do
-      original_changeset = Changeset.change(%BulkAnimal{})
-      assert original_changeset.errors == []
-
-      # I'm using species for the source of messages because it's a simple schema.
-      failing_changeset =
-        %Species{name: "bovine"}
-        |> Changeset.change
-        |> Changeset.add_error(:first_field, "this will affect `:name`")
-        |> Changeset.add_error(:second_field, "transferred directly, msg ignored")
-
-      first_handler = fn failing, original ->
-        {msg, _} = failing.errors[:first_field]
-        Changeset.add_error(original, :name, msg)
-      end
-
-      # You can add new error fields that don't correspond to the original schema.
-      second_handler = fn _failing, original ->
-        Changeset.add_error(original, :second_field, "ignore message")
-      end
+    test "the results can be extracted, ordered by `id`" do
+      in_order = [%{id: 1}, %{id: 2}, %{id: 3}, %{id: 4}]
+      tx_result =
+        Enum.shuffle(in_order)      
+        |> Enum.map(fn tx_result -> {{Any.Old.Schema, tx_result.id}, tx_result} end)
+        |> Map.new
       
-      {:error, result} = Transaction.on_error(
-        {:error, :_step_key, failing_changeset, :_result_so_far},
-        original_changeset, first_field: first_handler, second_field: second_handler)
+      {:ok, tx_result}
+      |> Transaction.simplify_result(:return_inserted_values)
+      |> assert_equals({:ok, in_order})
+    end
 
-      assert_errors(result,
-        name: "this will affect `:name`",
-        second_field: "ignore message")
+    test "a specific tag's value can be extracted" do
+      {:ok, %{:animal_ids => [1, 2, 3]}}
+      |> Transaction.simplify_result(extract: :animal_ids)
+      |> assert_equals({:ok, [1, 2, 3]})
     end
   end
 end

@@ -62,29 +62,23 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimal do
 
   @spec insert_all([Schemas.Animal], short_name()) :: nary_error(VM.Animal)
   def insert_all(animals, institution) do
-    insertion_result = 
-      (for animal <- animals, do: Schemas.Animal.constrained(animal))
-      |> script(institution)
-      |> run_script(institution)
+    insertion_result =
+      animals
+      |> Enum.map(&Schemas.Animal.constrained/1)
+      |> BulkInsert.idlist_script(institution,
+                                  schema: Schemas.Animal,
+                                  ids: :animal_ids)
+      |> Sql.transaction(institution)
+      |> Sql.Transaction.simplify_result(extract: :animal_ids)
     
     case insertion_result do
       {:ok, animal_ids} -> 
         {:ok, VM.Animal.fetch(:all_for_summary_list, animal_ids, institution)}
-      {:error, :name, failing_name} ->
-        {:error, :constraint, %{duplicate_name: failing_name}}
+      {:error, _index, changeset} ->
+        name = ChangesetX.new!(changeset, :name)
+        message = ~s[An animal named "#{name}" is already in service]
+
+        {:error, :constraint, %{message: message}}
     end
-  end
-
-  defp script(animals, institution) do 
-    animals
-    |> BulkInsert.idlist_script(institution, schema: Schemas.Animal, ids: :animal_ids)
-  end
-
-  defp run_script(script, institution) do
-    script
-    |> Sql.transaction(institution)
-    |> Sql.Transaction.on_ok(extract: :animal_ids)
-    |> Sql.Transaction.on_error(failing_changeset: :name)
-    
   end
 end

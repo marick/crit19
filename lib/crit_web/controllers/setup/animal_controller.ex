@@ -45,10 +45,9 @@ defmodule CritWeb.Setup.AnimalController do
     else
       {:error, :form, vm_changeset} ->
         render_bulk_create_form(conn, vm_changeset)
-      {:error, :constraint, %{duplicate_name: name}} ->
+      {:error, :constraint, %{message: message}} ->
         # vm_changeset from above is not in scope. Blah.
         {:ok, vm_changeset} = VM.BulkAnimal.accept_form(params, inst)
-        message = ~s[An animal named "#{name}" is already in service]
         render_bulk_create_form(
           conn,
           ChangesetX.add_as_visible_error(vm_changeset, :names, message))
