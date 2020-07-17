@@ -20,6 +20,7 @@ defmodule Crit.DataCase do
 
       import Ecto
       import Ecto.Changeset
+      alias Ecto.ChangesetX
       import Ecto.Query
       import Crit.DataCase
       alias Crit.Factory

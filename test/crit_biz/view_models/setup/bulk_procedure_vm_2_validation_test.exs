@@ -59,30 +59,41 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
         ])
         |> become_incorrect
       
-
       assert [all_blank, blank_with_species, valid, invalid_only_name] = actual
 
       all_blank
       |> assert_valid
       |> assert_unchanged([:name, :species_ids])
-      |> assert_change(index: 0)
 
       blank_with_species
       |> assert_valid
       |> assert_unchanged(:name)
       |> assert_changes(Params.as_cast(:blank_with_species, without: [:name]))
-      |> assert_change(index: 1)
       
       valid
       |> assert_valid
       |> assert_changes(Params.as_cast(:valid))
-      |> assert_change(index: 2)
 
       invalid_only_name
       |> assert_invalid
       |> assert_unchanged(:species_ids)
       |> assert_change(name: "haltering")
-      |> assert_change(index: 3)
+    end
+  end
+
+
+  describe "numbering" do 
+    # Empty changesets are numbered to make processing a little easier.
+    # This numbering is retained (as are blank forms) when there's an
+    # error.
+
+    test "numbering is retained when there are errors" do
+      actual =
+        Params.that_are(
+          [:valid, :all_blank, [:valid, deleting: ["species_ids"]]])
+        |> become_incorrect
+      
+      assert [0, 1, 2] == Enum.map(actual, &(ChangesetX.new!(&1, :index)))
     end
   end
 
