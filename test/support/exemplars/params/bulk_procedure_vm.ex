@@ -1,7 +1,5 @@
 defmodule Crit.Exemplars.Params.BulkProcedures do
-  alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
-  alias Ecto.ChangesetX
   use Crit.TestConstants
   alias CritBiz.ViewModels.Setup, as: VM
   import Crit.Params
@@ -66,6 +64,42 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     },
   }
 
+  def validate_categories(categories, function_runner, print \\ false)
+    when is_list(categories) do
+    for name <- exemplar_names_for_categories(categories) do
+      if print do 
+        IO.puts "Exemplar `#{inspect name}` in partition #{inspect categories}:"
+        IO.inspect(only(name))
+      end
+      validate(name, function_runner)
+    end
+  end
+
+  def validate_category(category, function_runner, print \\ false),
+      do: validate_categories([category], function_runner, print)
+
+  defp validate(exemplar_name, function_runner) when is_atom(exemplar_name) do
+    case that_are(exemplar_name) |> function_runner.() do
+      %Ecto.Changeset{} = changeset ->
+        run_assertions(changeset, exemplar_name)
+      [] -> 
+        :no_op
+      x ->
+        IO.puts "Expected either a changeset or emptiness, not:"
+        IO.inspect x
+        flunk "Most likely, #{inspect function_runner} should end with []"
+    end
+  end
+
+
+
+
+
+
+
+
+  
+
   def exemplar_names_for_category(category) when is_atom(category),
     do: filter_by_categories(Map.keys(@options), [category])
 
@@ -102,7 +136,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
 
 
-  def assert(changeset, descriptor) do
+  def run_assertions(changeset, descriptor) do
     item = Map.get(@options, descriptor)
     
     assert changeset.valid? == Enum.member?(item.categories, :valid)

@@ -6,42 +6,12 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
   # ----------------------------------------------------------------------------
   test "the representative kinds of forms" do
-    validate_category(:invalid, &become_incorrect_singleton/1)
-    validate_categories([:valid, :filled], &become_correct_singleton/1)
-    validate_category(:blank, &become_empty/1)
+    Params.validate_category(:invalid, &become_incorrect_singleton/1)
+    Params.validate_categories([:valid, :filled], &become_correct_singleton/1)
+    Params.validate_category(:blank, &become_empty/1)
   end
   
   
-  def validate_categories(categories, function_runner, print \\ false)
-    when is_list(categories) do
-    for name <- Params.exemplar_names_for_categories(categories) do
-      if print do 
-        IO.puts "Exemplar `#{inspect name}` in partition #{inspect categories}:"
-        IO.inspect(Params.only(name))
-      end
-      validate(name, function_runner)
-    end
-  end
-
-  def validate_category(category, function_runner, print \\ false),
-      do: validate_categories([category], function_runner, print)
-
-  def validate(exemplar_name, function_runner) when is_atom(exemplar_name) do
-    case Params.that_are(exemplar_name) |> function_runner.() do
-      %Ecto.Changeset{} = changeset ->
-        Params.assert(changeset, exemplar_name)
-      [] -> 
-        :no_op
-      x ->
-        IO.puts "Expected either a changeset or emptiness, not:"
-        IO.inspect x
-        flunk "Most likely, #{inspect function_runner} should end with []"
-    end
-  end
-
-
-
-
 
 
   
