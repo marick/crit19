@@ -3,14 +3,55 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Exemplars.Params.BulkProcedures, as: Params
 
+
   # ----------------------------------------------------------------------------
+  test "the representative kinds of forms" do
+    validate_category(:invalid, &become_incorrect_singleton/1)
+    validate_categories([:valid, :filled], &become_correct_singleton/1)
+    validate_category(:blank, &become_empty/1)
+  end
+  
+  
+  def validate_categories(categories, function_runner, print \\ false)
+    when is_list(categories) do
+    for name <- Params.exemplar_names_for_categories(categories) do
+      if print do 
+        IO.puts "Exemplar `#{inspect name}` in partition #{inspect categories}:"
+        IO.inspect(Params.only(name))
+      end
+      validate(name, function_runner)
+    end
+  end
+
+  def validate_category(category, function_runner, print \\ false),
+      do: validate_categories([category], function_runner, print)
+
+  def validate(exemplar_name, function_runner) when is_atom(exemplar_name) do
+    case Params.that_are(exemplar_name) |> function_runner.() do
+      %Ecto.Changeset{} = changeset ->
+        Params.assert(changeset, exemplar_name)
+      [] -> 
+        :no_op
+      x ->
+        IO.puts "Expected either a changeset or emptiness, not:"
+        IO.inspect x
+        flunk "Most likely, #{inspect function_runner} should end with []"
+    end
+  end
+
+
+
+
+
+
+  
   describe "successful form validation" do
     test "validation of one procedure" do
       Params.that_are(:valid)
       |> become_correct_singleton
-      |> assert_changes(Params.as_cast(:valid))
+#      |> Params.assert(:valid)
     end
-
+    
     test "an empty subform doesn't turn into a changeset" do
       params = Params.that_are(:all_blank)
       assert VM.BulkProcedure.accept_form(params) == {:ok, []}
@@ -26,13 +67,12 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
     test "procedure names are trimmed" do
       params = Params.that_are(:valid,  except: %{"name" => " proc  "})
       as_cast = Params.as_cast(:valid, except: %{name:      "proc"})
-
+      
       params
       |> become_correct_singleton
       |> assert_change(as_cast)
     end
-  end
-
+end
   describe "errors" do     # name ^ not species
     test "species_ids must be present if the name is" do
       Params.that_are(:valid, deleting: ["species_ids"])
@@ -42,7 +82,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> assert_change(Params.as_cast(:valid, without: [:species_ids]))
     end
 
-    test "the name can be missing if the species id is present" do  #
+    test "the name can be missing if the species id is present" do  
       # ... so that a single button can select a species for N procedures"
       Params.that_are(:blank_with_species)
       |> become_correct
@@ -62,22 +102,18 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       assert [all_blank, blank_with_species, valid, invalid_only_name] = actual
 
       all_blank
-      |> assert_valid
       |> assert_unchanged([:name, :species_ids])
 
       blank_with_species
-      |> assert_valid
       |> assert_unchanged(:name)
       |> assert_changes(Params.as_cast(:blank_with_species, without: [:name]))
       
       valid
-      |> assert_valid
       |> assert_changes(Params.as_cast(:valid))
 
       invalid_only_name
-      |> assert_invalid
       |> assert_unchanged(:species_ids)
-      |> assert_change(name: "haltering")
+      |> assert_change(name: "valid")
     end
   end
 
@@ -116,5 +152,10 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
     become_incorrect(params)
     |> singleton_payload
     |> assert_invalid
+  end
+
+  def become_empty(params) do
+    assert VM.BulkProcedure.accept_form(params) == {:ok, []}
+    []
   end
 end

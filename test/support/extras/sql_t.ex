@@ -11,6 +11,4 @@ defmodule Crit.Extras.SqlT do
     |> Sql.all(@institution)
     |> EnumX.ids
   end
-
-  
 end
