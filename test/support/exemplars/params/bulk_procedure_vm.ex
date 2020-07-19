@@ -19,9 +19,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   }
   """
 
-  @default_cast_fields [:name, :species_ids, :frequency_id]
-  
-  @options %{
+  @data %{
     valid: %{
       categories: [:valid, :filled],
       params: paramify(%{name: "valid", 
@@ -64,10 +62,23 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     },
   }
 
-  def validate_categories(categories, function_runner, print \\ false)
+  @default_cast_fields [:name, :species_ids, :frequency_id]
+
+  def data(), do: @data
+  def default_cast_fields, do: @default_cast_fields
+  def module_under_test, do: VM.BulkProcedure
+  def empty_struct, do: %VM.BulkProcedure{}
+
+  def all_names, do: Map.keys(data())
+  def all_values, do: Map.values(data())
+  def one_value(name), do: Map.fetch!(data(), name)
+
+  
+
+  def validate_categories(categories, function_runner, verbose \\ false)
     when is_list(categories) do
     for name <- exemplar_names_for_categories(categories) do
-      if print do 
+      if verbose do 
         IO.puts "Exemplar `#{inspect name}` in partition #{inspect categories}:"
         IO.inspect(only(name))
       end
@@ -75,8 +86,8 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     end
   end
 
-  def validate_category(category, function_runner, print \\ false),
-      do: validate_categories([category], function_runner, print)
+  def validate_category(category, function_runner, verbose \\ false),
+      do: validate_categories([category], function_runner, verbose)
 
   defp validate(exemplar_name, function_runner) when is_atom(exemplar_name) do
     case that_are(exemplar_name) |> function_runner.() do
@@ -101,10 +112,10 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   
 
   def exemplar_names_for_category(category) when is_atom(category),
-    do: filter_by_categories(Map.keys(@options), [category])
+    do: filter_by_categories(all_names(), [category])
 
   def exemplar_names_for_categories(categories) when is_list(categories),
-    do: filter_by_categories(Map.keys(@options), categories)
+    do: filter_by_categories(all_names(), categories)
     
     
   #   |> Enum.with_index
@@ -117,8 +128,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   # end
 
   def exemplars(categories) when is_list(categories) do
-    @options
-    |> Map.values
+    all_values()
     |> filter_by_categories(categories)
     |> Enum.map(&(&1.params))
   end
@@ -128,7 +138,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
   defp filter_by_categories(names, [category | remainder]) do
     names
-    |> Enum.filter(&Enum.member?(@options[&1].categories, category))
+    |> Enum.filter(&Enum.member?(one_value(&1).categories, category))
     |> filter_by_categories(remainder)
   end
 
@@ -137,7 +147,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
 
   def run_assertions(changeset, descriptor) do
-    item = Map.get(@options, descriptor)
+    item = one_value(descriptor)
     
     assert changeset.valid? == Enum.member?(item.categories, :valid)
 
@@ -154,14 +164,14 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     |> Map.drop(deleted_keys(opts))
   end
   
-  def only(descriptor), do: @options[descriptor].params
+  def only(descriptor), do: one_value(descriptor).params
 
   defp exceptions(opts), do: Keyword.get(opts, :except, %{})
   defp without(opts), do: Keyword.get(opts, :without, [])
   defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
 
   defp fields_to_check(descriptor, opts) do
-    pure_fields = Map.get(@options[descriptor], :to_cast, @default_cast_fields)
+    pure_fields = Map.get(one_value(descriptor), :to_cast, default_cast_fields())
     extras = exceptions(opts) |> Map.keys
 
     pure_fields
@@ -171,8 +181,8 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
   def as_cast(descriptor, opts \\ []) do
     cast_value = 
-      %VM.BulkProcedure{}
-      |> Changeset.cast(only(descriptor), VM.BulkProcedure.fields())
+      empty_struct()
+      |> Changeset.cast(only(descriptor), module_under_test().fields())
       |> Changeset.apply_changes
       |> Map.merge(exceptions(opts))
       |> Map.drop(without(opts))
@@ -205,10 +215,10 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   end
 
   def accept_form(descriptor),
-    do: that_are(descriptor) |> VM.BulkProcedure.accept_form
+    do: that_are(descriptor) |> module_under_test().accept_form
 
   def lower_changesets(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
-    VM.BulkProcedure.lower_changesets(vm_changesets)
+    module_under_test().lower_changesets(vm_changesets)
   end
 end
