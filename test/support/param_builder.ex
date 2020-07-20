@@ -1,7 +1,4 @@
-defmodule Crit.Params do
-  @moduledoc """
-  Shorthand map functions for use in tests.
-  """
+defmodule Crit.ParamBuilder do
 
   # convert shorthand into the kind of parameters delivered to
   # controller actions.

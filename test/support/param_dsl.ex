@@ -2,7 +2,6 @@ defmodule Crit.ParamDSL do
   use Crit.TestConstants
   import ExUnit.Assertions
   alias Ecto.Changeset
-  import Crit.Params
   import Crit.Assertions.Changeset
 
   def data_source(), do: Process.get(:data_source)
@@ -132,7 +131,7 @@ defmodule Crit.ParamDSL do
       use Crit.TestConstants
       import ExUnit.Assertions
       alias Ecto.Changeset
-      import Crit.Params
+      import Crit.ParamBuilder
       import Crit.Assertions.Changeset
       alias Crit.ParamDSL
       

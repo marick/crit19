@@ -1,9 +1,5 @@
 defmodule Crit.Exemplars.Params do
   alias Crit.Exemplars, as: Ex
-  import Crit.Params
-  alias Ecto.Changeset
-  alias Ecto.ChangesetX
-  
 
   def put_nested(top_params, field, nary) when is_list(nary) do
     param_map = 

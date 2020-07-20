@@ -1,6 +1,6 @@
-defmodule Crit.ParamsTest do
+defmodule Crit.ParamBuilderTest do
   use ExUnit.Case, async: true
-  import Crit.Params
+  import Crit.ParamBuilder
 
   describe "paramify" do
     test "empty" do
