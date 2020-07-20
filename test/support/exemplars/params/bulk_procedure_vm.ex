@@ -60,5 +60,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
         categories: [:invalid, :filled]
       },
     }
-  
 end
+
+

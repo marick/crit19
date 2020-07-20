@@ -11,10 +11,6 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
     Params.validate_category(:blank, &become_empty/1)
   end
   
-  
-
-
-  
   describe "successful form validation" do
     test "validation of one procedure" do
       Params.that_are(:valid)
