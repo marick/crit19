@@ -13,7 +13,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   }
   """
 
-  use Crit.TestConstants
   alias CritBiz.ViewModels.Setup, as: VM
   use Crit.Params.Builder,
     view_module: VM.BulkProcedure,
@@ -21,23 +20,23 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     data: %{
       valid: %{
         categories: [:valid, :filled],
-        params: paramify(%{name: "valid", 
-                           species_ids: [@bovine_id],
-                           frequency_id: @once_per_week_frequency_id}),
+        params: to_strings(%{name: "valid", 
+                             species_ids: [@bovine_id],
+                             frequency_id: @once_per_week_frequency_id}),
       },
       
       two_species: %{
         categories: [:valid, :filled],
-        params: paramify(%{name: "two species",
-                           species_ids: [@bovine_id, @equine_id],
-                           frequency_id: @once_per_week_frequency_id}),
+        params: to_strings(%{name: "two species",
+                             species_ids: [@bovine_id, @equine_id],
+                             frequency_id: @once_per_week_frequency_id}),
       },
       
       all_blank: %{
         categories: [:valid, :blank],
-        params: paramify(%{name: "", 
-                           # no value for species_ids will be sent by the browser.
-                           frequency_id: @unlimited_frequency_id}),
+        params: to_strings(%{name: "", 
+                             # no value for species_ids will be sent by the browser.
+                             frequency_id: @unlimited_frequency_id}),
         unchanged: [:name, :species_ids],
       },
       
@@ -46,16 +45,16 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
       # but not a name. But those create nothing in the database.
       blank_with_species: %{
         categories: [:valid, :blank],
-        params: paramify(%{name: "",
-                           species_ids: [@bovine_id],
-                           frequency_id: @unlimited_frequency_id}),
+        params: to_strings(%{name: "",
+                             species_ids: [@bovine_id],
+                             frequency_id: @unlimited_frequency_id}),
       },
       
       #-----------------
       # Only one way to be invalid
       name_but_no_species: %{
-        params: paramify(%{name: "xxlxl",
-                           frequency_id: @unlimited_frequency_id}),
+        params: to_strings(%{name: "xxlxl",
+                             frequency_id: @unlimited_frequency_id}),
         unchanged: [:species_ids],
         categories: [:invalid, :filled]
       },

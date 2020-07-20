@@ -3,15 +3,15 @@ defmodule Crit.Params.Builder do
   # convert shorthand into the kind of parameters delivered to
   # controller actions.
   
-  def paramify(map) when is_map(map) do
+  def to_strings(map) when is_map(map) do
     map
-    |> Enum.map(fn {k,v} -> {to_string(k), paramify_value(v)} end)
+    |> Enum.map(fn {k,v} -> {to_string(k), to_string_value(v)} end)
     |> Map.new
   end
 
-  defp paramify_value(value) when is_list(value), do: Enum.map(value, &to_string/1)
-  defp paramify_value(value) when is_map(value), do: paramify(value)
-  defp paramify_value(value), do: to_string(value)
+  defp to_string_value(value) when is_list(value), do: Enum.map(value, &to_string/1)
+  defp to_string_value(value) when is_map(value), do: to_strings(value)
+  defp to_string_value(value), do: to_string(value)
 
   defmacro __using__(
     view_module: view_module,
