@@ -6,12 +6,12 @@ defmodule Crit.Params.Validation do
 
   def data_source(), do: Process.get(:data_source)
 
-  def empty_struct, do: struct(data_source().view_module())
+  def empty_struct, do: struct(data_source().module_under_test())
   def all_names, do: Map.keys(data_source().data())
   def all_values, do: Map.values(data_source().data())
   def one_value(name), do: Map.fetch!(data_source().data(), name)
   def default_cast_fields(), do: data_source().default_cast_fields()
-  def view_module(), do: data_source().view_module()
+  def module_under_test(), do: data_source().module_under_test()
   
   def validate_categories(categories, function_runner, verbose) do 
     for name <- exemplar_names_for_categories(categories) do
@@ -90,7 +90,7 @@ defmodule Crit.Params.Validation do
   def as_cast(descriptor, opts \\ []) do
     cast_value = 
       empty_struct()
-      |> Changeset.cast(only(descriptor), view_module().fields())
+      |> Changeset.cast(only(descriptor), module_under_test().fields())
       |> Changeset.apply_changes
       |> Map.merge(exceptions(opts))
       |> Map.drop(without(opts))

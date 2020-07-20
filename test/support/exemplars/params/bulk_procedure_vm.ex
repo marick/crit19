@@ -15,7 +15,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
   alias CritBiz.ViewModels.Setup, as: VM
   use Crit.Params.Builder,
-    view_module: VM.BulkProcedure,
+    module_under_test: VM.BulkProcedure,
     default_cast_fields: [:name, :species_ids, :frequency_id],
     data: %{
       valid: %{
@@ -59,6 +59,17 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
         categories: [:invalid, :filled]
       },
     }
+
+  # ----------------------------------------------------------------------------
+
+  def accept_form(descriptor) do
+    that_are(descriptor) |> module_under_test().accept_form
+  end
+      
+  def lower_changesets(descriptor) do
+    {:ok, vm_changesets} = accept_form(descriptor)
+    module_under_test().lower_changesets(vm_changesets)
+  end
 end
 
 

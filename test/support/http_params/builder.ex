@@ -14,7 +14,7 @@ defmodule Crit.Params.Builder do
   defp to_string_value(value), do: to_string(value)
 
   defmacro __using__(
-    view_module: view_module,
+    module_under_test: module_under_test,
     default_cast_fields: default_cast_fields,
     data: data
   ) do 
@@ -28,7 +28,7 @@ defmodule Crit.Params.Builder do
       
       def data(), do: unquote(data)
       def default_cast_fields, do: unquote(default_cast_fields)
-      def view_module, do: unquote(view_module)
+      def module_under_test, do: unquote(module_under_test)
 
       def validate_categories(categories, function_runner, verbose \\ false) do 
         Process.put(:data_source, __MODULE__)
@@ -44,18 +44,6 @@ defmodule Crit.Params.Builder do
         Process.put(:data_source, __MODULE__)
         Validation.as_cast(descriptor, opts)
       end
-
-      def accept_form(descriptor) do
-        Process.put(:data_source, __MODULE__)
-        Validation.that_are(descriptor) |> view_module().accept_form
-      end
-      
-      def lower_changesets(descriptor) do
-        Process.put(:data_source, __MODULE__)
-        {:ok, vm_changesets} = accept_form(descriptor)
-        view_module().lower_changesets(vm_changesets)
-      end
-
 
       def that_are(descriptors) when is_list(descriptors) do
         Process.put(:data_source, __MODULE__)
