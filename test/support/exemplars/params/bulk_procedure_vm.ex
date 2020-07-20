@@ -15,7 +15,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
   use Crit.TestConstants
   alias CritBiz.ViewModels.Setup, as: VM
-  use Crit.ParamDSL,
+  use Crit.Params.Builder,
     view_module: VM.BulkProcedure,
     default_cast_fields: [:name, :species_ids, :frequency_id],
     data: %{

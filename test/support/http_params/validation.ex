@@ -1,4 +1,4 @@
-defmodule Crit.ParamDSL do
+defmodule Crit.Params.Validation do
   use Crit.TestConstants
   import ExUnit.Assertions
   alias Ecto.Changeset
@@ -120,70 +120,6 @@ defmodule Crit.ParamDSL do
     end)
     |> Map.new
     
-  end
-  
-  defmacro __using__(
-    view_module: view_module,
-    default_cast_fields: default_cast_fields,
-    data: data
-  ) do 
-    quote do
-      use Crit.TestConstants
-      import ExUnit.Assertions
-      alias Ecto.Changeset
-      import Crit.ParamBuilder
-      import Crit.Assertions.Changeset
-      alias Crit.ParamDSL
-      
-      def data(), do: unquote(data)
-      def default_cast_fields, do: unquote(default_cast_fields)
-      def view_module, do: unquote(view_module)
-
-
-      def validate_categories(categories, function_runner, verbose \\ false) do 
-        Process.put(:data_source, __MODULE__)
-        ParamDSL.validate_categories(categories, function_runner, verbose)
-      end
-
-      def validate_category(category, function_runner, verbose \\ false) do 
-        Process.put(:data_source, __MODULE__)
-        validate_categories([category], function_runner, verbose)
-      end
-
-      def as_cast(descriptor, opts \\ []) do
-        Process.put(:data_source, __MODULE__)
-        ParamDSL.as_cast(descriptor, opts)
-      end
-
-      def accept_form(descriptor) do
-        Process.put(:data_source, __MODULE__)
-        ParamDSL.that_are(descriptor) |> view_module().accept_form
-      end
-      
-      def lower_changesets(descriptor) do
-        Process.put(:data_source, __MODULE__)
-        {:ok, vm_changesets} = accept_form(descriptor)
-        view_module().lower_changesets(vm_changesets)
-      end
-
-
-      def that_are(descriptors) when is_list(descriptors) do
-        Process.put(:data_source, __MODULE__)
-        descriptors
-        |> Enum.map(&ParamDSL.only/1)
-        |> ParamDSL.exemplars_to_params
-      end
-  
-      def that_are(descriptor) do 
-        Process.put(:data_source, __MODULE__)
-        ParamDSL.that_are([descriptor])
-      end
-        
-      def that_are(descriptor, opts) do
-        Process.put(:data_source, __MODULE__)
-        ParamDSL.that_are([[descriptor | opts]])
-      end
-    end
   end
 end
 
