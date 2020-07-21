@@ -14,7 +14,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   """
 
   alias CritBiz.ViewModels.Setup, as: VM
-  use Crit.Params.Builder,
+  use Crit.Params.ManyToManyBuilder,
     module_under_test: VM.BulkProcedure,
     default_cast_fields: [:name, :species_ids, :frequency_id],
     data: %{

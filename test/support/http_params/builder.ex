@@ -13,54 +13,37 @@ defmodule Crit.Params.Builder do
   defp to_string_value(value) when is_map(value), do: to_strings(value)
   defp to_string_value(value), do: to_string(value)
 
-  defmacro __using__(
-    module_under_test: module_under_test,
-    default_cast_fields: default_cast_fields,
-    data: data
-  ) do 
-    quote do
-      use Crit.TestConstants
-      import ExUnit.Assertions
-      alias Ecto.Changeset
-      import Crit.Params.Builder
-      import Crit.Assertions.Changeset
-      alias Crit.Params.Validation
-      
-      def data(), do: unquote(data)
-      def default_cast_fields, do: unquote(default_cast_fields)
-      def module_under_test, do: unquote(module_under_test)
 
-      def validate_categories(categories, function_runner, verbose \\ false) do 
-        Process.put(:data_source, __MODULE__)
-        Validation.validate_categories(categories, function_runner, verbose)
-      end
+  # ----------------------------------------------------------------------------
 
-      def validate_category(category, function_runner, verbose \\ false) do 
-        Process.put(:data_source, __MODULE__)
-        validate_categories([category], function_runner, verbose)
-      end
-
-      def as_cast(descriptor, opts \\ []) do
-        Process.put(:data_source, __MODULE__)
-        Validation.as_cast(descriptor, opts)
-      end
-
-      def that_are(descriptors) when is_list(descriptors) do
-        Process.put(:data_source, __MODULE__)
-        descriptors
-        |> Enum.map(&Validation.only/1)
-        |> Validation.exemplars_to_params
-      end
+  def data_source(), do: Process.get(:data_source)
+  def one_value(name), do: Map.fetch!(data_source().data(), name)
   
-      def that_are(descriptor) do 
-        Process.put(:data_source, __MODULE__)
-        Validation.that_are([descriptor])
-      end
-        
-      def that_are(descriptor, opts) do
-        Process.put(:data_source, __MODULE__)
-        Validation.that_are([[descriptor | opts]])
-      end
-    end
-  end  
+  defp exceptions(opts), do: Keyword.get(opts, :except, %{})
+  defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
+
+  def make_numbered_params(descriptors) when is_list(descriptors) do
+    descriptors
+    |> Enum.map(&only/1)
+    |> combine_into_numbered_params
+  end
+  
+  defp combine_into_numbered_params(exemplars) do
+    exemplars
+    |> Enum.with_index
+    |> Enum.map(fn {entry, index} ->
+      key = to_string(index)
+      value = Map.put(entry, "index", to_string(index))
+      {key, value}
+    end)
+    |> Map.new  
+  end
+
+  def only([descriptor | opts]) do
+    only(descriptor)
+    |> Map.merge(exceptions(opts))
+    |> Map.drop(deleted_keys(opts))
+  end
+  
+  def only(descriptor), do: one_value(descriptor).params
 end
