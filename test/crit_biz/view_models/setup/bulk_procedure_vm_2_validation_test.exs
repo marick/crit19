@@ -12,17 +12,6 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   end
   
   describe "successful form validation" do
-    test "validation of one procedure" do
-      Params.that_are(:valid)
-      |> become_correct_singleton
-#      |> Params.assert(:valid)
-    end
-    
-    test "an empty subform doesn't turn into a changeset" do
-      params = Params.that_are(:all_blank)
-      assert VM.BulkProcedure.accept_form(params) == {:ok, []}
-    end
-
     test "the empty procedure doesn't have to be at the end" do
       params = Params.that_are([:all_blank, :valid])
 
@@ -38,23 +27,9 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       |> become_correct_singleton
       |> assert_change(as_cast)
     end
-end
+  end
+  
   describe "errors" do     # name ^ not species
-    test "species_ids must be present if the name is" do
-      Params.that_are(:valid, deleting: ["species_ids"])
-      |> become_incorrect_singleton
-      |> assert_error(species_ids: @at_least_one_species)
-
-      |> assert_change(Params.as_cast(:valid, without: [:species_ids]))
-    end
-
-    test "the name can be missing if the species id is present" do  
-      # ... so that a single button can select a species for N procedures"
-      Params.that_are(:blank_with_species)
-      |> become_correct
-      |> assert_equal([])  # Blank forms are filtered out.
-    end
-
     test "blank fields are retained when there are errors" do
       actual =
         Params.that_are([
@@ -83,7 +58,6 @@ end
     end
   end
 
-
   describe "numbering" do 
     # Empty changesets are numbered to make processing a little easier.
     # This numbering is retained (as are blank forms) when there's an
@@ -110,17 +84,17 @@ end
   defp become_correct_singleton(params),
     do: become_correct(params) |> singleton_payload
 
-  def become_incorrect(params) do
+  defp become_incorrect(params) do
     VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
   end
 
-  def become_incorrect_singleton(params) do
+  defp become_incorrect_singleton(params) do
     become_incorrect(params)
     |> singleton_payload
     |> assert_invalid
   end
 
-  def become_empty(params) do
+  defp become_empty(params) do
     assert VM.BulkProcedure.accept_form(params) == {:ok, []}
     []
   end
