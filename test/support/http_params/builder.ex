@@ -27,7 +27,7 @@ defmodule Crit.Params.Builder do
     |> Enum.map(&only/1)
     |> combine_into_numbered_params
   end
-  
+
   defp combine_into_numbered_params(exemplars) do
     exemplars
     |> Enum.with_index

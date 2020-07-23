@@ -1,6 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
   use Crit.DataCase
   alias CritBiz.ViewModels.Setup, as: VM
+  alias Crit.Exemplars.Params.BulkAnimal, as: Params
 
   @correct %{"names" => "a, b, c",
              "species_id" => to_string(@bovine_id),
@@ -8,12 +9,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
              "out_of_service_datestring" => @iso_date_2}
 
   test "success" do
-    VM.BulkAnimal.accept_form(@correct, @institution) |> ok_payload
-    |> assert_valid
-    |> assert_changes(names: "a, b, c",
-                      species_id: @bovine_id,
-                      in_service_datestring: @iso_date_1,
-                      out_of_service_datestring: @iso_date_2)
+    Params.validate_categories([:valid], &become_correct/1)
   end
 
   describe "error checking" do
@@ -49,6 +45,19 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
       |> assert_error(:out_of_service_datestring)
       |> assert_form_will_display_errors
     end
+  end
+
+  # ----------------------------------------------------------------------------
+
+  
+
+  defp become_correct(params) do 
+    VM.BulkAnimal.accept_form(params, @institution)
+    |> ok_payload
+  end
+
+  defp become_incorrect(params) do
+    VM.BulkAnimal.accept_form(params, @institution) |> error2_payload(:form)
   end
 end
   
