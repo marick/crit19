@@ -14,9 +14,18 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   """
 
   alias CritBiz.ViewModels.Setup, as: VM
+  alias Crit.Schemas
+
   use Crit.Params.ManyToManyBuilder,
+    # View model changesets
     module_under_test: VM.BulkProcedure,
     default_cast_fields: [:name, :species_ids, :frequency_id],
+
+    # Lowering
+    # produces: Schemas.Procedure,
+    # splits_on: :species_ids,
+    # retains: [:name, :frequency_id],
+  
     data: %{
       valid: %{
         categories: [:valid, :filled],
@@ -30,6 +39,8 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
         params: to_strings(%{name: "two species",
                              species_ids: [@bovine_id, @equine_id],
                              frequency_id: @once_per_week_frequency_id}),
+        fields_copied_to_each: [:name, :frequency_id],
+        additions_to_each: %{species_id: [@bovine_id, @equine_id]}
       },
       
       all_blank: %{
