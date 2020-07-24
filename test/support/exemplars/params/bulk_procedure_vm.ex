@@ -27,9 +27,9 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
       default_cast_fields: [:name, :species_ids, :frequency_id],
       
       # Lowering
-      # produces: Schemas.Procedure,
-      # splits_on: :species_ids,
-      # retains: [:name, :frequency_id],
+      produces: Schemas.Procedure,
+      retains: [:name, :frequency_id],
+      splits: %{:species_ids => :species_id},
       
       data: %{
         valid: %{
@@ -44,8 +44,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
           params: to_strings(%{name: "two species",
                                species_ids: [@bovine_id, @equine_id],
                                frequency_id: @once_per_week_frequency_id}),
-          fields_copied_to_each: [:name, :frequency_id],
-          additions_to_each: %{species_id: [@bovine_id, @equine_id]}
         },
         
         all_blank: %{

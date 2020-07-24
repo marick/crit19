@@ -13,6 +13,7 @@ defmodule Crit.Params.ManyToManyBuilder do
     quote do
       use Crit.TestConstants
       import ExUnit.Assertions
+      import Crit.Assertions.{Ecto,Map}
       alias Ecto.Changeset
       import Crit.Params.Builder, only: [to_strings: 1]
       alias Crit.Params.Builder
@@ -50,14 +51,25 @@ defmodule Crit.Params.ManyToManyBuilder do
       #
 
       def validate_lowered_values(descriptor) do
+        config = config()
+        exemplar = Builder.one_value(config, descriptor)
+        [{field_to_split, destination_field}] = Enum.into(config.splits, [])
+        actuals = lower_changesets(descriptor)
+
+        split_cast_values = Keyword.get(as_cast(descriptor), field_to_split)
         
-        # Process.put(:data_source, __MODULE__)
-        # expected = Builder.one_value(descriptor) |> IO.inspect
-        # actuals = lower_changesets(descriptor) |> IO.inspect
-        # for value <- actuals do
-        #   value
-        #   |> IO.inspect
-        # end
+        for struct <- actuals do
+          cast_map = Enum.into(as_cast(descriptor), %{})
+          
+          struct
+          |> assert_schema(config.produces)
+          |> assert_partial_copy(cast_map, config.retains)
+        end
+
+        for {struct, split_value} <- Enum.zip(actuals, split_cast_values) do
+          assert Map.get(struct, destination_field) == split_value
+        end
+        
       end
 
       # ----------------------------------------------------------------------------
