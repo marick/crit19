@@ -110,6 +110,11 @@ defmodule Crit.Assertions.Map do
     assert Map.drop(new, ignoring_keys) == Map.drop(old, ignoring_keys)
   end
 
+
+  defchain assert_partial_copy(new, old, fields_to_compare) do
+    assert Map.take(new, fields_to_compare) == Map.take(old, fields_to_compare)
+  end
+
   defp assert_extended_equality(actual, predicate, key) when is_function(predicate) do
     msg = "#{inspect key} => #{inspect actual} fails predicate #{inspect predicate}"
     assert(predicate.(actual), msg)
