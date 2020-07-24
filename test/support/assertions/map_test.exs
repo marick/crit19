@@ -208,7 +208,12 @@ defmodule Crit.Assertions.MapTest do
     new =  %{stable: 1, change: []}
 
     assert_partial_copy(new, old, [:stable])
-    assert_partial_copy(new, old, [:stable, :change])
+
+    assertion_fails_with_diagnostic(
+      ["Assertion with == failed"],
+      fn -> 
+        assert_partial_copy(new, old, [:stable, :change])
+      end)
   end
   
   describe "shape comparison" do
