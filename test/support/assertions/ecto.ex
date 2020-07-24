@@ -21,6 +21,10 @@ defmodule Crit.Assertions.Ecto do
     not match?(%Ecto.Association.NotLoaded{}, Map.get(struct, key))
   end
 
+  defchain assert_schema(value, module_name) do
+    assert value.__meta__.schema == module_name
+  end
+
   defchain assert_schema_copy(new, original, [ignoring: extras]) do
     ignoring = extras ++ [:inserted_at, :updated_at, :__meta__]
     assert_copy(new, original, ignoring: ignoring)
