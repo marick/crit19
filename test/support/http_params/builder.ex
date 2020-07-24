@@ -16,15 +16,14 @@ defmodule Crit.Params.Builder do
 
   # ----------------------------------------------------------------------------
 
-  def data_source(), do: Process.get(:data_source)
-  def one_value(name), do: Map.fetch!(data_source().data(), name)
+  defp one_value(config, name), do: config.data[name]
   
   defp exceptions(opts), do: Keyword.get(opts, :except, %{})
   defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
 
-  def make_numbered_params(descriptors) when is_list(descriptors) do
+  def make_numbered_params(config, descriptors) when is_list(descriptors) do
     descriptors
-    |> Enum.map(&only/1)
+    |> Enum.map(&(only(config, &1)))
     |> combine_into_numbered_params
   end
 
@@ -39,11 +38,11 @@ defmodule Crit.Params.Builder do
     |> Map.new  
   end
 
-  def only([descriptor | opts]) do
-    only(descriptor)
+  def only(config, [descriptor | opts]) do
+    only(config, descriptor)
     |> Map.merge(exceptions(opts))
     |> Map.drop(deleted_keys(opts))
   end
   
-  def only(descriptor), do: one_value(descriptor).params
+  def only(config, descriptor), do: one_value(config, descriptor).params
 end

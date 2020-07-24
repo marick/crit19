@@ -6,23 +6,22 @@ defmodule Crit.Params.Validation do
   alias Crit.Params.Builder
 
   # ----------------------------------------------------------------------------
-
-  def as_cast(descriptor, opts \\ []) do
+  def as_cast(config, descriptor, opts \\ []) do
     opts = Enum.into(opts, %{except: %{}, without: []})
-    cast_value = 
-      empty_struct()
-      |> Changeset.cast(Builder.only(descriptor), module_under_test().fields())
+    cast_value =
+      struct(config.module_under_test)
+      |> Changeset.cast(Builder.only(config, descriptor), config.module_under_test.fields())
       |> Changeset.apply_changes
       |> Map.merge(opts.except)
       |> Map.drop(opts.without)
     
-    for field <- fields_to_check(descriptor, opts.except, opts.without), 
+    for field <- fields_to_check(config, descriptor, opts.except, opts.without), 
       do: {field, Map.get(cast_value, field)}
   end
 
-  defp fields_to_check(descriptor, except, without) do
-    one_value(descriptor)
-    |> Map.get(:to_cast, default_cast_fields())
+  defp fields_to_check(config, descriptor, except, without) do
+    one_value(config, descriptor)
+    |> Map.get(:to_cast, config.default_cast_fields)
     |> Enum.concat(Map.keys(except))
     |> ListX.delete(without)
   end
@@ -30,10 +29,10 @@ defmodule Crit.Params.Validation do
   
   # ----------------------------------------------------------------------------
 
-  def check_actual(actual, exemplar_name) do
+  def check_actual(config, actual, exemplar_name) do
     case actual do
       %Ecto.Changeset{} = changeset ->
-        run_assertions(changeset, exemplar_name)
+        run_assertions(config, changeset, exemplar_name)
       [] -> 
         :no_op
       x ->
@@ -45,38 +44,32 @@ defmodule Crit.Params.Validation do
 
   # ----------------------------------------------------------------------------
 
-  defp data_source(), do: Process.get(:data_source)
-
-  defp empty_struct, do: struct(data_source().module_under_test())
-  defp one_value(name), do: Map.fetch!(data_source().data(), name)
-  defp default_cast_fields(), do: data_source().default_cast_fields()
-  defp module_under_test(), do: data_source().module_under_test()
-
+  defp one_value(config, name), do: Map.fetch!(config.data, name)
 
   def note_name(name, verbose) do
     if verbose, do: IO.puts("+ #{inspect name}")
   end
   
-  def filter_by_categories(names, categories, verbose) do
+  def filter_by_categories(config, names, categories, verbose) do
     if verbose, do: IO.puts(">> Partition #{inspect categories}")
-    filter_by_categories(names, categories)
+    filter_by_categories(config, names, categories)
   end
 
-  def filter_by_categories(names, [category | remainder]) do
-    names
-    |> Enum.filter(&Enum.member?(one_value(&1).categories, category))
-    |> filter_by_categories(remainder)
+  def filter_by_categories(config, names, [category | remainder]) do
+    filtered = 
+      Enum.filter(names, &Enum.member?(one_value(config, &1).categories, category))
+    filter_by_categories(config, filtered, remainder)
   end
   
-  def filter_by_categories(names, []), do: names
+  def filter_by_categories(_config, names, []), do: names
   
-  defp run_assertions(changeset, descriptor) do
-    item = one_value(descriptor)
+  defp run_assertions(config, changeset, descriptor) do
+    item = one_value(config, descriptor)
     
     assert changeset.valid? == Enum.member?(item.categories, :valid)
     
     unchanged_fields = Map.get(item, :unchanged, [])
-    assert_change(changeset, as_cast(descriptor, without: unchanged_fields))
+    assert_change(changeset, as_cast(config, descriptor, without: unchanged_fields))
     assert_unchanged(changeset, unchanged_fields)
   end
 end

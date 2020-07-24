@@ -9,11 +9,7 @@ defmodule Crit.Params.ManyToManyBuilder do
   }
   """
 
-  defmacro __using__(
-    module_under_test: module_under_test,
-    default_cast_fields: default_cast_fields,
-    data: data
-  ) do 
+  defmacro __using__(_) do
     quote do
       use Crit.TestConstants
       import ExUnit.Assertions
@@ -22,24 +18,26 @@ defmodule Crit.Params.ManyToManyBuilder do
       alias Crit.Params.Builder
       import Crit.Assertions.Changeset
       alias Crit.Params.Validation
-      
-      def data(), do: unquote(data)
-      def default_cast_fields, do: unquote(default_cast_fields)
-      def module_under_test, do: unquote(module_under_test)
-      def all_names(), do: Map.keys(data())
+
+      def config(), do: __MODULE__.test_data()
+      def data(), do: config().data
+      def default_cast_fields, do: config().default_cast_fields
+      def module_under_test, do: config().module_under_test
+      def all_names(config), do: Map.keys(config.data)
 
       # ----------------------------------------------------------------------------
       def validate_categories(categories, function_runner, verbose \\ false) do
-        Process.put(:data_source, __MODULE__)
         exemplar_names =
-          Validation.filter_by_categories(all_names(), categories, verbose)
+          Validation.filter_by_categories(config(), all_names(config()), categories, verbose)
 
         for name <- exemplar_names do 
           Validation.note_name(name, verbose)
 
-          Builder.make_numbered_params([name])
-          |> function_runner.()
-          |> Validation.check_actual(name)
+          Validation.check_actual(
+            config(),
+            (Builder.make_numbered_params(config(), [name]) |> function_runner.()),
+            name)
+          
         end
       end
 
@@ -49,15 +47,27 @@ defmodule Crit.Params.ManyToManyBuilder do
       end
 
       # ----------------------------------------------------------------------------
+      #
+
+      def validate_lowered_values(descriptor) do
+        
+        # Process.put(:data_source, __MODULE__)
+        # expected = Builder.one_value(descriptor) |> IO.inspect
+        # actuals = lower_changesets(descriptor) |> IO.inspect
+        # for value <- actuals do
+        #   value
+        #   |> IO.inspect
+        # end
+      end
+
+      # ----------------------------------------------------------------------------
       def as_cast(descriptor, opts \\ []) do
-        Process.put(:data_source, __MODULE__)
-        Validation.as_cast(descriptor, opts)
+        Validation.as_cast(config(), descriptor, opts)
       end
 
       # ----------------------------------------------------------------------------
       def that_are(descriptors) when is_list(descriptors) do
-        Process.put(:data_source, __MODULE__)
-        Builder.make_numbered_params(descriptors)
+        Builder.make_numbered_params(config(), descriptors)
       end
   
       def that_are(descriptor),       do: that_are([descriptor])

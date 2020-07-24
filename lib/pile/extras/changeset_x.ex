@@ -62,11 +62,11 @@ defmodule Ecto.ChangesetX do
 
   @spec ids_marked_for_deletion(Changeset.t, :atom) :: MapSet.t(db_id())
   def ids_marked_for_deletion(container, list_field) do
-      container
-      |> Changeset.fetch_field!(list_field)
-      |> Enum.filter(&(Changeset.get_change(&1, :delete, false)))
-      |> Enum.map(&Changeset.get_field(&1, :id))
-      |> MapSet.new
+    container
+    |> Changeset.fetch_field!(list_field)
+    |> Enum.filter(&(Changeset.get_change(&1, :delete, false)))
+    |> Enum.map(&Changeset.get_field(&1, :id))
+    |> MapSet.new
   end
 
   # ----------------Hidden---------------------------
