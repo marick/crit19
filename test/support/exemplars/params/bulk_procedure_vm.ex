@@ -17,6 +17,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   alias Crit.Schemas
   import Crit.Params.Builder, only: [to_strings: 1]
   use Crit.TestConstants
+  use Crit.Errors
   use Crit.Params.ManyToManyBuilder
 
 
@@ -70,7 +71,8 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
           params: to_strings(%{name: "xxlxl",
                                frequency_id: @unlimited_frequency_id}),
           unchanged: [:species_ids],
-          categories: [:invalid, :filled]
+          categories: [:invalid, :filled],
+          errors: [species_ids: @at_least_one_species]
         },
       }
     }

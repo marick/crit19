@@ -69,8 +69,12 @@ defmodule Crit.Params.Validation do
     assert changeset.valid? == Enum.member?(item.categories, :valid)
     
     unchanged_fields = Map.get(item, :unchanged, [])
-    assert_change(changeset, as_cast(config, descriptor, without: unchanged_fields))
-    assert_unchanged(changeset, unchanged_fields)
+    errors = Map.get(item, :errors, [])
+
+    changeset
+    |> assert_change(as_cast(config, descriptor, without: unchanged_fields))
+    |> assert_unchanged(unchanged_fields)
+    |> assert_errors(errors)
   end
 end
 
