@@ -15,9 +15,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
-  import Crit.Params.Builder, only: [to_strings: 1]
-  use Crit.TestConstants
-  use Crit.Errors
   use Crit.Params.ManyToManyBuilder
 
 

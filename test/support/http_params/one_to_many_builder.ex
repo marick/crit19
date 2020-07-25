@@ -14,6 +14,7 @@ defmodule Crit.Params.OneToManyBuilder do
   defmacro __using__(_) do 
     quote do
       use Crit.TestConstants
+      use Crit.Errors
       import ExUnit.Assertions
       alias Ecto.Changeset
       import Crit.Params.Builder, only: [to_strings: 1]

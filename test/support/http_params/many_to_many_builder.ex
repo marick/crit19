@@ -12,6 +12,7 @@ defmodule Crit.Params.ManyToManyBuilder do
   defmacro __using__(_) do
     quote do
       use Crit.TestConstants
+      use Crit.Errors
       import ExUnit.Assertions
       import Crit.Assertions.{Ecto,Map}
       alias Ecto.Changeset

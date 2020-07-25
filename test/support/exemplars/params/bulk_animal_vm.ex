@@ -10,7 +10,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
     %{
       module_under_test: VM.BulkAnimal,
       default_cast_fields: [:names, :species_id,
-                          :in_service_datestring, :out_of_service_datestring],
+                            :in_service_datestring, :out_of_service_datestring],
       data: %{
         valid: %{
           categories: [:valid],
@@ -18,6 +18,15 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
                                species_id: @bovine_id,
                                in_service_datestring: @iso_date_1,
                                out_of_service_datestring: @iso_date_2})
+        },
+        blank_names: %{
+          categories: [:invalid],
+          params: to_strings(%{names: "",
+                               species_id: @bovine_id,
+                               in_service_datestring: @iso_date_1,
+                               out_of_service_datestring: @iso_date_2}),
+          unchanged: [:names],
+          errors: [names: @no_valid_names_message]
         },
       }
     }

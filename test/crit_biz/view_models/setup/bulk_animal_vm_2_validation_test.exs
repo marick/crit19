@@ -9,19 +9,11 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
              "out_of_service_datestring" => @iso_date_2}
 
   test "success" do
-    Params.validate_categories([:valid], &become_correct/1)
+    Params.validate_category(:valid, &become_correct/1)
+    Params.validate_category(:invalid, &become_incorrect/1)
   end
 
   describe "error checking" do
-    test "checks the namelist" do
-      input = Map.put(@correct, "names", "")
-
-      VM.BulkAnimal.accept_form(input, @institution) |> error2_payload(:form)
-      |> assert_invalid
-      |> assert_error(names: @no_valid_names_message)
-      |> assert_form_will_display_errors
-    end
-
     test "blank datestrings will just retain old values" do
       # The front end should not ever send back blank datestrings, but...
       input = Map.merge(@correct, %{"in_service_datestring" => "",
