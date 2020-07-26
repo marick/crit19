@@ -87,6 +87,9 @@ defmodule Crit.Params.Builder do
       def config(), do: __MODULE__.test_data()
       def config(:all_names), do: Map.keys(config(:data))
       def config(atom), do: config()[atom]
+
+      def validate_changeset(name, changeset),
+        do: Validation.validate_changeset(config(), changeset, name)
     end
   end
 end

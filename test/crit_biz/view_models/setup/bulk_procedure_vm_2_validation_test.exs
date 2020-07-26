@@ -36,25 +36,16 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
           :all_blank,
           :blank_with_species,
           :valid,
-          [:valid, deleting: ["species_ids"]],
+          :name_but_no_species
         ])
         |> become_incorrect
       
-      assert [all_blank, blank_with_species, valid, invalid_only_name] = actual
+      assert [all_blank, blank_with_species, valid, invalid] = actual
 
-      all_blank
-      |> assert_unchanged([:name, :species_ids])
-
-      blank_with_species
-      |> assert_unchanged(:name)
-      |> assert_changes(Params.as_cast(:blank_with_species, without: [:name]))
-      
-      valid
-      |> assert_changes(Params.as_cast(:valid))
-
-      invalid_only_name
-      |> assert_unchanged(:species_ids)
-      |> assert_change(name: "valid")
+      Params.validate_changeset(:all_blank, all_blank)
+      Params.validate_changeset(:blank_with_species, blank_with_species)
+      Params.validate_changeset(:valid, valid)
+      Params.validate_changeset(:name_but_no_species, invalid)
     end
   end
 
@@ -65,8 +56,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
     test "numbering is retained when there are errors" do
       actual =
-        Params.that_are(
-          [:valid, :all_blank, [:valid, deleting: ["species_ids"]]])
+        Params.that_are([:valid, :all_blank, :name_but_no_species])
         |> become_incorrect
       
       assert [0, 1, 2] == Enum.map(actual, &(ChangesetX.new!(&1, :index)))

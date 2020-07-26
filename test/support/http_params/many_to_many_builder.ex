@@ -36,6 +36,7 @@ defmodule Crit.Params.ManyToManyBuilder do
         validate_categories([category], function_runner, verbose)
       end
 
+
       # ----------------------------------------------------------------------------
       #
 

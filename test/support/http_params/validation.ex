@@ -30,9 +30,10 @@ defmodule Crit.Params.Validation do
   # ----------------------------------------------------------------------------
 
   def check_actual(config, actual, exemplar_name) do
+    
     case actual do
       %Ecto.Changeset{} = changeset ->
-        run_assertions(config, changeset, exemplar_name)
+        validate_changeset(config, changeset, exemplar_name)
       [] -> 
         :no_op
       x ->
@@ -63,8 +64,13 @@ defmodule Crit.Params.Validation do
   
   def filter_by_categories(_config, names, []), do: names
   
-  defp run_assertions(config, changeset, descriptor) do
+  def validate_changeset(config, changeset, descriptor) do
     item = one_value(config, descriptor)
+    if Map.has_key?(item, :verbose) do
+      IO.inspect(item.params, label: to_string(descriptor))
+      IO.inspect(changeset, label: "changeset")
+      IO.inspect(changeset.data, label: "underlying data")
+    end
     
     assert changeset.valid? == Enum.member?(item.categories, :valid)
     

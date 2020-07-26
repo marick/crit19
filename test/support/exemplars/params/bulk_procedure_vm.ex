@@ -17,8 +17,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   alias Crit.Schemas
   use Crit.Params.ManyToManyBuilder
 
-
-
   @test_data build(
     # View model changesets
     module_under_test: VM.BulkProcedure,
@@ -56,7 +54,8 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
       # but not a name. But those create nothing in the database.
       blank_with_species: %{
         categories: [:valid, :blank],
-        params: like(:all_blank, except: %{species_ids: [@bovine_id]})
+        params: like(:all_blank, except: %{species_ids: [@bovine_id]}),
+        unchanged: [:name],
       },
       
       #-----------------
@@ -66,7 +65,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
         params: to_strings(%{name: "xxlxl",
                              frequency_id: @unlimited_frequency_id}),
         unchanged: [:species_ids],
-        errors: [species_ids: @at_least_one_species]
+        errors: [species_ids: @at_least_one_species],
       },
     ])
 
@@ -76,7 +75,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   def accept_form(descriptor) do
     that_are(descriptor) |> config(:module_under_test).accept_form
   end
-      
+
   def lower_changesets(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
     config(:module_under_test).lower_changesets(vm_changesets)

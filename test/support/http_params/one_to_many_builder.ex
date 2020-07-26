@@ -17,12 +17,9 @@ defmodule Crit.Params.OneToManyBuilder do
       alias Crit.Params.Builder
       alias Crit.Params.Validation
       
-      def config(), do: __MODULE__.test_data()
-      defp all_names(config), do: Map.keys(config().data)
-
       def validate_categories(categories, function_runner, verbose \\ false) do 
         exemplar_names =
-          Validation.filter_by_categories(config(), all_names(config()), categories, verbose)
+          Validation.filter_by_categories(config(), config(:all_names), categories, verbose)
 
         for name <- exemplar_names do 
           Validation.note_name(name, verbose)
