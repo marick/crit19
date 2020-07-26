@@ -16,29 +16,19 @@ defmodule Crit.Params.ManyToManyBuilder do
       alias Crit.Params.Validation
 
       # ----------------------------------------------------------------------------
-      def validate_categories(categories, function_runner, verbose \\ false) do
-        exemplar_names =
-          Validation.filter_by_categories(config(), config(:all_names), categories, verbose)
 
-        for name <- exemplar_names do 
-          Validation.note_name(name, verbose)
+      defp make_params_for_name(config, name),
+        do: Builder.make_numbered_params(config(), [name])
 
-          Validation.check_actual(
-            config(),
-            (Builder.make_numbered_params(config(), [name]) |> function_runner.()),
-            name)
-          
-        end
+
+      def that_are(descriptors) when is_list(descriptors) do
+        Builder.make_numbered_params(config(), descriptors)
       end
-
-      # Convenience
-      def validate_category(category, function_runner, verbose \\ false) do 
-        validate_categories([category], function_runner, verbose)
-      end
-
+  
+      def that_are(descriptor),       do: that_are([descriptor])
+      def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
 
       # ----------------------------------------------------------------------------
-      #
 
       def validate_lowered_values(descriptor) do
         config = config()
@@ -61,19 +51,6 @@ defmodule Crit.Params.ManyToManyBuilder do
         end
         
       end
-
-      # ----------------------------------------------------------------------------
-      def as_cast(descriptor, opts \\ []) do
-        Validation.as_cast(config(), descriptor, opts)
-      end
-
-      # ----------------------------------------------------------------------------
-      def that_are(descriptors) when is_list(descriptors) do
-        Builder.make_numbered_params(config(), descriptors)
-      end
-  
-      def that_are(descriptor),       do: that_are([descriptor])
-      def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
     end
   end  
 end

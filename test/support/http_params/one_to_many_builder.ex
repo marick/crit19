@@ -17,33 +17,10 @@ defmodule Crit.Params.OneToManyBuilder do
       alias Crit.Params.Builder
       alias Crit.Params.Validation
       
-      def validate_categories(categories, function_runner, verbose \\ false) do 
-        exemplar_names =
-          Validation.filter_by_categories(config(), config(:all_names), categories, verbose)
+      defp make_params_for_name(config, name), do: Builder.only(config(), name)
 
-        for name <- exemplar_names do 
-          Validation.note_name(name, verbose)
+      def that_are(descriptor), do: Builder.only(config(), descriptor)
 
-          Validation.check_actual(
-            config(),
-            (Builder.only(config(), name) |> function_runner.()),
-            name)
-        end          
-      end
-
-      # Convenience
-      def validate_category(category, function_runner, verbose \\ false) do 
-        validate_categories([category], function_runner, verbose)
-      end
-
-      def as_cast(descriptor, opts \\ []) do
-        Validation.as_cast(config(), descriptor, opts)
-      end
-
-      # ----------------------------------------------------------------------------
-      def that_are(descriptor) do
-        Builder.only(config(), descriptor)
-      end
     end
   end  
 end
