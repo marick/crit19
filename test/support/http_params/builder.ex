@@ -14,6 +14,35 @@ defmodule Crit.Params.Builder do
   defp to_string_value(value), do: to_string(value)
 
 
+  def build(keywords) do
+    start = Enum.into(keywords, %{})
+
+    expanded_exemplars =
+      Enum.reduce(start.exemplars, %{}, &add_real_exemplar/2)
+
+    Map.put(start, :data, expanded_exemplars)
+  end
+
+
+  defp add_real_exemplar({new_name, %{params: params} = raw_data} = tuple, acc) do
+    expanded_params =
+      case params do
+        {:__like, earlier_name, overriding_params} ->
+          IO.inspect earlier_name
+          IO.inspect acc
+          Map.merge(acc[earlier_name].params, overriding_params)
+        _ ->
+          params
+      end
+    expanded_data = Map.put(raw_data, :params, expanded_params) |> IO.inspect(label: "expanded")
+    Map.put(acc, new_name, expanded_data) |> IO.inspect
+  end
+
+
+  def like(valid, except: map) do 
+    {:__like, valid, to_strings(map)}
+  end
+
   # ----------------------------------------------------------------------------
 
   def one_value(config, name), do: config.data[name]
@@ -45,4 +74,10 @@ defmodule Crit.Params.Builder do
   end
   
   def only(config, descriptor), do: one_value(config, descriptor).params
+
+
+  # ----------------------------------------------------------------------------
+
+  def __using__(_) do 
+  end
 end

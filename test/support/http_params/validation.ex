@@ -21,7 +21,7 @@ defmodule Crit.Params.Validation do
 
   defp fields_to_check(config, descriptor, except, without) do
     one_value(config, descriptor)
-    |> Map.get(:to_cast, config.default_cast_fields)
+    |> Map.get(:to_cast, config.validates)
     |> Enum.concat(Map.keys(except))
     |> ListX.delete(without)
   end

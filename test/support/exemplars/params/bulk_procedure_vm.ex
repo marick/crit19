@@ -22,7 +22,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     %{
       # View model changesets
       module_under_test: VM.BulkProcedure,
-      default_cast_fields: [:name, :species_ids, :frequency_id],
+      validates: [:name, :species_ids, :frequency_id],
       
       # Lowering
       produces: Schemas.Procedure,
