@@ -81,6 +81,7 @@ defmodule Crit.Params.Builder do
       use Crit.TestConstants
       import ExUnit.Assertions
       import Crit.Params.Builder, only: [to_strings: 1, build: 1, like: 2]
+      alias Crit.Params.Builder
       alias Crit.Params.Validation
       import Crit.Assertions.{Ecto,Map}
 
@@ -97,7 +98,7 @@ defmodule Crit.Params.Builder do
 
       def validate_categories(categories, function_runner, verbose \\ false) do
         exemplar_names =
-          Validation.filter_by_categories(config(), config(:all_names), categories, verbose)
+          Validation.filter_by_categories(config(), categories, verbose)
 
         for name <- exemplar_names do 
           Validation.note_name(name, verbose)
@@ -113,6 +114,28 @@ defmodule Crit.Params.Builder do
       def validate_category(category, function_runner, verbose \\ false) do 
         validate_categories([category], function_runner, verbose)
       end
+
+
+      def validate_lowered_values(descriptor) do
+        config = config()
+        exemplar = Builder.one_value(config, descriptor)
+        [{field_to_split, destination_field}] = Enum.into(config.lowering_splits, [])
+        actuals = lower_changesets(descriptor)
+
+        split_cast_values = Keyword.get(as_cast(descriptor), field_to_split)
+        
+        for struct <- actuals do
+          cast_map = Enum.into(as_cast(descriptor), %{})
+          
+          struct
+          |> assert_schema(config.produces)
+          |> assert_partial_copy(cast_map, config.lowering_retains)
+        end
+
+        for {struct, split_value} <- Enum.zip(actuals, split_cast_values) do
+          assert Map.get(struct, destination_field) == split_value
+        end
+      end        
     end
   end
 end

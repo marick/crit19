@@ -30,7 +30,6 @@ defmodule Crit.Params.Validation do
   # ----------------------------------------------------------------------------
 
   def check_actual(config, actual, exemplar_name) do
-    
     case actual do
       %Ecto.Changeset{} = changeset ->
         validate_changeset(config, changeset, exemplar_name)
@@ -50,11 +49,6 @@ defmodule Crit.Params.Validation do
   def note_name(name, verbose) do
     if verbose, do: IO.puts("+ #{inspect name}")
   end
-  
-  def filter_by_categories(config, names, categories, verbose) do
-    if verbose, do: IO.puts(">> Partition #{inspect categories}")
-    filter_by_categories(config, names, categories)
-  end
 
   def filter_by_categories(config, names, [category | remainder]) do
     filtered = 
@@ -63,6 +57,14 @@ defmodule Crit.Params.Validation do
   end
   
   def filter_by_categories(_config, names, []), do: names
+
+  def filter_by_categories(config, categories, verbose) do
+    if verbose, do: IO.puts(">> Partition #{inspect categories}")
+    all_names = Map.keys(config.data)
+    filter_by_categories(config, all_names, categories)
+  end
+
+
   
   def validate_changeset(config, changeset, descriptor) do
     item = one_value(config, descriptor)

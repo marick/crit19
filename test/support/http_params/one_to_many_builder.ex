@@ -18,9 +18,7 @@ defmodule Crit.Params.OneToManyBuilder do
       alias Crit.Params.Validation
       
       defp make_params_for_name(config, name), do: Builder.only(config(), name)
-
       def that_are(descriptor), do: Builder.only(config(), descriptor)
-
     end
   end  
 end

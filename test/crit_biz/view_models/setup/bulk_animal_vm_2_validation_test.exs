@@ -8,7 +8,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
              "in_service_datestring" => @iso_date_1,
              "out_of_service_datestring" => @iso_date_2}
 
-  test "success" do
+  test "categories" do
     Params.validate_category(:valid, &become_correct/1)
     Params.validate_category(:invalid, &become_incorrect/1)
   end
