@@ -22,12 +22,11 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     %{
       # View model changesets
       module_under_test: VM.BulkProcedure,
+      produces: Schemas.Procedure,
       validates: [:name, :species_ids, :frequency_id],
       
-      # Lowering
-      produces: Schemas.Procedure,
-      retains: [:name, :frequency_id],
-      splits: %{:species_ids => :species_id},
+      lowering_splits: %{:species_ids => :species_id},
+      lowering_retains: [:name, :frequency_id],
       
       data: %{
         valid: %{

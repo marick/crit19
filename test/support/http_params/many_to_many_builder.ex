@@ -54,7 +54,7 @@ defmodule Crit.Params.ManyToManyBuilder do
       def validate_lowered_values(descriptor) do
         config = config()
         exemplar = Builder.one_value(config, descriptor)
-        [{field_to_split, destination_field}] = Enum.into(config.splits, [])
+        [{field_to_split, destination_field}] = Enum.into(config.lowering_splits, [])
         actuals = lower_changesets(descriptor)
 
         split_cast_values = Keyword.get(as_cast(descriptor), field_to_split)
@@ -64,7 +64,7 @@ defmodule Crit.Params.ManyToManyBuilder do
           
           struct
           |> assert_schema(config.produces)
-          |> assert_partial_copy(cast_map, config.retains)
+          |> assert_partial_copy(cast_map, config.lowering_retains)
         end
 
         for {struct, split_value} <- Enum.zip(actuals, split_cast_values) do

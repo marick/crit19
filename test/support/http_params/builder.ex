@@ -24,18 +24,16 @@ defmodule Crit.Params.Builder do
   end
 
 
-  defp add_real_exemplar({new_name, %{params: params} = raw_data} = tuple, acc) do
+  defp add_real_exemplar({new_name, %{params: params} = raw_data}, acc) do
     expanded_params =
       case params do
         {:__like, earlier_name, overriding_params} ->
-          IO.inspect earlier_name
-          IO.inspect acc
           Map.merge(acc[earlier_name].params, overriding_params)
         _ ->
           params
       end
-    expanded_data = Map.put(raw_data, :params, expanded_params) |> IO.inspect(label: "expanded")
-    Map.put(acc, new_name, expanded_data) |> IO.inspect
+    expanded_data = Map.put(raw_data, :params, expanded_params)
+    Map.put(acc, new_name, expanded_data)
   end
 
 
