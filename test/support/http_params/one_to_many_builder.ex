@@ -13,13 +13,8 @@ defmodule Crit.Params.OneToManyBuilder do
 
   defmacro __using__(_) do 
     quote do
-      use Crit.TestConstants
-      use Crit.Errors
-      import ExUnit.Assertions
-      alias Ecto.Changeset
-      import Crit.Params.Builder, only: [to_strings: 1]
+      use Crit.Params.Builder
       alias Crit.Params.Builder
-      import Crit.Assertions.Changeset
       alias Crit.Params.Validation
       
       def config(), do: __MODULE__.test_data()

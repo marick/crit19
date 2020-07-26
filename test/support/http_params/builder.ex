@@ -73,9 +73,20 @@ defmodule Crit.Params.Builder do
   
   def only(config, descriptor), do: one_value(config, descriptor).params
 
-
   # ----------------------------------------------------------------------------
 
-  def __using__(_) do 
+  defmacro __using__(_) do
+    quote do
+      use Crit.Errors
+      use Crit.TestConstants
+      import ExUnit.Assertions
+      import Crit.Params.Builder, only: [to_strings: 1, build: 1, like: 2]
+      alias Crit.Params.Validation
+      import Crit.Assertions.{Ecto,Map}
+
+      def config(), do: __MODULE__.test_data()
+      def config(:all_names), do: Map.keys(config(:data))
+      def config(atom), do: config()[atom]
+    end
   end
 end

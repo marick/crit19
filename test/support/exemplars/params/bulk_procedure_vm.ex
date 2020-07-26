@@ -77,12 +77,12 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
   # ----------------------------------------------------------------------------
 
   def accept_form(descriptor) do
-    that_are(descriptor) |> module_under_test().accept_form
+    that_are(descriptor) |> config(:module_under_test).accept_form
   end
       
   def lower_changesets(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
-    module_under_test().lower_changesets(vm_changesets)
+    config(:module_under_test).lower_changesets(vm_changesets)
   end
 end
 

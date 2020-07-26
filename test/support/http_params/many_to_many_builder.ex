@@ -11,26 +11,14 @@ defmodule Crit.Params.ManyToManyBuilder do
 
   defmacro __using__(_) do
     quote do
-      use Crit.TestConstants
-      use Crit.Errors
-      import ExUnit.Assertions
-      import Crit.Assertions.{Ecto,Map}
-      alias Ecto.Changeset
-      import Crit.Params.Builder, only: [to_strings: 1]
+      use Crit.Params.Builder
       alias Crit.Params.Builder
-      import Crit.Assertions.Changeset
       alias Crit.Params.Validation
-
-      def config(), do: __MODULE__.test_data()
-      def data(), do: config().data
-      def default_cast_fields, do: config().default_cast_fields
-      def module_under_test, do: config().module_under_test
-      def all_names(config), do: Map.keys(config.data)
 
       # ----------------------------------------------------------------------------
       def validate_categories(categories, function_runner, verbose \\ false) do
         exemplar_names =
-          Validation.filter_by_categories(config(), all_names(config()), categories, verbose)
+          Validation.filter_by_categories(config(), config(:all_names), categories, verbose)
 
         for name <- exemplar_names do 
           Validation.note_name(name, verbose)

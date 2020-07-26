@@ -7,8 +7,6 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
   alias Ecto.Datespan
   use Crit.Params.OneToManyBuilder
 
-  import Builder, only: [to_strings: 1, build: 1, like: 2]
-
   @test_data build(
     module_under_test: VM.BulkAnimal,
     produces: Schemas.Animal,
