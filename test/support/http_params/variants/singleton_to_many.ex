@@ -18,7 +18,7 @@ defmodule Crit.Params.Variants.SingletonToMany do
 
   defmacro __using__(_) do
     quote do
-      use Crit.Params.Builder
+      use Crit.Params.Variants.Common
       alias Crit.Params.Builder
       alias Crit.Params.Validation
 

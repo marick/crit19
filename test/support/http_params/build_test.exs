@@ -1,6 +1,6 @@
-defmodule Crit.Params.BuilderTest do
+defmodule Crit.Params.BuildTest do
   use ExUnit.Case, async: true
-  import Crit.Params.Builder
+  import Crit.Params.Build
 
   describe "to_strings" do
     test "empty" do
