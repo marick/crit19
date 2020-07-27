@@ -15,7 +15,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
 
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
-  use Crit.Params.ManyToManyBuilder
+  use Crit.Params.Variants.SingletonToMany
 
   @test_data build(
     # View model changesets

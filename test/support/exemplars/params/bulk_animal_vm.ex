@@ -6,7 +6,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
   alias Ecto.Datespan
-  use Crit.Params.OneToManyBuilder
+  use Crit.Params.Variants.OneToMany
 
   @test_data build(
     module_under_test: VM.BulkAnimal,
@@ -45,5 +45,3 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
     config(:module_under_test).lower_changeset(vm_changeset)
   end
 end
-
-
