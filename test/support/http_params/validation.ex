@@ -3,16 +3,16 @@ defmodule Crit.Params.Validation do
   import ExUnit.Assertions
   alias Ecto.Changeset
   import Crit.Assertions.Changeset
-  alias Crit.Params.Builder
   import Crit.Assertions.{Ecto,Map}
   alias Pile.Namelist
+  alias Crit.Params.Get
 
   # ----------------------------------------------------------------------------
   def as_cast(config, descriptor, opts \\ []) do
     opts = Enum.into(opts, %{except: %{}, without: []})
     cast_value =
       struct(config.module_under_test)
-      |> Changeset.cast(Builder.only(config, descriptor), config.module_under_test.fields())
+      |> Changeset.cast(Get.params(config, descriptor), config.module_under_test.fields())
       |> Changeset.apply_changes
       |> Map.merge(opts.except)
       |> Map.drop(opts.without)
@@ -22,7 +22,7 @@ defmodule Crit.Params.Validation do
   end
 
   defp fields_to_check(config, descriptor, except, without) do
-    one_value(config, descriptor)
+    Get.exemplar(config, descriptor)
     |> Map.get(:to_cast, config.validates)
     |> Enum.concat(Map.keys(except))
     |> ListX.delete(without)
@@ -46,15 +46,13 @@ defmodule Crit.Params.Validation do
 
   # ----------------------------------------------------------------------------
 
-  defp one_value(config, name), do: Map.fetch!(config.exemplars, name)
-
   def note_name(name, verbose) do
     if verbose, do: IO.puts("+ #{inspect name}")
   end
 
   def filter_by_categories(config, names, [category | remainder]) do
     filtered = 
-      Enum.filter(names, &Enum.member?(one_value(config, &1).categories, category))
+      Enum.filter(names, &Enum.member?(Get.exemplar(config, &1).categories, category))
     filter_by_categories(config, filtered, remainder)
   end
   
@@ -69,7 +67,7 @@ defmodule Crit.Params.Validation do
 
   
   def validate_changeset(config, changeset, descriptor) do
-    item = one_value(config, descriptor)
+    item = Get.exemplar(config, descriptor)
     if Map.has_key?(item, :verbose) do
       IO.inspect(item.params, label: to_string(descriptor))
       IO.inspect(changeset, label: "changeset")

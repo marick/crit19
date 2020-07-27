@@ -24,11 +24,11 @@ defmodule Crit.Params.Variants.OneToMany do
   defmacro __using__(_) do 
     quote do
       use Crit.Params.Variants.Common
-      alias Crit.Params.Builder
       alias Crit.Params.Validation
+      alias Crit.Params.Get
       
-      defp make_params_for_name(config, name), do: Builder.only(config(), name)
-      def that_are(descriptor), do: Builder.only(config(), descriptor)
+      defp make_params_for_name(config, name), do: Get.params(config(), name)
+      def that_are(descriptor), do: Get.params(config(), descriptor)
     end
   end  
 end

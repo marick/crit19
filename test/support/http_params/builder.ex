@@ -1,14 +1,11 @@
 defmodule Crit.Params.Builder do
+  alias Crit.Params.Get
   # ----------------------------------------------------------------------------
 
-  def one_value(config, name), do: config.exemplars[name]
   
-  defp exceptions(opts), do: Keyword.get(opts, :except, %{})
-  defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
-
   def make_numbered_params(config, descriptors) when is_list(descriptors) do
     descriptors
-    |> Enum.map(&(only(config, &1)))
+    |> Enum.map(&(Get.params(config, &1)))
     |> combine_into_numbered_params
   end
 
@@ -22,13 +19,4 @@ defmodule Crit.Params.Builder do
     end)
     |> Map.new  
   end
-
-  def only(config, [descriptor | opts]) do
-    only(config, descriptor)
-    |> Map.merge(exceptions(opts))
-    |> Map.drop(deleted_keys(opts))
-  end
-  
-  def only(config, descriptor), do: one_value(config, descriptor).params
-
 end
