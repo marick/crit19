@@ -1,7 +1,7 @@
 defmodule Crit.Params.Builder do
   # ----------------------------------------------------------------------------
 
-  def one_value(config, name), do: config.data[name]
+  def one_value(config, name), do: config.exemplars[name]
   
   defp exceptions(opts), do: Keyword.get(opts, :except, %{})
   defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])

@@ -46,7 +46,7 @@ defmodule Crit.Params.Validation do
 
   # ----------------------------------------------------------------------------
 
-  defp one_value(config, name), do: Map.fetch!(config.data, name)
+  defp one_value(config, name), do: Map.fetch!(config.exemplars, name)
 
   def note_name(name, verbose) do
     if verbose, do: IO.puts("+ #{inspect name}")
@@ -62,7 +62,7 @@ defmodule Crit.Params.Validation do
 
   def filter_by_categories(config, categories, verbose) do
     if verbose, do: IO.puts(">> Partition #{inspect categories}")
-    all_names = Map.keys(config.data)
+    all_names = Map.keys(config.exemplars)
     filter_by_categories(config, all_names, categories)
   end
 

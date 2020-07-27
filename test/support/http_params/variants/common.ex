@@ -11,7 +11,7 @@ defmodule Crit.Params.Variants.Common do
       import Crit.Assertions.{Ecto,Map}
 
       def config(), do: __MODULE__.test_data()
-      def config(:all_names), do: Map.keys(config(:data))
+      def config(:all_names), do: Map.keys(config(:exemplars))
       def config(atom), do: config()[atom]
 
       def validate_changeset(name, changeset),

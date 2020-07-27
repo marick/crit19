@@ -6,7 +6,7 @@ defmodule Crit.Params.Build do
     expanded_exemplars =
       Enum.reduce(start.exemplars, %{}, &add_real_exemplar/2)
 
-    Map.put(start, :data, expanded_exemplars)
+    Map.put(start, :exemplars, expanded_exemplars)
   end
 
   def to_strings(map) when is_map(map) do
