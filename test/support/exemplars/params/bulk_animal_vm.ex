@@ -4,6 +4,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
   """
 
   alias CritBiz.ViewModels.Setup, as: VM
+  alias Crit.Schemas
   alias Ecto.Datespan
   use Crit.Params.OneToManyBuilder
 
@@ -40,8 +41,8 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
   end
 
   def lower_changesets(descriptor) do
-    {:ok, vm_changesets} = accept_form(descriptor)
-    config(:module_under_test).lower_changesets(vm_changesets)
+    {:ok, vm_changeset} = accept_form(descriptor)
+    config(:module_under_test).lower_changeset(vm_changeset)
   end
 end
 

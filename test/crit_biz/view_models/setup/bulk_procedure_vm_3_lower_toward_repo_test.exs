@@ -9,7 +9,4 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.LowerTowardRepoTest do
       Params.validate_lowered_values(:valid)
     end
   end
-
-
-  
 end

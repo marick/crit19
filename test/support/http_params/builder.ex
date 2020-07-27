@@ -115,26 +115,8 @@ defmodule Crit.Params.Builder do
         validate_categories([category], function_runner, verbose)
       end
 
-
       def validate_lowered_values(descriptor) do
-        config = config()
-        exemplar = Builder.one_value(config, descriptor)
-        [{field_to_split, destination_field}] = Enum.into(config.lowering_splits, [])
-        actuals = lower_changesets(descriptor)
-
-        split_cast_values = Keyword.get(as_cast(descriptor), field_to_split)
-        
-        for struct <- actuals do
-          cast_map = Enum.into(as_cast(descriptor), %{})
-          
-          struct
-          |> assert_schema(config.produces)
-          |> assert_partial_copy(cast_map, config.lowering_retains)
-        end
-
-        for {struct, split_value} <- Enum.zip(actuals, split_cast_values) do
-          assert Map.get(struct, destination_field) == split_value
-        end
+        Validation.assert_lowered(config(), descriptor, lower_changesets(descriptor))
       end        
     end
   end
