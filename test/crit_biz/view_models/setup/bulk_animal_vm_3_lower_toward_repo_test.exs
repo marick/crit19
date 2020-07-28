@@ -3,6 +3,6 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.LowerTowardRepoTest do
   alias Crit.Exemplars.Params.BulkAnimal, as: Params
 
   test "validate specific cases" do
-    Params.validate_lowered_values(:valid)
+    Params.validate(:lowered, :valid)
   end
 end
