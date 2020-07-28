@@ -1,10 +1,13 @@
 defmodule Crit.Params.Get do
+  alias Ecto.Changeset
+  
   def exemplar(config, name), do: config.exemplars[name]
 
   def params(config, [descriptor | opts]) do
+    opts = terser(opts, except: %{}, deleting: [])
     params(config, descriptor)
-    |> Map.merge(exceptions(opts))
-    |> Map.drop(deleted_keys(opts))
+    |> Map.merge(opts.except)
+    |> Map.drop(opts.deleting)
   end
   
   def params(config, descriptor), do: exemplar(config, descriptor).params
@@ -66,7 +69,34 @@ defmodule Crit.Params.Get do
     |> Map.new
   end
 
+  def cast_map(config, descriptor, opts \\ []) do
+    opts = terser(opts, except: %{}, without: [])
+    fields = config.module_under_test.fields()
+
+    struct(config.module_under_test)
+    |> Changeset.cast(params(config, descriptor), fields)
+    |> Changeset.apply_changes
+    |> Map.merge(opts.except)
+    |> Map.drop(opts.without)
+  end
+
+  def as_cast(config, descriptor, opts \\ []) do
+    opts = terser(opts, except: %{}, without: [])
+    map = cast_map(config, descriptor, opts)
+    
+    for field <- field_names(config, opts.except, opts.without), 
+      do: {field, Map.get(map, field)}
+  end
+
+  defp field_names(config, except, without) do
+    config.validates
+    |> Enum.concat(Map.keys(except))
+    |> ListX.delete(without)
+  end
+
   # ----------------------------------------------------------------------------
-  defp exceptions(opts), do: Keyword.get(opts, :except, %{})
-  defp deleted_keys(opts), do: Keyword.get(opts, :deleting, [])
+  defp terser(opts, defaults) do
+    defaults = Enum.into(defaults, %{})
+    Enum.into(opts, defaults)
+  end    
 end

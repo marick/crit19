@@ -6,7 +6,7 @@ defmodule Crit.Params.Variants.Common do
       use Crit.TestConstants
       import ExUnit.Assertions
       import Crit.Params.Build, only: [to_strings: 1, build: 1, like: 2]
-      alias Crit.Params.Builder
+      alias Crit.Params.Get
       alias Crit.Params.Validation
       import Crit.Assertions.{Ecto,Map}
 
@@ -17,9 +17,11 @@ defmodule Crit.Params.Variants.Common do
       def validate_changeset(name, changeset),
         do: Validation.validate_changeset(config(), changeset, name)
 
-      def as_cast(descriptor, opts \\ []) do
-        Validation.as_cast(config(), descriptor, opts)
-      end
+      def as_cast(descriptor, opts \\ []),
+        do: Get.as_cast(config(), descriptor, opts)
+
+      def cast_map(descriptor, opts \\ []),
+        do: Get.cast_map(config(), descriptor, opts)
 
       def validate_categories(categories, function_runner, verbose \\ false) do
         exemplar_names =

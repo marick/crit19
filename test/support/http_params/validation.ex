@@ -1,34 +1,11 @@
 defmodule Crit.Params.Validation do
   use Crit.TestConstants
   import ExUnit.Assertions
-  alias Ecto.Changeset
   import Crit.Assertions.Changeset
   import Crit.Assertions.{Ecto,Map}
   alias Pile.Namelist
   alias Crit.Params.Get
 
-  # ----------------------------------------------------------------------------
-  def as_cast(config, descriptor, opts \\ []) do
-    opts = Enum.into(opts, %{except: %{}, without: []})
-    cast_value =
-      struct(config.module_under_test)
-      |> Changeset.cast(Get.params(config, descriptor), config.module_under_test.fields())
-      |> Changeset.apply_changes
-      |> Map.merge(opts.except)
-      |> Map.drop(opts.without)
-    
-    for field <- fields_to_check(config, descriptor, opts.except, opts.without), 
-      do: {field, Map.get(cast_value, field)}
-  end
-
-  defp fields_to_check(config, descriptor, except, without) do
-    Get.exemplar(config, descriptor)
-    |> Map.get(:to_cast, config.validates)
-    |> Enum.concat(Map.keys(except))
-    |> ListX.delete(without)
-  end
-  
-  
   # ----------------------------------------------------------------------------
 
   def check_actual(config, actual, exemplar_name) do
@@ -80,7 +57,7 @@ defmodule Crit.Params.Validation do
     errors = Map.get(item, :errors, [])
 
     changeset
-    |> assert_change(as_cast(config, descriptor, without: unchanged_fields))
+    |> assert_change(Get.as_cast(config, descriptor, without: unchanged_fields))
     |> assert_unchanged(unchanged_fields)
     |> assert_errors(errors)
   end
@@ -92,7 +69,7 @@ defmodule Crit.Params.Validation do
 
   defp assert_non_split_values(config, descriptor, actuals) do 
     for struct <- actuals do
-      cast_map = Enum.into(as_cast(config, descriptor), %{})
+      cast_map = Get.cast_map(config, descriptor)
       
       struct
       |> assert_schema(config.produces)
@@ -102,7 +79,7 @@ defmodule Crit.Params.Validation do
 
   defp assert_split_value(config, descriptor, actuals) do
     [{field_to_split, destination_field}] = Enum.into(config.lowering_splits, [])
-    split_cast_values = split(as_cast(config, descriptor), field_to_split)
+    split_cast_values = split(Get.as_cast(config, descriptor), field_to_split)
 
     for {struct, split_value} <- Enum.zip(actuals, split_cast_values),
       do: assert Map.get(struct, destination_field) == split_value
