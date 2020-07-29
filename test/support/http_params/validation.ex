@@ -1,26 +1,9 @@
 defmodule Crit.Params.Validation do
   use Crit.TestConstants
-  import ExUnit.Assertions
-  import Crit.Assertions.Changeset
-  import Crit.Assertions.{Ecto,Map}
-  alias Pile.Namelist
   alias Crit.Params.Get
-  alias Crit.Params.Validate
 
   # ----------------------------------------------------------------------------
 
-  def check_actual(config, actual, exemplar_name) do
-    case actual do
-      %Ecto.Changeset{} = changeset ->
-        Validate.FormChecking.check(config, changeset, exemplar_name)
-      [] -> 
-        :no_op
-      x ->
-        IO.puts "Expected either a changeset or emptiness, not:"
-        IO.inspect x
-        flunk "Most likely, the function given should end with []"
-    end
-  end
 
   # ----------------------------------------------------------------------------
 
@@ -41,9 +24,5 @@ defmodule Crit.Params.Validation do
     all_names = Map.keys(config.exemplars)
     filter_by_categories(config, all_names, categories)
   end
-
-
-  
-
 end
 

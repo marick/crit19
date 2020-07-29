@@ -10,7 +10,7 @@ defmodule Crit.Params.Get do
     |> Map.drop(opts.deleting)
   end
   
-  def params(config, descriptor), do: exemplar(config, descriptor).params
+  def params(config, name), do: exemplar(config, name).params
 
   @doc """
    Produces a map from index to exemplar params. That's the way

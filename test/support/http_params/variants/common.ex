@@ -22,27 +22,24 @@ defmodule Crit.Params.Variants.Common do
       def cast_map(descriptor, opts \\ []),
         do: Get.cast_map(config(), descriptor, opts)
 
-      def validate_categories(categories, function_runner, verbose \\ false) do
-        exemplar_names =
-          Validation.filter_by_categories(config(), categories, verbose)
 
-        for name <- exemplar_names do 
-          Validation.note_name(name, verbose)
+      def check_form_validation(opts) do
+        opts = Enum.into(opts, %{verbose: false})
 
-          Validation.check_actual(
-            config(),
-            (make_params_for_name(config(), name) |> function_runner.()),
-            name)
+        check =
+          case Map.get(opts, :result) do
+            nil ->
+              fn result, name -> check_changeset(result, name) end
+            f -> f
+          end
+
+        names = 
+          Validation.filter_by_categories(config(), opts.categories, opts.verbose)
+        
+        for name <- names do
+          accept_form(name) |> check.(name)
         end
       end
-
-      # Convenience
-      def validate_category(category, function_runner, verbose \\ false) do 
-        validate_categories([category], function_runner, verbose)
-      end
-
-
-
       
       defchain validate(:lowered, name),
         do: Validate.Lowering.check(config(), name, lower_changesets(name))

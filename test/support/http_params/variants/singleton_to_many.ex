@@ -48,8 +48,8 @@ defmodule Crit.Params.Variants.SingletonToMany do
       use Crit.Params.Variants.Common
       alias Crit.Params.Get
       alias Crit.Params.Validation
-
-      # ----------------------------------------------------------------------------
+      import Crit.Assertions.{Changeset,Misc}
+      alias Crit.Params.Validate
 
       defp make_params_for_name(config, name),
         do: Get.doubly_numbered_params(config(), [name], "index")
@@ -60,6 +60,30 @@ defmodule Crit.Params.Variants.SingletonToMany do
   
       def that_are(descriptor),       do: that_are([descriptor])
       def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
+
+
+      def check_changeset({:error, :form, [changeset]}, name) do
+        config = config()
+        assert_invalid(changeset)
+        Validate.FormChecking.assert_error_expected(config, name)
+        Validate.FormChecking.check(config, changeset, name)
+      end
+
+      def check_changeset({:ok, [changeset]}, name) do
+        config = config()
+        assert_valid(changeset)
+        Validate.FormChecking.refute_error_expected(config, name)
+        Validate.FormChecking.check(config(), changeset, name)
+      end
+
+      def discarded do
+        fn result, name ->
+          if ok_payload(result) != [] do
+            IO.inspect result
+            flunk("Exemplar #{name} is not supposed to produce a changeset")
+          end
+        end
+      end
     end
   end  
 end

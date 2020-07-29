@@ -9,8 +9,8 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
              "out_of_service_datestring" => @iso_date_2}
 
   test "categories" do
-    Params.validate_category(:valid, &become_correct/1)
-    Params.validate_category(:invalid, &become_incorrect/1)
+    Params.check_form_validation(categories: [:valid])
+    Params.check_form_validation(categories: [:invalid])
   end
 
   describe "error checking" do
@@ -37,19 +37,6 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
       |> assert_error(:out_of_service_datestring)
       |> assert_form_will_display_errors
     end
-  end
-
-  # ----------------------------------------------------------------------------
-
-  
-
-  defp become_correct(params) do 
-    VM.BulkAnimal.accept_form(params, @institution)
-    |> ok_payload
-  end
-
-  defp become_incorrect(params) do
-    VM.BulkAnimal.accept_form(params, @institution) |> error2_payload(:form)
   end
 end
   

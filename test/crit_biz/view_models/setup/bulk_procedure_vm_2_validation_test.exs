@@ -6,9 +6,10 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
   # ----------------------------------------------------------------------------
   test "the representative kinds of forms" do
-    Params.validate_category(:invalid, &become_incorrect_singleton/1)
-    Params.validate_categories([:valid, :filled], &become_correct_singleton/1)
-    Params.validate_category(:blank, &become_empty/1)
+    Params.check_form_validation(categories: [:invalid])
+    Params.check_form_validation(categories: [:valid, :filled])
+    Params.check_form_validation(categories: [:valid, :blank],
+      result: Params.discarded)
   end
   
   describe "successful form validation" do
@@ -77,16 +78,5 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
   defp become_incorrect(params) do
     VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
-  end
-
-  defp become_incorrect_singleton(params) do
-    become_incorrect(params)
-    |> singleton_payload
-    |> assert_invalid
-  end
-
-  defp become_empty(params) do
-    assert VM.BulkProcedure.accept_form(params) == {:ok, []}
-    []
   end
 end

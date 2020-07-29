@@ -6,6 +6,16 @@ defmodule Crit.Params.Validate do
 
   defmodule FormChecking do
     import Crit.Assertions.Changeset
+
+    def assert_error_expected(config, name) do
+      exemplar = Get.exemplar(config, name)
+      assert Map.has_key?(exemplar, :errors)
+    end
+    
+    def refute_error_expected(config, name) do
+      exemplar = Get.exemplar(config, name)
+      refute Map.has_key?(exemplar, :errors)
+    end
     
     def check(config, changeset, descriptor) do
       item = Get.exemplar(config, descriptor)
