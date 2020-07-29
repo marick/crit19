@@ -94,6 +94,18 @@ defmodule Crit.Params.Get do
     |> ListX.delete(without)
   end
 
+  def names_in_categories(config, categories, verbose) do
+    if verbose, do: IO.puts("\n>> Partition #{inspect categories}")
+    all_names = Map.keys(config.exemplars)
+    filter_by_categories(config, all_names, categories)
+  end
+
+  defp filter_by_categories(config, names, categories) do
+    Enum.reduce(categories, names, fn category, acc ->
+      Enum.filter(acc, &Enum.member?(exemplar(config, &1).categories, category))
+    end)
+  end
+
   # ----------------------------------------------------------------------------
   defp terser(opts, defaults) do
     defaults = Enum.into(defaults, %{})

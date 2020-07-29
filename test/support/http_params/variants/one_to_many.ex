@@ -24,7 +24,6 @@ defmodule Crit.Params.Variants.OneToMany do
   defmacro __using__(_) do 
     quote do
       use Crit.Params.Variants.Common
-      alias Crit.Params.Validation
       alias Crit.Params.{Get,Validate}
       import Crit.Assertions.Changeset
       

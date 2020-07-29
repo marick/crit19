@@ -4,6 +4,10 @@ defmodule Crit.Params.Validate do
   alias Pile.Namelist
   alias Crit.Params.Get
 
+  def note_name(name, verbose) do
+    if verbose, do: IO.puts("+ #{inspect name}")
+  end
+
   defmodule FormChecking do
     import Crit.Assertions.Changeset
 

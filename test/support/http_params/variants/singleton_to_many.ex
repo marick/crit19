@@ -46,10 +46,8 @@ defmodule Crit.Params.Variants.SingletonToMany do
   defmacro __using__(_) do
     quote do
       use Crit.Params.Variants.Common
-      alias Crit.Params.Get
-      alias Crit.Params.Validation
+      alias Crit.Params.{Get,Validate}
       import Crit.Assertions.{Changeset,Misc}
-      alias Crit.Params.Validate
 
       defp make_params_for_name(config, name),
         do: Get.doubly_numbered_params(config(), [name], "index")

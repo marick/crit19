@@ -7,9 +7,7 @@ defmodule Crit.Params.Variants.Common do
       import ExUnit.Assertions
       import Crit.Assertions.Defchain
       import Crit.Params.Build, only: [to_strings: 1, build: 1, like: 2]
-      alias Crit.Params.Get
-      alias Crit.Params.Validate
-      alias Crit.Params.Validation
+      alias Crit.Params.{Get,Validate}
       import Crit.Assertions.{Ecto,Map}
 
       def config(), do: __MODULE__.test_data()
@@ -34,9 +32,10 @@ defmodule Crit.Params.Variants.Common do
           end
 
         names = 
-          Validation.filter_by_categories(config(), opts.categories, opts.verbose)
+          Get.names_in_categories(config(), opts.categories, opts.verbose)
         
         for name <- names do
+          Validate.note_name(name, opts.verbose)
           accept_form(name) |> check.(name)
         end
       end
