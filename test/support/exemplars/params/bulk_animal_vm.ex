@@ -6,6 +6,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
   alias Ecto.Datespan
+  alias CritBiz.ViewModels.FieldValidators
   use Crit.Params.Variants.OneToMany
 
   @test_data build(
@@ -18,6 +19,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
     lowering_splits: %{:names => :name},
     lowering_retains: [:species_id],
 
+    # -----------------------------------------------------------------------
     exemplars: [
       valid: %{categories: [:valid],
                params: to_strings(%{names: "a, b, c",
@@ -46,14 +48,14 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
                      unchanged: [:names],
                      errors: [names: @no_valid_names_message]},
 
-      out_of_order: %{categories: [:invalid],
-                      params: like(:valid,
-                        except: %{in_service_datestring: @iso_date_4,
-                                  out_of_service_datestring: @iso_date_3}),
-                      errors: [out_of_service_datestring: @date_misorder_message]},
-
-      # We don't other possible cases because the datestring-checking
-      # code is handled elsewhere.
+      out_of_order: %{
+        params: like(:valid,
+          except: %{in_service_datestring: @iso_date_4,
+                    out_of_service_datestring: @iso_date_3}),
+        because_of: {FieldValidators, :date_order},
+        errors: [out_of_service_datestring: @date_misorder_message],
+        categories: [:invalid],
+      }
     ])
     
   def test_data, do: @test_data

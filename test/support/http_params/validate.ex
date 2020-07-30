@@ -10,6 +10,7 @@ defmodule Crit.Params.Validate do
 
   defmodule FormChecking do
     import Crit.Assertions.Changeset
+    import Mockery.Assertions
 
     def assert_error_expected(config, name) do
       exemplar = Get.exemplar(config, name)
@@ -29,11 +30,12 @@ defmodule Crit.Params.Validate do
         
         unchanged_fields = Map.get(item, :unchanged, [])
         errors = Map.get(item, :errors, [])
-        
+
         changeset
         |> assert_change(Get.as_cast(config, descriptor, without: unchanged_fields))
         |> assert_unchanged(unchanged_fields)
         |> assert_errors(errors)
+        check_spies(item[:because_of])
       rescue
         exception in [ExUnit.AssertionError] ->
           IO.puts "\nBackground for following test failure:"
@@ -43,6 +45,15 @@ defmodule Crit.Params.Validate do
           reraise exception, __STACKTRACE__
       end
     end
+
+    defp check_spies(dependencies) when is_list(dependencies) do
+      for {module, name} <- dependencies do
+        assert_called(module, name)
+      end
+    end
+    
+    defp check_spies(tuple) when is_tuple(tuple), do: check_spies([tuple])
+    defp check_spies(_), do: "nothing"
   end
   
   # ----------------------------------------------------------------------------

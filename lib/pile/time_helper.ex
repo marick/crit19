@@ -1,5 +1,5 @@
 defmodule Pile.TimeHelper do
-  import Pile.Interface
+  import Pile.Aspect, only: [some: 1]
 
   @doc ~S"""
   Produces a `Date` for today *in the given `timezone`*. That is, if a

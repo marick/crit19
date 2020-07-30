@@ -2,7 +2,7 @@ defmodule Crit.State.UserTask do
   @moduledoc """
   Cache used user activities that occur in multiple steps.
   """
-  import Pile.Interface
+  import Pile.Aspect, only: [some: 1]
   alias Ecto.Changeset
 
   def new_id, do: UUID.uuid4()

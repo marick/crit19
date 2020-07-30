@@ -7,6 +7,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimal do
   alias CritBiz.ViewModels.FieldValidators
   alias Pile.Namelist
   alias Crit.Ecto.BulkInsert
+  import Pile.Aspect, only: [spy_on: 1]
 
   @primary_key false
   embedded_schema do
@@ -39,8 +40,8 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimal do
     changeset = 
       %__MODULE__{institution: institution}
       |> changeset(params)
-      |> FieldValidators.date_order
-      |> FieldValidators.namelist(:names)
+      |> spy_on(FieldValidators).date_order
+      |> spy_on(FieldValidators).namelist(:names)
     summarize_validation(changeset, changeset.valid?, error_subtype: :form)
   end
 
