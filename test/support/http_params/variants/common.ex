@@ -10,16 +10,13 @@ defmodule Crit.Params.Variants.Common do
       alias Crit.Params.{Get,Validate}
       import Crit.Assertions.{Ecto,Map}
 
-      def config(), do: __MODULE__.test_data()
-      def config(:all_names), do: Map.keys(config(:exemplars))
-      def config(atom), do: config()[atom]
+      # -----CAN BE USED IN TEST--------------------------------------------------
 
       def as_cast(descriptor, opts \\ []),
         do: Get.as_cast(config(), descriptor, opts)
 
       def cast_map(descriptor, opts \\ []),
         do: Get.cast_map(config(), descriptor, opts)
-
 
       def check_form_validation(opts) do
         opts = Enum.into(opts, %{verbose: false})
@@ -46,6 +43,12 @@ defmodule Crit.Params.Variants.Common do
       defchain validate(:form_checking, name, changeset) do 
         Validate.FormChecking.check(config(), changeset, name)
       end
+
+      # ----------------------------------------------------------------------------
+
+      defp config(), do: __MODULE__.test_data()
+      defp config(:all_names), do: Map.keys(config(:exemplars))
+      defp config(atom), do: config()[atom]
     end
   end
 end

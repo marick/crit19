@@ -27,22 +27,27 @@ defmodule Crit.Params.Variants.OneToMany do
       alias Crit.Params.{Get,Validate}
       import Crit.Assertions.Changeset
       
-      defp make_params_for_name(config, name), do: Get.params(config(), name)
+      # -----CAN BE USED IN TEST--------------------------------------------------
+
       def that_are(descriptor), do: Get.params(config(), descriptor)
 
-      def check_changeset({:error, :form, changeset}, name) do
+      # ----------------------------------------------------------------------------
+
+      defp check_changeset({:error, :form, changeset}, name) do
         config = config()
         assert_invalid(changeset)
         Validate.FormChecking.assert_error_expected(config, name)
         Validate.FormChecking.check(config, changeset, name)
       end
 
-      def check_changeset({:ok, changeset}, name) do
+      defp check_changeset({:ok, changeset}, name) do
         config = config()
         assert_valid(changeset)
         Validate.FormChecking.refute_error_expected(config, name)
-        Validate.FormChecking.check(config(), changeset, name)
+        Validate.FormChecking.check(config, changeset, name)
       end
+
+      defp make_params_for_name(config, name), do: Get.params(config, name)
     end
   end  
 end

@@ -49,8 +49,7 @@ defmodule Crit.Params.Variants.SingletonToMany do
       alias Crit.Params.{Get,Validate}
       import Crit.Assertions.{Changeset,Misc}
 
-      defp make_params_for_name(config, name),
-        do: Get.doubly_numbered_params(config(), [name], "index")
+      # -----CAN BE USED IN TEST--------------------------------------------------
 
       def that_are(descriptors) when is_list(descriptors) do
         Get.doubly_numbered_params(config(), descriptors, "index")
@@ -60,20 +59,6 @@ defmodule Crit.Params.Variants.SingletonToMany do
       def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
 
 
-      def check_changeset({:error, :form, [changeset]}, name) do
-        config = config()
-        assert_invalid(changeset)
-        Validate.FormChecking.assert_error_expected(config, name)
-        Validate.FormChecking.check(config, changeset, name)
-      end
-
-      def check_changeset({:ok, [changeset]}, name) do
-        config = config()
-        assert_valid(changeset)
-        Validate.FormChecking.refute_error_expected(config, name)
-        Validate.FormChecking.check(config(), changeset, name)
-      end
-
       def discarded do
         fn result, name ->
           if ok_payload(result) != [] do
@@ -82,6 +67,25 @@ defmodule Crit.Params.Variants.SingletonToMany do
           end
         end
       end
+
+      # ----------------------------------------------------------------------------
+
+      defp check_changeset({:error, :form, [changeset]}, name) do
+        config = config()
+        assert_invalid(changeset)
+        Validate.FormChecking.assert_error_expected(config, name)
+        Validate.FormChecking.check(config, changeset, name)
+      end
+
+      defp check_changeset({:ok, [changeset]}, name) do
+        config = config()
+        assert_valid(changeset)
+        Validate.FormChecking.refute_error_expected(config, name)
+        Validate.FormChecking.check(config, changeset, name)
+      end
+
+      defp make_params_for_name(config, name),
+        do: Get.doubly_numbered_params(config(), [name], "index")
     end
   end  
 end
