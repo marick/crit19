@@ -25,12 +25,25 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
                                     in_service_datestring: @iso_date_1,
                                     out_of_service_datestring: @iso_date_2}),
                lowering_adds: %{span: Datespan.customary(@date_1, @date_2)}
-              }, 
+              },
+
+      # The front end should not ever send back blank datestrings, but
+      # it's worth documenting the behavior if the impossible happens.
+      blank_service_gaps: %{categories: [:valid],
+                            params: like(:valid,
+                              except: %{in_service_datestring: "",
+                                        out_of_service_datestring: ""}),
+                              # The underlying value, which defaults to
+                              # "today" and "never", is retained.
+                              unchanged: [:in_service_datestring,
+                                          :out_of_service_datestring]
+                           },
       
       blank_names: %{categories: [:invalid],
                      params: like(:valid, except: %{names: ""}),
                      unchanged: [:names],
-                     errors: [names: @no_valid_names_message]}
+                     errors: [names: @no_valid_names_message]},
+
     ])
     
   def test_data, do: @test_data

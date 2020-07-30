@@ -36,7 +36,5 @@ defmodule Crit.Params.Build do
     expanded_data = Map.put(raw_data, :params, expanded_params)
     Map.put(acc, new_name, expanded_data)
   end
-
-
 end
 

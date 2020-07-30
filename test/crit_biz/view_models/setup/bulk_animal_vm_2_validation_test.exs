@@ -14,20 +14,6 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
   end
 
   describe "error checking" do
-    test "blank datestrings will just retain old values" do
-      # The front end should not ever send back blank datestrings, but...
-      input = Map.merge(@correct, %{"in_service_datestring" => "",
-                                    "out_of_service_datestring" => ""})
-
-      VM.BulkAnimal.accept_form(input, @institution) |> ok_payload
-      |> assert_valid
-      # This behavior is a happenstance because `cast` doesn't
-      # overwrite a non-blank value with a blank one. But seems as good
-      # a way to handle an 'impossible' error as any other.
-      |> assert_data(in_service_datestring: @today,
-                     out_of_service_datestring: @never)
-    end
-
     test "datestrings are checked" do
       input = Map.merge(@correct, %{"in_service_datestring" => @iso_date_4,
                                     "out_of_service_datestring" => @iso_date_3})

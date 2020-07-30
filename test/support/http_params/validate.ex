@@ -23,21 +23,25 @@ defmodule Crit.Params.Validate do
     
     def check(config, changeset, descriptor) do
       item = Get.exemplar(config, descriptor)
-      if Map.has_key?(item, :verbose) do
-        IO.inspect(item.params, label: to_string(descriptor))
-        IO.inspect(changeset, label: "changeset")
-        IO.inspect(changeset.data, label: "underlying data")
+
+      try do 
+        assert changeset.valid? == Enum.member?(item.categories, :valid)
+        
+        unchanged_fields = Map.get(item, :unchanged, [])
+        errors = Map.get(item, :errors, [])
+        
+        changeset
+        |> assert_change(Get.as_cast(config, descriptor, without: unchanged_fields))
+        |> assert_unchanged(unchanged_fields)
+        |> assert_errors(errors)
+      rescue
+        exception in [ExUnit.AssertionError] ->
+          IO.puts "\nBackground for following test failure:"
+          IO.inspect(item.params, label: to_string(descriptor))
+          IO.inspect(changeset, label: "changeset")
+          IO.inspect(changeset.data, label: "underlying data")
+          reraise exception, __STACKTRACE__
       end
-      
-      assert changeset.valid? == Enum.member?(item.categories, :valid)
-      
-      unchanged_fields = Map.get(item, :unchanged, [])
-      errors = Map.get(item, :errors, [])
-      
-      changeset
-      |> assert_change(Get.as_cast(config, descriptor, without: unchanged_fields))
-      |> assert_unchanged(unchanged_fields)
-      |> assert_errors(errors)
     end
   end
   
