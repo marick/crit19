@@ -29,21 +29,31 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
 
       # The front end should not ever send back blank datestrings, but
       # it's worth documenting the behavior if the impossible happens.
-      blank_service_gaps: %{categories: [:valid],
-                            params: like(:valid,
-                              except: %{in_service_datestring: "",
-                                        out_of_service_datestring: ""}),
-                              # The underlying value, which defaults to
-                              # "today" and "never", is retained.
-                              unchanged: [:in_service_datestring,
-                                          :out_of_service_datestring]
-                           },
+      blank_datestrings: %{categories: [:valid],
+                           params: like(:valid,
+                             except: %{in_service_datestring: "",
+                                       out_of_service_datestring: ""}),
+                           # The underlying value, which defaults to
+                           # "today" and "never", is retained.
+                           unchanged: [:in_service_datestring,
+                                       :out_of_service_datestring]
+                          },
+
+      # ----------------------------------------------------------------------------
       
       blank_names: %{categories: [:invalid],
                      params: like(:valid, except: %{names: ""}),
                      unchanged: [:names],
                      errors: [names: @no_valid_names_message]},
 
+      out_of_order: %{categories: [:invalid],
+                      params: like(:valid,
+                        except: %{in_service_datestring: @iso_date_4,
+                                  out_of_service_datestring: @iso_date_3}),
+                      errors: [out_of_service_datestring: @date_misorder_message]},
+
+      # We don't other possible cases because the datestring-checking
+      # code is handled elsewhere.
     ])
     
   def test_data, do: @test_data
