@@ -2,10 +2,10 @@
 
 This file describes a "little language" for testing Phoenix form
 handling. Form handling is similar enough from one form to another
-that it's fairly easy to make language to describe test cases in a way
+that it's fairly easy to make a language to describe test cases in a way
 that's concise, declarative, and easy to write.
 
-There are cases where more procedural, ["arrange, act, assert"](https://xp123.com/articles/3a-arrange-act-assert/) tests are
+There are cases where a more procedural, ["arrange, act, assert"](https://xp123.com/articles/3a-arrange-act-assert/) style is
 needed. The little language can help with those as well, but I don't
 talk about it here.
 
@@ -13,13 +13,13 @@ talk about it here.
 
 Unusually for a Phoenix app (I think), I use two separate Ecto schemas
 to translate from a form on a webpage to rows to be inserted or
-updated in a Postgres table.  That doesn't matter for this approach,
+updated in a Postgres table.  This approach isn't tied to that,
 but I need to describe it so the examples make sense.
 
 
 For each form-to-table transformation, there's a responsible module in
 [`lib/crit_biz/view_models`](/lib/crit_biz/view_models). I'll use
-[`BulkAnimal`](lib/crit_biz/view_models) for these examples. In code,
+[`BulkAnimal`](/lib/crit_biz/view_models/setup/bulk_animal_vm.ex) for these examples. In code,
 it's always aliased to `VM.BulkAnimal`.
 
 
