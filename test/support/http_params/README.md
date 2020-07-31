@@ -30,7 +30,7 @@ form looks like this:
 
 In this example, three new horses named "Jake", "Bouncer", and
 "Galaxy" are being entered into service starting today, with an end
-date a few months from now. `VM.BulkAnimal` describes that form:
+date a few months from now. [`VM.BulkAnimal`](/lib/crit_biz/view_models/setup/bulk_animal_vm.ex) describes that form:
 
 ```elixir
   @primary_key false
@@ -47,29 +47,29 @@ steps in processing the form: *validation*, *lowering*, and
 
 1. **Validation** looks for errors in user input. For example, the
    `names` field can't be empty or something nonsensical like `",
-   "`. The out-of-service datestring can't be before today.
+   "`. An animal can't go out of service before it goes into service.
    
    If there's a validation error, a form populated with an error message
    is to be sent back by the controller. The mechanism to do this in Phoenix
-   is to populate the form with a `Changeset`, which is a structure that
-   contains both form values and error messages (as well as some other things).
+   is to populate the form with a [`Changeset`](https://hexdocs.pm/ecto/Ecto.Changeset.html#summary), which is a structure that
+   contains both form values and error messages to display (as well as some other things).
    
    If there's no error, ...
    
 2. **Lowering** converts the `VM.BulkAnimal` structure into one or more
    `Schemas.Animal` structures that look like this:
    
-        ```elixir
-        schema "animals" do
-          field :name, TrimmedString
-          field :span, Datespan
-          field :available, :boolean, default: true
-          field :lock_version, :integer, default: 1
-          belongs_to :species, Schemas.Species
-          has_many :service_gaps, Schemas.ServiceGap
-          timestamps()
-        end
-        ```
+   ```elixir
+   schema "animals" do
+     field :name, TrimmedString
+     field :span, Datespan
+     field :available, :boolean, default: true
+     field :lock_version, :integer, default: 1
+     belongs_to :species, Schemas.Species
+     has_many :service_gaps, Schemas.ServiceGap
+     timestamps()
+   end
+   ```
    
    Things to note: 
    * The `names` field has gone away. Each animal has its own `name`. 
