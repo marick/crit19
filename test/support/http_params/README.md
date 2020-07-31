@@ -72,7 +72,7 @@ steps in processing the form: *validation*, *lowering*, and
    ```
    
    Things to note: 
-   * The `names` field has gone away. Each animal has its own `name`. Mentioning three animals in a `VM.BulkAnimal` means three `Schemas.Animals` should be created. They'll differ in only their names.
+   * The `names` field has gone away. Naming three animals in the original form means three `Schemas.Animals` should be created. They'll differ in only their names.
    * Some fields irrelevant to creation (`available` and `lock_version`)
      are filled with defaults here.
    * The two strings describing the dates the animal is in service have
@@ -82,11 +82,13 @@ steps in processing the form: *validation*, *lowering*, and
    Lowering
    can't fail (unless there's a bug). So the next step is always...
    
-3. **Inserting** the three `Schema.Animals` is a simple transactional
+3. **Inserting** the three `Schema.Animals` in a simple transactional
    insert with only one interesting thing about it: there's a database
    uniqueness constraint on animal names. So the insertion can
-   fail. If so, the original `VM.BulkAnimal` is used to indicate the
+   fail. If so, the original `VM.BulkAnimal` must be used to indicate the
    error. 
+   
+   ![Constraint failure](/pics/constraint_failure.png)
    
    
 I find separating what's on the form and what's in the database is
