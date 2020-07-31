@@ -16,7 +16,7 @@ to translate from a form on a webpage to one or more inserted or
 updated rows in a Postgres table. There is a module responsible for
 each such transformation under
 `[lib/crit_biz/view_models](lib/crit_biz/view_models)`. I'll use
-`[BulkAnimal](lib/crit_biz/view_models](lib/crit_biz/view_models)`. In
+`[BulkAnimal](lib/crit_biz/view_models)`. In
 code, it's always aliased to `VM.BulkAnimal`.
 
 
@@ -26,7 +26,7 @@ form looks like this:
 
 
 In this example, three new horses named "Jake", "Bouncer", and
-"Galazy" are being entered into service starting today, with an end
+"Galaxy" are being entered into service starting today, with an end
 date a few months from now. `VM.BulkAnimal` describes that form:
 
 ```elixir
@@ -253,6 +253,10 @@ some other module:
                     out_of_service_datestring: @iso_date_3}),
         errors: [out_of_service_datestring: @date_misorder_message],
 ```
+
+The test runner watches (using [Mockery](https://github.com/appunite/mockery)) to see whether the execution
+of the `out_of_order` test calls `FieldValidators.date_order` and
+fails if it doesn't.
 
 ## Lowering
 
