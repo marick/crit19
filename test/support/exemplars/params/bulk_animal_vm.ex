@@ -1,13 +1,19 @@
 defmodule Crit.Exemplars.Params.BulkAnimal do
 
-  @moduledoc """
-  """
-
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
   alias Ecto.Datespan
   alias CritBiz.ViewModels.FieldValidators
   use Crit.Params.Variants.OneToMany
+
+  @moduledoc """
+  %{
+    "in_service_datestring" => "today",
+    "names" => "bad ass animal, animal of bliss",
+    "out_of_service_datestring" => "never",
+    "species_id" => "1"
+  }
+  """
 
   @test_data build(
     module_under_test: VM.BulkAnimal,
@@ -19,14 +25,14 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
     lowering_splits: %{:names => :name},
     lowering_retains: [:species_id],
 
-    # -----------------------------------------------------------------------
     exemplars: [
-      valid: %{categories: [:valid],
-               params: to_strings(%{names: "a, b, c",
+      # -------------------------------------------VALID-------------------
+      valid: %{params: to_strings(%{names: "a, b, c",
                                     species_id: @bovine_id,
                                     in_service_datestring: @iso_date_1,
                                     out_of_service_datestring: @iso_date_2}),
-               lowering_adds: %{span: Datespan.customary(@date_1, @date_2)}
+               lowering_adds: %{span: Datespan.customary(@date_1, @date_2)},
+               categories: [:valid],
               },
 
       # The front end should not ever send back blank datestrings, but
@@ -41,18 +47,20 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
                                        :out_of_service_datestring]
                           },
 
-      # ----------------------------------------------------------------------------
+      # ----------------------------------------INVALID-----------------
       
-      blank_names: %{categories: [:invalid],
-                     params: like(:valid, except: %{names: ""}),
-                     unchanged: [:names],
-                     errors: [names: @no_valid_names_message]},
-
+      blank_names: %{
+        shows_delegation: {FieldValidators, :namelist},
+        params: like(:valid, except: %{names: "  ,"}),
+        errors: [names: @no_valid_names_message],
+        categories: [:invalid],
+      },
+      
       out_of_order: %{
+        shows_delegation: {FieldValidators, :date_order},
         params: like(:valid,
           except: %{in_service_datestring: @iso_date_4,
                     out_of_service_datestring: @iso_date_3}),
-        because_of: {FieldValidators, :date_order},
         errors: [out_of_service_datestring: @date_misorder_message],
         categories: [:invalid],
       }
