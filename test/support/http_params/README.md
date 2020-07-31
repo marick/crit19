@@ -56,7 +56,7 @@ steps in processing the form: *validation*, *lowering*, and
    
    If there's no error, ...
    
-2. **Lowering** converts the `VM.BulkAnimal` structure into one or more
+2. **Lowering** converts a `VM.BulkAnimal` structure into one or more
    `Schemas.Animal` structures that look like this:
    
    ```elixir
@@ -72,15 +72,14 @@ steps in processing the form: *validation*, *lowering*, and
    ```
    
    Things to note: 
-   * The `names` field has gone away. Each animal has its own `name`. 
+   * The `names` field has gone away. Each animal has its own `name`. Mentioning three animals in a `VM.BulkAnimal` means three `Schemas.Animals` should be created. They'll differ in only their names.
    * Some fields irrelevant to creation (`available` and `lock_version`)
      are filled with defaults here.
    * The two strings describing the dates the animal is in service have
      been converted to a single `Datespan` (which, in turn, will become
      a Postgres range of dates). 
 
-   Lowering (so called because the value closer to the user is converted
-   to one closer to the database) does this convertion. Note that it
+   Lowering
    can't fail (unless there's a bug). So the next step is always...
    
 3. **Inserting** the three `Schema.Animals` is a simple transactional
