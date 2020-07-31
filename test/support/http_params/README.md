@@ -91,9 +91,7 @@ steps in processing the form: *validation*, *lowering*, and
    ![Constraint failure](/pics/constraint_failure.png)
    
    
-I find separating what's on the form and what's in the database is
-less confusing, as is not trying to handle both validation and
-constraint errors in the same way. 
+I find these separate structures, and the separate steps they imply, less confusing than one structure that represents both the form and the database. Separate handling of validation (form) errors and constraint (database) errors also seems to help my coding, even though they end up looking the same to the user.
 
 
 ## Exemplars
