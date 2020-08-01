@@ -28,7 +28,7 @@ it's always aliased to `VM.BulkAnimal`.
 It describes the fields on a form used to create many animals. That
 form looks like this:
 
-![Creating animals](/pics/create_animals.png)
+<img src="/pics/create_animals.png"/>
 
 In this example, three new horses named "Jake", "Bouncer", and
 "Galaxy" are being entered into service starting today, with an end
