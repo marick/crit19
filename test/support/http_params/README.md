@@ -86,12 +86,12 @@ steps in processing the form: *validation*, *lowering*, and
    insert with only one interesting thing about it: there's a database
    uniqueness constraint on animal names. So the insertion can
    fail. If so, the original `VM.BulkAnimal` must be used to indicate the
-   error. 
+   error, which looks like this:
    
    ![Constraint failure](/pics/constraint_failure.png)
    
    
-I find these separate structures, and the separate steps they imply, less confusing than one structure that represents both the form and the database. Separate handling of validation (form) errors and constraint (database) errors also seems to help my coding, even though they end up looking the same to the user.
+I find these separate structures, and the separate steps they imply, less confusing than one structure that represents both the form and the database. And even though validation (form) errors and constraint (database) errors look the same to the user, separating them seems to help my coding.
 
 
 ## Exemplars
@@ -104,7 +104,7 @@ written, you're typically coming to it with some narrow question that
 you want to answer quickly. You're acting according to the surgeon's
 motto: Get In, Get Done, and Get Out.
 
-Sometimes you want to find out why this test is failing. Sometimes
+It's not always the same question. Sometimes you want to find out why this test is failing. Sometimes
 you're skimming through tests to find how each test differs from
 similar tests. For this reason, a regular structure is useful. I'm
 fond of tables, but also of hierarchical structures.
@@ -112,13 +112,15 @@ fond of tables, but also of hierarchical structures.
 Moreover, a complete set of tests for a particular module should
 suggest, through examples, a complete list of the kinds of values the
 module will have to process. Each one should represent - skimmably -
-something special that required special code to be written.
+something about the module's clients that required special code to be written.
 
 I've taken to calling these "exemplars". They're not just any old
 examples: they're "a model or pattern to be copied or imitated", a
 "*typical* example or instance". I've also started putting those
-exemplars in files where they serve as pictures of the kinds of data
+exemplars in files where they serve as (textual) pictures of the kinds of data
 the module processes.
+
+![directory of exemplars](pics/exemplars.png)
 
 ## The description language, up through validation
 
