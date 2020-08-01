@@ -90,7 +90,7 @@ steps in processing the form: *validation*, *lowering*, and
    fail. If so, the original `VM.BulkAnimal` must be used to indicate the
    error, which looks like this:
    
-   <img src="/pics/constraint_failure.png" height="60%" width="60%"/>
+   <img src="/pics/constraint_failure.png" height="50%" width="50%"/>
    
    
 I find these separate structures, and the separate steps they imply, less confusing than one structure that represents both the form and the database. And even though validation (form) errors and constraint (database) errors look the same to the user, separating them seems to help my coding.
@@ -184,7 +184,7 @@ The invalid params should add a particular error message ("should not
 be before the start date") to the changeset, identifying the error
 with the second datestring:
 
-<img src="/pics/date_error.png" height="60%" width="60%"/>
+<img src="/pics/date_error.png" height="40%" width="40%"/>
 
 When the form is re-displayed to the user, all of the parameters
 should have the values the user set. For example, the text field for
