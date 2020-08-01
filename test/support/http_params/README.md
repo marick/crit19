@@ -120,7 +120,7 @@ examples: they're "a model or pattern to be copied or imitated", a
 exemplars in files where they serve as (textual) pictures of the kinds of data
 the module processes.
 
-![directory of exemplars](pics/exemplars.png)
+![directory of exemplars](/pics/exemplars.png)
 
 ## The description language, up through validation
 
