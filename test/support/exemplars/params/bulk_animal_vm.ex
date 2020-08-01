@@ -27,7 +27,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
 
     exemplars: [
       # -------------------------------------------VALID-------------------
-      valid: %{params: to_strings(%{names: "a, b, c",
+      valid: %{params: to_strings(%{names: "Shelley, Bossie, cow12 ",
                                     species_id: @bovine_id,
                                     in_service_datestring: @iso_date_1,
                                     out_of_service_datestring: @iso_date_2}),
