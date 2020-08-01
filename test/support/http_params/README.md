@@ -223,7 +223,8 @@ It's got its own tests, and it's used by `VM.BulkAnimal.accept_form`:
     changeset = 
       %__MODULE__{institution: institution}
       |> changeset(params)
-      |> FieldValidators.date_order          # <<<<<<<
+      |> FieldValidators.date_order
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       |> FieldValidators.namelist(:names)
     summarize_validation(changeset, changeset.valid?, error_subtype: :form)
 ```
@@ -247,7 +248,8 @@ some other module:
 
 ```elixir
       out_of_order: %{
-        shows_delegation: {FieldValidators, :date_order},   #<<<<<
+        shows_delegation: {FieldValidators, :date_order},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         params: like(:valid,
           except: %{in_service_datestring: @iso_date_4,
                     out_of_service_datestring: @iso_date_3}),
