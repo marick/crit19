@@ -273,7 +273,8 @@ to `Schemas.Animal`, there are three:
     module_under_test: VM.BulkAnimal,
     produces: Schemas.Animal,
     validates: [:names, ...],
-    lowering_retains: [:species_id],     # <<<<<<
+    lowering_retains: [:species_id],    
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    ```
    
 2. `Schemas.Animal` has a `span` field that's synthesized from the higher structure's 
@@ -286,14 +287,14 @@ to `Schemas.Animal`, there are three:
                           in_service_datestring: @iso_date_1,
                           out_of_service_datestring: @iso_date_2}),
      lowering_adds: %{span: Datespan.customary(@date_1, @date_2)},
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    ```
 
    (Note that this test depends on knowing that `@date_1` is the
    `Date` corresponding to the string `@iso_date_1`. Even if a reader
    didn't know that coming to this code - hard to do, since the
    predefined dates are used everywhere - I don't think that's a very
-   difficult inference to make.
+   difficult inference to make.)
 
 3. Finally, the `"Shelley, Bossie, cow12 "` in the `:names` field are used to create
    three different `Schemas.Animal` structures. That can be represented
@@ -305,32 +306,36 @@ to `Schemas.Animal`, there are three:
     produces: Schemas.Animal,
     validates: [:names, ...],
     lowering_retains: [:species_id],
-    lowering_splits: %{:names => :name},   #<<<<<
+    lowering_splits: %{:names => :name},
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    ```
    
    We don't have to describe how many different `Schemas.Animals` are
    created; that's implied by the data. We don't have to extract the
    individual names ourselves: the test runner can use the same
-   (tested) comma-separated-string-handling code the code being tested
+   (tested) function the code being tested
    does.
    
-   This same notation works for different transformation. For example,
+   This same notation works for different transformations. For example,
    a single form lets you create the same procedure (same name) for N
    different species. Here's its test description:
 
    ```elixir
      @test_data build(
-       ...
+       module_under_test: VM.BulkProcedure,
+       produces: Schemas.Procedure,
        validates: [:name, :species_ids, :frequency_id],
          
-       lowering_splits: %{:species_ids => :species_id},   #<<<<
+       lowering_splits: %{:species_ids => :species_id},
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
        lowering_retains: [:name, :frequency_id],
    
        exemplars: [
          two_species: %{
            categories: [:valid, :filled],
            params: to_strings(%{name: "two species",
-                                species_ids: [@bovine_id, @equine_id],  #<<<<
+                                species_ids: [@bovine_id, @equine_id],
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                                 frequency_id: @once_per_week_frequency_id}),
          },
    ```
