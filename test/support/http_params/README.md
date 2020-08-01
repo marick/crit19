@@ -101,7 +101,7 @@ I find these separate structures, and the separate steps they imply, less confus
 One of my slogans for testing is that you should avoid using words in
 a test that aren't relevant to the purpose of the test. That makes
 tests more readable. More precisely, it makes them more *scannable*,
-as Geepaw Hill [explains](https://www.geepawhill.org/2018/01/18/five-underplayed-premises-of-tdd-2/). When you read a test some time after it was
+as [Geepaw Hill](https://twitter.com/geepawhill) [explains](https://www.geepawhill.org/2018/01/18/five-underplayed-premises-of-tdd-2/). When you read a test some time after it was
 written, you're typically coming to it with some narrow question that
 you want to answer quickly. You're acting according to the surgeon's
 motto: Get In, Get Done, and Get Out.
