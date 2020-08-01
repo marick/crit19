@@ -46,7 +46,7 @@ steps in processing the form: *validation*, *lowering*, and
 *insertion*.
 
 1. **Validation** looks for errors in user input. For example, the
-   `names` field can't be empty or something nonsensical like `",
+   `names` field mustn't be empty or something nonsensical like `",
    "`. An animal can't go out of service before it goes into service.
    
    If there's a validation error, a form populated with an error message
@@ -57,7 +57,7 @@ steps in processing the form: *validation*, *lowering*, and
    If there's no error, ...
    
 2. **Lowering** converts a `VM.BulkAnimal` structure into one or more
-   `Schemas.Animal` structures that look like this:
+   [`Schemas.Animal`](/lib/crit/schemas/animal.ex) structures that look like this:
    
    ```elixir
    schema "animals" do
