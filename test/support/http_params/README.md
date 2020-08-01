@@ -122,7 +122,7 @@ examples: they're "a model or pattern to be copied or imitated", a
 exemplars in files where they serve as (textual) pictures of the kinds of data
 the module processes.
 
-   <img src="/pics/exemplars.png" height="60%" width="60%"/>
+   <img src="/pics/exemplars.png" height="40%" width="40%"/>
 
 ## The description language, up through validation
 
@@ -184,7 +184,7 @@ The invalid params should add a particular error message ("should not
 be before the start date") to the changeset, identifying the error
 with the second datestring:
 
-<img src="/pics/date_error.png" height="40%" width="40%"/>
+<img src="/pics/date_error.png" height="50%" width="50%"/>
 
 When the form is re-displayed to the user, all of the parameters
 should have the values the user set. For example, the text field for
