@@ -90,7 +90,7 @@ steps in processing the form: *validation*, *lowering*, and
    fail. If so, the original `VM.BulkAnimal` must be used to indicate the
    error, which looks like this:
    
-   <img src="/pics/constraint_failure.png" height="50%" width="50%"/>
+   <img src="/pics/constraint_failure.png" height="40%" width="40%"/>
    
    
 I find these separate structures, and the separate steps they imply, less confusing than one structure that represents both the form and the database. And even though validation (form) errors and constraint (database) errors look the same to the user, separating them seems to help my coding.
@@ -122,7 +122,7 @@ examples: they're "a model or pattern to be copied or imitated", a
 exemplars in files where they serve as (textual) pictures of the kinds of data
 the module processes.
 
-   <img src="/pics/exemplars.png" height="40%" width="40%"/>
+   <img src="/pics/exemplars.png" height="30%" width="30%"/>
 
 ## The description language, up through validation
 
