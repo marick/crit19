@@ -5,6 +5,8 @@ handling. Form handling is similar enough from one form to another
 that it's fairly easy to make a language to describe test cases in a way
 that's concise, declarative, and easy to write.
 
+If you want to peek ahead, `[Exemplars.Params.BulkAnimal]`(/test/support/exemplars/params/bulk_animal_vm.ex#L18) has the full set of declarative tests partially explained below.
+
 There are cases where a more procedural, ["arrange, act, assert"](https://xp123.com/articles/3a-arrange-act-assert/) style is
 needed. The little language can help with those as well, but I don't
 talk about it here.
