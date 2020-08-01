@@ -28,7 +28,7 @@ it's always aliased to `VM.BulkAnimal`.
 It describes the fields on a form used to create many animals. That
 form looks like this:
 
-<img src="/pics/create_animals.png" height="50%" width="50%"/>
+<img src="/pics/create_animals.png" height="70%" width="70%"/>
 
 In this example, three new horses named "Jake", "Bouncer", and
 "Galaxy" are being entered into service starting today, with an end
@@ -90,7 +90,7 @@ steps in processing the form: *validation*, *lowering*, and
    fail. If so, the original `VM.BulkAnimal` must be used to indicate the
    error, which looks like this:
    
-   ![Constraint failure](/pics/constraint_failure.png)
+   <img src="/pics/constraint_failure.png" height="60%" width="60%"/>
    
    
 I find these separate structures, and the separate steps they imply, less confusing than one structure that represents both the form and the database. And even though validation (form) errors and constraint (database) errors look the same to the user, separating them seems to help my coding.
@@ -122,7 +122,7 @@ examples: they're "a model or pattern to be copied or imitated", a
 exemplars in files where they serve as (textual) pictures of the kinds of data
 the module processes.
 
-![directory of exemplars](/pics/exemplars.png)
+   <img src="/pics/exemplars.png" height="60%" width="60%"/>
 
 ## The description language, up through validation
 
@@ -184,7 +184,7 @@ The invalid params should add a particular error message ("should not
 be before the start date") to the changeset, identifying the error
 with the second datestring:
 
-![date order error message](/pics/date_error.png)
+<img src="/pics/date_error.png" height="60%" width="60%"/>
 
 When the form is re-displayed to the user, all of the parameters
 should have the values the user set. For example, the text field for
