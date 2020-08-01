@@ -187,11 +187,10 @@ with the second datestring:
 When the form is re-displayed to the user, all of the parameters
 should have the values the user set. For example, the text field for
 the `:names` should have whatever the `:valid` value is, not be blank
-like in the original form. There's nothing about that in the test
-because I think that goes without saying. It's only worth highlighting
-any case where that *doesn't* happen.
+like in the original form. There's nothing about that in the exemplar
+because I think it goes without saying. 
 
-Therefore, checking an exemplar means checking that the changeset
+That doesn't mean it shouldn't be tested, though. Therefore, checking an exemplar means checking that the changeset
 resulting from the validation step is populated with the values from
 the params. I find it convenient to list the fields that the module-under-test is "about" up at the top of the description:
 
@@ -205,20 +204,16 @@ the params. I find it convenient to list the fields that the module-under-test i
                 :in_service_datestring, :out_of_service_datestring],
 ```
 
-(Individual exemplars can't override the global data.)
+(Individual exemplars can override the global data.)
 
 ## Describing dependencies
 
-There's more than one way a pair of datestrings can be wrong. In the
-exemplar we've been working with, it's because an explicit ISO8601
-datestring is not before another one. But what if the form uses
-"today" instead of an explicit value? That's also an error. Should
-there be a separate `VM.BulkAnimal` test for that?
+There's more than one way a pair of datestrings can be wrong. Is it time to add a second datestring error test? One, say, that uses the "today" value instead of an ISO8601 string?
 
 Well, consider: pairs of in-service and out-of service dates are all
 over the code. You'd expect there to be a single function to call to
-check such pairs. There is, it's called `FieldValidators.date_order`,
-it's got its own tests, and it's used by `VM.BulkAnimal.accept_form`:
+check such pairs. And there is: [`FieldValidators.date_order`](/lib/crit_biz/view_models/support/field_validators.ex#L10). 
+It's got its own tests, and it's used by `VM.BulkAnimal.accept_form`:
 
 
 ```elixir
@@ -226,7 +221,7 @@ it's got its own tests, and it's used by `VM.BulkAnimal.accept_form`:
     changeset = 
       %__MODULE__{institution: institution}
       |> changeset(params)
-      |> FieldValidators.date_order
+      |> FieldValidators.date_order          # <<<<<<<
       |> FieldValidators.namelist(:names)
     summarize_validation(changeset, changeset.valid?, error_subtype: :form)
 ```
@@ -234,18 +229,17 @@ it's got its own tests, and it's used by `VM.BulkAnimal.accept_form`:
 There's already a test showing that `date_order` works for all *its*
 relevant exemplars. We only care about how `accept_form` *uses* the
 results from `date_order`. And what it does with the results
-is... nothing, really. Specifically, `FieldValidators.date_order` just
-(maybe) adds an error to a changeset, and `accept_form` just passes
+is... nothing, really. Specifically, `FieldValidators.date_order` at most adds an error to a changeset, and `accept_form` just passes
 the resulting changeset on.
 
-So parameters that use "today" incorrectly tells us nothing exemplary
+So an exemplar that uses "today" incorrectly would tell us nothing... exemplary...
 about `VM.BulkAnimal`... *provided* we know that it uses
 `FieldValidators.namelist`. That's an interesting fact we might want
-to document, so long as it's easy. For example, we don't really want
-someone else to come across these exemplars, tut-tut about a missing
-case, and add it.
+to document (so long as it's easy). That way, we'd prevent
+someone else coming across these exemplars, tut-tut about a missing
+error case, and wasting time adding it.
 
-So we'll use the single exemplar to document the fact that the
+So we'll add to the single exemplar to document the fact that the
 correctness of our module-under-test depends on the correctness of
 some other module:
 
@@ -266,15 +260,13 @@ fails if it doesn't.
 
 Lowering only applies when the parameters have passed the validation
 check. Lowering uses the information from the "higher" structure to
-fill in fields in the lower structure. Given the context of
+fill fields in the lower structure. Given we're 
 transforming form values into database values, there really aren't a
 lot of possibilities. In the case of a lowering from `VM.BulkAnimal`
 to `Schemas.Animal`, there are three:
 
 
-1. The `species_id` is just a validated field copied from one to the other. That will
-   happen in exactly the same way no matter what the HTTP parameters
-   are, so long as they're valid. So we can state that fact at the
+1. The `species_id` is just copied from the higher structure to the lower one. Copying happens in exactly the same way for any valid exemplar, so we can state that fact at the
    global scope:
 
    ```elixir
@@ -284,16 +276,16 @@ to `Schemas.Animal`, there are three:
     lowering_retains: [:species_id],     # <<<<<<
    ```
    
-2. `Schemas.Animal` has a `span` field that's synthesized from the two
-   datestrings. Its value depends on the specific parameter values. So
+2. `Schemas.Animal` has a `span` field that's synthesized from the higher structure's 
+   datestrings. Its value depends on the specific datestring values. So
    we have to describe it in the exemplar:
 
-   ```
-   %{params: to_strings(%{names: "a, b, c",
+   ```elixir
+   %{params: to_strings(%{names: "Shelley, Bossie, cow12 ",
                           species_id: @bovine_id,
                           in_service_datestring: @iso_date_1,
                           out_of_service_datestring: @iso_date_2}),
-               lowering_adds: %{span: Datespan.customary(@date_1, @date_2)},
+     lowering_adds: %{span: Datespan.customary(@date_1, @date_2)},
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    ```
 
@@ -303,7 +295,7 @@ to `Schemas.Animal`, there are three:
    predefined dates are used everywhere - I don't think that's a very
    difficult inference to make.
 
-3. Finally, the `"a, b, c"` in the `:names` field are used to create
+3. Finally, the `"Shelley, Bossie, cow12 "` in the `:names` field are used to create
    three different `Schemas.Animal` structures. That can be represented
    straightforwardly. Since that's a fact true for all valid values of `:names`,
    it can also be stated at the top level:
