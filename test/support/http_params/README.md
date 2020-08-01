@@ -135,11 +135,11 @@ Here's the very rough structure of a set of exemplars for `VM.BulkAnimal`:
 ```
 
 If I were test-driving the `module_under_test`, I'd probably start by
-thinking about a valid case. What's an exemplary creation of animals?
+thinking about a valid case. What's exemplary data for the creation of animals?
 How about this?
 
 ```elixir
-      valid: %{params: to_strings(%{names: "a, b, c",
+       valid: %{params: to_strings(%{names: "Shelley, Bossie, cow12 ",
                                     species_id: @bovine_id,
                                     in_service_datestring: @iso_date_1,
                                     out_of_service_datestring: @iso_date_2}),
@@ -155,16 +155,14 @@ immediately passed to `VM.BulkAnimal`). That real data would look like this:
 ```elixir
 %{
   "in_service_datestring" => "2201-01-01",
-  "names" => "a, b, c",
+  "names" => "Shelley, Bossie, cow12 ",
   "out_of_service_datestring" => "2202-02-02",
   "species_id" => "1"
 }
 ```
 
 Although I might think about this exemplar first, I'd probably start
-test-driving the module with an error case. The reason is that
-validation will immediately fail, so I don't have to worry about
-lowering a `VM.BulkAnimal` into several `Schemas.Animals`. I'll
+test-driving the module with an error case. It seems an easier first step. I'll
 arbitrarily pick a case where dates are out of order:
 
 ```elixir
@@ -182,7 +180,9 @@ don't want to mention them.
 
 The invalid params should add a particular error message ("should not
 be before the start date") to the changeset, identifying the error
-with the second datestring.
+with the second datestring:
+
+![date order error message](/pics/date_error.png)
 
 When the form is re-displayed to the user, all of the parameters
 should have the values the user set. For example, the text field for
