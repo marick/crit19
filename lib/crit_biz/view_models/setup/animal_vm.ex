@@ -44,7 +44,7 @@ defmodule CritBiz.ViewModels.Setup.Animal do
 
   def fetch(:all_for_summary_list, idlist, institution) when is_list(idlist) do
     Schemas.Animal.Get.all_by_ids(idlist,institution, preload: [:species])
-    |> VM.Animal.lift(institution)
+    |> lift(institution)
   end
 
   def fetch(:one_for_summary, id, institution) do

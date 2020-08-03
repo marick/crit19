@@ -14,6 +14,8 @@ defmodule Crit.Exemplars.Bossie do
   
   def repo_has_bossie(_), do: [repo: create()]
 
+  def bossie_has_service_gap(%{repo: repo}),
+    do: Ex.Bossie.put_service_gap(repo, span: :first)
 
   # ----------------------------------------------------------------------------
 
