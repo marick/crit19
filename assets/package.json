@@ -10,7 +10,7 @@
     "@fullcalendar/daygrid": "^4.4.0",
     "@fullcalendar/interaction": "^4.4.0",
     "date-fns": "^2.11.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "stimulus": "^1.1.1",
