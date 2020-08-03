@@ -237,7 +237,7 @@ the resulting changeset on.
 
 So an exemplar that uses "today" incorrectly would tell us nothing... exemplary...
 about `VM.BulkAnimal`... *provided* we know that it uses
-`FieldValidators.namelist`. That's an interesting fact we might want
+`FieldValidators.date_order`. That's an interesting fact we might want
 to document (so long as it's easy). That way, we'd prevent
 someone else coming across these exemplars, tut-tut about a missing
 error case, and wasting time adding it.
