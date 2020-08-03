@@ -37,7 +37,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
       
       # There are no service-gap changesets. But the data has been converted
       # to the lower type.
-      with_singleton(actual, :fetch_field!, :service_gaps)
+      with_singleton(actual, :old!, :service_gaps)
          |> assert_shape(%Schemas.ServiceGap{})
          |> assert_field(id: repo.only_sg.id,
                          reason: repo.only_sg.reason,
@@ -62,7 +62,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
       |> assert_unchanged([:name, :lock_version, :span])
 
       # Unlike earlier tests, there is a changeset for the service gap
-      |> with_singleton(:fetch_change!, :service_gaps)
+      |> with_singleton(:new!, :service_gaps)
          |> assert_shape(%Changeset{})
          |> assert_change(reason: "!!!!")
          |> assert_unchanged([:id, :span])
@@ -73,7 +73,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
       |> only_service_gap_change(:delete, true)
       |> VM.Animal.lower_changeset(repo.bossie.id, @institution)
 
-      |> with_singleton(:fetch_change!, :service_gaps)
+      |> with_singleton(:new!, :service_gaps)
          |> assert_unchanged([:id, :span, :reason])
          |> assert_field(action: :delete)
     end

@@ -1,7 +1,7 @@
 defmodule Crit.Assertions.Misc do
   import ExUnit.Assertions
   import Crit.Assertions.Defchain
-  alias Ecto.Changeset
+  alias Ecto.{Changeset, ChangesetX}
   
   # Note: It would be nice to use
   #     assert_shape(thing, User)
@@ -68,7 +68,7 @@ defmodule Crit.Assertions.Misc do
   # Note that these return the extracted value, not the first argument.
 
   def with_singleton(%Changeset{} = changeset, fetch_how, field) do
-    apply(Changeset, fetch_how, [changeset, field])
+    apply(ChangesetX, fetch_how, [changeset, field])
     |> singleton_payload
   end
 

@@ -52,7 +52,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
       VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
       |> VM.Animal.fresh_form_changeset
       |> assert_no_changes
-      |> with_singleton(:fetch_field!, :service_gaps)
+      |> with_singleton(:old!, :service_gaps)
          |> assert_fields(reason: "",
                           in_service_datestring: "",
                           out_of_service_datestring: "")
