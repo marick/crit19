@@ -11,5 +11,10 @@ defmodule ListX do
     |> Enum.map(&String.trim/1)
     |> Enum.reject(fn s -> s == "" end)
   end
-  
+
+  def sorted_by_id(container, field) do
+    container
+    |> Map.get(field)
+    |> EnumX.sort_by_id
+  end
 end

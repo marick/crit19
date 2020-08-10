@@ -71,7 +71,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       animal = VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
       assert_field(animal, name: "new name!")
 
-      [changed, _unchanged, added] = sorted_by_id(animal, :service_gaps)
+      [changed, _unchanged, added] = ListX.sorted_by_id(animal, :service_gaps)
 
       assert_field(changed, reason: "replaces: will change")
       assert_fields(added,
