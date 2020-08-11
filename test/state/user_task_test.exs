@@ -3,7 +3,8 @@ defmodule Crit.State.UserTaskTest do
   alias Crit.State.UserTask
   alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
   alias CritWeb.Reservations.AfterTheFactStructs.ActionData
-  import Crit.Assertions.Map
+  use FlowAssertions.NoValueA, no_value: :nothing
+  import FlowAssertions.MapA
 
   test "How controllers use UserTask" do
     # For readability, return value of `update` is shown in another task
@@ -11,7 +12,7 @@ defmodule Crit.State.UserTaskTest do
     %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
 
     (%TaskMemory{} = UserTask.get(task_id))
-    |> assert_nothing(:chosen_animal_ids)
+    |> assert_no_value(:chosen_animal_ids)
     |> assert_field(task_id: task_id)
 
     # task_id gets put in a form's `input type=hidden`

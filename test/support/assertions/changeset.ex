@@ -1,8 +1,8 @@
 defmodule Crit.Assertions.Changeset do
-  import Crit.Assertions.Defchain
+  use FlowAssertions.Define
   import ExUnit.Assertions
   import Crit.Extras.ChangesetT, only: [errors_on: 1]
-  import Crit.Assertions.Map
+  import FlowAssertions.MapA
   alias Ecto.Changeset
 
   # ------------------------------------------------------------------------
@@ -59,7 +59,7 @@ defmodule Crit.Assertions.Changeset do
       assert_unchanged(changeset, [:name, :tags])
   """
   defchain assert_unchanged(%Changeset{} = changeset, field) when is_atom(field) do
-    assert_no_typo_in_struct_key(changeset.data, field)
+    struct_must_have_key!(changeset.data, field)
     refute Map.has_key?(changeset.changes, field),
       "Field `#{inspect field}` has changed"
   end
@@ -154,7 +154,7 @@ defmodule Crit.Assertions.Changeset do
     errors = errors_on(changeset)
 
     check = fn(field) ->
-      assert_no_typo_in_struct_key(changeset.data, field)
+      struct_must_have_key!(changeset.data, field)
       refute Map.has_key?(errors, field),
         "There is an error for field `#{inspect field}`"
     end

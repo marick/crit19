@@ -27,7 +27,6 @@ defmodule Crit.Assertions.Map do
   # Credit: Steve Freeman inspired this.
   defchain assert_fields(kvs, list) do
     assert_present = fn key -> 
-      assert_no_typo_in_struct_key(kvs, key)
       assert Map.has_key?(kvs, key), "Field `#{inspect key}` is missing"
     end
     
@@ -104,8 +103,6 @@ defmodule Crit.Assertions.Map do
     ignoring_keys =
       Keyword.get(opts, :ignoring, []) ++ Keyword.keys(except)
 
-    Enum.map(ignoring_keys, &(assert_no_typo_in_struct_key(new, &1)))
-      
     assert_fields(new, except)
     assert Map.drop(new, ignoring_keys) == Map.drop(old, ignoring_keys)
   end
