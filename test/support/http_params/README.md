@@ -100,20 +100,20 @@ I find these separate structures, and the separate steps they imply, less confus
 
 One of my slogans for testing is that you should avoid using words in
 a test that aren't relevant to the purpose of the test. That makes
-tests more readable. More precisely, it makes them more *skimmable*,
-as Geepaw Hill explains. When you read a test some time after it was
+tests more readable. More precisely, it makes them more *scannable*,
+as [Geepaw Hill](https://twitter.com/geepawhill) [explains](https://www.geepawhill.org/2018/01/18/five-underplayed-premises-of-tdd-2/). When you read a test some time after it was
 written, you're typically coming to it with some narrow question that
 you want to answer quickly. You're acting according to the surgeon's
 motto: Get In, Get Done, and Get Out.
 
 It's not always the same question. Sometimes you want to find out why this test is failing. Sometimes
-you're skimming through tests to find how each test differs from
+you're scanning through tests to find how each test differs from
 similar tests. For this reason, a regular structure is useful. I'm
 fond of tables, but also of hierarchical structures.
 
 Moreover, a complete set of tests for a particular module should
 suggest, through examples, a complete list of the kinds of values the
-module will have to process. Each one should represent - skimmably -
+module will have to process. Each one should represent - scannably -
 something about the module's clients that required special code to be written.
 
 I've taken to calling these "exemplars". They're not just any old
@@ -237,7 +237,7 @@ the resulting changeset on.
 
 So an exemplar that uses "today" incorrectly would tell us nothing... exemplary...
 about `VM.BulkAnimal`... *provided* we know that it uses
-`FieldValidators.namelist`. That's an interesting fact we might want
+`FieldValidators.date_order`. That's an interesting fact we might want
 to document (so long as it's easy). That way, we'd prevent
 someone else coming across these exemplars, tut-tut about a missing
 error case, and wasting time adding it.
