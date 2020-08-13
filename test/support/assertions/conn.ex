@@ -2,8 +2,8 @@ defmodule CritWeb.Assertions.Conn do
   use Phoenix.ConnTest
   use Crit.TestConstants
   import CritWeb.ConnExtras
-  import ExUnit.Assertions
-  import Crit.Assertions.{Defchain, Map}
+  use FlowAssertions.Define
+  use FlowAssertions
   alias CritWeb.PublicController
   alias Crit.Users.Schemas.User
   import CritWeb.Plugs.Accessors

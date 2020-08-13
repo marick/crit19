@@ -1,6 +1,6 @@
 defmodule Crit.Assertions.User do
   use Crit.TestConstants
-  import Crit.Assertions.Defchain
+  use FlowAssertions.Define
   import ExUnit.Assertions
   alias Crit.Users.Schemas.PermissionList
   alias Crit.Users.UniqueId

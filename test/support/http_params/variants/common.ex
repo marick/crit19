@@ -4,11 +4,11 @@ defmodule Crit.Params.Variants.Common do
     quote do
       use Crit.Errors
       use Crit.TestConstants
-      import ExUnit.Assertions
-      import Crit.Assertions.Defchain
+      use FlowAssertions.Define
       import Crit.Params.Build, only: [to_strings: 1, build: 1, like: 2]
       alias Crit.Params.{Get,Validate}
-      import Crit.Assertions.{Ecto,Map}
+      use FlowAssertions
+      import Crit.Assertions.Ecto
 
       # -----CAN BE USED IN TEST--------------------------------------------------
 

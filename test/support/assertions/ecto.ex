@@ -1,6 +1,6 @@
 defmodule Crit.Assertions.Ecto do
   import ExUnit.Assertions
-  import Crit.Assertions.Defchain
+  use FlowAssertions.Define
   import FlowAssertions.MapA
 
   defchain assert_assoc_loaded(struct, keys) when is_list(keys) do

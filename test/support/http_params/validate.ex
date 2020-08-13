@@ -1,6 +1,7 @@
 defmodule Crit.Params.Validate do
   import ExUnit.Assertions
-  import Crit.Assertions.{Ecto,Map}
+  import Crit.Assertions.Ecto
+  use FlowAssertions
   alias Pile.Namelist
   alias Crit.Params.Get
 
@@ -69,7 +70,7 @@ defmodule Crit.Params.Validate do
         
         struct
         |> assert_schema(config.produces)
-        |> assert_partial_copy(cast_map, config.lowering_retains)
+        |> assert_same_map(cast_map, comparing: config.lowering_retains)
       end
     end
     

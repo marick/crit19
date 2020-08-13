@@ -1,6 +1,6 @@
 defmodule Crit.Assertions.Form do
   use Crit.TestConstants
-  import Crit.Assertions.Defchain
+  use FlowAssertions.Define
   import ExUnit.Assertions
   use PhoenixIntegration
 
