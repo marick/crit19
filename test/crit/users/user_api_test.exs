@@ -58,7 +58,7 @@ defmodule Crit.Users.UserApiTest do
       params = Factory.string_params_for(:user, auth_id: "unique")
 
       %UserHavingToken{user: user, token: token} =
-        t_create_unactivated_user(params) |> ok_payload
+        t_create_unactivated_user(params) |> ok_content
       [user: user, token: token]
     end
 
@@ -80,14 +80,14 @@ defmodule Crit.Users.UserApiTest do
     test "trying to reuse an auth id", %{user: original} do
       params = Factory.string_params_for(:user, auth_id: original.auth_id)
       t_create_unactivated_user(params)
-      |> error_payload
+      |> error_content
       |> assert_error(auth_id: "has already been taken")
     end
 
     test "creating with a bad param" do
       params = Factory.string_params_for(:user, auth_id: "")
       t_create_unactivated_user(params)
-      |> error_payload
+      |> error_content
       |> assert_error(auth_id: "can't be blank")
     end
   end

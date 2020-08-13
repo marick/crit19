@@ -68,15 +68,15 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   # ----------------------------------------------------------------------------
 
   defp become_correct(params) do 
-    changesets = VM.BulkProcedure.accept_form(params) |> ok_payload
+    changesets = VM.BulkProcedure.accept_form(params) |> ok_content
     for c <- changesets, do: assert_valid(c)
     changesets
   end
 
   defp become_correct_singleton(params),
-    do: become_correct(params) |> singleton_payload
+    do: become_correct(params) |> singleton_content
 
   defp become_incorrect(params) do
-    VM.BulkProcedure.accept_form(params) |> error2_payload(:form)
+    VM.BulkProcedure.accept_form(params) |> error2_content(:form)
   end
 end

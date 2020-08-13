@@ -1,7 +1,7 @@
 defmodule Crit.Assertions.Ecto do
   import ExUnit.Assertions
   import Crit.Assertions.Defchain
-  import Crit.Assertions.Map
+  import FlowAssertions.MapA
 
   defchain assert_assoc_loaded(struct, keys) when is_list(keys) do
     for k <- keys, do: assert_assoc_loaded(struct, k)
@@ -27,6 +27,6 @@ defmodule Crit.Assertions.Ecto do
 
   defchain assert_schema_copy(new, original, [ignoring: extras]) do
     ignoring = extras ++ [:inserted_at, :updated_at, :__meta__]
-    assert_copy(new, original, ignoring: ignoring)
+    assert_same_map(new, original, ignoring: ignoring)
   end
 end

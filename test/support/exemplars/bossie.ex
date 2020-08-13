@@ -3,7 +3,7 @@ defmodule Crit.Exemplars.Bossie do
   use ExContract
   import Crit.RepoState
   alias CritBiz.ViewModels.Setup, as: VM
-  import Crit.Assertions.Map
+  import FlowAssertions.MapA
   alias Crit.Exemplars, as: Ex
   alias Crit.Factory
 

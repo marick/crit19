@@ -26,7 +26,7 @@ defmodule Crit.Users.PasswordApi.PasswordTokenTest do
     test "bad user data prevents a token from being created" do
       Factory.string_params_for(:user, auth_id: "")
       |> UserApi.create_unactivated_user(@institution)
-      |> error_payload
+      |> error_content
       |> assert_error(auth_id: "can't be blank")
 
       # Check that nothing has been created

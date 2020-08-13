@@ -7,6 +7,7 @@ defmodule Integration.Reservations.AfterTheFactTest do
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan
   import Crit.RepoState
+  use FlowAssertions
 
   setup :logged_in_as_reservation_manager
 

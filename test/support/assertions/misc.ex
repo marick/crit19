@@ -67,11 +67,6 @@ defmodule Crit.Assertions.Misc do
 
   # Note that these return the extracted value, not the first argument.
 
-  def with_singleton(%Changeset{} = changeset, fetch_how, field) do
-    apply(ChangesetX, fetch_how, [changeset, field])
-    |> singleton_payload
-  end
-
   def with_singleton(container, field) do
     container
     |> Map.get(field)

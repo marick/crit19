@@ -5,6 +5,9 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   alias Crit.RepoState
   alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
+  use FlowAssertions
+  use FlowAssertions.NoValueA, no_value: :nothing
+  import Crit.Assertions.Changeset
 
   setup :repo_has_bossie
 
@@ -82,13 +85,13 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   # ----------------------------------------------------------------------------
   
   def assert_expected_non_assoc_fields(list, repo) when is_list(list),
-    do: singleton_payload(list) |> assert_expected_non_assoc_fields(repo)
+    do: singleton_content(list) |> assert_expected_non_assoc_fields(repo)
 
   def assert_expected_non_assoc_fields(view_model, repo), 
     do: Ex.Bossie.assert_view_model_for(view_model, id: repo.bossie.id)
 
   def assert_no_service_gaps(list, repo) when is_list(list),
-    do: singleton_payload(list) |> assert_no_service_gaps(repo)
+    do: singleton_content(list) |> assert_no_service_gaps(repo)
 
   def assert_no_service_gaps(view_model, _repo),
     do: refute_assoc_loaded(view_model, :service_gaps)
@@ -96,7 +99,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   def assert_bossie_service_gap(view_model, _repo) do 
     view_model
     |> assert_assoc_loaded(:service_gaps)
-    |> with_singleton(:service_gaps)
+    |> with_singleton_content(:service_gaps)
        |> assert_shape(%VM.ServiceGap{})
        |> Ex.Datespan.assert_datestrings(:first)
   end

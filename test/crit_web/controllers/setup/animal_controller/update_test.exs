@@ -6,6 +6,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
   alias CritBiz.ViewModels.Setup, as: VM
   import Crit.RepoState
   alias Crit.Exemplars, as: Ex
+  use FlowAssertions
   
 
   setup :logged_in_as_setup_manager
@@ -86,7 +87,7 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       correct_update(conn, repo.bossie, changing: %{})
       
       VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
-      |> assert_copy(original, except: [lock_version: original.lock_version + 1])
+      |> assert_same_map(original, except: [lock_version: original.lock_version + 1])
     end
 
     test "validation failures produce appropriate messages in the HTML",

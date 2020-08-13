@@ -6,6 +6,8 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
   alias Crit.Schemas
   alias CritWeb.Audit
   alias Crit.Exemplars, as: Ex
+  use FlowAssertions
+  
 
   setup :logged_in_as_setup_manager
 

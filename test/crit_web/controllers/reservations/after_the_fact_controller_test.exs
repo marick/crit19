@@ -9,6 +9,9 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias Crit.Setup.{InstitutionApi}
   alias Crit.Reservations.ReservationApi
   alias Ecto.Datespan
+  use FlowAssertions
+  use FlowAssertions.NoValueA, no_value: :nothing
+  
 
   setup :logged_in_as_reservation_manager
 
@@ -62,7 +65,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       UserTask.get(@task_id)
       |> assert_field(span: expected_span,
                       responsible_person: "dster")
-      |> refute_nothing([:species_id, :timeslot_id, :date_showable_date])
+      |> refute_no_value([:species_id, :timeslot_id, :date_showable_date])
     end
 
     test "task_id has expired", %{conn: conn, params: params} do

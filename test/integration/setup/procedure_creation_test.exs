@@ -3,6 +3,7 @@ defmodule Integration.Setup.ProcedureCreationTest do
   alias CritWeb.Setup.ProcedureController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Schemas
+  use FlowAssertions
 
   setup :logged_in_as_setup_manager
 

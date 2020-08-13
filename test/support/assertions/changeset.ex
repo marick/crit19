@@ -2,8 +2,9 @@ defmodule Crit.Assertions.Changeset do
   use FlowAssertions.Define
   import ExUnit.Assertions
   import Crit.Extras.ChangesetT, only: [errors_on: 1]
-  import FlowAssertions.MapA
+  use FlowAssertions
   alias Ecto.Changeset
+  alias Ecto.ChangesetX
 
   # ------------------------------------------------------------------------
 
@@ -199,5 +200,11 @@ defmodule Crit.Assertions.Changeset do
 
   defchain refute_form_will_display_errors(changeset),
     do: assert changeset.action == nil
-  
+
+
+
+  def with_singleton(%Changeset{} = changeset, fetch_how, field) do
+    apply(ChangesetX, fetch_how, [changeset, field])
+    |> singleton_content
+  end
 end

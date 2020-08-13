@@ -4,6 +4,7 @@ defmodule CritWeb.CurrentUser.SettingsControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.PasswordFocused
   alias Crit.Users.{UserApi,PasswordApi}
+  use FlowAssertions
 
 
   defp session_with_unactivated_user(%{conn: conn}) do

@@ -47,7 +47,8 @@ defmodule Crit.Params.Variants.SingletonToMany do
     quote do
       use Crit.Params.Variants.Common
       alias Crit.Params.{Get,Validate}
-      import Crit.Assertions.{Changeset,Misc}
+      use FlowAssertions
+      import Crit.Assertions.Changeset
 
       # -----CAN BE USED IN TEST--------------------------------------------------
 
@@ -61,7 +62,7 @@ defmodule Crit.Params.Variants.SingletonToMany do
 
       def discarded do
         fn result, name ->
-          if ok_payload(result) != [] do
+          if ok_content(result) != [] do
             IO.inspect result
             flunk("Exemplar #{name} is not supposed to produce a changeset")
           end

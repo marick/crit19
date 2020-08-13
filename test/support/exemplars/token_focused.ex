@@ -3,12 +3,12 @@ defmodule Crit.Exemplars.TokenFocused do
   use Crit.TestConstants
   alias Crit.Users.UserApi
   alias Crit.Factory
-  import Crit.Assertions.Misc
+  use FlowAssertions
 
 
   def user(attrs \\ []) do
     Factory.string_params_for(:user, attrs)
     |> UserApi.create_unactivated_user(@institution)
-    |> ok_payload
+    |> ok_content
   end
 end

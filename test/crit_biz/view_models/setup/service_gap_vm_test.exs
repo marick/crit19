@@ -154,7 +154,7 @@ defmodule CritBiz.ViewModels.Setup.ServiceGapTest do
       actual =
         [VM.ServiceGap.accept_form(params, @institution)]
         |> VM.ServiceGap.lower_to_attrs
-        |> singleton_payload
+        |> singleton_content
 
       assert actual == expected
     end

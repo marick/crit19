@@ -2,6 +2,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
+  use FlowAssertions
 
   @daisy_to_insert Factory.build(:animal, name: "Daisy")
 
@@ -27,7 +28,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
       
       daisy_vm
       |> assert_shape(%VM.Animal{})
-      |> assert_copy(expected)
+      |> assert_same_map(expected)
     end
   end
 

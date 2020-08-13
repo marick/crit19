@@ -4,6 +4,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
   alias Ecto.Datespan
   alias Ecto.Changeset
   alias Crit.Exemplars.Params
+  import Crit.Assertions.Changeset
 
   @base_animal %{
       "id" => "1",
@@ -40,7 +41,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
     # let's separate that more complicated handling.
     
     test "success" do
-      VM.Animal.accept_form(@base_animal, @institution) |> ok_payload
+      VM.Animal.accept_form(@base_animal, @institution) |> ok_content
       |> assert_valid
       |> assert_changes(id: 1,
                        lock_version: 2,
@@ -54,7 +55,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
       [empty, only] = 
         @base_animal
         |> Params.put_nested("service_gaps", [@empty_sg_params, @update_sg_params])
-        |> VM.Animal.accept_form(@institution) |> ok_payload
+        |> VM.Animal.accept_form(@institution) |> ok_content
         |> Changeset.fetch_change!(:service_gaps)
 
       empty
@@ -83,7 +84,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
         @base_animal
         |> Params.put_nested("service_gaps", [@update_sg_params])
         |> VM.Animal.accept_form(@institution)
-        |> ok_payload
+        |> ok_content
         |> VM.Animal.lower_to_attrs
 
       assert actual == expected
@@ -93,7 +94,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
   describe "validation failures" do 
     test "required fields are must be present" do
       %{"service_gaps" => %{}}
-      |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
+      |> VM.Animal.accept_form(@institution) |> error2_content(:form)
       |> assert_invalid
       |> assert_errors(VM.Animal.required())
       |> assert_form_will_display_errors
@@ -104,7 +105,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
                   "in_service_datestring" => @iso_date_2,
                   "out_of_service_datestring" => @iso_date_2}
 
-      VM.Animal.accept_form(params, @institution) |> error2_payload(:form)
+      VM.Animal.accept_form(params, @institution) |> error2_content(:form)
       |> assert_invalid
       |> assert_error(out_of_service_datestring: @date_misorder_message)
       |> assert_form_will_display_errors
@@ -118,7 +119,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
     test "the service gap is correct" do
       @base_animal
       |> Params.put_nested("service_gaps", [@update_sg_params])
-      |> VM.Animal.accept_form(@institution) |> ok_payload
+      |> VM.Animal.accept_form(@institution) |> ok_content
       |> assert_valid      
       |> refute_form_will_display_errors
     end
@@ -126,8 +127,8 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
     test "changesets are produced for service gaps: error case" do
       @base_animal
       |> Params.put_nested("service_gaps", [@bad_sg_params])
-      |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
-      |> Changeset.get_change(:service_gaps) |> singleton_payload
+      |> VM.Animal.accept_form(@institution) |> error2_content(:form)
+      |> Changeset.get_change(:service_gaps) |> singleton_content
       |> assert_invalid
       |> assert_error(:reason)
       |> assert_form_will_display_errors
@@ -138,7 +139,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
       # invalid or ALL of them.
       @base_animal
       |> Params.put_nested("service_gaps", [@bad_sg_params, @update_sg_params])
-      |> VM.Animal.accept_form(@institution) |> error2_payload(:form)
+      |> VM.Animal.accept_form(@institution) |> error2_content(:form)
       |> assert_invalid
       |> assert_form_will_display_errors
     end

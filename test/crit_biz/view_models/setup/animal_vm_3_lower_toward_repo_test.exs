@@ -5,7 +5,8 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
   alias Crit.Exemplars, as: Ex
   alias Ecto.Changeset
   alias Ecto.Datespan
-
+  import Crit.Assertions.Changeset
+  use FlowAssertions
 
   setup do
     repo =
@@ -95,7 +96,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.LowerTowardRepoTest do
     new_service_gap =
       animal_changeset
       |> Changeset.fetch_field!(:service_gaps)
-      |> singleton_payload
+      |> singleton_content
       |> Changeset.put_change(field, value)
     
     Changeset.put_change(animal_changeset, :service_gaps, [new_service_gap])

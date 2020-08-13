@@ -40,7 +40,7 @@ defmodule Crit.Reservations.ReservationApiTest do
 
       ready
       |> ReservationApi.create(@institution)
-      |> ok_payload
+      |> ok_content
       |> assert_expected_reservation(ready)
     end
   end
@@ -51,7 +51,7 @@ defmodule Crit.Reservations.ReservationApiTest do
       %{id: reservation_id} =
         ready
         |> ReservationApi.create(@institution)
-        |> ok_payload
+        |> ok_content
       
       [reservation_id: reservation_id, ready: ready]
     end

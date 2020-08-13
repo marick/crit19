@@ -30,8 +30,7 @@ defmodule CritWeb.ConnCase do
       use Crit.TestConstants
       use Crit.Mock
       alias Crit.Extras.SqlT
-      import Crit.Assertions.Map
-      import Crit.Assertions.Misc
+      import FlowAssertions
       import Crit.Assertions.Form
       use Crit.Errors
 

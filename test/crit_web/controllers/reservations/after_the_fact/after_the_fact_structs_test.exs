@@ -3,6 +3,7 @@ defmodule CritWeb.Reservations.AfterTheFactStructsTest do
   alias CritWeb.Reservations.AfterTheFactStructs.ActionData
   alias Ecto.Timespan
   alias Crit.State.UserTask
+  use FlowAssertions
 
   describe "processing of NonUseValues" do
     test "success" do

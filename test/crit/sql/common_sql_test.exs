@@ -3,6 +3,7 @@ defmodule Crit.Sql.CommonSqlTest do
   alias Crit.Sql
   alias Crit.Sql.CommonSql
   alias Crit.Schemas.Procedure
+  import Crit.Assertions.Ecto
 
   setup do
     f = &insert/3

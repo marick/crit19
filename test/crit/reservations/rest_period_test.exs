@@ -86,7 +86,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       
       |> t_unavailable_by(@friday)
       
-      |> singleton_payload
+      |> singleton_content
       |> assert_fields(animal_name: "bossie",
                        procedure_name: "used procedure",
                        dates: [@monday, @wednesday])
@@ -138,7 +138,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       # Saturday is the end of the week
       repo
       |> t_unavailable_by(@saturday)
-      |> singleton_payload
+      |> singleton_content
       |> assert_fields(animal_name: "bossie",
                        procedure_name: "used procedure",
                        dates: [@monday, @wednesday])
@@ -161,7 +161,7 @@ defmodule Crit.Reservations.RestPeriodTest do
   
   def assert_conflict_on(results, dates) when is_list(dates) do
     results
-    |> singleton_payload
+    |> singleton_content
     |> assert_fields(animal_name: "bossie",
                      procedure_name: "used procedure",
                      dates: dates)

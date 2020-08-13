@@ -12,7 +12,7 @@ defmodule CritBiz.ViewModels.Reservation.ShowTest do
     result =
       ready
       |> ReservationApi.create(@institution)
-      |> ok_payload
+      |> ok_content
       |> Show.to_view_model(@institution)
 
     assert_fields(result,

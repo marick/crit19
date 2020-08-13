@@ -22,7 +22,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.UpdateTest do
   test "simple change: returns Animal ready to display", %{repo: repo} do
     changeset_with_change(repo.bossie.id, :name, "ossie")
     |> VM.Animal.update(@institution)
-    |> ok_payload
+    |> ok_content
     |> assert_shape(%VM.Animal{})
     |> assert_field(name: "ossie")
   end

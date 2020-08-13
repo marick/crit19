@@ -4,6 +4,7 @@ defmodule Crit.Sql.RouteToSchemaTest do
   alias Crit.Sql
   alias Crit.Audit.ToEcto.Record  # It's one of the simplest table types.
   alias Crit.Exemplars.Minimal
+  use FlowAssertions
 
   setup do
     user = Minimal.user
@@ -24,5 +25,5 @@ defmodule Crit.Sql.RouteToSchemaTest do
   end
 
   def assert_same_audit_content(one, other),
-    do: assert_copy(one, other, ignoring: [:id, :inserted_at])
+    do: assert_same_map(one, other, ignoring: [:id, :inserted_at])
 end
