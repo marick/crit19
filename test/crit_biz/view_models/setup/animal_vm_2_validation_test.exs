@@ -4,7 +4,8 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.ValidationTest do
   alias Ecto.Datespan
   alias Ecto.Changeset
   alias Crit.Exemplars.Params
-  import Crit.Assertions.Changeset
+  use FlowAssertions.Ecto
+  import Crit.Assertions.Form
 
   @base_animal %{
       "id" => "1",

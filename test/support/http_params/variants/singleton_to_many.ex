@@ -48,7 +48,7 @@ defmodule Crit.Params.Variants.SingletonToMany do
       use Crit.Params.Variants.Common
       alias Crit.Params.{Get,Validate}
       use FlowAssertions
-      import Crit.Assertions.Changeset
+      use FlowAssertions.Ecto
 
       # -----CAN BE USED IN TEST--------------------------------------------------
 

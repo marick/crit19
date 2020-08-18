@@ -7,7 +7,6 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   alias Ecto.Changeset
   use FlowAssertions
   use FlowAssertions.NoValueA, no_value: :nothing
-  import Crit.Assertions.Changeset
 
   setup :repo_has_bossie
 
@@ -55,7 +54,7 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
       VM.Animal.fetch(:one_for_edit, repo.bossie.id, @institution)
       |> VM.Animal.fresh_form_changeset
       |> assert_no_changes
-      |> with_singleton(:old!, :service_gaps)
+      |> with_singleton_content(:data, :service_gaps)
          |> assert_fields(reason: "",
                           in_service_datestring: "",
                           out_of_service_datestring: "")

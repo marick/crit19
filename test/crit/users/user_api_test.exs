@@ -22,7 +22,7 @@ defmodule Crit.Users.UserApiTest do
 
   test "the fresh/default user changeset contains permissions" do
     t_fresh_user_changeset()
-    |> assert_unchanged(:permission_list)
+    |> assert_no_changes(:permission_list)
     |> assert_data_shape(:permission_list, %PermissionList{})
   end
 

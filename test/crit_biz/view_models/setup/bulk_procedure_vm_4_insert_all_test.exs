@@ -16,7 +16,7 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedureVM.InsertAllTest do
       {:ok, [%{id: id}]} = VM.BulkProcedure.insert_all([procedure], @institution)
 
       Schemas.Procedure.Get.one_by_id(id, @institution)
-      |> assert_schema_copy(procedure, ignoring: [:id])
+      |> assert_same_schema(procedure, ignoring: [:id])
     end
 
     test "what the returned view models look like", %{procedure: procedure} do

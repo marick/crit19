@@ -8,7 +8,7 @@ defmodule Crit.Params.Variants.Common do
       import Crit.Params.Build, only: [to_strings: 1, build: 1, like: 2]
       alias Crit.Params.{Get,Validate}
       use FlowAssertions
-      import Crit.Assertions.Ecto
+      use FlowAssertions.Ecto
 
       # -----CAN BE USED IN TEST--------------------------------------------------
 

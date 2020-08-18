@@ -1,7 +1,7 @@
 defmodule Crit.Params.Validate do
   import ExUnit.Assertions
-  import Crit.Assertions.Ecto
   use FlowAssertions
+  use FlowAssertions.Ecto
   alias Pile.Namelist
   alias Crit.Params.Get
 
@@ -10,7 +10,7 @@ defmodule Crit.Params.Validate do
   end
 
   defmodule FormChecking do
-    import Crit.Assertions.Changeset
+    use FlowAssertions.Ecto
     import Mockery.Assertions
 
     def assert_error_expected(config, name) do
@@ -34,7 +34,7 @@ defmodule Crit.Params.Validate do
 
         changeset
         |> assert_change(Get.as_cast(config, descriptor, without: unchanged_fields))
-        |> assert_unchanged(unchanged_fields)
+        |> assert_no_changes(unchanged_fields)
         |> assert_errors(errors)
         check_spies(item[:because_of])
       rescue
@@ -69,7 +69,7 @@ defmodule Crit.Params.Validate do
         cast_map = Get.cast_map(config, descriptor)
         
         struct
-        |> assert_schema(config.produces)
+        |> assert_schema_name(config.produces)
         |> assert_same_map(cast_map, comparing: config.lowering_retains)
       end
     end

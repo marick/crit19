@@ -3,6 +3,7 @@ defmodule CritBiz.ViewModels.Setup.ServiceGapTest do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
   alias Ecto.Datespan
+  import Crit.Assertions.Form
 
   @id "any old id"
   @reason "some reason"

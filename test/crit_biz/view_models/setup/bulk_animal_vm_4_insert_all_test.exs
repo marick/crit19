@@ -17,7 +17,7 @@ defmodule CritBiz.ViewModels.Setup.BulkAnimalVM.InsertAllTest do
     test "what the on-disk version looks like", %{daisy_vm: daisy_vm} do
       Schemas.Animal.Get.one_by_id(daisy_vm.id, @institution)
       |> assert_shape(%Schemas.Animal{})
-      |> assert_schema_copy(@daisy_to_insert, ignoring: [:id, :lock_version])
+      |> assert_same_schema(@daisy_to_insert, ignoring: [:id, :lock_version])
 
       # We don't check the lock version because we don't care what it's starting
       # value is, so long as it increments correctly. (It happens to be 2.)

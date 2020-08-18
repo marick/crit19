@@ -27,8 +27,7 @@ defmodule Crit.DataCase do
       use Crit.TestConstants
       alias Crit.Extras.SqlT
       use FlowAssertions
-      import Crit.Assertions.Changeset
-      import Crit.Assertions.Ecto
+      use FlowAssertions.Ecto
       import Assertions
       use Crit.Mock
       import Crit.Extras.ChangesetT, only: [errors_on: 1]
