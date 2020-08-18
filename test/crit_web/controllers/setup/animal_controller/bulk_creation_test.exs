@@ -27,7 +27,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
       |> assert_fields(in_service_datestring: @today,
                        out_of_service_datestring: @never,
                        species_id: to_string(@bovine_id),
-                       names: "\n")
+                       names: ~r/^\W*$/)
     end
   end
 
