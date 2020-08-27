@@ -39,7 +39,7 @@ defmodule Crit.RepoState do
        
   def shorthand(data) do
     Enum.reduce(@valid, data, fn schema, acc ->
-      shorthand_(acc, data[schema])
+      shorthand_(acc, data[:_schemas][schema])
     end)
   end
 
@@ -53,7 +53,7 @@ defmodule Crit.RepoState do
       name: calculation_name <> " procedure frequency",
       calculation_name: calculation_name)
 
-    put(data, schema, calculation_name, addition)
+    schema_put(data, schema, calculation_name, addition)
   end
 
   def procedure(data, procedure_name, opts \\ []) do
@@ -114,7 +114,7 @@ defmodule Crit.RepoState do
     addition =
       ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
 
-    put(data, schema, name, addition)
+    schema_put(data, schema, name, addition)
   end
 
   def service_gap_for(data, animal_name, opts \\ []) do
@@ -135,40 +135,41 @@ defmodule Crit.RepoState do
 
   def valid_schema?(key), do: MapSet.member?(@valid, key)
 
-  def put(data, schema, name, value) do
-    deep_merge(data, %{schema => %{name => value}})
+  def schema_put(data, schema, name, value) do
+    deep_merge(data, %{_schemas: %{schema => %{name => value}}})
   end
 
-  defp get(data, schema, name) do
+  defp schema_get(data, schema, name) do
     assert valid_schema?(schema)
     with(
-      category <- data[schema],
+      schemas <- data[:_schemas],
+      category <- schemas[schema],
       value <- category[name]
     ) do
       value
     end
   end
   
-  defp lazy_get(data, schema, name, putter) do
-    get(data, schema, name)
-    || putter.(data) |> lazy_get(schema, name, putter)
+  defp lazy_schema_get(data, schema, name, putter) do
+    schema_get(data, schema, name)
+    || putter.(data) |> lazy_schema_get(schema, name, putter)
   end
 
-  def id(data, schema, name), do: get(data, schema, name).id
+  def id(data, schema, name), do: schema_get(data, schema, name).id
 
   def ids(data, schema, names) do
     for name <- names, do: id(data, schema, name)
   end
 
   defp ensure(data, schema, name, creator) do 
-    case get(data, schema, name) do
-      nil -> put(data, schema, name, creator.())
+    case schema_get(data, schema, name) do
+      nil -> schema_put(data, schema, name, creator.())
       _ -> data
     end
   end
 
   defp lazy_frequency(data, calculation_name) do
-    lazy_get(data, :procedure_frequency, calculation_name,
+    lazy_schema_get(data, :procedure_frequency, calculation_name,
       &(procedure_frequency(&1, calculation_name)))
   end
 
@@ -181,7 +182,7 @@ defmodule Crit.RepoState do
   defp load_completely(data, _), do: data
 
   defp load_completely(data, schema, api, module) do
-    keys = Map.keys(data[schema] || %{})
+    keys = Map.keys(data[:_schemas][schema] || %{})
 
     Enum.reduce(keys, data, fn name, acc ->
       new = 
@@ -189,7 +190,7 @@ defmodule Crit.RepoState do
         |> id(schema, name)
         |> api.one_by_id(@institution, preload: module.associations())
 
-      put(acc, schema, name, new)
+      schema_put(acc, schema, name, new)
     end)
   end
 

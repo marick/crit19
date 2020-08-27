@@ -16,8 +16,8 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
 
   def conflicts_for(repo, date) do
     RestPeriod.unavailable_by(
-      %{chosen_animal_ids: repo[:animal] |> Map.values |> EnumX.ids,
-        chosen_procedure_ids: repo[:procedure] |> Map.values |> EnumX.ids,
+      %{chosen_animal_ids: repo[:_schemas][:animal] |> Map.values |> EnumX.ids,
+        chosen_procedure_ids: repo[:_schemas][:procedure] |> Map.values |> EnumX.ids,
         date: date}, 
       @institution)
   end
@@ -37,7 +37,6 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
       |> reservation_for(["bossie"], ["haltering"], date: @mon)
       |> shorthand
       |> load_completely
-      |> IO.inspect
 
       # Act
       |> conflicts_for(                              @fri)
