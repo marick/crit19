@@ -2,10 +2,10 @@ defmodule Crit.RepoState do
   use ExUnit.CaseTemplate
   use Crit.TestConstants
   alias Crit.Exemplars.ReservationFocused
-  import DeepMerge
   alias Crit.Factory
   alias Ecto.Datespan
   alias Crit.Schemas.{Animal, Procedure}
+  alias Pile.RepoBuilder, as: B
 
   @valid MapSet.new([:procedure_frequency, :procedure, :animal,
                      :reservation, :service_gap])
@@ -53,11 +53,11 @@ defmodule Crit.RepoState do
       name: calculation_name <> " procedure frequency",
       calculation_name: calculation_name)
 
-    schema_put(so_far, schema, calculation_name, addition)
+    B.Schema.put(so_far, schema, calculation_name, addition)
   end
 
   def procedure(so_far, procedure_name, opts \\ []) do
-    ensure(so_far, :procedure, procedure_name, fn ->
+    B.Schema.create_if_needed(so_far, :procedure, procedure_name, fn ->
       opts = Enum.into(opts, %{frequency: "unlimited"})
         
       frequency = lazy_frequency(so_far, opts.frequency)   # Create as needed
@@ -82,7 +82,7 @@ defmodule Crit.RepoState do
     do: span
 
   def animal(so_far, animal_name, opts \\ []) do
-    ensure(so_far, :animal, animal_name, fn -> 
+    B.Schema.create_if_needed(so_far, :animal, animal_name, fn -> 
       opts =
         Enum.into(opts, %{
               available: @earliest_date,
@@ -114,7 +114,7 @@ defmodule Crit.RepoState do
     addition =
       ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
 
-    schema_put(so_far, schema, name, addition)
+    B.Schema.put(so_far, schema, name, addition)
   end
 
   def service_gap_for(so_far, animal_name, opts \\ []) do
@@ -125,7 +125,7 @@ defmodule Crit.RepoState do
     animal_id = id(so_far, :animal, animal_name)
     span = Datespan.customary(opts.starting, opts.ending)
 
-    ensure(so_far, :service_gap, opts.name, fn ->
+    B.Schema.create_if_needed(so_far, :service_gap, opts.name, fn ->
       details = [animal_id: animal_id, span: span, reason: opts.reason]
       Factory.sql_insert!(:service_gap, details, @institution)
     end)
@@ -135,37 +135,15 @@ defmodule Crit.RepoState do
 
   def valid_schema?(key), do: MapSet.member?(@valid, key)
 
-  def schema_put(so_far, schema, name, value) do
-    deep_merge(so_far, %{__schemas__: %{schema => %{name => value}}})
-  end
-
-  defp schema_get(so_far, schema, name) do
-    assert valid_schema?(schema)
-    with(
-      schemas <- so_far[:__schemas__],
-      category <- schemas[schema],
-      value <- category[name]
-    ) do
-      value
-    end
-  end
-  
   defp lazy_schema_get(so_far, schema, name, putter) do
-    schema_get(so_far, schema, name)
+    B.Schema.get(so_far, schema, name)
     || putter.(so_far) |> lazy_schema_get(schema, name, putter)
   end
 
-  def id(so_far, schema, name), do: schema_get(so_far, schema, name).id
+  def id(so_far, schema, name), do: B.Schema.get(so_far, schema, name).id
 
   def ids(so_far, schema, names) do
     for name <- names, do: id(so_far, schema, name)
-  end
-
-  defp ensure(so_far, schema, name, creator) do 
-    case schema_get(so_far, schema, name) do
-      nil -> schema_put(so_far, schema, name, creator.())
-      _ -> so_far
-    end
   end
 
   defp lazy_frequency(so_far, calculation_name) do
@@ -190,7 +168,7 @@ defmodule Crit.RepoState do
         |> id(schema, name)
         |> api.one_by_id(@institution, preload: module.associations())
 
-      schema_put(acc, schema, name, new)
+      B.Schema.put(acc, schema, name, new)
     end)
   end
 
