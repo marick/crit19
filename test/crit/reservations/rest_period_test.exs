@@ -22,8 +22,8 @@ defmodule Crit.Reservations.RestPeriodTest do
 
   def t_unavailable_by(data, date) do
     RestPeriod.unavailable_by(
-      %{chosen_animal_ids: data[:_schemas][:animal] |> Map.values |> EnumX.ids,
-       chosen_procedure_ids: data[:_schemas][:procedure] |> Map.values |> EnumX.ids,
+      %{chosen_animal_ids: data[:__schemas__][:animal] |> Map.values |> EnumX.ids,
+       chosen_procedure_ids: data[:__schemas__][:procedure] |> Map.values |> EnumX.ids,
        date: date}, 
       @institution)
   end

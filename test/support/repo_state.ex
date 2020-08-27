@@ -20,8 +20,8 @@ defmodule Crit.RepoState do
   This replaces a partially loaded structure with one that has
   all its possible preloads loaded.
   """
-  def load_completely(data) do 
-    Enum.reduce(@valid, data, fn schema, acc ->
+  def load_completely(so_far) do 
+    Enum.reduce(@valid, so_far, fn schema, acc ->
       load_completely(acc, schema)
     end)
   end
@@ -37,31 +37,31 @@ defmodule Crit.RepoState do
        repo.one_procedure 
   """
        
-  def shorthand(data) do
-    Enum.reduce(@valid, data, fn schema, acc ->
-      shorthand_(acc, data[:_schemas][schema])
+  def shorthand(so_far) do
+    Enum.reduce(@valid, so_far, fn schema, acc ->
+      shorthand_(acc, so_far[:__schemas__][schema])
     end)
   end
 
   #-----------------------------------------------------------------------------
   
 
-  def procedure_frequency(data, calculation_name) do
+  def procedure_frequency(so_far, calculation_name) do
     schema = :procedure_frequency
     
     addition = Factory.sql_insert!(schema,
       name: calculation_name <> " procedure frequency",
       calculation_name: calculation_name)
 
-    schema_put(data, schema, calculation_name, addition)
+    schema_put(so_far, schema, calculation_name, addition)
   end
 
-  def procedure(data, procedure_name, opts \\ []) do
-    ensure(data, :procedure, procedure_name, fn ->
+  def procedure(so_far, procedure_name, opts \\ []) do
+    ensure(so_far, :procedure, procedure_name, fn ->
       opts = Enum.into(opts, %{frequency: "unlimited"})
         
-      frequency = lazy_frequency(data, opts.frequency)   # Create as needed
-      species_id = data.species_id
+      frequency = lazy_frequency(so_far, opts.frequency)   # Create as needed
+      species_id = so_far.species_id
 
       Factory.sql_insert!(:procedure,
         name: procedure_name,
@@ -70,8 +70,8 @@ defmodule Crit.RepoState do
     end)
   end
 
-  def procedures(data, names) do
-    Enum.reduce(names, data, fn name, acc ->
+  def procedures(so_far, names) do
+    Enum.reduce(names, so_far, fn name, acc ->
       apply &procedure/3, [acc, name, []]
     end)
   end
@@ -81,12 +81,12 @@ defmodule Crit.RepoState do
   defp compute_span(%Datespan{} = span),
     do: span
 
-  def animal(data, animal_name, opts \\ []) do
-    ensure(data, :animal, animal_name, fn -> 
+  def animal(so_far, animal_name, opts \\ []) do
+    ensure(so_far, :animal, animal_name, fn -> 
       opts =
         Enum.into(opts, %{
               available: @earliest_date,
-              species_id: data.species_id})
+              species_id: so_far.species_id})
       
       Factory.sql_insert!(:animal,
         name: animal_name,
@@ -95,37 +95,37 @@ defmodule Crit.RepoState do
     end)
   end
 
-  def animals(data, names) do
-    Enum.reduce(names, data, fn name, acc ->
+  def animals(so_far, names) do
+    Enum.reduce(names, so_far, fn name, acc ->
       apply &animal/3, [acc, name, []]
     end)
   end
 
-  def reservation_for(data, animal_names, procedure_names, opts \\ []) do
+  def reservation_for(so_far, animal_names, procedure_names, opts \\ []) do
     schema = :reservation
-    species_id = data.species_id
+    species_id = so_far.species_id
     name = Factory.unique("reservation")    
 
-    data =
-      data 
+    so_far =
+      so_far 
       |> procedures(procedure_names)
       |> animals(animal_names)
     
     addition =
       ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
 
-    schema_put(data, schema, name, addition)
+    schema_put(so_far, schema, name, addition)
   end
 
-  def service_gap_for(data, animal_name, opts \\ []) do
+  def service_gap_for(so_far, animal_name, opts \\ []) do
     opts = Enum.into(opts, %{
           starting: @earliest_date, ending: @latest_date,
           reason: Factory.unique(:repo_state),
           name: Factory.unique(:service_gap)})
-    animal_id = id(data, :animal, animal_name)
+    animal_id = id(so_far, :animal, animal_name)
     span = Datespan.customary(opts.starting, opts.ending)
 
-    ensure(data, :service_gap, opts.name, fn ->
+    ensure(so_far, :service_gap, opts.name, fn ->
       details = [animal_id: animal_id, span: span, reason: opts.reason]
       Factory.sql_insert!(:service_gap, details, @institution)
     end)
@@ -135,14 +135,14 @@ defmodule Crit.RepoState do
 
   def valid_schema?(key), do: MapSet.member?(@valid, key)
 
-  def schema_put(data, schema, name, value) do
-    deep_merge(data, %{_schemas: %{schema => %{name => value}}})
+  def schema_put(so_far, schema, name, value) do
+    deep_merge(so_far, %{__schemas__: %{schema => %{name => value}}})
   end
 
-  defp schema_get(data, schema, name) do
+  defp schema_get(so_far, schema, name) do
     assert valid_schema?(schema)
     with(
-      schemas <- data[:_schemas],
+      schemas <- so_far[:__schemas__],
       category <- schemas[schema],
       value <- category[name]
     ) do
@@ -150,41 +150,41 @@ defmodule Crit.RepoState do
     end
   end
   
-  defp lazy_schema_get(data, schema, name, putter) do
-    schema_get(data, schema, name)
-    || putter.(data) |> lazy_schema_get(schema, name, putter)
+  defp lazy_schema_get(so_far, schema, name, putter) do
+    schema_get(so_far, schema, name)
+    || putter.(so_far) |> lazy_schema_get(schema, name, putter)
   end
 
-  def id(data, schema, name), do: schema_get(data, schema, name).id
+  def id(so_far, schema, name), do: schema_get(so_far, schema, name).id
 
-  def ids(data, schema, names) do
-    for name <- names, do: id(data, schema, name)
+  def ids(so_far, schema, names) do
+    for name <- names, do: id(so_far, schema, name)
   end
 
-  defp ensure(data, schema, name, creator) do 
-    case schema_get(data, schema, name) do
-      nil -> schema_put(data, schema, name, creator.())
-      _ -> data
+  defp ensure(so_far, schema, name, creator) do 
+    case schema_get(so_far, schema, name) do
+      nil -> schema_put(so_far, schema, name, creator.())
+      _ -> so_far
     end
   end
 
-  defp lazy_frequency(data, calculation_name) do
-    lazy_schema_get(data, :procedure_frequency, calculation_name,
+  defp lazy_frequency(so_far, calculation_name) do
+    lazy_schema_get(so_far, :procedure_frequency, calculation_name,
       &(procedure_frequency(&1, calculation_name)))
   end
 
   # ----------------------------------------------------------------------------
 
-  defp load_completely(data, :procedure),
-    do: load_completely(data, :procedure, Procedure.Get, Procedure)
-  defp load_completely(data, :animal),
-    do: load_completely(data, :animal, Animal.Get, Animal)
-  defp load_completely(data, _), do: data
+  defp load_completely(so_far, :procedure),
+    do: load_completely(so_far, :procedure, Procedure.Get, Procedure)
+  defp load_completely(so_far, :animal),
+    do: load_completely(so_far, :animal, Animal.Get, Animal)
+  defp load_completely(so_far, _), do: so_far
 
-  defp load_completely(data, schema, api, module) do
-    keys = Map.keys(data[:_schemas][schema] || %{})
+  defp load_completely(so_far, schema, api, module) do
+    keys = Map.keys(so_far[:__schemas__][schema] || %{})
 
-    Enum.reduce(keys, data, fn name, acc ->
+    Enum.reduce(keys, so_far, fn name, acc ->
       new = 
         acc
         |> id(schema, name)
@@ -195,9 +195,9 @@ defmodule Crit.RepoState do
   end
 
   # ----------------------------------------------------------------------------
-  defp shorthand_(data, nil), do: data
-  defp shorthand_(data, schema_map) do
-    Enum.reduce(schema_map, data, fn {name, value}, acc ->
+  defp shorthand_(so_far, nil), do: so_far
+  defp shorthand_(so_far, schema_map) do
+    Enum.reduce(schema_map, so_far, fn {name, value}, acc ->
       name_atom = name |> String.downcase |> String.to_atom
       Map.put(acc, name_atom, value)
     end)

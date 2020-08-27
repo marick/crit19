@@ -16,8 +16,8 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
 
   def conflicts_for(repo, date) do
     RestPeriod.unavailable_by(
-      %{chosen_animal_ids: repo[:_schemas][:animal] |> Map.values |> EnumX.ids,
-        chosen_procedure_ids: repo[:_schemas][:procedure] |> Map.values |> EnumX.ids,
+      %{chosen_animal_ids: repo[:__schemas__][:animal] |> Map.values |> EnumX.ids,
+        chosen_procedure_ids: repo[:__schemas__][:procedure] |> Map.values |> EnumX.ids,
         date: date}, 
       @institution)
   end
