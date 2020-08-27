@@ -21,7 +21,7 @@ defmodule Crit.Reservations.RestPeriodTest do
   end
 
   def t_unavailable_by(data, date) do
-    RestPeriod.unavailable_by("ignored",
+    RestPeriod.unavailable_by(
       %{chosen_animal_ids: data[:animal] |> Map.values |> EnumX.ids,
        chosen_procedure_ids: data[:procedure] |> Map.values |> EnumX.ids,
        date: date}, 
@@ -100,8 +100,7 @@ defmodule Crit.Reservations.RestPeriodTest do
       |> put_reservation(@monday)
 
       |> procedure(different, frequency: "twice per week")
-      |> reservation_for("vcm103",
-              ["bossie"], [different], date: @wednesday)
+      |> reservation_for(["bossie"], [different], date: @wednesday)
       |> t_unavailable_by(@friday)
       
       |> assert_empty
@@ -178,6 +177,6 @@ defmodule Crit.Reservations.RestPeriodTest do
   
   defp put_reservation(data, date) do
     data
-    |> reservation_for("vcm103", ["bossie"], ["used procedure"], date: date)    
+    |> reservation_for(["bossie"], ["used procedure"], date: date)    
   end
 end

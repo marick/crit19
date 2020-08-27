@@ -21,7 +21,7 @@ defmodule Crit.Reservations.ReservationImpl.Write do
     end
 
     rest_periods_fn = fn _repo, _so_far ->
-      {:ok, RestPeriod.unavailable_by(animals_query, struct, institution)}
+      {:ok, RestPeriod.unavailable_by(struct, institution)}
     end
 
     changeset = struct_to_changeset(struct)

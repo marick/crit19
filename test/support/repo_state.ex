@@ -101,9 +101,10 @@ defmodule Crit.RepoState do
     end)
   end
 
-  def reservation_for(data, purpose, animal_names, procedure_names, opts \\ []) do
+  def reservation_for(data, animal_names, procedure_names, opts \\ []) do
     schema = :reservation
     species_id = data.species_id
+    name = Factory.unique("reservation")    
 
     data =
       data 
@@ -113,7 +114,7 @@ defmodule Crit.RepoState do
     addition =
       ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
 
-    put(data, schema, purpose, addition)
+    put(data, schema, name, addition)
   end
 
   def service_gap_for(data, animal_name, opts \\ []) do

@@ -21,8 +21,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   setup do 
     repo =
       empty_repo()
-      |> reservation_for("vcm103",
-                         [@animal__two_conflicts, @animal__only_use_conflict],
+      |> reservation_for([@animal__two_conflicts, @animal__only_use_conflict],
                          ["any old procedure", @procedure__used_twice],
                          date: @date) 
       |> service_gap_for(@animal__two_conflicts, starting: @date)

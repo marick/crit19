@@ -14,19 +14,13 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
 
   #-----------------------------------------------------
 
-  def t_unavailable_by(data, date) do
-    RestPeriod.unavailable_by("ignored",
-      %{chosen_animal_ids: data[:animal] |> Map.values |> EnumX.ids,
-       chosen_procedure_ids: data[:procedure] |> Map.values |> EnumX.ids,
-       date: date}, 
+  def conflicts_for(repo, date) do
+    RestPeriod.unavailable_by(
+      %{chosen_animal_ids: repo[:animal] |> Map.values |> EnumX.ids,
+        chosen_procedure_ids: repo[:procedure] |> Map.values |> EnumX.ids,
+        date: date}, 
       @institution)
   end
-
-  def conflicts_for(repo, date) do
-    t_unavailable_by(repo, date)
-  end
-  
-
   
   describe "twice per week frequency: linear tests" do
     setup do
@@ -36,15 +30,23 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
       [repo: repo]
     end
 
-    test "adjacent days are disallowed", %{repo: repo} do
+    test "third day is rejected", %{repo: repo} do
+      # Arrange
       repo
-      |> reservation_for("vcm103", ["bossie"], ["haltering"], date: @mon)
-      
-      |> conflicts_for(@tue)
+      |> reservation_for(["bossie"], ["haltering"], date: @wed)
+      |> reservation_for(["bossie"], ["haltering"], date: @mon)
+      |> shorthand
+      |> load_completely
+      |> IO.inspect
+
+      # Act
+      |> conflicts_for(                              @fri)
+
+      # Assert
       |> singleton_content
-      |> assert_fields(animal_name: "bossie",
-      procedure_name: "haltering",
-      dates: [@mon])
+      |> assert_fields(animal_name:    "bossie",
+                       procedure_name: "haltering",
+                       dates:          in_any_order([@mon, @wed]))
     end
   end
 
@@ -54,7 +56,7 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
     populate = fn dates ->
       repo = background_populator.()
       Enum.reduce(dates, repo, fn date, acc ->
-        reservation_for(acc, Factory.unique("reservation"),
+        reservation_for(acc,
           [animal_name], [procedure_name],
           date: date)
       end)
@@ -130,7 +132,7 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
     
     test "A single attempt can fail for two reasons", %{a: a} do 
       [@mon, @wed, then: @sun]  |> a.error_mentions.([@mon])       # adjacent day
-                                |>           a.plus.([@mon, @wed]) # three times / week;
+                                |>           a.plus.([@mon, @wed]) # three times / week
     end 
   end  
 end

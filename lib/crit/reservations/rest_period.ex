@@ -4,9 +4,8 @@ defmodule Crit.Reservations.RestPeriod do
   alias Crit.Schemas.{Animal,Procedure, Use, Reservation}
   alias Ecto.Datespan
   import Ecto.Datespan  # This has to be imported for query construction.
-  
- 
-  def unavailable_by(_query, struct, institution) do
+
+  def unavailable_by(struct, institution) do
     chosen_procedures =
       Procedure.Get.all_by_ids(struct.chosen_procedure_ids,
         institution,
