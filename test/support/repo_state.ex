@@ -57,10 +57,12 @@ defmodule Crit.RepoState do
   end
 
   def procedure(so_far, procedure_name, opts \\ []) do
+    opts = Enum.into(opts, %{frequency: "unlimited"})
+    
+    so_far = procedure_frequency(so_far, opts.frequency)
+    
     B.Schema.create_if_needed(so_far, :procedure, procedure_name, fn ->
-      opts = Enum.into(opts, %{frequency: "unlimited"})
-        
-      frequency = lazy_frequency(so_far, opts.frequency)   # Create as needed
+      frequency = B.Schema.get(so_far, :procedure_frequency, opts.frequency)
       species_id = so_far.species_id
 
       Factory.sql_insert!(:procedure,
@@ -135,20 +137,10 @@ defmodule Crit.RepoState do
 
   def valid_schema?(key), do: MapSet.member?(@valid, key)
 
-  defp lazy_schema_get(so_far, schema, name, putter) do
-    B.Schema.get(so_far, schema, name)
-    || putter.(so_far) |> lazy_schema_get(schema, name, putter)
-  end
-
   def id(so_far, schema, name), do: B.Schema.get(so_far, schema, name).id
 
   def ids(so_far, schema, names) do
     for name <- names, do: id(so_far, schema, name)
-  end
-
-  defp lazy_frequency(so_far, calculation_name) do
-    lazy_schema_get(so_far, :procedure_frequency, calculation_name,
-      &(procedure_frequency(&1, calculation_name)))
   end
 
   # ----------------------------------------------------------------------------
