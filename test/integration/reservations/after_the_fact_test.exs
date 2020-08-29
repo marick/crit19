@@ -8,6 +8,7 @@ defmodule Integration.Reservations.AfterTheFactTest do
   alias Ecto.Timespan
   import Crit.RepoState
   use FlowAssertions
+  alias Crit.Schemas.Reservation
 
   setup :logged_in_as_reservation_manager
 
@@ -33,8 +34,7 @@ defmodule Integration.Reservations.AfterTheFactTest do
 
 
   test "after-the-fact reservation workflow",
-    %{conn: conn, picked_animal: picked_animal,
-      picked_procedure: picked_procedure} do 
+    %{conn: conn, picked_animal: picked_animal, picked_procedure: picked_procedure} do
     # ----------------------------------------------------------------------------
     get_via_action(conn, :start)                             # Start
     # ----------------------------------------------------------------------------
@@ -52,8 +52,9 @@ defmodule Integration.Reservations.AfterTheFactTest do
           %{chosen_procedure_ids: [picked_procedure.id]}})
     # ----------------------------------------------------------------------------
 
-    [only] = ReservationApi.on_date(@date, @institution)
-    assert_correct_result(only, picked_animal, picked_procedure)
+    ReservationApi.on_date(@date, @institution)
+    |> singleton_content(Reservation)
+    |> assert_correct_result(picked_animal, picked_procedure)
   end
 
 
