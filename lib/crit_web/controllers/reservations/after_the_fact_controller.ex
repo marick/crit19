@@ -19,42 +19,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     render_start_of_task(conn, task_memory, ActionData.NonUseValues.empty)
   end
 
-  defp got_valid(conn, %ActionData.NonUseValues{} = action_data) do
-    header =
-      View.non_use_values_header(
-        action_data.date_showable_date,
-        InstitutionApi.timeslot_name(action_data.timeslot_id, institution(conn)))
-
-    task_memory = UserTask.remember_relevant(action_data, task_header: header)
-    render_form_for_next_step(conn, :put_animals, task_memory)
-  end
-
-  defp got_valid(conn, %ActionData.Animals{} = action_data) do
-    header =
-      action_data.chosen_animal_ids
-      |> Schemas.Animal.Get.all_by_ids(institution(conn))
-      |> View.animals_header
-    
-    task_memory = UserTask.remember_relevant(action_data, task_header: header)
-    
-    render_form_for_next_step(conn, :put_procedures, task_memory)
-  end
-
-  defp got_valid(conn, %ActionData.Procedures{} = action_data) do
-        task_memory = UserTask.remember_relevant(action_data)
-        
-    {:ok, reservation, conflicts} =
-       ReservationApi.create_noting_conflicts(task_memory, institution(conn))
-    UserTask.delete(action_data.task_id)
-
-    conn
-    |> put_flash(:info, View.describe_creation(conflicts))
-    |> redirect(to: ReservationController.path(:show, reservation))
-  end    
-  
-
-  # ----------------------------------------------------------------------------
-
   def put_non_use_values(conn, %{"non_use_values" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
@@ -92,6 +56,41 @@ defmodule CritWeb.Reservations.AfterTheFactController do
         |> render_form_for_next_step(:put_procedures, UserTask.get(task_id))
     end
   end
+
+  # ----------------------------------------------------------------------------
+
+  defp got_valid(conn, %ActionData.NonUseValues{} = action_data) do
+    header =
+      View.non_use_values_header(
+        action_data.date_showable_date,
+        InstitutionApi.timeslot_name(action_data.timeslot_id, institution(conn)))
+
+    task_memory = UserTask.remember_relevant(action_data, task_header: header)
+    render_form_for_next_step(conn, :put_animals, task_memory)
+  end
+
+  defp got_valid(conn, %ActionData.Animals{} = action_data) do
+    header =
+      action_data.chosen_animal_ids
+      |> Schemas.Animal.Get.all_by_ids(institution(conn))
+      |> View.animals_header
+    
+    task_memory = UserTask.remember_relevant(action_data, task_header: header)
+    
+    render_form_for_next_step(conn, :put_procedures, task_memory)
+  end
+
+  defp got_valid(conn, %ActionData.Procedures{} = action_data) do
+        task_memory = UserTask.remember_relevant(action_data)
+        
+    {:ok, reservation, conflicts} =
+       ReservationApi.create_noting_conflicts(task_memory, institution(conn))
+    UserTask.delete(action_data.task_id)
+
+    conn
+    |> put_flash(:info, View.describe_creation(conflicts))
+    |> redirect(to: ReservationController.path(:show, reservation))
+  end    
 
   # ----------------------------------------------------------------------------
 
