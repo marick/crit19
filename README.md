@@ -21,7 +21,7 @@ Since I started, new management at the University of Illinois has decided they p
 
 I've tried to make the new version have the features of modern web apps (like scaling down nicely to fit on a phone screen). 
 
-![](https://github.com/marick/crit19/blob/master/pics/2.png)
+![](https://github.com/marick/crit19/blob/main/pics/2.png)
 
 Here's a form you'd use to mark an animal as out of service:
-![](https://github.com/marick/crit19/blob/master/pics/3.png?raw=true)
+![](https://github.com/marick/crit19/blob/main/pics/3.png?raw=true)
