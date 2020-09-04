@@ -51,10 +51,9 @@ defmodule Pile.RepoBuilderTest do
     end
   end
 
+  @fake_animal %{id: "bossie_id", bossie_association: :unloaded}    
   
   describe "loading completely" do
-    @fake_animal %{id: "bossie_id", bossie_association: :unloaded}    
-
     defp loader_maker(schema) do 
       assert schema == :animal
       fn value ->
@@ -80,6 +79,32 @@ defmodule Pile.RepoBuilderTest do
       |> B.Schema.get(:animal, "bossie")
       |> assert_field(bossie_association: %{id: "loaded"})
     end
-    
+
+    test "a single animal", %{repo: repo} do
+      repo
+      |> B.load_some_names_completely(:animal, ["bossie"], loader_maker(:animal))
+      |> B.Schema.get(:animal, "bossie")
+      |> assert_field(bossie_association: %{id: "loaded"})
+    end
+  end
+
+  test "shorthand" do
+    repo =
+      @start
+      |> B.Schema.put(:animal, "bossie", "bossie")
+      |> B.Schema.put(:animal, "jake", "jake")
+      |> B.Schema.put(:procedure, "haltering", "haltering")
+
+    gives = fn opts, expected ->
+      new_repo = B.shorthand(repo, opts)
+      [Map.get(new_repo, :bossie), Map.get(new_repo, :jake)]
+      |> Enum.reject(&(&1 == nil))
+      |> assert_equal(expected)
+    end
+
+    [schemas: [:animal]                   ] |> gives.(["bossie", "jake"])
+    [schema:   :animal                    ] |> gives.(["bossie", "jake"])
+    [schema:   :animal, names: ["bossie"] ] |> gives.(["bossie"])
+    [schema:   :animal, name:   "jake"    ] |> gives.(["jake"])
   end
 end

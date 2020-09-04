@@ -157,11 +157,11 @@ defmodule Pile.RepoBuilder do
       fn old -> Repo.get(Animal, old.id, preload: [:species, :service_gaps])
 
   Note: this does not change values made available by `shorthand`. Generally,
-  this function should only be used afteris used before `shorthand`. 
+  this function should only be used after `shorthand`. 
 
         repo
         |> service_gap_for("Bossie", name: "sg", starting: @earliest_date)
-        |> load_completely
+        |> load_completely(loader)
         |> shorthand
 
   """
@@ -169,6 +169,60 @@ defmodule Pile.RepoBuilder do
     Enum.reduce(names, repo, fn name, acc ->
       old = Schema.get(acc, schema, name)
       Schema.put(acc, schema, name, loader.(old))
+    end)
+  end
+
+  @doc """
+  Make particular names available in a `repo.name` format.
+
+  This:
+
+       repo = 
+         put(:animal, "bossie", %Animal{id: 5})
+         shorthand(schema: :animal)
+
+  allows this:
+
+       repo.bossie.id    # 5
+
+  There are these variants:
+
+      shorthand(repo, schemas: [:animal, :procedure]        )
+      shorthand(repo, schema:   :animal                     )
+      shorthand(repo, schema:   :animal,  names: ["bossie"] )
+      shorthand(repo, schema:   :animal,  name:   "bossie"  )
+
+  """
+  def shorthand(repo, opts) do
+    case Enum.into(opts, %{}) do
+      %{schemas: schemas} ->
+        shorthand_for_all_within_schemas(repo, schemas)
+      %{schema: schema, names: names} -> 
+        shorthand_for_names_within_schema(repo, schema, names)
+      %{schema: schema, name: name} ->
+        shorthand_for_names_within_schema(repo, schema, [name])
+      %{schema: schema} ->
+        shorthand_for_all_within_schema(repo, schema)
+    end
+  end
+
+  defp shorthand_for_all_within_schemas(repo, schema_list) do
+    Enum.reduce(schema_list, repo, fn schema, acc ->
+      shorthand_for_all_within_schema(acc, schema)
+    end)
+  end
+
+  defp shorthand_for_all_within_schema(repo, schema) do
+    names = Schema.names(repo, schema)
+    shorthand_for_names_within_schema(repo, schema, names)
+  end
+
+
+  defp shorthand_for_names_within_schema(repo, schema, names) do
+    Enum.reduce(names, repo, fn name, acc ->
+      name_atom = name |> String.downcase |> String.to_atom
+      value = Schema.get(repo, schema, name)
+      Map.put(acc, name_atom, value)
     end)
   end
 end
