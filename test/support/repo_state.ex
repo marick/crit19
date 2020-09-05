@@ -7,8 +7,7 @@ defmodule Crit.RepoState do
   alias Crit.Schemas.{Animal, Procedure}
   alias Pile.RepoBuilder, as: B
 
-  @valid MapSet.new([:procedure_frequency, :procedure, :animal,
-                     :reservation, :service_gap])
+  @valid [:procedure_frequency, :procedure, :animal, :reservation, :service_gap]
 
   #-----------------------------------------------------------------------------
   def empty_repo(species_id \\ @bovine_id) do
@@ -38,9 +37,7 @@ defmodule Crit.RepoState do
   """
        
   def shorthand(so_far) do
-    Enum.reduce(@valid, so_far, fn schema, acc ->
-      shorthand_(acc, so_far[:__schemas__][schema])
-    end)
+    B.shorthand(so_far, schemas: @valid)
   end
 
   #-----------------------------------------------------------------------------
@@ -135,7 +132,7 @@ defmodule Crit.RepoState do
 
   #-----------------------------------------------------
 
-  def valid_schema?(key), do: MapSet.member?(@valid, key)
+  def valid_schema?(key), do: Enum.member?(@valid, key)
 
   def id(so_far, schema, name), do: B.Schema.get(so_far, schema, name).id
 
@@ -161,15 +158,6 @@ defmodule Crit.RepoState do
         |> api.one_by_id(@institution, preload: module.associations())
 
       B.Schema.put(acc, schema, name, new)
-    end)
-  end
-
-  # ----------------------------------------------------------------------------
-  defp shorthand_(so_far, nil), do: so_far
-  defp shorthand_(so_far, schema_map) do
-    Enum.reduce(schema_map, so_far, fn {name, value}, acc ->
-      name_atom = name |> String.downcase |> String.to_atom
-      Map.put(acc, name_atom, value)
     end)
   end
 end
