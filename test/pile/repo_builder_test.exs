@@ -88,23 +88,38 @@ defmodule Pile.RepoBuilderTest do
     end
   end
 
-  test "shorthand" do
-    repo =
-      @start
-      |> B.Schema.put(:animal, "bossie", "bossie")
-      |> B.Schema.put(:animal, "jake", "jake")
-      |> B.Schema.put(:procedure, "haltering", "haltering")
+  test "names" do
+    repo = 
+      B.Schema.put(@start, :animal, "bossie", "bossie content")
 
-    gives = fn opts, expected ->
-      new_repo = B.shorthand(repo, opts)
-      [Map.get(new_repo, :bossie), Map.get(new_repo, :jake)]
-      |> Enum.reject(&(&1 == nil))
-      |> assert_equal(expected)
+    assert B.Schema.names(repo, :animal) == ["bossie"]
+    assert B.Schema.names(repo, :nothing) == []
+  end    
+
+  describe "shorthand" do 
+    test "fetching" do
+      repo =
+        @start
+        |> B.Schema.put(:animal, "bossie", "bossie")
+        |> B.Schema.put(:animal, "jake", "jake")
+        |> B.Schema.put(:procedure, "haltering", "haltering")
+      
+      gives = fn opts, expected ->
+        new_repo = B.shorthand(repo, opts)
+        [Map.get(new_repo, :bossie), Map.get(new_repo, :jake)]
+        |> Enum.reject(&(&1 == nil))
+        |> assert_equal(expected)
+      end
+      
+      [schemas: [:animal]                   ] |> gives.(["bossie", "jake"])
+      [schema:   :animal                    ] |> gives.(["bossie", "jake"])
+      [schema:   :animal, names: ["bossie"] ] |> gives.(["bossie"])
+      [schema:   :animal, name:   "jake"    ] |> gives.(["jake"])
     end
 
-    [schemas: [:animal]                   ] |> gives.(["bossie", "jake"])
-    [schema:   :animal                    ] |> gives.(["bossie", "jake"])
-    [schema:   :animal, names: ["bossie"] ] |> gives.(["bossie"])
-    [schema:   :animal, name:   "jake"    ] |> gives.(["jake"])
+    test "the schema can be missing" do
+      assert B.shorthand(@start, schemas: [:animal]) == @start
+      assert B.shorthand(@start, schema:   :animal) == @start
+    end
   end
 end

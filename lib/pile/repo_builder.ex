@@ -69,7 +69,7 @@ defmodule Pile.RepoBuilder do
     Return `nil` if either key does not exist.
     """
     def get(repo, schema, name) do
-      repo[:__schemas__][schema][name]
+      schemas(repo)[schema][name]
     end
 
     @doc """
@@ -104,11 +104,13 @@ defmodule Pile.RepoBuilder do
     @doc """
     Return all the names (keys) for the given schema.
 
-    Raises an error if the schema does not exist.
+    Returns [] if the schema does not exist.
     """
     def names(repo, schema) do
-      Map.get(repo[:__schemas__], schema) |> Map.keys
+      Map.get(schemas(repo), schema, %{}) |> Map.keys
     end
+
+    defp schemas(repo), do: Map.get(repo, :__schemas__, %{})
   end
 
   @doc """
@@ -192,6 +194,8 @@ defmodule Pile.RepoBuilder do
       shorthand(repo, schema:   :animal,  names: ["bossie"] )
       shorthand(repo, schema:   :animal,  name:   "bossie"  )
 
+  It is safe - a no-op - to refer to a schema that has never been created (and
+  consequently contains no valid).
   """
   def shorthand(repo, opts) do
     case Enum.into(opts, %{}) do
@@ -212,6 +216,7 @@ defmodule Pile.RepoBuilder do
     end)
   end
 
+  defp shorthand_for_all_within_schema(repo, nil), do: repo
   defp shorthand_for_all_within_schema(repo, schema) do
     names = Schema.names(repo, schema)
     shorthand_for_names_within_schema(repo, schema, names)
@@ -224,5 +229,17 @@ defmodule Pile.RepoBuilder do
       value = Schema.get(repo, schema, name)
       Map.put(acc, name_atom, value)
     end)
+  end
+
+
+  defmacro __using__(_) do
+    quote do 
+      alias Pile.RepoBuilder, as: B
+      
+      def get(repo, schema, name),
+        do: B.Schema.get(repo, schema, name)
+        def shorthand(repo, opts),
+          do: B.Schema.shorthand(repo, opts)
+    end
   end
 end
