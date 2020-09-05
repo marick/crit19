@@ -58,6 +58,17 @@ defmodule Pile.RepoBuilder do
     end
 
     @doc """
+    Replace some schema values within the repo.
+
+    The final argument is an enumeration of `{name, value}` pairs.
+    All of the values are installed, as with `put/4`, under the corresponding
+    name. 
+    """
+    def replace(repo, schema, pairs) do
+      deep_merge(repo, %{__schemas__: %{schema => Map.new(pairs)}})
+    end
+
+    @doc """
     Get a value from a repo structure.
 
         repo
@@ -114,65 +125,68 @@ defmodule Pile.RepoBuilder do
   end
 
   @doc """
-  Reload all values in a list of schemas, typically preloading all associations.
+  Reload all values in a list of schemas, with thoroughness determined by caller.
 
-      load_completely(repo, [:animal, :procedure], fetch_loader)
+      reload(repo, [:animal, :procedure], reloader)
 
   The result is a new repo, with the values within the schemas having
   been reloaded from the persistent store.
 
-  `fetch_loader` is a function that takes a schema (typically an atom)
-  and returns a function. That function takes a current value and
-  returns a new one. When working with Ecto, the function is typically
-  something like this:
+  The `reloader` takes two arguments: the schema and a list of current
+  values. It could be a function like this:
 
-      fn old -> Repo.get(Animal, old.id, preload: [:species, :service_gaps])
+     defp reload_some(:animal, animals),
+       do: Enum.map(animals, &(&1.id)) |> Animal.get_by_ids
+       
+     defp reload_some(:procedures, procedures),
+       do: Enum.map(procedures, &(&1.id)) |> Procedure.get_by_ids
 
-  If there's only a single schema, you don't have to put it into a list.
+  There are these variants:
+
+      reload(repo, schemas: [:animal, :procedure]        )
+      reload(repo, schema:   :animal                     )
+      reload(repo, schema:   :animal,  names: ["bossie"] )
+      reload(repo, schema:   :animal,  name:   "bossie"  )
+
+  It is safe - a no-op - to refer to a schema that has never been created (and
+  consequently contains no values. Referring to a nonexistent name raises an
+  exception.
   
   """
-  def load_completely(repo, schemas, fetch_loader) when is_list(schemas) do
-    Enum.reduce(schemas, repo, fn schema, acc ->
-      load_completely(acc, schema, fetch_loader)
+  def reload(repo, reloader, opts) do
+    case Enum.into(opts, %{}) do
+      %{schema: schema, names: names} ->
+        reload_for_names_within_schema(repo, schema, names, reloader)
+      %{schema: schema, name: name} ->
+        reload_for_names_within_schema(repo, schema, [name], reloader)
+      %{schema: schema} ->
+        reload_for_all_within_schema(repo, schema, reloader)
+      %{schemas: schemas} ->
+        reload_for_all_within_schemas(repo, schemas, reloader)
+    end
+  end
+
+  defp reload_for_all_within_schemas(repo, schema_list, reloader) do
+    Enum.reduce(schema_list, repo, fn schema, acc ->
+      reload_for_all_within_schema(acc, schema, reloader)
     end)
   end
 
-  def load_completely(repo, schema, fetch_loader) do
+  defp reload_for_all_within_schema(repo, schema, reloader) do
     names = Schema.names(repo, schema)
-    load_some_names_completely(repo, schema, names, fetch_loader.(schema))
+    reload_for_names_within_schema(repo, schema, names, reloader)
   end
 
+  IO.puts "Note that order must be guaranteed."
+  defp reload_for_names_within_schema(repo, schema, names, reloader) do
+    values =
+      for n <- names, do: requiring_existence(repo, schema, n, &(&1))
+    new_values = reloader.(schema, values)
+    replacements = Enum.zip(names, new_values)
+
+    Schema.replace(repo, schema, replacements)
+  end
   
-  @doc """
-  Reload some values from a schema, typically preloading all associations.
-
-      repo
-      |> load_some_names_completely(:animal, ["bossie"], loader)
-
-  The result is a new repo, with the values identified by the names having
-  been reloaded from the persistent store.
-
-  `loader` is a function that takes a value (like the `Animal`
-  associated with `"bossie"` and produces a new value. It's typically
-  a function like this:
-
-      fn old -> Repo.get(Animal, old.id, preload: [:species, :service_gaps])
-
-  Note: this does not change values made available by `shorthand`. Generally,
-  this function should only be used after `shorthand`. 
-
-        repo
-        |> service_gap_for("Bossie", name: "sg", starting: @earliest_date)
-        |> load_completely(loader)
-        |> shorthand
-
-  """
-  def load_some_names_completely(repo, schema, names, loader) do
-    Enum.reduce(names, repo, fn name, acc ->
-      old = Schema.get(acc, schema, name)
-      Schema.put(acc, schema, name, loader.(old))
-    end)
-  end
 
   @doc """
   Make particular names available in a `repo.name` format.
@@ -195,18 +209,19 @@ defmodule Pile.RepoBuilder do
       shorthand(repo, schema:   :animal,  name:   "bossie"  )
 
   It is safe - a no-op - to refer to a schema that has never been created (and
-  consequently contains no valid).
+  consequently contains no values. Referring to a nonexistent name raises an
+  exception.
   """
   def shorthand(repo, opts) do
     case Enum.into(opts, %{}) do
-      %{schemas: schemas} ->
-        shorthand_for_all_within_schemas(repo, schemas)
       %{schema: schema, names: names} -> 
         shorthand_for_names_within_schema(repo, schema, names)
       %{schema: schema, name: name} ->
         shorthand_for_names_within_schema(repo, schema, [name])
       %{schema: schema} ->
         shorthand_for_all_within_schema(repo, schema)
+      %{schemas: schemas} ->
+        shorthand_for_all_within_schemas(repo, schemas)
     end
   end
 
@@ -216,7 +231,6 @@ defmodule Pile.RepoBuilder do
     end)
   end
 
-  defp shorthand_for_all_within_schema(repo, nil), do: repo
   defp shorthand_for_all_within_schema(repo, schema) do
     names = Schema.names(repo, schema)
     shorthand_for_names_within_schema(repo, schema, names)
@@ -225,10 +239,21 @@ defmodule Pile.RepoBuilder do
 
   defp shorthand_for_names_within_schema(repo, schema, names) do
     Enum.reduce(names, repo, fn name, acc ->
-      name_atom = name |> String.downcase |> String.to_atom
-      value = Schema.get(repo, schema, name)
-      Map.put(acc, name_atom, value)
+      requiring_existence(repo, schema, name, fn value ->
+        name_atom = name |> String.downcase |> String.to_atom
+        Map.put(acc, name_atom, value)
+      end)
     end)
+  end
+
+
+  defp requiring_existence(repo, schema, name, f) do
+    case Schema.get(repo, schema, name) do
+      nil ->
+        raise "There is no `#{inspect name}` in schema `#{inspect schema}`"
+      value ->
+        f.(value)
+    end
   end
 
 

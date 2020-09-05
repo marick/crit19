@@ -51,43 +51,6 @@ defmodule Pile.RepoBuilderTest do
     end
   end
 
-  @fake_animal %{id: "bossie_id", bossie_association: :unloaded}    
-  
-  describe "loading completely" do
-    defp loader_maker(schema) do 
-      assert schema == :animal
-      fn value ->
-        assert value == @fake_animal
-        %{@fake_animal | bossie_association: %{id: "loaded"}}
-      end
-    end
-
-    setup do
-      [repo: B.Schema.put(@start, :animal, "bossie", @fake_animal)]
-    end
-
-    test "a list of schemas", %{repo: repo} do
-      repo
-      |> B.load_completely([:animal], &loader_maker/1)
-      |> B.Schema.get(:animal, "bossie")
-      |> assert_field(bossie_association: %{id: "loaded"})
-    end
-
-    test "a single schema", %{repo: repo} do
-      repo
-      |> B.load_completely(:animal, &loader_maker/1)
-      |> B.Schema.get(:animal, "bossie")
-      |> assert_field(bossie_association: %{id: "loaded"})
-    end
-
-    test "a single animal", %{repo: repo} do
-      repo
-      |> B.load_some_names_completely(:animal, ["bossie"], loader_maker(:animal))
-      |> B.Schema.get(:animal, "bossie")
-      |> assert_field(bossie_association: %{id: "loaded"})
-    end
-  end
-
   test "names" do
     repo = 
       B.Schema.put(@start, :animal, "bossie", "bossie content")
@@ -95,6 +58,57 @@ defmodule Pile.RepoBuilderTest do
     assert B.Schema.names(repo, :animal) == ["bossie"]
     assert B.Schema.names(repo, :nothing) == []
   end    
+
+  @fake_animal %{id: "bossie_id", association: :unloaded}    
+  
+  describe "loading completely" do
+
+    defp reloader _schema, values do 
+      for v <- values, 
+        do: %{v | association: %{note: "association loaded"}}
+    end
+      
+    test "normal loading" do
+      repo = B.Schema.put(@start, :animal, "bossie", @fake_animal)
+
+      pass = fn opts ->
+        repo
+        |> B.reload(&reloader/2, opts)
+        |> B.Schema.get(:animal, "bossie")
+        |> assert_field(association: %{note: "association loaded"})
+      end
+      
+      [schemas: [:animal]]                  |> pass.()
+      [schema:   :animal ]                  |> pass.()
+      [schema:   :animal, name: "bossie"  ] |> pass.()
+      [schema:   :animal, names: ["bossie"] ] |> pass.()
+    end
+
+    test "the schema can be missing" do
+      # It happens to create an empty one, which is harmless
+      pass = fn opts, repo, schema ->
+        new_repo = B.reload(repo, &reloader/2, opts)
+        assert B.Schema.names(new_repo, schema) == []
+      end
+
+      # These are so empty they don't even have a __schemas__ key.
+      [schemas: [:irrelevant]] |> pass.(@start, :irrelevant)
+      [schema:   :irrelevant ] |> pass.(@start, :irrelevant)
+      
+      # This forces the __schemas__ key to be present.
+      repo = B.Schema.put(@start, :animal, "bossie", "bossie")
+      [schemas: [:missing_schema]] |> pass.(repo, :missing_schema)
+      [schema:   :missing_schema ] |> pass.(repo, :missing_schema)
+    end
+    
+    test "the name must exist in the schema" do
+      repo = B.Schema.put(@start, :animal, "bossie", "bossie")
+
+      assert_raise RuntimeError, fn -> 
+        B.reload(repo, &reloader/2, schema: :animal, name: "missing")
+      end
+    end
+  end
 
   describe "shorthand" do 
     test "fetching" do
@@ -118,8 +132,26 @@ defmodule Pile.RepoBuilderTest do
     end
 
     test "the schema can be missing" do
-      assert B.shorthand(@start, schemas: [:animal]) == @start
-      assert B.shorthand(@start, schema:   :animal) == @start
+      pass = fn opts, repo ->
+        assert B.shorthand(repo, opts) == repo
+      end
+
+      # These are so empty they don't even have a __schemas__ key.
+      [schemas: [:irrelevant]] |> pass.(@start)
+      [schema:   :irrelevant ] |> pass.(@start)
+      
+      # This forces the __schemas__ key to be present.
+      repo = B.Schema.put(@start, :animal, "bossie", "bossie")
+      [schemas: [:missing_schema]] |> pass.(repo)
+      [schema:   :missing_schema ] |> pass.(repo)
     end
+
+    test "the name must exist in the schema" do
+      repo = B.Schema.put(@start, :animal, "bossie", "bossie")
+
+      assert_raise RuntimeError, fn -> 
+        B.shorthand(repo, schema: :animal, name: "missing")
+      end
+    end    
   end
 end
