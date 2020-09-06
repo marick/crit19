@@ -288,15 +288,4 @@ defmodule Pile.RepoBuilder do
 
   defp shorthands(repo),
     do: Map.get(repo, :__shorthands__, %{})
-
-  defmacro __using__(_) do
-    quote do 
-      alias Pile.RepoBuilder, as: B
-      
-      def get(repo, schema, name),
-        do: B.Schema.get(repo, schema, name)
-        def shorthand(repo, opts),
-          do: B.Schema.shorthand(repo, opts)
-    end
-  end
 end
