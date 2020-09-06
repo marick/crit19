@@ -132,26 +132,32 @@ defmodule Pile.RepoBuilder do
   The result is a new repo, with the values within the schemas having
   been reloaded from the persistent store.
 
-  The `reloader` takes two arguments: the schema and a list of current
-  values. It could be a function like this:
-
-     defp reload_some(:animal, animals),
-       do: Enum.map(animals, &(&1.id)) |> Animal.get_by_ids
-       
-     defp reload_some(:procedures, procedures),
-       do: Enum.map(procedures, &(&1.id)) |> Procedure.get_by_ids
-
   There are these variants:
 
-      reload(repo, schemas: [:animal, :procedure]        )
-      reload(repo, schema:   :animal                     )
-      reload(repo, schema:   :animal,  names: ["bossie"] )
-      reload(repo, schema:   :animal,  name:   "bossie"  )
+      reload(repo, value_reloader, schemas: [:animal, :procedure]        )
+      reload(repo, value_reloader, schema:   :animal                     )
+      reload(repo, value_reloader, schema:   :animal,  names: ["bossie"] )
+      reload(repo, value_reloader, schema:   :animal,  name:   "bossie"  )
+
+  A `value_reloader` is given two arguments. The first is a schema name; the
+  second is a value from which a query key can be extracted. The value reloader
+  most likely calls code like this:
+
+           query =
+             from a in Animal,
+             where: a.id == ^current_id,
+             preload: [:service_gaps, :species]
+           Repo.one!(query)
+
+  That's not so efficient, but it relieves the reloader of the
+  responsibility of indicating which reloaded value corresponds to
+  which name/key.
 
   It is safe - a no-op - to refer to a schema that has never been created (and
   consequently contains no values. Referring to a nonexistent name raises an
   exception.
-  
+
+  If `shorthand/2` has been used, the shorthand values are also updated.
   """
   def reload(repo, reloader, opts) do
     case Enum.into(opts, %{}) do
@@ -177,16 +183,18 @@ defmodule Pile.RepoBuilder do
     reload_for_names_within_schema(repo, schema, names, reloader)
   end
 
-  IO.puts "Note that order must be guaranteed."
   defp reload_for_names_within_schema(repo, schema, names, reloader) do
     values =
       for n <- names, do: requiring_existence(repo, schema, n, &(&1))
-    new_values = reloader.(schema, values)
-    replacements = Enum.zip(names, new_values)
+    new_values =
+      for v <- values, do: reloader.(schema, v)
+    replacements =
+      Enum.zip(names, new_values)
 
-    Schema.replace(repo, schema, replacements)
+    repo
+    |> Schema.replace(schema, replacements)
+    |> replace_shorthand(schema, replacements)
   end
-  
 
   @doc """
   Make particular names available in a `repo.name` format.
@@ -236,16 +244,15 @@ defmodule Pile.RepoBuilder do
     shorthand_for_names_within_schema(repo, schema, names)
   end
 
-
   defp shorthand_for_names_within_schema(repo, schema, names) do
     Enum.reduce(names, repo, fn name, acc ->
       requiring_existence(repo, schema, name, fn value ->
-        name_atom = name |> String.downcase |> String.to_atom
-        Map.put(acc, name_atom, value)
-      end)
+        acc
+        |> remember_shorthand({schema, name})
+        |> install_shorthand({schema, name}, value)
+       end)
     end)
   end
-
 
   defp requiring_existence(repo, schema, name, f) do
     case Schema.get(repo, schema, name) do
@@ -256,6 +263,31 @@ defmodule Pile.RepoBuilder do
     end
   end
 
+  defp remember_shorthand(repo, {_, name} = key) do
+    name_atom = name |> String.downcase |> String.to_atom
+
+    memory = Map.put(shorthands(repo), key, name_atom)
+    Map.put(repo, :__shorthands__, memory)
+  end
+
+  defp install_shorthand(repo, schema_and_name, value) do
+    case get_in(repo, [:__shorthands__, schema_and_name]) do
+      nil ->
+        repo
+      name_atom -> 
+        Map.put(repo, name_atom, value)
+    end
+  end
+
+
+  defp replace_shorthand(repo, schema, name_value_pairs) do
+    Enum.reduce(name_value_pairs, repo, fn {name, value}, acc ->
+      install_shorthand(acc, {schema, name}, value)
+    end)
+  end
+
+  defp shorthands(repo),
+    do: Map.get(repo, :__shorthands__, %{})
 
   defmacro __using__(_) do
     quote do 

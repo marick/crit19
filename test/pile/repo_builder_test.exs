@@ -63,9 +63,8 @@ defmodule Pile.RepoBuilderTest do
   
   describe "loading completely" do
 
-    defp reloader _schema, values do 
-      for v <- values, 
-        do: %{v | association: %{note: "association loaded"}}
+    defp reloader _schema, value do 
+      %{value | association: %{note: "association loaded"}}
     end
       
     test "normal loading" do
@@ -107,6 +106,16 @@ defmodule Pile.RepoBuilderTest do
       assert_raise RuntimeError, fn -> 
         B.reload(repo, &reloader/2, schema: :animal, name: "missing")
       end
+    end
+
+    test "reloading re-establishes shorthand" do
+      repo = 
+        B.Schema.put(@start, :animal, "bossie", @fake_animal)
+        |> B.shorthand(schema: :animal)
+        |> B.reload(&reloader/2, schema: :animal)
+
+      repo.bossie.association
+      |> assert_field(note: "association loaded")
     end
   end
 
@@ -152,6 +161,6 @@ defmodule Pile.RepoBuilderTest do
       assert_raise RuntimeError, fn -> 
         B.shorthand(repo, schema: :animal, name: "missing")
       end
-    end    
+    end
   end
 end
