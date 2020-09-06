@@ -19,10 +19,8 @@ defmodule Crit.RepoState do
   This replaces a partially loaded structure with one that has
   all its possible preloads loaded.
   """
-  def load_completely(so_far) do 
-    Enum.reduce(@valid, so_far, fn schema, acc ->
-      load_completely(acc, schema)
-    end)
+  def load_completely(so_far) do
+    B.reload(so_far, &reloader/2, schemas: @valid)
   end
 
   @doc """
@@ -142,22 +140,14 @@ defmodule Crit.RepoState do
 
   # ----------------------------------------------------------------------------
 
-  defp load_completely(so_far, :procedure),
-    do: load_completely(so_far, :procedure, Procedure.Get, Procedure)
-  defp load_completely(so_far, :animal),
-    do: load_completely(so_far, :animal, Animal.Get, Animal)
-  defp load_completely(so_far, _), do: so_far
 
-  defp load_completely(so_far, schema, api, module) do
-    keys = Map.keys(so_far[:__schemas__][schema] || %{})
-
-    Enum.reduce(keys, so_far, fn name, acc ->
-      new = 
-        acc
-        |> id(schema, name)
-        |> api.one_by_id(@institution, preload: module.associations())
-
-      B.Schema.put(acc, schema, name, new)
-    end)
+  defp reloader(:procedure, value), 
+    do: reloader(Procedure.Get, Procedure, value)
+  defp reloader(:animal, value),
+    do: reloader(Animal.Get, Animal, value)
+  defp reloader(_, value), do: value
+    
+  defp reloader(api, module, %{id: id}) do
+    api.one_by_id(id, @institution, preload: module.associations())
   end
 end
