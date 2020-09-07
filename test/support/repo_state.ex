@@ -7,58 +7,36 @@ defmodule Crit.RepoState do
   alias Crit.Schemas.{Animal, Procedure}
   alias EctoTestDataBuilder, as: B
 
+
   @valid [:procedure_frequency, :procedure, :animal, :reservation, :service_gap]
 
-  #-----------------------------------------------------------------------------
+
+  #----- Initial values ------------------------------------------------------
   def empty_repo(species_id \\ @bovine_id) do
     %{species_id: species_id}
   end
 
-  @doc """
-  Sometimes associations can be added on after a structure is created.
-  This replaces a partially loaded structure with one that has
-  all its possible preloads loaded.
-  """
-  def load_completely(so_far) do
-    B.Repo.reload(so_far, &reloader/2, schemas: @valid)
-  end
-
-  @doc """
-  Make the atom-ized name a key on the map. This allows:
-
-       repo = ...
-         |> procedure("one_procedure")
-         |> shorthand
-
-       ...
-       repo.one_procedure 
-  """
-       
-  def shorthand(so_far) do
-    B.Repo.shorthand(so_far, schemas: @valid)
-  end
-
-  #-----------------------------------------------------------------------------
-  
-
-  def procedure_frequency(so_far, calculation_name) do
+  def procedure_frequency(repo, calculation_name) do
     schema = :procedure_frequency
-    
+
     addition = Factory.sql_insert!(schema,
       name: calculation_name <> " procedure frequency",
       calculation_name: calculation_name)
 
-    B.Schema.put(so_far, schema, calculation_name, addition)
+    B.Schema.put(repo, schema, calculation_name, addition)
   end
 
-  def procedure(so_far, procedure_name, opts \\ []) do
+  #-----------------------------------------------------------------------------
+
+
+  def procedure(repo, procedure_name, opts \\ []) do
     opts = Enum.into(opts, %{frequency: "unlimited"})
-    
-    so_far = procedure_frequency(so_far, opts.frequency)
-    
-    B.Schema.create_if_needed(so_far, :procedure, procedure_name, fn ->
-      frequency = B.Schema.get(so_far, :procedure_frequency, opts.frequency)
-      species_id = so_far.species_id
+
+    repo = procedure_frequency(repo, opts.frequency)
+
+    B.Schema.create_if_needed(repo, :procedure, procedure_name, fn ->
+      frequency = B.Schema.get(repo, :procedure_frequency, opts.frequency)
+      species_id = repo.species_id
 
       Factory.sql_insert!(:procedure,
         name: procedure_name,
@@ -67,8 +45,8 @@ defmodule Crit.RepoState do
     end)
   end
 
-  def procedures(so_far, names) do
-    Enum.reduce(names, so_far, fn name, acc ->
+  def procedures(repo, names) do
+    Enum.reduce(names, repo, fn name, acc ->
       apply &procedure/3, [acc, name, []]
     end)
   end
@@ -78,13 +56,13 @@ defmodule Crit.RepoState do
   defp compute_span(%Datespan{} = span),
     do: span
 
-  def animal(so_far, animal_name, opts \\ []) do
-    B.Schema.create_if_needed(so_far, :animal, animal_name, fn -> 
+  def animal(repo, animal_name, opts \\ []) do
+    B.Schema.create_if_needed(repo, :animal, animal_name, fn ->
       opts =
         Enum.into(opts, %{
               available: @earliest_date,
-              species_id: so_far.species_id})
-      
+              species_id: repo.species_id})
+
       Factory.sql_insert!(:animal,
         name: animal_name,
         span: compute_span(opts.available),
@@ -92,37 +70,37 @@ defmodule Crit.RepoState do
     end)
   end
 
-  def animals(so_far, names) do
-    Enum.reduce(names, so_far, fn name, acc ->
+  def animals(repo, names) do
+    Enum.reduce(names, repo, fn name, acc ->
       apply &animal/3, [acc, name, []]
     end)
   end
 
-  def reservation_for(so_far, animal_names, procedure_names, opts \\ []) do
+  def reservation_for(repo, animal_names, procedure_names, opts \\ []) do
     schema = :reservation
-    species_id = so_far.species_id
-    name = Factory.unique("reservation")    
+    species_id = repo.species_id
+    name = Factory.unique("reservation")
 
-    so_far =
-      so_far 
+    repo =
+      repo
       |> procedures(procedure_names)
       |> animals(animal_names)
-    
+
     addition =
       ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
 
-    B.Schema.put(so_far, schema, name, addition)
+    B.Schema.put(repo, schema, name, addition)
   end
 
-  def service_gap_for(so_far, animal_name, opts \\ []) do
+  def service_gap_for(repo, animal_name, opts \\ []) do
     opts = Enum.into(opts, %{
           starting: @earliest_date, ending: @latest_date,
           reason: Factory.unique(:repo_state),
           name: Factory.unique(:service_gap)})
-    animal_id = id(so_far, :animal, animal_name)
+    animal_id = id(repo, :animal, animal_name)
     span = Datespan.customary(opts.starting, opts.ending)
 
-    B.Schema.create_if_needed(so_far, :service_gap, opts.name, fn ->
+    B.Schema.create_if_needed(repo, :service_gap, opts.name, fn ->
       details = [animal_id: animal_id, span: span, reason: opts.reason]
       Factory.sql_insert!(:service_gap, details, @institution)
     end)
@@ -130,23 +108,34 @@ defmodule Crit.RepoState do
 
   #-----------------------------------------------------
 
-  def valid_schema?(key), do: Enum.member?(@valid, key)
+  def id(repo, schema, name), do: B.Schema.get(repo, schema, name).id
 
-  def id(so_far, schema, name), do: B.Schema.get(so_far, schema, name).id
-
-  def ids(so_far, schema, names) do
-    for name <- names, do: id(so_far, schema, name)
+  def ids(repo, schema, names) do
+    for name <- names, do: id(repo, schema, name)
   end
+
+
+
+
 
   # ----------------------------------------------------------------------------
 
+  def shorthand(repo) do
+    B.Repo.shorthand(repo, schemas: @valid)
+  end
 
-  defp reloader(:procedure, value), 
+  # ----------------------------------------------------------------------------
+  def load_completely(repo) do
+    B.Repo.reload(repo, &reloader/2, schemas: @valid)
+  end
+
+
+  defp reloader(:procedure, value),
     do: reloader(Procedure.Get, Procedure, value)
   defp reloader(:animal, value),
     do: reloader(Animal.Get, Animal, value)
   defp reloader(_, value), do: value
-    
+
   defp reloader(api, module, %{id: id}) do
     api.one_by_id(id, @institution, preload: module.associations())
   end
