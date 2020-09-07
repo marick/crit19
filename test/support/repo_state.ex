@@ -5,7 +5,7 @@ defmodule Crit.RepoState do
   alias Crit.Factory
   alias Ecto.Datespan
   alias Crit.Schemas.{Animal, Procedure}
-  alias Pile.RepoBuilder, as: B
+  alias EctoTestDataBuilder, as: B
 
   @valid [:procedure_frequency, :procedure, :animal, :reservation, :service_gap]
 
@@ -20,7 +20,7 @@ defmodule Crit.RepoState do
   all its possible preloads loaded.
   """
   def load_completely(so_far) do
-    B.reload(so_far, &reloader/2, schemas: @valid)
+    B.Repo.reload(so_far, &reloader/2, schemas: @valid)
   end
 
   @doc """
@@ -35,7 +35,7 @@ defmodule Crit.RepoState do
   """
        
   def shorthand(so_far) do
-    B.shorthand(so_far, schemas: @valid)
+    B.Repo.shorthand(so_far, schemas: @valid)
   end
 
   #-----------------------------------------------------------------------------

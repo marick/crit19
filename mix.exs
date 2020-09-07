@@ -57,6 +57,13 @@ defmodule Crit.MixProject do
       {:recase, "~> 0.6.0"},
       {:conjunction, "~> 1.0.2"},       
       {:phoenix_integration, "~> 0.8", only: :test},
+
+      {:ecto_test_data_builder, "~> 0.1",
+       path: "/Users/bem/src/ecto_test_data_builder",
+       only: :test,
+       # override: true
+      },
+      
       # {:flow_assertions, "~> 0.4",
       #  # path: "/Users/bem/src/flow_assertions",
       #  only: :test,
