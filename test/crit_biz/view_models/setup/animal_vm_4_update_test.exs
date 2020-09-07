@@ -10,7 +10,6 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.UpdateTest do
     repo =
       Ex.Bossie.create
       |> animal("Not_bossie")
-      |> shorthand
 
     [repo: repo]
   end

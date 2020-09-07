@@ -18,8 +18,6 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
       repo =
         Ex.Bossie.create
         |> service_gap_for("Bossie", name: "sg", starting: @earliest_date)
-        |> load_completely
-        |> shorthand
       [repo: repo]
     end
     
@@ -48,8 +46,6 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         |> Ex.Bossie.put_service_gap(reason: "will change")
         |> Ex.Bossie.put_service_gap(reason: "won't change")
         |> Ex.Bossie.put_service_gap(reason: "will delete")
-        |> load_completely
-        |> shorthand
       [repo: repo]
     end
 
@@ -149,7 +145,6 @@ defmodule CritWeb.Setup.AnimalController.UpdateTest do
         empty_repo(@equine_id)
         |> animal("Jake", available: Ex.Datespan.named(:widest_infinite))
         |> service_gap_for("Jake", name: "sg", starting: @sg_start, ending: @sg_end)
-        |> shorthand
 
       [repo: repo]
     end

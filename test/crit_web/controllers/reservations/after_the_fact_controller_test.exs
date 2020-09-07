@@ -30,8 +30,6 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       empty_repo(@bovine_id)
       |> animal("Bossie", available_on: @date)
       |> procedure("only_procedure")
-      |> load_completely
-      |> shorthand
     
     [bossie: repo.bossie, procedure: repo.only_procedure]
   end

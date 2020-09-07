@@ -22,7 +22,6 @@ defmodule Crit.Exemplars.Bossie do
   def put(repo) do
     repo
     |> animal(@bossie, available: Ex.Datespan.named(:widest_finite))
-    |> shorthand
   end
 
   def create do 
@@ -40,7 +39,6 @@ defmodule Crit.Exemplars.Bossie do
     opts = [name: opts.name, reason: opts.reason, starting: starting, ending: ending]
     repo 
     |> service_gap_for("Bossie", opts)
-    |> shorthand
   end
 
   # ----------------------------------------------------------------------------

@@ -35,8 +35,6 @@ defmodule Crit.Reservations.RestPeriodTabularTest do
       repo
       |> reservation_for(["bossie"], ["haltering"], date: @wed)
       |> reservation_for(["bossie"], ["haltering"], date: @mon)
-      |> shorthand
-      |> load_completely
 
       # Act
       |> conflicts_for(                              @fri)

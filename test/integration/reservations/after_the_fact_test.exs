@@ -27,7 +27,6 @@ defmodule Integration.Reservations.AfterTheFactTest do
       |> animal("picked_animal", available: @date)
       |> animal("not picked", available: @date)
       |> procedure("picked_procedure")
-      |> shorthand()
     
     [picked_animal: repo.picked_animal, picked_procedure: repo.picked_procedure]
   end
@@ -67,8 +66,10 @@ defmodule Integration.Reservations.AfterTheFactTest do
       timeslot_id: @timeslot_id
     )
 
-    assert {[^picked_animal], [^picked_procedure]} =
+    assert {[animal], [procedure]} =
       ReservationApi.all_used(reservation.id, @institution)
+    assert animal.id == picked_animal.id
+    assert procedure.id == picked_procedure.id
   end
 
   # A little paranoia here.
