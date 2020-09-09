@@ -6,6 +6,8 @@ defmodule Crit.RepoState do
   alias Ecto.Datespan
   alias Crit.Schemas.{Animal, Procedure, Reservation}
   alias EctoTestDataBuilder, as: B
+  require B.Macro
+
 
   #----- Initial values ------------------------------------------------------
   def empty_repo(species_id \\ @bovine_id) do
@@ -45,11 +47,8 @@ defmodule Crit.RepoState do
 
   end
 
-  def procedures(repo, names) do
-    Enum.reduce(names, repo, fn name, acc ->
-      apply &procedure/3, [acc, name, []]
-    end)
-  end
+  B.Macro.make_plural_builder(:procedures, from: :procedure)
+  
 
   # ---- Animals ---------------------------------------------------------------
 
@@ -85,11 +84,7 @@ defmodule Crit.RepoState do
   defp reload_animal(repo, animal_name),
     do: B.Repo.fully_load(repo, &reloader/2, schema: :animal, name: animal_name)
 
-  def animals(repo, names) do
-    Enum.reduce(names, repo, fn name, acc ->
-      apply &animal/3, [acc, name, []]
-    end)
-  end
+  B.Macro.make_plural_builder(:animals, from: :animal)
 
   # --- Service Gaps ----------------------------------------------------------
   
@@ -156,15 +151,8 @@ defmodule Crit.RepoState do
     }
   end
 
-  defp reservation_factory_opts(builder_map) do
-    Enum.into(builder_map, [])
-     
-    # span = Datespan.customary(builder_map.starting, builder_map.ending)
-    # animal_id = B.Schema.get(repo, :animal, animal_name).id
-    # [animal_id: animal_id, span: span, reason: builder_map.reason]
-  end
-  
-  
+  defp reservation_factory_opts(builder_map), 
+    do: Enum.into(builder_map, [])
 
   # ----------------------------------------------------------------------------
 
