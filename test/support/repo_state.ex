@@ -54,24 +54,30 @@ defmodule Crit.RepoState do
   # ---- Animals ---------------------------------------------------------------
 
   def animal(repo, animal_name, opts \\ []) do
-    B.Schema.create_if_needed(repo, :animal, animal_name, fn ->
-      opts =
-        Enum.into(opts, %{
-              available: @earliest_date,
-              species_id: repo.species_id})
-
-      animal = Factory.sql_insert!(:animal,
-        name: animal_name,
-        span: compute_span(opts.available),
-        species_id: opts.species_id)
-
-      reloader(:animal, animal)
+    schema = :animal
+    builder_map = animal_defaulted(opts)
+    
+    B.Schema.create_if_needed(repo, schema, animal_name, fn ->
+      factory_opts = animal_factory_opts(repo, animal_name, builder_map)
+      animal = Factory.sql_insert!(schema, factory_opts)
+      reloader(schema, animal)
     end)
-    |> B.Repo.shorthand(schema: :animal, name: animal_name)
+    |> B.Repo.shorthand(schema: schema, name: animal_name)
   end
 
-  def reload_animal(repo, animal_name),
-    do: B.Repo.reload(repo, &reloader/2, schema: :animal, name: animal_name)
+  defp animal_defaulted(builder_opts) do 
+    default = %{available: @earliest_date}
+    B.Schema.combine_opts(builder_opts, default)
+  end
+
+  defp animal_factory_opts(repo, name, builder_map) do
+    [name: name,
+     span: compute_span(builder_map.available),
+     species_id: repo.species_id]
+  end
+
+  defp reload_animal(repo, animal_name),
+    do: B.Repo.load_fully(repo, &reloader/2, schema: :animal, name: animal_name)
 
   def animals(repo, names) do
     Enum.reduce(names, repo, fn name, acc ->
@@ -80,21 +86,31 @@ defmodule Crit.RepoState do
   end
 
   def service_gap_for(repo, animal_name, opts \\ []) do
-    opts = Enum.into(opts, %{
-          starting: @earliest_date, ending: @latest_date,
-          reason: Factory.unique(:repo_state),
-          name: Factory.unique(:service_gap)})
-    animal_id = id(repo, :animal, animal_name)
-    span = Datespan.customary(opts.starting, opts.ending)
-
+    schema = :service_gap
+    builder_map = service_gap_defaulted(opts)
+    factory_opts = service_gap_factory_opts(repo, animal_name, builder_map)
     repo 
-    |> B.Schema.create_if_needed(:service_gap, opts.name, fn ->
-         details = [animal_id: animal_id, span: span, reason: opts.reason]
-         Factory.sql_insert!(:service_gap, details, @institution)
+    |> B.Schema.create_if_needed(schema, builder_map.name, fn ->
+         Factory.sql_insert!(schema, factory_opts)
        end)
-    |> B.Repo.shorthand(schema: :service_gap, name: opts.name)
+    |> B.Repo.shorthand(schema: schema, name: builder_map.name)
     |> reload_animal(animal_name)
   end
+
+  defp service_gap_defaulted(builder_opts) do
+    defaults = %{
+      starting: @earliest_date, ending: @latest_date,
+      reason: Factory.unique(:repo_state),
+      name: Factory.unique(:service_gap)}
+    B.Schema.combine_opts(builder_opts, defaults)
+  end
+
+  defp service_gap_factory_opts(repo, animal_name, builder_map) do
+    span = Datespan.customary(builder_map.starting, builder_map.ending)
+    animal_id = id(repo, :animal, animal_name)
+    [animal_id: animal_id, span: span, reason: builder_map.reason]
+  end
+
 
   defp compute_span(%Date{} = earliest_date),
     do: Datespan.customary(earliest_date, @latest_date)
