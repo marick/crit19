@@ -28,7 +28,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
     repo = 
       empty_repo(@bovine_id)
-      |> animal("Bossie", available_on: @date)
+      |> animal("Bossie", available: @date)
       |> procedure("only_procedure")
     
     [bossie: repo.bossie, procedure: repo.only_procedure]
