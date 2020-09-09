@@ -4,6 +4,7 @@ defmodule Crit.Sql.CommonQuery do
   def start(schema) when is_atom(schema),        do: from x in schema
   def start(schema, where) when is_atom(schema), do: from x in schema, where: ^where
 
+  def start_by_id(schema, id), do: from x in schema, where: x.id == ^id
   def start_by_ids(schema, ids), do: from x in schema, where: x.id in ^ids
   
   def ordered_by_name(%Ecto.Query{} = query) do

@@ -4,7 +4,7 @@ defmodule Crit.RepoState do
   alias Crit.Exemplars.ReservationFocused
   alias Crit.Factory
   alias Ecto.Datespan
-  alias Crit.Schemas.{Animal, Procedure}
+  alias Crit.Schemas.{Animal, Procedure, Reservation}
   alias EctoTestDataBuilder, as: B
 
   #----- Initial values ------------------------------------------------------
@@ -53,10 +53,19 @@ defmodule Crit.RepoState do
 
   # ---- Animals ---------------------------------------------------------------
 
+  @doc """
+  Shorthand: yes, fully_loaded: yes
+
+  Options:
+
+  * `available`: A `Date` or `Datespan`. A `Date` is converted to a
+    "customary" `Datespan` with endpoint `@latest_date`.
+
+  """
   def animal(repo, animal_name, opts \\ []) do
     schema = :animal
-    builder_map = animal_defaulted(opts)
-    
+    builder_map = B.Schema.combine_opts(opts, animal_defaults())
+
     B.Schema.create_if_needed(repo, schema, animal_name, fn ->
       factory_opts = animal_factory_opts(repo, animal_name, builder_map)
       animal = Factory.sql_insert!(schema, factory_opts)
@@ -65,10 +74,7 @@ defmodule Crit.RepoState do
     |> B.Repo.shorthand(schema: schema, name: animal_name)
   end
 
-  defp animal_defaulted(builder_opts) do 
-    default = %{available: @earliest_date}
-    B.Schema.combine_opts(builder_opts, default)
-  end
+  defp animal_defaults(), do: %{available: @earliest_date}
 
   defp animal_factory_opts(repo, name, builder_map) do
     [name: name,
@@ -77,7 +83,7 @@ defmodule Crit.RepoState do
   end
 
   defp reload_animal(repo, animal_name),
-    do: B.Repo.load_fully(repo, &reloader/2, schema: :animal, name: animal_name)
+    do: B.Repo.fully_load(repo, &reloader/2, schema: :animal, name: animal_name)
 
   def animals(repo, names) do
     Enum.reduce(names, repo, fn name, acc ->
@@ -85,55 +91,80 @@ defmodule Crit.RepoState do
     end)
   end
 
+  # --- Service Gaps ----------------------------------------------------------
+  
+  @doc """
+  Shorthand: yes, fully_loaded: yes
+
+  Options:
+
+  * `name:` You can name the service gap if it'll be mentioned in
+    the test.
+  * `starting:` A `Date`. Defaults to `@earliest_date`. 
+  * `ending:` A `Date`. Defaults to `@latest_date`.
+  * `reason:` A string giving the `reason` for the service gap.
+
+  """
   def service_gap_for(repo, animal_name, opts \\ []) do
     schema = :service_gap
-    builder_map = service_gap_defaulted(opts)
-    factory_opts = service_gap_factory_opts(repo, animal_name, builder_map)
-    repo 
+    builder_map = B.Schema.combine_opts(opts, service_gap_defaults())
+
+    repo
     |> B.Schema.create_if_needed(schema, builder_map.name, fn ->
+         factory_opts = service_gap_factory_opts(repo, animal_name, builder_map)
          Factory.sql_insert!(schema, factory_opts)
        end)
     |> B.Repo.shorthand(schema: schema, name: builder_map.name)
     |> reload_animal(animal_name)
   end
 
-  defp service_gap_defaulted(builder_opts) do
-    defaults = %{
-      starting: @earliest_date, ending: @latest_date,
-      reason: Factory.unique(:repo_state),
-      name: Factory.unique(:service_gap)}
-    B.Schema.combine_opts(builder_opts, defaults)
+  defp service_gap_defaults do
+    %{starting: @earliest_date, ending: @latest_date,
+      reason: Factory.unique(:reason),
+      name: Factory.unique(:service_gap)
+    }
   end
 
   defp service_gap_factory_opts(repo, animal_name, builder_map) do
     span = Datespan.customary(builder_map.starting, builder_map.ending)
-    animal_id = id(repo, :animal, animal_name)
+    animal_id = B.Schema.get(repo, :animal, animal_name).id
     [animal_id: animal_id, span: span, reason: builder_map.reason]
   end
-
-
-  defp compute_span(%Date{} = earliest_date),
-    do: Datespan.customary(earliest_date, @latest_date)
-  defp compute_span(%Datespan{} = span),
-    do: span
 
   # --- Reservations -----------------------------------------------------------
 
   def reservation_for(repo, animal_names, procedure_names, opts \\ []) do
     schema = :reservation
-    species_id = repo.species_id
-    name = Factory.unique("reservation")
+    builder_map = B.Schema.combine_opts(opts, reservation_defaults())
 
-    repo =
-      repo
-      |> procedures(procedure_names)
-      |> animals(animal_names)
-
-    addition =
-      ReservationFocused.reserved!(species_id, animal_names, procedure_names, opts)
-
-    B.Schema.put(repo, schema, name, addition)
+    repo
+    |> procedures(procedure_names)
+    |> animals(animal_names)
+    |> B.Schema.create_if_needed(schema, builder_map.name, fn -> 
+         factory_opts = reservation_factory_opts(builder_map)
+         reservation = 
+           ReservationFocused.reserved!(
+             repo.species_id, animal_names, procedure_names, factory_opts)
+         reloader(schema, reservation)
+       end)
+    |> B.Repo.shorthand(schema: schema, name: builder_map.name)
   end
+
+  defp reservation_defaults do
+    %{name: Factory.unique(:reservation),
+      date: @date_2,
+    }
+  end
+
+  defp reservation_factory_opts(builder_map) do
+    Enum.into(builder_map, [])
+     
+    # span = Datespan.customary(builder_map.starting, builder_map.ending)
+    # animal_id = B.Schema.get(repo, :animal, animal_name).id
+    # [animal_id: animal_id, span: span, reason: builder_map.reason]
+  end
+  
+  
 
   # ----------------------------------------------------------------------------
 
@@ -141,6 +172,8 @@ defmodule Crit.RepoState do
     do: reloader(Procedure.Get, Procedure, value)
   defp reloader(:animal, value),
     do: reloader(Animal.Get, Animal, value)
+  defp reloader(:reservation, value),
+    do: reloader(Reservation.Get, Reservation, value)
   defp reloader(_, value), do: value
 
   defp reloader(api, module, %{id: id}) do
@@ -149,7 +182,12 @@ defmodule Crit.RepoState do
 
   #-----------------------------------------------------
 
-  def id(repo, schema, name), do: B.Schema.get(repo, schema, name).id
+  defp compute_span(%Date{} = earliest_date),
+    do: Datespan.customary(earliest_date, @latest_date)
+  defp compute_span(%Datespan{} = span),
+    do: span
+
+  defp id(repo, schema, name), do: B.Schema.get(repo, schema, name).id
 
   def ids(repo, schema, names) do
     for name <- names, do: id(repo, schema, name)

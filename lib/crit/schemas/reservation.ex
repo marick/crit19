@@ -28,4 +28,20 @@ defmodule Crit.Schemas.Reservation do
     |> cast_assoc(:uses)
     |> foreign_key_constraint(:species_id)
   end
+
+
+  defmodule Get do
+    import Ecto.Query
+    alias Crit.Sql
+    alias Crit.Sql.CommonQuery
+    alias Crit.Schemas.Reservation
+
+    def one_by_id(id, institution, opts \\ []) do
+      preloads = Keyword.get(opts, :preload, [])
+      
+      CommonQuery.start_by_id(Reservation, id)
+      |> preload(^preloads)
+      |> Sql.one(institution)
+    end
+  end
 end
