@@ -2,6 +2,8 @@ defmodule Crit.Reservations.ReservationApiTest do
   use Crit.DataCase
   alias Crit.Reservations.ReservationApi
   alias Crit.Exemplars.ReservationFocused
+  alias Crit.Schemas.Reservation
+  import Crit.RepoState
 
   def typical_params do 
     ReservationFocused.ignored_animal("Ignored animal", @bovine_id)
@@ -47,32 +49,27 @@ defmodule Crit.Reservations.ReservationApiTest do
 
   describe "fetching by id" do
     setup do
-      ready = typical_params()
-      %{id: reservation_id} =
-        ready
-        |> ReservationApi.create(@institution)
-        |> ok_content
-      
-      [reservation_id: reservation_id, ready: ready]
+      repo = 
+        empty_repo()
+        |> reservation_for(["bossie"], ["procedure1"],
+             date: @date_1, name: "reservation")
+      [repo: repo]
     end
 
-    test "by id", %{reservation_id: reservation_id, ready: ready} do
-      ReservationApi.get!(reservation_id, @institution)
-      |> assert_expected_reservation(ready)
+    test "by id", %{repo: repo} do
+      ReservationApi.get!(repo.reservation.id, @institution)
+      |> assert_shape(%Reservation{})
+      |> assert_same_map(repo.reservation, ignoring: [:uses])
+      |> refute_assoc_loaded(:uses)
     end
   end
 
   describe "fetching by dates" do
     setup do
-      ReservationFocused.reserved!(@bovine_id,
-        ["lower boundary"], ["procedure1"],
-        date: @date_1)
-      ReservationFocused.reserved!(@bovine_id,
-        ["upper boundary"], ["procedure2"],
-        date: @date_2)
-      ReservationFocused.reserved!(@bovine_id,
-        ["out of scope"], ["procedure3"],
-        date: @date_3)
+      empty_repo()
+      |> reservation_for(["lower boundary"], ["procedure1"], date: @date_1)
+      |> reservation_for(["upper boundary"], ["procedure2"], date: @date_2)
+      |> reservation_for(["out of scope"], ["procedure3"], date: @date_3)
       :ok
     end
     
@@ -84,5 +81,6 @@ defmodule Crit.Reservations.ReservationApiTest do
       assert upper.date == @date_2
     end
   end
+
 
 end
