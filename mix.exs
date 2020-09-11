@@ -59,7 +59,7 @@ defmodule Crit.MixProject do
       {:phoenix_integration, "~> 0.8", only: :test},
 
       {:ecto_test_data_builder, "~> 0.1",
-       path: "/Users/bem/src/ecto_test_data_builder",
+       # path: "/Users/bem/src/ecto_test_data_builder",
        only: :test,
        # override: true
       },
