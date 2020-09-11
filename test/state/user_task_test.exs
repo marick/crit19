@@ -15,7 +15,7 @@ defmodule Crit.State.UserTaskTest do
     |> assert_field(task_id: task_id)
 
     # task_id gets put in a form's `input type=hidden`
-   UserTask.remember_relevant(%VM.ActionData.Animals{
+   UserTask.remember_relevant(%VM.Form.Animals{
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
 
@@ -24,7 +24,7 @@ defmodule Crit.State.UserTaskTest do
                      task_id: task_id)
 
     # Confirm that struct remember_relevant merges
-    UserTask.remember_relevant(%VM.ActionData.Procedures{
+    UserTask.remember_relevant(%VM.Form.Procedures{
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
@@ -34,7 +34,7 @@ defmodule Crit.State.UserTaskTest do
                      task_id: task_id)
 
     # Show overwrite and how remember_relevant can take options.
-    struct = %VM.ActionData.Procedures{
+    struct = %VM.Form.Procedures{
       chosen_procedure_ids: [:new, :new, :new],
       task_id: task_id}
     UserTask.remember_relevant(struct, timeslot_id: 88)
@@ -51,11 +51,11 @@ defmodule Crit.State.UserTaskTest do
   test "update returns the whole state" do
     %VM{task_id: task_id} = UserTask.start(VM)
 
-    UserTask.remember_relevant(%VM.ActionData.Animals{
+    UserTask.remember_relevant(%VM.Form.Animals{
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
     
-    actual = UserTask.remember_relevant(%VM.ActionData.Procedures{
+    actual = UserTask.remember_relevant(%VM.Form.Procedures{
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
@@ -67,7 +67,7 @@ defmodule Crit.State.UserTaskTest do
 
   test "can put a single value" do
     %VM{task_id: task_id} = UserTask.start(VM)
-    UserTask.remember_relevant(%VM.ActionData.NonUseValues{
+    UserTask.remember_relevant(%VM.Form.NonUseValues{
           date: "some date",
           task_id: task_id})
 

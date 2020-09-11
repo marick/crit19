@@ -1,6 +1,6 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
   use Crit.DataCase, async: true
-  alias CritBiz.ViewModels.Reservation.AfterTheFact.ActionData
+  alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias Ecto.Timespan
   alias Crit.State.UserTask
   use FlowAssertions
@@ -19,7 +19,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
       assert {:ok, data, "uuid"} =
-        UserTask.pour_into_struct(params, ActionData.NonUseValues)
+        UserTask.pour_into_struct(params, VM.Form.NonUseValues)
       data
       |> assert_fields(
            species_id: @bovine_id,
@@ -35,7 +35,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
     # Procedures are the same with name changes
 
     setup do
-      %{task_id: task_id} = UserTask.start(ActionData.Animals)
+      %{task_id: task_id} = UserTask.start(VM.Form.Animals)
       [task_id: task_id]
     end
       
@@ -44,7 +44,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
                  "task_id" => task_id}
       
       assert {:ok, data, ^task_id} =
-        UserTask.pour_into_struct(params, ActionData.Animals)
+        UserTask.pour_into_struct(params, VM.Form.Animals)
       
       assert_lists_equal [1, 8], data.chosen_animal_ids
     end
@@ -55,14 +55,14 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
                  "task_id" => task_id}
 
       assert {:task_expiry, UserTask.expiry_message} ==
-        UserTask.pour_into_struct(params, ActionData.Animals)
+        UserTask.pour_into_struct(params, VM.Form.Animals)
     end
 
     test "no animals chosen", %{task_id: task_id} do
       params = %{"task_id" => task_id}
 
       assert {:error, changeset, ^task_id} =
-        UserTask.pour_into_struct(params, ActionData.Animals)
+        UserTask.pour_into_struct(params, VM.Form.Animals)
       assert %{chosen_animal_ids: [_]} = errors_on(changeset)
     end
   end  

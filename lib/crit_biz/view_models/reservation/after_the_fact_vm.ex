@@ -13,7 +13,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
     chosen_animal_ids:    :nothing,
     chosen_procedure_ids: :nothing
   
-  defmodule ActionData do 
+  defmodule Form do 
 
     defmodule NonUseValues do
       use Ecto.Schema
