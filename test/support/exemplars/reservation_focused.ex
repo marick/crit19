@@ -106,7 +106,7 @@ defmodule Crit.Exemplars.ReservationFocused do
     animal_ids = insert_or_create_animal_ids(animal_names, species_id)
     procedure_ids = insert_or_create_procedure_ids(procedure_names, species_id)
     
-    %VM.TaskMemory{
+    %VM{
       species_id: species_id,
       timeslot_id: opts.timeslot_id,
       date: opts.date,

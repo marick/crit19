@@ -8,9 +8,9 @@ defmodule Crit.State.UserTaskTest do
   test "How controllers use UserTask" do
     # For readability, return value of `update` is shown in another task
     
-    %VM.TaskMemory{task_id: task_id} = UserTask.start(VM.TaskMemory)
+    %VM{task_id: task_id} = UserTask.start(VM)
 
-    (%VM.TaskMemory{} = UserTask.get(task_id))
+    (%VM{} = UserTask.get(task_id))
     |> assert_no_value(:chosen_animal_ids)
     |> assert_field(task_id: task_id)
 
@@ -19,7 +19,7 @@ defmodule Crit.State.UserTaskTest do
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
 
-    (%VM.TaskMemory{} = UserTask.get(task_id))
+    (%VM{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      task_id: task_id)
 
@@ -28,7 +28,7 @@ defmodule Crit.State.UserTaskTest do
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
-    (%VM.TaskMemory{} = UserTask.get(task_id))
+    (%VM{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      chosen_procedure_ids: [3, 2, 1],
                      task_id: task_id)
@@ -39,7 +39,7 @@ defmodule Crit.State.UserTaskTest do
       task_id: task_id}
     UserTask.remember_relevant(struct, timeslot_id: 88)
 
-    (%VM.TaskMemory{} = UserTask.get(task_id))
+    (%VM{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      chosen_procedure_ids: [:new, :new, :new],
                      task_id: task_id)
@@ -49,7 +49,7 @@ defmodule Crit.State.UserTaskTest do
   end
 
   test "update returns the whole state" do
-    %VM.TaskMemory{task_id: task_id} = UserTask.start(VM.TaskMemory)
+    %VM{task_id: task_id} = UserTask.start(VM)
 
     UserTask.remember_relevant(%VM.ActionData.Animals{
           chosen_animal_ids: [1, 2, 3],
@@ -59,14 +59,14 @@ defmodule Crit.State.UserTaskTest do
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
-    assert %VM.TaskMemory{
+    assert %VM{
       chosen_animal_ids: [1, 2, 3],
       chosen_procedure_ids: [3, 2, 1],
       task_id: task_id} = actual
   end
 
   test "can put a single value" do
-    %VM.TaskMemory{task_id: task_id} = UserTask.start(VM.TaskMemory)
+    %VM{task_id: task_id} = UserTask.start(VM)
     UserTask.remember_relevant(%VM.ActionData.NonUseValues{
           date: "some date",
           task_id: task_id})

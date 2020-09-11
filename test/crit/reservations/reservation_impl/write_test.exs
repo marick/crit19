@@ -5,7 +5,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Schemas.Reservation
   alias Crit.Setup.InstitutionApi
   alias Crit.Exemplars.ReservationFocused
-  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   import Crit.RepoState
 
   @date @date_3
@@ -48,7 +48,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   end
 
   def reservation_data(repo, date, animal_names, procedure_names) do
-    %TaskMemory{
+    %VM{
       # When the reservation is
       date:  date,
       timeslot_id: @timeslot_id, 

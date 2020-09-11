@@ -13,7 +13,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    task_memory = UserTask.start(VM.TaskMemory)
+    task_memory = UserTask.start(VM)
 
     render_start_of_task(conn, task_memory, VM.ActionData.NonUseValues.empty)
   end
