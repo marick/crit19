@@ -17,34 +17,32 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
     # Note that these tests implicitly test `lift`.
     setup :bossie_has_service_gap
 
-    test "non-assoc fields are the same for all variants", %{repo: repo} do
-      id = repo.bossie.id
-
-      repo
-      |> check( [:all_possible              ], :assert_expected_non_assoc_fields)
-      |> check( [:all_for_summary_list, [id]], :assert_expected_non_assoc_fields)
-      |> check( [:one_for_summary,       id ], :assert_expected_non_assoc_fields)
-      |> check( [:one_for_edit,          id ], :assert_expected_non_assoc_fields)
+    setup %{repo: repo} do
+      [id: repo.bossie.id,
+       a: runners(repo)
+      ]
     end
 
-    test "which variants contain service gaps", %{repo: repo} do
-      id = repo.bossie.id
+    test "non-assoc fields are the same for all variants", %{a: a, id: id} do
+      [:all_possible              ]   |> a.pass.(:assert_expected_non_assoc_fields)
+      [:all_for_summary_list, [id]]   |> a.pass.(:assert_expected_non_assoc_fields)
+      [:one_for_summary,       id ]   |> a.pass.(:assert_expected_non_assoc_fields)
+      [:one_for_edit,          id ]   |> a.pass.(:assert_expected_non_assoc_fields)
+    end
 
-      repo
-      |> check( [:all_possible              ], :assert_no_service_gaps)
-      |> check( [:all_for_summary_list, [id]], :assert_no_service_gaps)
-      |> check( [:one_for_summary,       id ], :assert_no_service_gaps)
+    test "which variants contain service gaps", %{a: a, id: id} do
+      [:all_possible              ]   |> a.pass.(:assert_no_service_gaps)
+      [:all_for_summary_list, [id]]   |> a.pass.(:assert_no_service_gaps)
+      [:one_for_summary,       id ]   |> a.pass.(:assert_no_service_gaps)
       
-      |> check( [:one_for_edit,          id ], :assert_bossie_service_gap)
+      [:one_for_edit,          id ]   |> a.pass.(:assert_bossie_service_gap)
     end
 
     test "fetching is in alphabetical order", %{repo: repo} do
-      ["bz", "b", "a"] |> Enum.map(&RepoState.animal(repo, &1))
+      RepoState.animals(repo, ["bz", "b", "a"])
 
-      actual = 
-        VM.Animal.fetch(:all_possible, @institution) |> EnumX.names
-
-      assert actual == ["a", "b", "Bossie", "bz"]
+      VM.Animal.fetch(:all_possible, @institution) |> EnumX.names
+      |> assert_equal(["a", "b", "Bossie", "bz"])
     end
   end
 
@@ -82,7 +80,8 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   end
 
   # ----------------------------------------------------------------------------
-  
+
+  # These can't be private because they're used with `apply`.
   def assert_expected_non_assoc_fields(list, repo) when is_list(list),
     do: singleton_content(list) |> assert_expected_non_assoc_fields(repo)
 
@@ -105,9 +104,14 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
     
   # ----------------------------------------------------------------------------
 
-  def check(repo, arglist, assertion) do
-    result = apply(VM.Animal, :fetch, arglist ++ [@institution])
-    apply(__MODULE__, assertion, [result, repo])
-    repo
+  def runners(repo) do
+    run = fn arglist -> apply VM.Animal, :fetch, arglist ++ [@institution] end
+    pass = fn arglist, assertion ->
+      apply(__MODULE__, assertion, [run.(arglist), repo])
+    end
+
+    %{pass: pass}
   end
+
+  
 end
