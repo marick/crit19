@@ -1,6 +1,6 @@
-defmodule CritWeb.Reservations.AfterTheFactStructsTest do
+defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
   use Crit.DataCase, async: true
-  alias CritWeb.Reservations.AfterTheFactStructs.ActionData
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.ActionData
   alias Ecto.Timespan
   alias Crit.State.UserTask
   use FlowAssertions

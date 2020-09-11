@@ -5,7 +5,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   import Crit.RepoState
   alias CritWeb.Reservations.ReservationController
   alias Crit.State.UserTask
-  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
   alias Crit.Setup.{InstitutionApi}
   alias Crit.Reservations.ReservationApi
   alias Ecto.Datespan

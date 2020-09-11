@@ -1,4 +1,4 @@
-defmodule CritWeb.Reservations.AfterTheFactStructs do
+defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   alias Crit.State.UserTask
 
   defmodule TaskMemory do

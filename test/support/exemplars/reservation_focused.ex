@@ -5,7 +5,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Crit.Sql
   alias Ecto.Datespan
   alias Crit.Setup.InstitutionApi
-  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
   alias Crit.Reservations.ReservationApi
   import Ecto.Query
   import ExUnit.Assertions

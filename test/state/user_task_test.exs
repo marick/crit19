@@ -1,8 +1,8 @@
 defmodule Crit.State.UserTaskTest do 
   use ExUnit.Case, async: true
   alias Crit.State.UserTask
-  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  alias CritWeb.Reservations.AfterTheFactStructs.ActionData
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.ActionData
   use FlowAssertions.NoValueA, no_value: :nothing
   import FlowAssertions.MapA
 

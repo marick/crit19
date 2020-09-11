@@ -5,7 +5,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Schemas.Reservation
   alias Crit.Setup.InstitutionApi
   alias Crit.Exemplars.ReservationFocused
-  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
   import Crit.RepoState
 
   @date @date_3

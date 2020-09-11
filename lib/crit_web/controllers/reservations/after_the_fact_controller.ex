@@ -5,8 +5,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   alias Crit.Setup.InstitutionApi
   alias Crit.Schemas
   alias Crit.State.UserTask
-  alias CritWeb.Reservations.AfterTheFactStructs.TaskMemory
-  alias CritWeb.Reservations.AfterTheFactStructs.ActionData
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact.ActionData
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi
   alias CritWeb.Reservations.ReservationController
