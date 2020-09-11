@@ -1,46 +1,45 @@
 defmodule Crit.State.UserTaskTest do 
   use ExUnit.Case, async: true
   alias Crit.State.UserTask
-  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
-  alias CritBiz.ViewModels.Reservation.AfterTheFact.ActionData
+  alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   use FlowAssertions.NoValueA, no_value: :nothing
   import FlowAssertions.MapA
 
   test "How controllers use UserTask" do
     # For readability, return value of `update` is shown in another task
     
-    %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
+    %VM.TaskMemory{task_id: task_id} = UserTask.start(VM.TaskMemory)
 
-    (%TaskMemory{} = UserTask.get(task_id))
+    (%VM.TaskMemory{} = UserTask.get(task_id))
     |> assert_no_value(:chosen_animal_ids)
     |> assert_field(task_id: task_id)
 
     # task_id gets put in a form's `input type=hidden`
-   UserTask.remember_relevant(%ActionData.Animals{
+   UserTask.remember_relevant(%VM.ActionData.Animals{
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
 
-    (%TaskMemory{} = UserTask.get(task_id))
+    (%VM.TaskMemory{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      task_id: task_id)
 
     # Confirm that struct remember_relevant merges
-    UserTask.remember_relevant(%ActionData.Procedures{
+    UserTask.remember_relevant(%VM.ActionData.Procedures{
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
-    (%TaskMemory{} = UserTask.get(task_id))
+    (%VM.TaskMemory{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      chosen_procedure_ids: [3, 2, 1],
                      task_id: task_id)
 
     # Show overwrite and how remember_relevant can take options.
-    struct = %ActionData.Procedures{
+    struct = %VM.ActionData.Procedures{
       chosen_procedure_ids: [:new, :new, :new],
       task_id: task_id}
     UserTask.remember_relevant(struct, timeslot_id: 88)
 
-    (%TaskMemory{} = UserTask.get(task_id))
+    (%VM.TaskMemory{} = UserTask.get(task_id))
     |> assert_fields(chosen_animal_ids: [1, 2, 3],
                      chosen_procedure_ids: [:new, :new, :new],
                      task_id: task_id)
@@ -50,25 +49,25 @@ defmodule Crit.State.UserTaskTest do
   end
 
   test "update returns the whole state" do
-    %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
+    %VM.TaskMemory{task_id: task_id} = UserTask.start(VM.TaskMemory)
 
-    UserTask.remember_relevant(%ActionData.Animals{
+    UserTask.remember_relevant(%VM.ActionData.Animals{
           chosen_animal_ids: [1, 2, 3],
           task_id: task_id})
     
-    actual = UserTask.remember_relevant(%ActionData.Procedures{
+    actual = UserTask.remember_relevant(%VM.ActionData.Procedures{
           chosen_procedure_ids: [3, 2, 1],
           task_id: task_id})
 
-    assert %TaskMemory{
+    assert %VM.TaskMemory{
       chosen_animal_ids: [1, 2, 3],
       chosen_procedure_ids: [3, 2, 1],
       task_id: task_id} = actual
   end
 
   test "can put a single value" do
-    %TaskMemory{task_id: task_id} = UserTask.start(TaskMemory)
-    UserTask.remember_relevant(%ActionData.NonUseValues{
+    %VM.TaskMemory{task_id: task_id} = UserTask.start(VM.TaskMemory)
+    UserTask.remember_relevant(%VM.ActionData.NonUseValues{
           date: "some date",
           task_id: task_id})
 

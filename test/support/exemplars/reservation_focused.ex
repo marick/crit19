@@ -5,7 +5,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Crit.Sql
   alias Ecto.Datespan
   alias Crit.Setup.InstitutionApi
-  alias CritBiz.ViewModels.Reservation.AfterTheFact.TaskMemory
+  alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias Crit.Reservations.ReservationApi
   import Ecto.Query
   import ExUnit.Assertions
@@ -106,7 +106,7 @@ defmodule Crit.Exemplars.ReservationFocused do
     animal_ids = insert_or_create_animal_ids(animal_names, species_id)
     procedure_ids = insert_or_create_procedure_ids(procedure_names, species_id)
     
-    %TaskMemory{
+    %VM.TaskMemory{
       species_id: species_id,
       timeslot_id: opts.timeslot_id,
       date: opts.date,
