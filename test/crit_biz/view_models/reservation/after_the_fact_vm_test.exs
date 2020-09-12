@@ -5,7 +5,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
   alias Crit.State.UserTask
   use FlowAssertions
 
-  describe "processing of NonUseValues" do
+  describe "processing of Context" do
     test "success" do
       params = %{species_id: to_string(@bovine_id),
                  date: "2019-01-01",
@@ -19,7 +19,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
         Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 
       assert {:ok, data, "uuid"} =
-        UserTask.pour_into_struct(params, VM.Form.NonUseValues)
+        UserTask.pour_into_struct(params, VM.Form.Context)
       data
       |> assert_fields(
            species_id: @bovine_id,

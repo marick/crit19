@@ -15,7 +15,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   
   defmodule Form do 
 
-    defmodule NonUseValues do
+    defmodule Context do
       use Ecto.Schema
       import Ecto.Changeset
       alias Crit.Setup.InstitutionApi

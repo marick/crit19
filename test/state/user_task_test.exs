@@ -67,7 +67,7 @@ defmodule Crit.State.UserTaskTest do
 
   test "can put a single value" do
     %VM{task_id: task_id} = UserTask.start(VM)
-    UserTask.remember_relevant(%VM.Form.NonUseValues{
+    UserTask.remember_relevant(%VM.Form.Context{
           date: "some date",
           task_id: task_id})
 

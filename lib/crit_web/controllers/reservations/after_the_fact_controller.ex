@@ -15,14 +15,14 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def start(conn, _params) do
     task_memory = UserTask.start(VM)
 
-    render_start_of_task(conn, task_memory, VM.Form.NonUseValues.empty)
+    render_start_of_task(conn, task_memory, VM.Form.Context.empty)
   end
 
   def put_non_use_values(conn, %{"non_use_values" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
-    case UserTask.pour_into_struct(params, VM.Form.NonUseValues) do
-      {:ok, action_data, _task_id} -> got_valid(conn, action_data)
+    case UserTask.pour_into_struct(params, VM.Form.Context) do
+      {:ok, struct, _task_id} -> got_valid(conn, struct)
       {:error, changeset, task_id} ->
         render_start_of_task(conn, UserTask.get(task_id), changeset)
     end
@@ -30,7 +30,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   def put_animals(conn, %{"animals" => params}) do
     case UserTask.pour_into_struct(params, VM.Form.Animals) do
-      {:ok, action_data, _task_id} -> got_valid(conn, action_data)
+      {:ok, struct, _task_id} -> got_valid(conn, struct)
 
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))
@@ -44,7 +44,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   
   def put_procedures(conn, %{"procedures" => params}) do
     case UserTask.pour_into_struct(params, VM.Form.Procedures) do
-      {:ok, action_data, _task_id} -> got_valid(conn, action_data)
+      {:ok, struct, _task_id} -> got_valid(conn, struct)
 
       {:task_expiry, message} ->
         task_expiry_error(conn, message, path(:start))
@@ -58,33 +58,33 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   # ----------------------------------------------------------------------------
 
-  defp got_valid(conn, %VM.Form.NonUseValues{} = action_data) do
+  defp got_valid(conn, %VM.Form.Context{} = struct) do
     header =
       View.non_use_values_header(
-        action_data.date_showable_date,
-        InstitutionApi.timeslot_name(action_data.timeslot_id, institution(conn)))
+        struct.date_showable_date,
+        InstitutionApi.timeslot_name(struct.timeslot_id, institution(conn)))
 
-    task_memory = UserTask.remember_relevant(action_data, task_header: header)
+    task_memory = UserTask.remember_relevant(struct, task_header: header)
     render_form_for_next_step(conn, :put_animals, task_memory)
   end
 
-  defp got_valid(conn, %VM.Form.Animals{} = action_data) do
+  defp got_valid(conn, %VM.Form.Animals{} = struct) do
     header =
-      action_data.chosen_animal_ids
+      struct.chosen_animal_ids
       |> Schemas.Animal.Get.all_by_ids(institution(conn))
       |> View.animals_header
     
-    task_memory = UserTask.remember_relevant(action_data, task_header: header)
+    task_memory = UserTask.remember_relevant(struct, task_header: header)
     
     render_form_for_next_step(conn, :put_procedures, task_memory)
   end
 
-  defp got_valid(conn, %VM.Form.Procedures{} = action_data) do
-        task_memory = UserTask.remember_relevant(action_data)
+  defp got_valid(conn, %VM.Form.Procedures{} = struct) do
+        task_memory = UserTask.remember_relevant(struct)
         
     {:ok, reservation, conflicts} =
        ReservationApi.create_noting_conflicts(task_memory, institution(conn))
-    UserTask.delete(action_data.task_id)
+    UserTask.delete(struct.task_id)
 
     conn
     |> put_flash(:info, View.describe_creation(conflicts))
