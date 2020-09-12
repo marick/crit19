@@ -18,7 +18,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
     defmodule Context do
       use Ecto.Schema
       import Ecto.Changeset
-      alias Crit.Setup.InstitutionApi
+      alias Crit.Servers.Institution
       alias Ecto.Timespan
       
       embedded_schema do
@@ -51,7 +51,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
           [:date, :timeslot_id, :institution]
           |> Enum.map(&(get_change changeset, &1))
         
-        result = apply(InstitutionApi, :timespan, args)
+        result = apply(Institution, :timespan, args)
         put_change(changeset, :span, result)
       end
     end

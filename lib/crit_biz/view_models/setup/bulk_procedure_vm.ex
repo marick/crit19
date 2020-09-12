@@ -9,7 +9,7 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   alias Crit.Ecto.BulkInsert
   alias Ecto.Changeset
   alias Ecto.ChangesetX
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   
 
   # The index is used to give each element of the array its own unique id.
@@ -127,6 +127,6 @@ defmodule CritBiz.ViewModels.Setup.BulkProcedure do
   defp duplicate_name_message(changeset, institution) do
     data = Changeset.apply_changes(changeset)
     "A procedure named \"" <> data.name <> "\" already exists for species " <>
-      InstitutionApi.species_name(data.species_id, institution)
+      Institution.species_name(data.species_id, institution)
   end
 end

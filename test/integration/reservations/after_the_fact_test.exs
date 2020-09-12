@@ -4,7 +4,7 @@ defmodule Integration.Reservations.AfterTheFactTest do
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Servers.UserTask
   alias Crit.Reservations.ReservationApi
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Ecto.Timespan
   import Crit.RepoState
   use FlowAssertions
@@ -75,7 +75,7 @@ defmodule Integration.Reservations.AfterTheFactTest do
   # A little paranoia here.
   defp expected_span do 
     one_way =
-      InstitutionApi.timespan(@date, @timeslot_id, @institution)
+      Institution.timespan(@date, @timeslot_id, @institution)
     another =
       Timespan.from_date_time_and_duration(@date, ~T[08:00:00], 4 * 60)
     assert one_way == another

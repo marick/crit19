@@ -4,7 +4,7 @@ defmodule Crit.Exemplars.ReservationFocused do
   alias Crit.Schemas.{Animal, Procedure}
   alias Crit.Sql
   alias Ecto.Datespan
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias Crit.Reservations.ReservationApi
   import Ecto.Query
@@ -49,19 +49,19 @@ defmodule Crit.Exemplars.ReservationFocused do
   end
 
   def timeslot do
-    InstitutionApi.timeslots(@institution)
+    Institution.timeslots(@institution)
     |> List.first
   end
 
   def morning_timeslot do
     hard_coded = 1
-    assert InstitutionApi.timeslot_name(hard_coded, @institution) =~ "morning"
+    assert Institution.timeslot_name(hard_coded, @institution) =~ "morning"
     hard_coded
   end
 
   def evening_timeslot do
     hard_coded = 3
-    assert InstitutionApi.timeslot_name(hard_coded, @institution) =~ "evening"
+    assert Institution.timeslot_name(hard_coded, @institution) =~ "evening"
     hard_coded
   end
 
@@ -101,7 +101,7 @@ defmodule Crit.Exemplars.ReservationFocused do
     opts = Enum.into(opts, %{timeslot_id: timeslot_id(),
                              date: ~D[2019-01-01],
                              responsible_person: Faker.Name.name()})
-    span = InstitutionApi.timespan(opts.date, opts.timeslot_id, @institution)
+    span = Institution.timespan(opts.date, opts.timeslot_id, @institution)
 
     animal_ids = insert_or_create_animal_ids(animal_names, species_id)
     procedure_ids = insert_or_create_procedure_ids(procedure_names, species_id)

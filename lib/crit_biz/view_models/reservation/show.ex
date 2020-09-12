@@ -1,6 +1,6 @@
 defmodule CritBiz.ViewModels.Reservation.Show do
   use Ecto.Schema
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Crit.Schemas.Reservation
   alias Crit.Reservations.ReservationApi
   alias Pile.TimeHelper
@@ -16,8 +16,8 @@ defmodule CritBiz.ViewModels.Reservation.Show do
   end
 
   def to_view_model(%Reservation{} = r, institution) do 
-    species_name = InstitutionApi.species_name(r.species_id, institution)
-    timeslot_name = InstitutionApi.timeslot_name(r.timeslot_id, institution)
+    species_name = Institution.species_name(r.species_id, institution)
+    timeslot_name = Institution.timeslot_name(r.timeslot_id, institution)
     {animal_names, procedure_names} = ReservationApi.all_names(r.id, institution)
     %__MODULE__{
       id: r.id,

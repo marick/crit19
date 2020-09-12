@@ -1,7 +1,6 @@
-defmodule Crit.Setup.InstitutionSupervisor do
+defmodule Crit.Servers.Institution.Supervisor do
   use Supervisor
-  alias Crit.Setup.InstitutionApi
-  alias Crit.Setup.InstitutionServer
+  alias Crit.Servers.Institution
 
   def start_link(opts) do
     Supervisor.start_link(__MODULE__, :ok, opts)
@@ -9,9 +8,9 @@ defmodule Crit.Setup.InstitutionSupervisor do
 
   @impl true
   def init(:ok) do
-    InstitutionApi.all
+    Institution.all
     |> Enum.map(fn institution ->
-         Supervisor.child_spec({InstitutionServer, institution},
+         Supervisor.child_spec({Institution.Server, institution},
            id: institution.short_name)
     end)
     |> Supervisor.init(strategy: :one_for_one)

@@ -3,7 +3,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
   alias Crit.Reservations.ReservationImpl.Write
   alias Crit.Reservations.ReservationApi
   alias Crit.Schemas.Reservation
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Crit.Exemplars.ReservationFocused
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   import Crit.RepoState
@@ -52,7 +52,7 @@ defmodule Crit.Reservations.ReservationImpl.WriteTest do
       # When the reservation is
       date:  date,
       timeslot_id: @timeslot_id, 
-      span: InstitutionApi.timespan(date, @timeslot_id, @institution),
+      span: Institution.timespan(date, @timeslot_id, @institution),
 
       chosen_animal_ids: ids(repo, :animal, animal_names),
       chosen_procedure_ids: ids(repo, :procedure, procedure_names),

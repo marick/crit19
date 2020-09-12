@@ -1,11 +1,11 @@
-defmodule Crit.Setup.InstitutionServerTest do
+defmodule Crit.Schemas.Institution.ServerTest do
   use Crit.DataCase
   alias Crit.Schemas.Institution
+  alias Crit.Servers.Institution.Server
   alias Ecto.Changeset
-  import Crit.Setup.InstitutionServer, only: [server: 1]
 
   setup do
-    [server: server(@institution)]
+    [server: Server.server(@institution)]
   end
 
   test "an institution registers its name", %{server: server} do

@@ -1,17 +1,17 @@
 defmodule Crit.Sql do
   alias Crit.Repo
-  import Crit.Setup.InstitutionServer, only: [server: 1]
+  import Crit.Servers.Institution.Server, only: [server: 1]
 
   @moduledoc """
   These functions use the Institution's shortname to send the right
   SQL to the right place. 
 
   There's an function for each `Ecto.Repo` function (that is used by
-  this application). Each works by asking the `InstitutionServer` to
+  this application). Each works by asking the `Server` to
   provide arguments for it to `apply`. The caller does the work
   because otherwise tests would have to arrange for the
-  `InstitutionServer` and the test to share the same `SQL.Sandbox`
-  connection, which is awkward because the `InstitutionServer` is by
+  `Server` and the test to share the same `SQL.Sandbox`
+  connection, which is awkward because the `Server` is by
   default started before any test setup runs.
 
   For probably no good reason, `Ecto.Multi` functions are called
@@ -86,7 +86,7 @@ defmodule Crit.Sql do
   end
 
   # When multiple repos are used, this will need to forward to the
-  # `InstitutionServer`.
+  # `Server`.
   def transaction(multi, _short_name) do
     Repo.transaction(multi)
   end

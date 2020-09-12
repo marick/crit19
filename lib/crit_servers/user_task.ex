@@ -1,4 +1,4 @@
-defmodule Crit.State.UserTask do
+defmodule Crit.Servers.UserTask do
   @moduledoc """
   Cache used user activities that occur in multiple steps.
   """

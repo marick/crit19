@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.FieldFillers.FromWeb do
   use Crit.Global.Constants
   alias Ecto.Datespan
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Ecto.Changeset
 
   def span(%Changeset{} = changeset),
@@ -9,7 +9,7 @@ defmodule CritBiz.ViewModels.FieldFillers.FromWeb do
   
   def span(%{} = data) do
     date = fn string -> Date.from_iso8601!(string) end
-    today = fn -> InstitutionApi.today!(data.institution) end
+    today = fn -> Institution.today!(data.institution) end
 
     case {data.in_service_datestring, data.out_of_service_datestring} do
       {@today, @never} ->

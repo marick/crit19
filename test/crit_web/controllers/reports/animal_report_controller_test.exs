@@ -2,7 +2,7 @@ defmodule CritWeb.Reports.AnimalReportControllerTest do
   use CritWeb.ConnCase
   alias CritWeb.Reports.AnimalReportController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Crit.Exemplars.ReservationFocused
 
   setup :logged_in_as_reservation_manager
@@ -11,7 +11,7 @@ defmodule CritWeb.Reports.AnimalReportControllerTest do
   @in_last_month ~D[2020-02-29]
 
   def given_now(moment) do 
-    timezone = InstitutionApi.timezone(@institution)
+    timezone = Institution.timezone(@institution)
     in_this_month = DateTime.from_naive!(moment, timezone)
     given DateTime.now, [^timezone], do: {:ok, in_this_month}
   end

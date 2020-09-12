@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.Procedure do
   use Ecto.Schema
   alias Crit.Schemas
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Crit.Ecto.TrimmedString
   alias CritBiz.ViewModels.Setup, as: VM
 
@@ -27,9 +27,9 @@ defmodule CritBiz.ViewModels.Setup.Procedure do
 
   def lift(source, institution) do
     species_name =
-      InstitutionApi.species_name(source.species_id, institution)
+      Institution.species_name(source.species_id, institution)
     frequency_name =
-      InstitutionApi.procedure_frequency_name(source.frequency_id, institution)
+      Institution.procedure_frequency_name(source.frequency_id, institution)
 
     %{EnumX.pour_into(source, VM.Procedure) |
       species_name: species_name,
@@ -41,8 +41,8 @@ defmodule CritBiz.ViewModels.Setup.Procedure do
   
 
   def to_view_model(%Schemas.Procedure{} = p, institution) do
-    species_name = InstitutionApi.species_name(p.species_id, institution)
-    frequency_name = InstitutionApi.procedure_frequency_name(p.frequency_id, institution)
+    species_name = Institution.species_name(p.species_id, institution)
+    frequency_name = Institution.procedure_frequency_name(p.frequency_id, institution)
     %__MODULE__{name: p.name,
                 species_name: species_name,
                 frequency_name: frequency_name}

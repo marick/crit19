@@ -4,7 +4,7 @@ defmodule CritBiz.ViewModels.FieldFillers.FromWebTest do
   alias CritBiz.ViewModels.FieldFillers.FromWeb
   alias Pile.TimeHelper
   alias Ecto.Datespan
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
 
   # Assumes this partial schema. 
   # Various constants are reasonably stable, given the domain.
@@ -33,7 +33,7 @@ defmodule CritBiz.ViewModels.FieldFillers.FromWebTest do
 
     test "the special value `today`" do
       # Make sure that timezone is as expected
-      assert InstitutionApi.timezone(@institution) == @timezone
+      assert Institution.timezone(@institution) == @timezone
       
       input = %__MODULE__{
         in_service_datestring: @today,
@@ -65,7 +65,7 @@ defmodule CritBiz.ViewModels.FieldFillers.FromWebTest do
 
     test "the special value `today`" do
       # Make sure that timezone is as expected
-      assert InstitutionApi.timezone(@institution) == @timezone
+      assert Institution.timezone(@institution) == @timezone
       
       input = %__MODULE__{
         in_service_datestring: @today,

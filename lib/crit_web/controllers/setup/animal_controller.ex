@@ -3,7 +3,7 @@ defmodule CritWeb.Setup.AnimalController do
   use CritWeb.Controller.Path, :setup_animal_path
   import CritWeb.Plugs.Authorize
 
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
   alias CritBiz.ViewModels.Setup, as: VM
@@ -106,7 +106,7 @@ defmodule CritWeb.Setup.AnimalController do
     render(conn, "bulk_creation.html",
       changeset: changeset,
       path: path(:bulk_create),
-      options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name))
+      options: Institution.species(institution(conn)) |> EnumX.id_pairs(:name))
   end
 
   defp render_edit_form(conn, id, changeset) do 

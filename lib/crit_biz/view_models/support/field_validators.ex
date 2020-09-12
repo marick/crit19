@@ -3,7 +3,7 @@ defmodule CritBiz.ViewModels.FieldValidators do
   use Crit.Errors
   import Ecto.Changeset
   alias Ecto.ChangesetX
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Pile.Namelist
   use ExContract
 
@@ -21,7 +21,7 @@ defmodule CritBiz.ViewModels.FieldValidators do
     iso_today =
       changeset
       |> fetch_field!(:institution)
-      |> InstitutionApi.today!
+      |> Institution.today!
       |> Date.to_iso8601
 
     date_order_(changeset, [iso_today, out_of_service])

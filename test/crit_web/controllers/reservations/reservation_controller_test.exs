@@ -3,7 +3,7 @@ defmodule CritWeb.Reservations.ReservationControllerTest do
   alias CritWeb.Reservations.ReservationController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
   alias Crit.Exemplars.ReservationFocused
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias CritBiz.ViewModels.Reservation.CalendarEntry
 
   setup :logged_in_as_reservation_manager
@@ -22,7 +22,7 @@ defmodule CritWeb.Reservations.ReservationControllerTest do
     test "a reservation", %{conn: conn} do 
       reservation = ReservationFocused.reserved!(@bovine_id,
         ["jeff", "bossie"], ["procedure 1", "proc"],
-        date: InstitutionApi.today!(@institution))
+        date: Institution.today!(@institution))
 
       assert [result] =
         get_via_action(conn, :week_data, "0")
@@ -36,7 +36,7 @@ defmodule CritWeb.Reservations.ReservationControllerTest do
     test "a reservation in an earlier week", %{conn: conn} do 
       reservation = ReservationFocused.reserved!(@bovine_id,
         ["jeff", "bossie"], ["procedure 1", "proc"],
-        date: Date.add(InstitutionApi.today!(@institution), -7))
+        date: Date.add(Institution.today!(@institution), -7))
 
       assert [result] =
         get_via_action(conn, :week_data, "-1")

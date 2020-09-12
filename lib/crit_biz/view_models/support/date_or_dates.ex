@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.DateOrDates do
   use Ecto.Schema
   use Crit.Global.Constants
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   import Ecto.Changeset
 
   @last_day_radio_value "just one day"  
@@ -27,7 +27,7 @@ defmodule CritBiz.ViewModels.DateOrDates do
     {:ok, first_date} =
       synthesize(changeset,
         :first_datestring,
-        {@today, InstitutionApi.today!(institution)})
+        {@today, Institution.today!(institution)})
     {:ok, last_date} =
       synthesize(changeset,
         :last_datestring,

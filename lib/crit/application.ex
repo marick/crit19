@@ -15,7 +15,7 @@ defmodule Crit.Application do
       CritWeb.Endpoint,
       # Starts a worker by calling: Crit.Worker.start_link(arg)
       Crit.Audit.ToEcto.Server,
-      Crit.Setup.InstitutionSupervisor,
+      Crit.Servers.Institution.Supervisor,
       {ConCache, [name: Crit.Cache,
                   ttl_check_interval: :timer.hours(24),
                   global_ttl: :timer.hours(48)]}

@@ -2,7 +2,7 @@ defmodule CritWeb.Setup.ProcedureController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :setup_procedure_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias CritBiz.ViewModels.Setup, as: VM
   alias Ecto.ChangesetX
 
@@ -40,8 +40,8 @@ defmodule CritWeb.Setup.ProcedureController do
   # ------------------------------------------------------------------------
 
   defp render_bulk_creation_form(conn, changesets) do
-    species_pairs = InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name)
-    frequencies = InstitutionApi.procedure_frequencies(institution(conn))
+    species_pairs = Institution.species(institution(conn)) |> EnumX.id_pairs(:name)
+    frequencies = Institution.procedure_frequencies(institution(conn))
     render(conn, "bulk_creation_form.html",
       changesets: changesets,
       path: path(:bulk_create),

@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Crit.Schemas
   alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
@@ -62,7 +62,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     header =
       View.context_header(
         struct.date_showable_date,
-        InstitutionApi.timeslot_name(struct.timeslot_id, institution(conn)))
+        Institution.timeslot_name(struct.timeslot_id, institution(conn)))
 
     task_memory = UserTask.remember_relevant(struct, task_header: header)
     render_form_for_next_step(conn, :put_animals, task_memory)
@@ -120,8 +120,8 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   defp render_start_of_task(conn, task_memory, changeset) do
     render_form_for_next_step(conn, :put_context, task_memory,
       changeset: changeset,
-      species_options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name),
-      timeslot_options: InstitutionApi.timeslots(institution(conn)) |> EnumX.id_pairs(:name))
+      species_options: Institution.species(institution(conn)) |> EnumX.id_pairs(:name),
+      timeslot_options: Institution.timeslots(institution(conn)) |> EnumX.id_pairs(:name))
   end
 
   defp render_form_for_next_step(conn, next_action, task_memory, opts) do

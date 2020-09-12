@@ -77,7 +77,7 @@ defmodule CritWeb.Setup.AnimalController.BulkCreationTest do
     # This test no longer works because `follow_form` doesn't preserve
     # the audit record pid that's stashed in the `conn`. However, that
     # pid should probably be per-institution anyway, to be accessed
-    # via the InstitutionApi.
+    # via the Institution.
     @tag :skip
     test "an audit record is created", %{conn: conn} do
       changes = %{names: "bad ass animal, animal of bliss"}

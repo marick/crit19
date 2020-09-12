@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.DateOrDatesTest do
   use Crit.DataCase
   alias CritBiz.ViewModels.DateOrDates
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Ecto.Changeset
 
   @end_date_same_as_first "just one day"
@@ -13,7 +13,7 @@ defmodule CritBiz.ViewModels.DateOrDatesTest do
   end
 
   describe "creating a structure from two dates" do
-    defp today, do: InstitutionApi.today!(@institution)
+    defp today, do: Institution.today!(@institution)
     
     test "two real dates" do
       input = %{"first_datestring" => @iso_date_1,

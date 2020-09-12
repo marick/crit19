@@ -6,7 +6,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   alias CritWeb.Reservations.ReservationController
   alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
-  alias Crit.Setup.{InstitutionApi}
+  alias Crit.Servers.Institution
   alias Crit.Reservations.ReservationApi
   alias Ecto.Datespan
   use FlowAssertions
@@ -20,7 +20,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   @date ~D[2019-01-01]
   @human_date "January 1, 2019"
   @timeslot_id 1
-  @span InstitutionApi.timespan(@date, @timeslot_id, @institution)
+  @span Institution.timespan(@date, @timeslot_id, @institution)
   
   setup do
     given UserTask.new_id, [], do: @task_id
@@ -59,7 +59,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       post_to_action(conn, :put_context, under(:context, params))
       |> assert_purpose(after_the_fact_pick_animals())
 
-      expected_span = InstitutionApi.timespan(@date, @timeslot_id, @institution)
+      expected_span = Institution.timespan(@date, @timeslot_id, @institution)
       UserTask.get(@task_id)
       |> assert_field(span: expected_span,
                       responsible_person: "dster")

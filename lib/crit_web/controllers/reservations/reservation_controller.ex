@@ -6,7 +6,7 @@ defmodule CritWeb.Reservations.ReservationController do
   alias Crit.Reservations.{ReservationApi}
   alias CritBiz.ViewModels.DateOrDates
   alias Pile.TimeHelper
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   
   plug :must_be_able_to, :make_reservations
 
@@ -45,7 +45,7 @@ defmodule CritWeb.Reservations.ReservationController do
 
   def week_data(conn, %{"week_offset" => count_string}) do
     count = String.to_integer(count_string)
-    central_date = Date.add(InstitutionApi.today!(institution(conn)), count * 7)
+    central_date = Date.add(Institution.today!(institution(conn)), count * 7)
     {sunday, saturday} = TimeHelper.week_dates(central_date)
 
     reservations =

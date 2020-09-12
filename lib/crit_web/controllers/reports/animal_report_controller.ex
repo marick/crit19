@@ -2,7 +2,7 @@ defmodule CritWeb.Reports.AnimalReportController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :reports_animal_report_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Setup.InstitutionApi
+  alias Crit.Servers.Institution
   alias Ecto.Timespan
   alias Crit.SqlRows.Reservation
   alias CritBiz.ViewModels.Reports.Animal
@@ -27,7 +27,7 @@ defmodule CritWeb.Reports.AnimalReportController do
 
   defp last_month_span(institution) do 
     {now_year, now_month, _day} =
-      InstitutionApi.today!(institution)
+      Institution.today!(institution)
       |> Date.to_erl
 
     {year, month, _day} = 
