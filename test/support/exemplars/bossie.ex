@@ -3,7 +3,8 @@ defmodule Crit.Exemplars.Bossie do
   use ExContract
   import Crit.RepoState
   alias CritBiz.ViewModels.Setup, as: VM
-  import FlowAssertions.MapA
+  use FlowAssertions
+  use FlowAssertions.Ecto
   alias Crit.Exemplars, as: Ex
   alias Crit.Factory
 
@@ -52,5 +53,16 @@ defmodule Crit.Exemplars.Bossie do
                      institution: @institution,
                      in_service_datestring: @earliest_iso_date,
                      out_of_service_datestring: @latest_iso_date)
+  end
+
+  @doc """
+  Specifically, this is the service gap created by `put_service_gap`.
+  """
+  def assert_has_the_service_gap(%VM.Animal{} = animal) do
+    animal
+    |> assert_assoc_loaded(:service_gaps)
+    |> with_singleton_content(:service_gaps)
+       |> assert_shape(%VM.ServiceGap{})
+       |> Ex.Datespan.assert_datestrings(:first)
   end
 end

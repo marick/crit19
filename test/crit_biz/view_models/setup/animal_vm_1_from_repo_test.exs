@@ -94,12 +94,8 @@ defmodule CritBiz.ViewModels.Setup.AnimalVM.FromRepoTest do
   def assert_no_service_gaps(view_model, _repo),
     do: refute_assoc_loaded(view_model, :service_gaps)
     
-  def assert_bossie_service_gap(view_model, _repo) do 
-    view_model
-    |> assert_assoc_loaded(:service_gaps)
-    |> with_singleton_content(:service_gaps)
-       |> assert_shape(%VM.ServiceGap{})
-       |> Ex.Datespan.assert_datestrings(:first)
+  def assert_bossie_service_gap(view_model, _repo) do
+    Ex.Bossie.assert_has_the_service_gap(view_model)
   end
     
   # ----------------------------------------------------------------------------
