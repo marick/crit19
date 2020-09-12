@@ -1,8 +1,5 @@
 defmodule Crit.Servers.Institution do
-  alias Crit.Repo
-  alias Crit.Schemas.Institution
   import Crit.Servers.Institution.Server, only: [server: 1]
-  import Ecto.Query
   alias Ecto.Timespan
   alias Pile.TimeHelper
 
@@ -11,10 +8,6 @@ defmodule Crit.Servers.Institution do
   def timeslots(institution), do: get(:timeslots, institution)
 
   # ----------------------------------------------------------------------------
-
-  def all do
-    Repo.all(from Institution)
-  end
 
   def timezone(institution) do
     get(:institution, institution).timezone

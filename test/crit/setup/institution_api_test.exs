@@ -5,12 +5,6 @@ defmodule Crit.Servers.InstitutionTest do
   alias Ecto.Timespan
   alias Crit.Exemplars.ReservationFocused
 
-  test "during testing, there's a single institution" do
-    [retrieved] = Institution.all
-
-    assert retrieved.short_name == @institution
-  end
-
   test "an institution has a timezone" do
     actual = Institution.timezone(@institution) 
     assert actual == @default_timezone

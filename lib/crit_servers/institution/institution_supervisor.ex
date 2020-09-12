@@ -1,5 +1,6 @@
 defmodule Crit.Servers.Institution.Supervisor do
   use Supervisor
+  alias Crit.Schemas
   alias Crit.Servers.Institution
 
   def start_link(opts) do
@@ -8,7 +9,7 @@ defmodule Crit.Servers.Institution.Supervisor do
 
   @impl true
   def init(:ok) do
-    Institution.all
+    Schemas.Institution.all
     |> Enum.map(fn institution ->
          Supervisor.child_spec({Institution.Server, institution},
            id: institution.short_name)
