@@ -5,7 +5,7 @@ defmodule CritBiz.ViewModels.Reservation.InitialFormTest do
 
   @tag :skip
   test "the starting changeset" do
-    VM.Form.Context.empty
+    VM.Forms.Context.empty
     |> assert_shape(%Changeset{})
     |> assert_data(species_id: @bovine_id)
     |> IO.inspect

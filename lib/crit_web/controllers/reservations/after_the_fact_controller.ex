@@ -15,13 +15,13 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   def start(conn, _params) do
     task_memory = UserTask.start(VM)
 
-    render_start_of_task(conn, task_memory, VM.Form.Context.empty)
+    render_start_of_task(conn, task_memory, VM.Forms.Context.empty)
   end
 
   def put_context(conn, %{"context" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
-    case UserTask.pour_into_struct(params, VM.Form.Context) do
+    case UserTask.pour_into_struct(params, VM.Forms.Context) do
       {:ok, struct, _task_id} -> got_valid(conn, struct)
       {:error, changeset, task_id} ->
         render_start_of_task(conn, UserTask.get(task_id), changeset)
@@ -29,7 +29,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   def put_animals(conn, %{"animals" => params}) do
-    case UserTask.pour_into_struct(params, VM.Form.Animals) do
+    case UserTask.pour_into_struct(params, VM.Forms.Animals) do
       {:ok, struct, _task_id} -> got_valid(conn, struct)
 
       {:task_expiry, message} ->
@@ -43,7 +43,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
   
   def put_procedures(conn, %{"procedures" => params}) do
-    case UserTask.pour_into_struct(params, VM.Form.Procedures) do
+    case UserTask.pour_into_struct(params, VM.Forms.Procedures) do
       {:ok, struct, _task_id} -> got_valid(conn, struct)
 
       {:task_expiry, message} ->
@@ -58,7 +58,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   # ----------------------------------------------------------------------------
 
-  defp got_valid(conn, %VM.Form.Context{} = struct) do
+  defp got_valid(conn, %VM.Forms.Context{} = struct) do
     header =
       View.context_header(
         struct.date_showable_date,
@@ -68,7 +68,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     render_form_for_next_step(conn, :put_animals, task_memory)
   end
 
-  defp got_valid(conn, %VM.Form.Animals{} = struct) do
+  defp got_valid(conn, %VM.Forms.Animals{} = struct) do
     header =
       struct.chosen_animal_ids
       |> Schemas.Animal.Get.all_by_ids(institution(conn))
@@ -79,7 +79,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     render_form_for_next_step(conn, :put_procedures, task_memory)
   end
 
-  defp got_valid(conn, %VM.Form.Procedures{} = struct) do
+  defp got_valid(conn, %VM.Forms.Procedures{} = struct) do
         task_memory = UserTask.remember_relevant(struct)
         
     {:ok, reservation, conflicts} =
