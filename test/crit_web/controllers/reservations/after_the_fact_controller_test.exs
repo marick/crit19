@@ -4,7 +4,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
   use CritWeb.ConnMacros, controller: UnderTest
   import Crit.RepoState
   alias CritWeb.Reservations.ReservationController
-  alias Crit.State.UserTask
+  alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias Crit.Setup.{InstitutionApi}
   alias Crit.Reservations.ReservationApi

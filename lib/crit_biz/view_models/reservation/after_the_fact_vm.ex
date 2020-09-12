@@ -1,5 +1,5 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
-  alias Crit.State.UserTask
+  alias Crit.Servers.UserTask
 
   defstruct task_id: :nothing,
     task_header:          :nothing,

@@ -2,7 +2,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias Ecto.Timespan
-  alias Crit.State.UserTask
+  alias Crit.Servers.UserTask
   use FlowAssertions
 
   describe "processing of Context" do

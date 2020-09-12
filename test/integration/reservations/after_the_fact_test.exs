@@ -2,7 +2,7 @@ defmodule Integration.Reservations.AfterTheFactTest do
   use CritWeb.IntegrationCase
   alias CritWeb.Reservations.AfterTheFactController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  alias Crit.State.UserTask
+  alias Crit.Servers.UserTask
   alias Crit.Reservations.ReservationApi
   alias Crit.Setup.InstitutionApi
   alias Ecto.Timespan

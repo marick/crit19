@@ -4,7 +4,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   import CritWeb.Plugs.Authorize
   alias Crit.Setup.InstitutionApi
   alias Crit.Schemas
-  alias Crit.State.UserTask
+  alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias CritWeb.Reservations.AfterTheFactView, as: View
   alias Crit.Reservations.ReservationApi

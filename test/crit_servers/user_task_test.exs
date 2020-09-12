@@ -1,6 +1,6 @@
-defmodule Crit.State.UserTaskTest do 
+defmodule Crit.Servers.UserTaskTest do 
   use ExUnit.Case, async: true
-  alias Crit.State.UserTask
+  alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   use FlowAssertions.NoValueA, no_value: :nothing
   import FlowAssertions.MapA

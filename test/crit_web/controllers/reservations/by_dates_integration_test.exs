@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.ByAnimalIntegrationTest do
   use CritWeb.IntegrationCase
   alias CritWeb.Reservations.ReservationController, as: UnderTest
   use CritWeb.ConnMacros, controller: UnderTest
-  # alias Crit.State.UserTask
+  # alias Crit.Servers.UserTask
   # alias Crit.Exemplars.Available
   # alias Crit.Reservations.ReservationApi
   # alias Crit.Setup.InstitutionApi
