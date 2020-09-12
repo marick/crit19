@@ -18,7 +18,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     render_start_of_task(conn, task_memory, VM.Form.Context.empty)
   end
 
-  def put_non_use_values(conn, %{"non_use_values" => delivered_params}) do
+  def put_context(conn, %{"context" => delivered_params}) do
     # Institution is needed for time calculations
     params = Map.put(delivered_params, "institution", institution(conn))
     case UserTask.pour_into_struct(params, VM.Form.Context) do
@@ -60,7 +60,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
   defp got_valid(conn, %VM.Form.Context{} = struct) do
     header =
-      View.non_use_values_header(
+      View.context_header(
         struct.date_showable_date,
         InstitutionApi.timeslot_name(struct.timeslot_id, institution(conn)))
 
@@ -118,7 +118,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   defp render_start_of_task(conn, task_memory, changeset) do
-    render_form_for_next_step(conn, :put_non_use_values, task_memory,
+    render_form_for_next_step(conn, :put_context, task_memory,
       changeset: changeset,
       species_options: InstitutionApi.species(institution(conn)) |> EnumX.id_pairs(:name),
       timeslot_options: InstitutionApi.timeslots(institution(conn)) |> EnumX.id_pairs(:name))

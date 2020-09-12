@@ -2,7 +2,7 @@ defmodule CritWeb.Reservations.AfterTheFactView do
   use CritWeb, :view
   alias Pile.TimeHelper
 
-  def non_use_values_header(showable_date, timeslot_name) do
+  def context_header(showable_date, timeslot_name) do
     ~E"""
     <h2 class="ui center aligned header">
       Step 2: Choose animals for
