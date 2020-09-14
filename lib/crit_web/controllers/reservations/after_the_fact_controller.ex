@@ -118,10 +118,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   end
 
   defp render_start_of_task(conn, task_memory, changeset) do
-    render_form_for_next_step(conn, :put_context, task_memory,
-      changeset: changeset,
-      species_options: Institution.species(institution(conn)) |> EnumX.id_pairs(:name),
-      timeslot_options: Institution.timeslots(institution(conn)) |> EnumX.id_pairs(:name))
+    render_form_for_next_step(conn, :put_context, task_memory, changeset: changeset)
   end
 
   defp render_form_for_next_step(conn, next_action, task_memory, opts) do

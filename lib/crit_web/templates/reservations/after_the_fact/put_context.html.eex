@@ -23,19 +23,13 @@
 
 <div class="ui segment">
   <div class="fields">
-    <%= dropdown f, "Species", :species_id,
-          options: @species_options,
-          dropdown_id: "species_select" %>
+    <%= species_dropdown f, @conn %> 
     <%= labeled_text_field(f, "Responsible person", :responsible_person,
         placeholder: "Usually the instructor") %>
-  </div>    
+t  </div>    
   <div class="fields">
-
     <%= small_calendar(f, "Date", :date, unique: "showable") %>
-
-    <%= dropdown f, "Time", :timeslot_id,
-          options: @timeslot_options,
-          dropdown_id: "timeslott_select" %>
+    <%= timeslot_dropdown f, @conn %>
   </div>
 
 </div>

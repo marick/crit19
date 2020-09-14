@@ -21,10 +21,7 @@
 
 <div class="ui segment">
   <div class="fields">
-    <%= dropdown f, "Species", :species_id,
-          options: @options,
-          dropdown_id: "species_select" %>
-
+    <%= species_dropdown f, @conn %>
   </div>
 
   <%= calendar_with_alternatives f, "Date put into service", :in_service_datestring,

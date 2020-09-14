@@ -59,6 +59,7 @@ defmodule CritWeb do
       import CritWeb.Plugs.Accessors
       alias Ecto.ChangesetX
       import CritWeb.TaskHelpers
+      import CritWeb.InstitutionHelpers
     end
   end
 

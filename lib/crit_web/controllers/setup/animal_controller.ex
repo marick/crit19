@@ -105,8 +105,7 @@ defmodule CritWeb.Setup.AnimalController do
   defp render_bulk_create_form(conn, changeset) do 
     render(conn, "bulk_creation.html",
       changeset: changeset,
-      path: path(:bulk_create),
-      options: Institution.species(institution(conn)) |> EnumX.id_pairs(:name))
+      path: path(:bulk_create))
   end
 
   defp render_edit_form(conn, id, changeset) do 
