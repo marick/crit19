@@ -84,12 +84,8 @@ defmodule Crit.Servers.UserTaskTest do
   defstruct task_id: nil, some_array: [], keyword: false
 
   test "you can start with some data" do
-    initial = %__MODULE__{some_array: [1, 2, 3]}
-    assert_field(initial, task_id: nil)
-
-    (%__MODULE__{} = UserTask.start(__MODULE__, initial, keyword: true))
-    |> assert_fields(some_array: [1, 2, 3],
-                     keyword: true,
+    (%__MODULE__{} = UserTask.start(__MODULE__, keyword: true))
+    |> assert_fields(keyword: true,
                      task_id: &is_binary/1)
   end
 end

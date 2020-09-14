@@ -14,9 +14,9 @@ defmodule Crit.Servers.UserTask do
     starting_struct
   end
 
-  def start(module, initial, opts \\ []) do
-    %{task_id: task_id} = start(module)
-    store_by_task_id(task_id, initial, opts)
+  def start(module, initial_values) do
+    struct = start(module)
+    store_by_task_id(struct.task_id, struct, initial_values)
   end
 
   def remember_relevant(%{task_id: task_id} = new_values, extras \\ []) do
