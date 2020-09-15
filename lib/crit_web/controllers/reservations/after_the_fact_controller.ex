@@ -13,9 +13,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    task_memory = UserTask.start(VM)
-
-    render_start_of_task(conn, task_memory, VM.Forms.Context.empty)
+    render_start_of_task__2(conn, VM.start())
   end
 
   def put_context(conn, %{"context" => delivered_params}) do
@@ -115,6 +113,10 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     procedures =
       Schemas.Procedure.Get.all_by_species(task_memory.species_id, institution(conn))
     render_form_for_next_step(conn, :put_procedures, task_memory, procedures: procedures)
+  end
+
+  defp render_start_of_task__2(conn, {task_memory, changeset}) do
+    render_form_for_next_step(conn, :put_context, task_memory, changeset: changeset)
   end
 
   defp render_start_of_task(conn, task_memory, changeset) do

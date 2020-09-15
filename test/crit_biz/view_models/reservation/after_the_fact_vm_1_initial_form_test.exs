@@ -3,12 +3,8 @@ defmodule CritBiz.ViewModels.Reservation.InitialFormTest do
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
   alias Ecto.Changeset
 
-  @tag :skip
   test "the starting changeset" do
-    VM.Forms.Context.empty
-    |> assert_shape(%Changeset{})
-    |> assert_data(species_id: @bovine_id)
-    |> IO.inspect
+    assert {task_memory, changeset} = VM.start
   end
 end
   
