@@ -3,7 +3,6 @@ defmodule CritWeb.Setup.AnimalController do
   use CritWeb.Controller.Path, :setup_animal_path
   import CritWeb.Plugs.Authorize
 
-  alias Crit.Servers.Institution
   alias CritWeb.Audit
   alias CritWeb.Controller.Common
   alias CritBiz.ViewModels.Setup, as: VM
