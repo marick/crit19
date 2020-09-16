@@ -1,10 +1,24 @@
 defmodule CritBiz.ViewModels.Reservation.InitialFormTest do
   use Crit.DataCase
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
-  alias Ecto.Changeset
+#  alias Ecto.Changeset
+  alias Crit.Servers.UserTask
+
+  @task_id UserTask.new_id()
+
+  setup do 
+    given UserTask.new_id, [], do: @task_id
+    UserTask.delete(@task_id)
+  end
 
   test "the starting changeset" do
     assert {task_memory, changeset} = VM.start
+
+    task_memory
+    |> assert_fields(task_id: @task_id)
+
+    changeset
+    |> assert_no_changes
   end
 end
   

@@ -49,10 +49,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     render_form_for_next_step(conn, :put_animals, task_memory, animals: animals)
   end
 
-
-
-  
-
   # ----------------------------------------------------------------------------
 
 
