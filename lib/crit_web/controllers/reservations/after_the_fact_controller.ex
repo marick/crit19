@@ -13,7 +13,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    render_start_of_task__2(conn, VM.start())
+    render_start_of_task__2(conn, VM.start(institution(conn)))
   end
 
   defp render_start_of_task__2(conn, {task_memory, changeset}) do

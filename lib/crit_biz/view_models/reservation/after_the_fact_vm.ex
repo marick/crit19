@@ -16,7 +16,8 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
 
 
   # For the non-field parts of the display.
-  ## Values needed after step 1 (Start)
+    ## Values needed after step 1 (Start)
+    institution:          :nothing,
   
   ## Values needed after step 2 (put context)
     task_header:          :nothing
@@ -27,8 +28,8 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
 
 
   
-  def start do
-    task_memory = UserTask.start(__MODULE__)
+  def start(institution) do
+    task_memory = UserTask.start(__MODULE__, institution: institution)
     changeset = Forms.Context.empty
     {task_memory, changeset}
   end
