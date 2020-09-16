@@ -34,5 +34,50 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
     {task_memory, changeset}
   end
 
+  def accept_context_form(params) do
+    UserTask.supplying_task_memory(params, fn task_memory -> 
+      changeset = VM.Forms.Context.changeset(params)
+    end)
+  end
+        
+      
+    
+    
+  #   changeset = apply(struct_module, :changeset, [params])
+  #     task_id = Changeset.fetch_change!(changeset, :task_id)
+  #     changeset
+  #     |> Changeset.apply_action(:insert)
+  #     |> Tuple.append(task_id)
+  #   end
+    
 
+
+
+  # def put_context(conn, %{"context" => delivered_params}) do
+  #   # Institution is needed for time calculations
+  #   params = Map.put(delivered_params, "institution", institution(conn))
+  #   case UserTask.pour_into_struct(params, VM.Forms.Context) do
+  #     {:ok, struct, _task_id} -> got_valid_context(conn, struct)
+  #     {:error, changeset, task_id} ->
+  #       render_start_of_task__2(conn, {UserTask.get(task_id), changeset})
+  #   end
+  # end
+
+  # defp got_valid_context(conn, %VM.Forms.Context{} = struct) do
+  #   header =
+  #     View.context_header(
+  #       struct.date_showable_date,
+  #       Institution.timeslot_name(struct.timeslot_id, institution(conn)))
+
+  #   task_memory = UserTask.remember_relevant(struct, task_header: header)
+  #   render_form_for_animals_step(conn, :put_animals, task_memory)
+  # end
+
+  # defp render_form_for_animals_step(conn, :put_animals, task_memory) do
+  #   animals =
+  #     ReservationApi.after_the_fact_animals(task_memory, institution(conn))
+    
+  #   render_form_for_next_step(conn, :put_animals, task_memory, animals: animals)
+  # end
+    
 end

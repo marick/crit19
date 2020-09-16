@@ -8,6 +8,7 @@ defmodule CritBiz.ViewModels.Reservation.InitialFormTest do
   setup do 
     given UserTask.new_id, [], do: @task_id
     UserTask.delete(@task_id)
+    :ok
   end
 
   test "the starting changeset" do

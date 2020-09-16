@@ -48,6 +48,21 @@ defmodule Crit.Servers.UserTask do
   end
 
   def expiry_message, do: "This task has expired; you will have to start again."
+
+  def supplying_task_memory(params, f) when is_map(params),
+    do: supplying_task_memory(Map.fetch!(params, "task_id"), f)
+
+  def supplying_task_memory(task_id, f) when is_binary(task_id) do
+    case get(task_id) do
+      nil -> {:error, :expired_task, expiry_message()}
+      task_memory -> f.(task_memory)
+    end
+  end
+    
+      
+    
+
+  
   
   def pour_into_struct(params, struct_module) do
     changeset = apply(struct_module, :changeset, [params])
