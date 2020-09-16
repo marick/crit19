@@ -36,7 +36,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
 
   def accept_context_form(params) do
     UserTask.supplying_task_memory(params, fn task_memory -> 
-      changeset = VM.Forms.Context.changeset(params)
+      changeset = {:error, :form, Forms.Context.changeset(params)}
     end)
   end
         
