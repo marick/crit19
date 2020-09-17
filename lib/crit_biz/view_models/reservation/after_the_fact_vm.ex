@@ -1,8 +1,9 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact.Forms
-  alias Ecto.{Changeset,ChangesetX}
+  alias Ecto.Changeset
   alias Crit.Servers.Institution
+  alias Crit.Reservations.ReservationApi
 
   defstruct task_id: :nothing,
     # Values needed for creation
@@ -37,7 +38,9 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   end
 
 
-  defp attempt_step(params, form_module, next_task_memory: next_task_memory) do
+  defp attempt_step(params, form_module, kvs) do 
+    callbacks = Enum.into(kvs, %{})
+
     UserTask.supplying_task_memory(params, fn task_memory ->
       changeset = form_module.changeset(params)
       case changeset.valid? do
@@ -45,9 +48,11 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
           {:error, :form, changeset}
         true ->
           {:ok, struct} = Changeset.apply_action(changeset, :insert)
-          new_task_memory = next_task_memory.(task_memory, struct)
-          UserTask.replace(task_memory.task_id, new_task_memory)
-          {:ok, new_task_memory, nil}
+          next_task_memory = callbacks.next_task_memory.(task_memory, struct)
+          UserTask.replace(task_memory.task_id, next_task_memory)
+          next_form_data = callbacks.next_form_data.(next_task_memory, struct)
+          
+          {:ok, next_task_memory, next_form_data}
       end
     end)
   end
@@ -87,6 +92,9 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
         task_memory
         |> initialize_by_transfer(struct, @context_transfers)
         |> initialize_by_setting(span: span)
+      end,
+      next_form_data: fn task_memory, _struct ->
+        ReservationApi.after_the_fact_animals(task_memory, task_memory.institution)
       end)
   end
     

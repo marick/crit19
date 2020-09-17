@@ -4,7 +4,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.ValidateContext.Test do
 #  alias Ecto.Changeset
   alias Crit.Servers.UserTask
   alias Ecto.Timespan
-
+  
   setup do
     {task_memory, _} = VM.start(@institution)
     [task_memory: task_memory]
@@ -34,8 +34,8 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.ValidateContext.Test do
                "timeslot_id" => "1",
                "institution" => @institution,
                "task_id" => task_memory.task_id}
-    
-    assert {:ok, new_task_memory, changeset} = VM.accept_context_form(params)
+
+    assert {:ok, new_task_memory, animals} = VM.accept_context_form(params)
 
     expected_span =
       Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
@@ -43,14 +43,16 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.ValidateContext.Test do
 
     new_task_memory
     |> assert_fields(species_id: @bovine_id,
-    responsible_person: "dster",
+                     responsible_person: "dster",
     date: ~D[2019-01-01],
     timeslot_id: 1,
     span: expected_span
     )
+
+    IO.puts "Use a mock"
+    assert animals == []
     
   end
-
 
   def assert_task_memory_unchanged(task_memory) do 
     assert UserTask.get(task_memory.task_id) == task_memory
