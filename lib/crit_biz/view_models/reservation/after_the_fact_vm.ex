@@ -1,6 +1,8 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact.Forms
+  alias Ecto.{Changeset,ChangesetX}
+  alias Crit.Servers.Institution
 
   defstruct task_id: :nothing,
     # Values needed for creation
@@ -34,14 +36,59 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
     {task_memory, changeset}
   end
 
-  def accept_context_form(params) do
-    UserTask.supplying_task_memory(params, fn task_memory -> 
-      changeset = {:error, :form, Forms.Context.changeset(params)}
+
+  defp attempt_step(params, form_module, next_task_memory: next_task_memory) do
+    UserTask.supplying_task_memory(params, fn task_memory ->
+      changeset = form_module.changeset(params)
+      case changeset.valid? do
+        false ->
+          {:error, :form, changeset}
+        true ->
+          {:ok, struct} = Changeset.apply_action(changeset, :insert)
+          new_task_memory = next_task_memory.(task_memory, struct)
+          UserTask.replace(task_memory.task_id, new_task_memory)
+          {:ok, new_task_memory, nil}
+      end
     end)
   end
+
+  def check_not_already_initialized(task_memory, field) do 
+    case Map.get(task_memory, field) do
+      :nothing ->
+        :ok
+      value ->
+        raise "Task memory already has value `#{inspect value}` for field `#{inspect field}`"
+    end
+  end
+
+  def initialize_by_transfer(task_memory, source, fields) do
+    Enum.reduce(fields, task_memory, fn field, acc ->
+      check_not_already_initialized(task_memory, field)
+      Map.put(acc, field, Map.get(source, field))
+    end)
+  end
+
+  def initialize_by_setting(task_memory, kvs) do
+    Enum.reduce(kvs, task_memory, fn {field, value}, acc ->
+      check_not_already_initialized(task_memory, field)
+      Map.put(acc, field, value)
+    end)
+  end
+
+  @context_transfers [:species_id, :responsible_person, :date, :timeslot_id]
+
+  def accept_context_form(params) do
+    attempt_step(params, Forms.Context,
+      next_task_memory: fn task_memory, struct ->
+        span =
+          Institution.timespan(
+            struct.date, struct.timeslot_id, task_memory.institution)
         
-      
-    
+        task_memory
+        |> initialize_by_transfer(struct, @context_transfers)
+        |> initialize_by_setting(span: span)
+      end)
+  end
     
   #   changeset = apply(struct_module, :changeset, [params])
   #     task_id = Changeset.fetch_change!(changeset, :task_id)

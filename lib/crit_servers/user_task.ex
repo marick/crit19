@@ -19,13 +19,17 @@ defmodule Crit.Servers.UserTask do
     store_by_task_id(struct.task_id, struct, initial_values)
   end
 
-  def remember_relevant(%{task_id: task_id} = new_values, extras \\ []) do
-    store_by_task_id(task_id, new_values, extras)
-  end
-
   def put(task_id, key, value) do
     updater = fn old ->
       {:ok, Map.put(old, key, value)}
+    end
+    :ok = ConCache.update(Crit.Cache, task_id, updater)
+    get(task_id)
+  end
+  
+  def replace(task_id, new_struct) do
+    updater = fn _old ->
+      {:ok, new_struct}
     end
     :ok = ConCache.update(Crit.Cache, task_id, updater)
     get(task_id)
@@ -55,15 +59,20 @@ defmodule Crit.Servers.UserTask do
   def supplying_task_memory(task_id, f) when is_binary(task_id) do
     case get(task_id) do
       nil -> {:error, :expired_task, expiry_message()}
-      task_memory -> f.(task_memory)
+      task_memory ->
+        f.(task_memory)
     end
   end
     
       
-    
+  #### DELETE
+  def remember_relevant(%{task_id: task_id} = new_values, extras \\ []) do
+    store_by_task_id(task_id, new_values, extras)
+  end
+
 
   
-  
+  #### DELETE
   def pour_into_struct(params, struct_module) do
     changeset = apply(struct_module, :changeset, [params])
     if Enum.member?(Keyword.keys(changeset.errors), :task_id) do
@@ -77,6 +86,7 @@ defmodule Crit.Servers.UserTask do
   end
 
   # ----------------------------------------------------------------------------
+  #### DELETE
   defp store_by_task_id(task_id, %{} = new_values, extras) when is_struct(new_values) do
     total = Enum.into(
       extras,
