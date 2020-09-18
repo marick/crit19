@@ -2,7 +2,6 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   use CritWeb, :controller
   use CritWeb.Controller.Path, :after_the_fact_path
   import CritWeb.Plugs.Authorize
-  alias Crit.Servers.Institution
   alias Crit.Schemas
   alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
@@ -13,57 +12,34 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    render_start_of_task__2(conn, VM.start(institution(conn)))
-  end
-
-  defp render_start_of_task__2(conn, {task_memory, changeset}) do
-    render_form_for_next_step(conn, :put_context, task_memory, changeset: changeset)
+    {task_memory, changeset} = VM.start(institution(conn))
+    raw_render(conn, :put_context, task_memory, changeset: changeset)
   end
 
   # ----------------------------------------------------------------------------
 
   def put_context(conn, %{"context" => params}) do
-    VM.accept_context_form(params) |> put_context_render_next(conn)
+    result = VM.accept_context_form(params)
+    render_next(:put_context, result, conn)
   end
 
-  def put_context_render_next({:ok, task_memory, animals}, conn) do
-    render_form_for_next_step(conn, :put_animals, task_memory, animals: animals)
+  def render_next(:put_context, {:ok, task_memory, animals}, conn) do
+    raw_render(conn, :put_animals, task_memory, animals: animals)
   end
 
   def put_context_render_next({:error, :form, task_memory, changeset}, conn) do
-    render_start_of_task__2(conn, {task_memory, changeset})
+    raw_render(conn, :put_context, task_memory, changeset: changeset)
   end
   
 
-  # def put_context(conn, %{"context" => delivered_params}) do
-  #   # Institution is needed for time calculations
-  #   params = Map.put(delivered_params, "institution", institution(conn))
-  #   case UserTask.pour_into_struct(params, VM.Forms.Context) do
-  #     {:ok, struct, _task_id} -> got_valid_context(conn, struct)
-  #     {:error, changeset, task_id} ->
-  #       render_start_of_task__2(conn, {UserTask.get(task_id), changeset})
-  #   end
-  # end
-
-  # defp got_valid_context(conn, %VM.Forms.Context{} = struct) do
-  #   header =
-  #     View.context_header(
-  #       struct.date_showable_date,
-  #       Institution.timeslot_name(struct.timeslot_id, institution(conn)))
-
-  #   task_memory = UserTask.remember_relevant(struct, task_header: header)
-  #   render_form_for_animals_step(conn, :put_animals, task_memory)
-  # end
+  # ----------------------------------------------------------------------------
 
   defp render_form_for_animals_step(conn, :put_animals, task_memory) do
     animals =
       ReservationApi.after_the_fact_animals(task_memory, institution(conn))
     
-    render_form_for_next_step(conn, :put_animals, task_memory, animals: animals)
+    raw_render(conn, :put_animals, task_memory, animals: animals)
   end
-
-  # ----------------------------------------------------------------------------
-
 
   def put_animals(conn, %{"animals" => params}) do
     case UserTask.pour_into_struct(params, VM.Forms.Animals) do
@@ -93,7 +69,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   defp render_form_for_procedures_step(conn, :put_procedures, task_memory) do
     procedures =
       Schemas.Procedure.Get.all_by_species(task_memory.species_id, institution(conn))
-    render_form_for_next_step(conn, :put_procedures, task_memory, procedures: procedures)
+    raw_render(conn, :put_procedures, task_memory, procedures: procedures)
   end
   
 
@@ -128,7 +104,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
 
 
-  defp render_form_for_next_step(conn, next_action, task_memory, opts) do
+  defp raw_render(conn, next_action, task_memory, opts) do
     html = to_string(next_action) <> ".html"
     all_opts = opts ++ [path: path(next_action), state: task_memory]
     render(conn, html, all_opts)
