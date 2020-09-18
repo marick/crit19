@@ -60,6 +60,10 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     end
 
     @tag :skip
+    test "errors are shown", %{conn: conn, params: params} do
+    end
+
+    @tag :skip
     test "task_id has expired", %{conn: conn, params: params} do
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_redirected_to(UnderTest.path(:start))
