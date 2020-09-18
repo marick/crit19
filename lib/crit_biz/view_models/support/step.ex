@@ -7,7 +7,7 @@ defmodule CritBiz.ViewModels.Step do
       changeset = form_module.changeset(params)
       case changeset.valid? do
         false ->
-          {:error, :form, changeset}
+          {:error, :form, task_memory, changeset}
         true ->
           {:ok, struct} = Changeset.apply_action(changeset, :insert)
           next_task_memory = form_module.next_task_memory(task_memory, struct)

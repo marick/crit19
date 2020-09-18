@@ -16,13 +16,14 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.ValidateContext.Test do
                "responsible_person" => "",
                "date" => "",
               }
-    assert {:error, :form, changeset} = VM.accept_context_form(params)
+    assert {:error, :form, new_task_memory, changeset} = VM.accept_context_form(params)
 
     changeset
     |> assert_error(responsible_person: "can't be blank",
                     date: "can't be blank")
 
-    assert_task_memory_unchanged(task_memory)
+    new_task_memory
+    |> assert_same_map(task_memory)
   end
 
 
