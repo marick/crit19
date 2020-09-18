@@ -13,14 +13,12 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
       field :date, :date
       field :date_showable_date, :string
       field :timeslot_id, :integer
-      field :institution, :string
-      field :span, Timespan
       field :responsible_person, :string
       field :task_id, :string
     end
     
     @required [:responsible_person, :species_id, :date,
-               :date_showable_date, :timeslot_id, :institution, :task_id]
+               :date_showable_date, :timeslot_id, :task_id]
     
     @transfers [:species_id, :responsible_person, :date, :timeslot_id]
 
@@ -32,10 +30,9 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
       empty()
       |> cast(attrs, @required)
       |> validate_required(@required)
-      |> add_span
     end
 
-    def next_task_memory(task_memory, struct) do 
+    def next_task_memory(task_memory, struct) do
       span =
         Institution.timespan(
           struct.date, struct.timeslot_id, task_memory.institution)
@@ -53,17 +50,6 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
 
     def next_form_data(task_memory, _struct) do 
       ReservationApi.after_the_fact_animals(task_memory, task_memory.institution)
-    end
-    
-    
-    defp add_span(%{valid?: false} = changeset), do: changeset
-    defp add_span(changeset) do
-      args =
-        [:date, :timeslot_id, :institution]
-        |> Enum.map(&(get_change changeset, &1))
-      
-      result = apply(Institution, :timespan, args)
-      put_change(changeset, :span, result)
     end
   end
   
