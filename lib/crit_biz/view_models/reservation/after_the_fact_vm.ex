@@ -4,6 +4,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   alias Ecto.Changeset
   alias Crit.Servers.Institution
   alias Crit.Reservations.ReservationApi
+  alias CritBiz.ViewModels.Step
 
   defstruct task_id: :nothing,
     # Values needed for creation
@@ -38,64 +39,11 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   end
 
 
-  defp attempt_step(params, form_module, kvs) do 
-    callbacks = Enum.into(kvs, %{})
-
-    UserTask.supplying_task_memory(params, fn task_memory ->
-      changeset = form_module.changeset(params)
-      case changeset.valid? do
-        false ->
-          {:error, :form, changeset}
-        true ->
-          {:ok, struct} = Changeset.apply_action(changeset, :insert)
-          next_task_memory = callbacks.next_task_memory.(task_memory, struct)
-          UserTask.replace(task_memory.task_id, next_task_memory)
-          next_form_data = callbacks.next_form_data.(next_task_memory, struct)
-          
-          {:ok, next_task_memory, next_form_data}
-      end
-    end)
-  end
-
-  def check_not_already_initialized(task_memory, field) do 
-    case Map.get(task_memory, field) do
-      :nothing ->
-        :ok
-      value ->
-        raise "Task memory already has value `#{inspect value}` for field `#{inspect field}`"
-    end
-  end
-
-  def initialize_by_transfer(task_memory, source, fields) do
-    Enum.reduce(fields, task_memory, fn field, acc ->
-      check_not_already_initialized(task_memory, field)
-      Map.put(acc, field, Map.get(source, field))
-    end)
-  end
-
-  def initialize_by_setting(task_memory, kvs) do
-    Enum.reduce(kvs, task_memory, fn {field, value}, acc ->
-      check_not_already_initialized(task_memory, field)
-      Map.put(acc, field, value)
-    end)
-  end
-
-  @context_transfers [:species_id, :responsible_person, :date, :timeslot_id]
 
   def accept_context_form(params) do
-    attempt_step(params, Forms.Context,
-      next_task_memory: fn task_memory, struct ->
-        span =
-          Institution.timespan(
-            struct.date, struct.timeslot_id, task_memory.institution)
-        
-        task_memory
-        |> initialize_by_transfer(struct, @context_transfers)
-        |> initialize_by_setting(span: span)
-      end,
-      next_form_data: fn task_memory, _struct ->
-        ReservationApi.after_the_fact_animals(task_memory, task_memory.institution)
-      end)
+    Step.attempt_step(params, Forms.Context,
+      next_task_memory: &Forms.Context.next_task_memory/2, 
+      next_form_data: &Forms.Context.next_form_data/2)
   end
     
   #   changeset = apply(struct_module, :changeset, [params])

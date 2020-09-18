@@ -4,6 +4,8 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
     import Ecto.Changeset
     alias Crit.Servers.Institution
     alias Ecto.Timespan
+    alias CritBiz.ViewModels.Step
+    alias Crit.Reservations.ReservationApi
     
     embedded_schema do
       field :species_id, :integer
@@ -19,6 +21,8 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
     @required [:responsible_person, :species_id, :date,
                :date_showable_date, :timeslot_id, :institution, :task_id]
     
+    @transfers [:species_id, :responsible_person, :date, :timeslot_id]
+
     def empty do
       change(%__MODULE__{})
     end
@@ -29,6 +33,21 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
       |> validate_required(@required)
       |> add_span
     end
+
+    def next_task_memory(task_memory, struct) do 
+      span =
+        Institution.timespan(
+          struct.date, struct.timeslot_id, task_memory.institution)
+      
+      task_memory
+      |> Step.initialize_by_transfer(struct, @transfers)
+      |> Step.initialize_by_setting(span: span)
+    end
+
+    def next_form_data(task_memory, _struct) do 
+      ReservationApi.after_the_fact_animals(task_memory, task_memory.institution)
+    end
+    
     
     defp add_span(%{valid?: false} = changeset), do: changeset
     defp add_span(changeset) do
