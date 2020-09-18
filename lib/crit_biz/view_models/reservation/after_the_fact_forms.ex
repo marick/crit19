@@ -1,11 +1,8 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
   defmodule Context do
     use Ecto.Schema
-    import Ecto.Changeset
-    alias Crit.Servers.Institution
     alias Ecto.Timespan
     alias CritBiz.ViewModels.Step
-    alias Crit.Reservations.ReservationApi
     
     embedded_schema do
       field :species_id, :integer

@@ -2,9 +2,7 @@ defmodule CritBiz.ViewModels.Step do
   alias Crit.Servers.UserTask
   alias Ecto.Changeset
 
-  def attempt_step(params, form_module, kvs) do 
-    callbacks = Enum.into(kvs, %{})
-
+  def attempt_step(params, form_module) do 
     UserTask.supplying_task_memory(params, fn task_memory ->
       changeset = form_module.changeset(params)
       case changeset.valid? do
@@ -12,9 +10,9 @@ defmodule CritBiz.ViewModels.Step do
           {:error, :form, changeset}
         true ->
           {:ok, struct} = Changeset.apply_action(changeset, :insert)
-          next_task_memory = callbacks.next_task_memory.(task_memory, struct)
+          next_task_memory = form_module.next_task_memory(task_memory, struct)
           UserTask.replace(task_memory.task_id, next_task_memory)
-          next_form_data = callbacks.next_form_data.(next_task_memory, struct)
+          next_form_data = form_module.next_form_data(next_task_memory, struct)
           
           {:ok, next_task_memory, next_form_data}
       end
