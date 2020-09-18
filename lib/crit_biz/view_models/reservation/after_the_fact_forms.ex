@@ -1,8 +1,12 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
   defmodule Context do
     use Ecto.Schema
+    import Ecto.Changeset
+    alias Crit.Servers.Institution
     alias Ecto.Timespan
     alias CritBiz.ViewModels.Step
+    alias Crit.Reservations.ReservationApi
+    alias CritWeb.Reservations.AfterTheFactView, as: View
     
     embedded_schema do
       field :species_id, :integer
@@ -35,10 +39,16 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.Forms do
       span =
         Institution.timespan(
           struct.date, struct.timeslot_id, task_memory.institution)
+
+      header =
+        View.context_header(
+          struct.date_showable_date,
+          Institution.timeslot_name(struct.timeslot_id, task_memory.institution))
+      
       
       task_memory
       |> Step.initialize_by_transfer(struct, @transfers)
-      |> Step.initialize_by_setting(span: span)
+      |> Step.initialize_by_setting(span: span, task_header: header)
     end
 
     def next_form_data(task_memory, _struct) do 
