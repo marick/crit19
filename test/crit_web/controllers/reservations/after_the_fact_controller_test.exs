@@ -60,7 +60,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     end
 
     @tag :skip
-    test "errors are shown", %{conn: conn, params: params} do
+    test "errors are shown", %{conn: _conn, params: _params} do
     end
 
     @tag :skip
