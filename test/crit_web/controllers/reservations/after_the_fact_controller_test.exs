@@ -44,6 +44,7 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
 
   describe "submitting the date, species, etc. form produces some new HTML" do
     setup do
+      VM.start(@institution)
       params = %{species_id: to_string(@bovine_id),
                  date: @iso_date,
                  date_showable_date: @human_date,
@@ -54,15 +55,12 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
     end
     
     test "success", %{conn: conn, params: params} do
-      VM.start(@institution)
-
       post_to_action(conn, :put_context, under(:context, params))
       |> assert_purpose(after_the_fact_pick_animals())
     end
 
     @tag :skip
     test "task_id has expired", %{conn: conn, params: params} do
-      UserTask.delete(@task_id)
       post_to_action(conn, :put_animals, under(:animals, params))
       |> assert_redirected_to(UnderTest.path(:start))
       |> assert_error_flash_has(UserTask.expiry_message())
@@ -73,14 +71,10 @@ defmodule CritWeb.Reservations.AfterTheFactControllerTest do
       %{conn: conn, params: original} do
 
       params = %{original | date: "", date_showable_date: ""}
-      UserTask.start(%VM{task_id: @task_id})
 
-      post_to_action(conn, :put_context, under(:context, params))
+      post_to_action(conn, :put_context, under(:context, params)).resp_body
       |> assert_purpose(after_the_fact_pick_context())
       |> assert_user_sees("be blank")
-
-      UserTask.get(@task_id)
-      |> assert_field(task_id: @task_id)
     end
   end
 

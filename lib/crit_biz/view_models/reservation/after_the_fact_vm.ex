@@ -32,7 +32,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   def start(institution) do
     task_memory = UserTask.start(__MODULE__, institution: institution)
     changeset = Forms.Context.empty
-    {task_memory, changeset}
+    {:ok, task_memory, changeset}
   end
 
   def accept_context_form(params) do

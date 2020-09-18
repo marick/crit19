@@ -12,7 +12,7 @@ defmodule CritBiz.ViewModels.Reservation.InitialFormTest do
   end
 
   test "the starting changeset" do
-    assert {task_memory, changeset} = VM.start(@institution)
+    assert {:ok, task_memory, changeset} = VM.start(@institution)
 
     task_memory
     |> assert_fields(task_id: @task_id,

@@ -12,23 +12,21 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   plug :must_be_able_to, :make_reservations
 
   def start(conn, _params) do
-    {task_memory, changeset} = VM.start(institution(conn))
-    raw_render(conn, :put_context, task_memory, changeset: changeset)
+    case VM.start(institution(conn)) do
+      {:ok, task_memory, changeset} -> 
+        render_next(conn, :put_context, task_memory, changeset: changeset)
+    end
   end
 
   # ----------------------------------------------------------------------------
 
   def put_context(conn, %{"context" => params}) do
-    result = VM.accept_context_form(params)
-    render_next(:put_context, result, conn)
-  end
-
-  def render_next(:put_context, {:ok, task_memory, animals}, conn) do
-    raw_render(conn, :put_animals, task_memory, animals: animals)
-  end
-
-  def put_context_render_next({:error, :form, task_memory, changeset}, conn) do
-    raw_render(conn, :put_context, task_memory, changeset: changeset)
+    case VM.accept_context_form(params) |> IO.inspect do
+      {:error, :form, task_memory, changeset} ->         
+        render_next(conn, :put_context, task_memory, changeset: changeset)      
+      {:ok, task_memory, animals} -> 
+        render_next(conn, :put_animals, task_memory, animals: animals)
+    end
   end
   
 
@@ -38,7 +36,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
     animals =
       ReservationApi.after_the_fact_animals(task_memory, institution(conn))
     
-    raw_render(conn, :put_animals, task_memory, animals: animals)
+    render_next(conn, :put_animals, task_memory, animals: animals)
   end
 
   def put_animals(conn, %{"animals" => params}) do
@@ -69,7 +67,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   defp render_form_for_procedures_step(conn, :put_procedures, task_memory) do
     procedures =
       Schemas.Procedure.Get.all_by_species(task_memory.species_id, institution(conn))
-    raw_render(conn, :put_procedures, task_memory, procedures: procedures)
+    render_next(conn, :put_procedures, task_memory, procedures: procedures)
   end
   
 
@@ -104,7 +102,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
 
 
 
-  defp raw_render(conn, next_action, task_memory, opts) do
+  defp render_next(conn, next_action, task_memory, opts) do
     html = to_string(next_action) <> ".html"
     all_opts = opts ++ [path: path(next_action), state: task_memory]
     render(conn, html, all_opts)

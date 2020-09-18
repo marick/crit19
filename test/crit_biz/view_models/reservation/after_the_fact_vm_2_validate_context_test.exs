@@ -6,7 +6,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.ValidateContext.Test do
   alias Ecto.Timespan
   
   setup do
-    {task_memory, _} = VM.start(@institution)
+    {:ok, task_memory, _} = VM.start(@institution)
     [task_memory: task_memory]
   end
 
