@@ -21,7 +21,7 @@ defmodule CritWeb.Reservations.AfterTheFactController do
   # ----------------------------------------------------------------------------
 
   def put_context(conn, %{"context" => params}) do
-    case VM.accept_context_form(params) |> IO.inspect do
+    case VM.accept_context_form(params) do 
       {:error, :form, task_memory, changeset} ->         
         render_next(conn, :put_context, task_memory, changeset: changeset)      
       {:ok, task_memory, animals} -> 

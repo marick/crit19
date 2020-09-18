@@ -63,7 +63,6 @@ defmodule Crit.Params.Variants.SingletonToMany do
       def discarded do
         fn result, name ->
           if ok_content(result) != [] do
-            IO.inspect result
             flunk("Exemplar #{name} is not supposed to produce a changeset")
           end
         end
