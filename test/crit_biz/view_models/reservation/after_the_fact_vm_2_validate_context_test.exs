@@ -37,6 +37,7 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact.ValidateContext.Test do
 
     assert {:ok, new_task_memory, animals} = VM.accept_context_form(params)
 
+    # Task header would probably be better placed in the form data. OK for now
     expected_span =
       Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
 

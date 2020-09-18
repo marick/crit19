@@ -2,7 +2,7 @@ defmodule CritBiz.ViewModels.Step do
   alias Crit.Servers.UserTask
   alias Ecto.Changeset
 
-  def attempt_step(params, form_module) do 
+  def attempt(params, form_module) do 
     UserTask.supplying_task_memory(params, fn task_memory ->
       changeset = form_module.changeset(params)
       case changeset.valid? do

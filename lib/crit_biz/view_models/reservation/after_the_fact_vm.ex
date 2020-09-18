@@ -1,22 +1,19 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   alias Crit.Servers.UserTask
   alias CritBiz.ViewModels.Reservation.AfterTheFact.Forms
-  alias Ecto.Changeset
-  alias Crit.Servers.Institution
-  alias Crit.Reservations.ReservationApi
   alias CritBiz.ViewModels.Step
 
   defstruct task_id: :nothing,
     # Values needed for creation
     
-    species_id:           :nothing,
-    date:                 :nothing,
-    timeslot_id:          :nothing,
-    span:                 :nothing,
-    responsible_person:   :nothing,
+    species_id:           :nothing,   # context form
+    date:                 :nothing,   # context form
+    timeslot_id:          :nothing,   # context form
+    span:                 :nothing,   # context form
+    responsible_person:   :nothing,   # context form
     
-    chosen_animal_ids:    :nothing,
-    chosen_procedure_ids: :nothing,
+    chosen_animal_ids:    :nothing,   # animals form
+    chosen_procedure_ids: :nothing,   # procedures form
 
 
   # For the non-field parts of the display.
@@ -39,6 +36,6 @@ defmodule CritBiz.ViewModels.Reservation.AfterTheFact do
   end
 
   def accept_context_form(params) do
-    Step.attempt_step(params, Forms.Context)
+    Step.attempt(params, Forms.Context)
   end
 end
