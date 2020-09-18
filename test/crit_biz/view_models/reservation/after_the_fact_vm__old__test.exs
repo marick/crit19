@@ -1,35 +1,8 @@
 defmodule CritBiz.ViewModels.Reservation.AfterTheFactTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Reservation.AfterTheFact, as: VM
-  alias Ecto.Timespan
   alias Crit.Servers.UserTask
   use FlowAssertions
-
-  describe "processing of Context" do
-    test "success" do
-      params = %{species_id: to_string(@bovine_id),
-                 date: "2019-01-01",
-                 date_showable_date: "January 1, 2019",
-                 responsible_person: "dster", 
-                 timeslot_id: "1",
-                 institution: @institution,
-                 task_id: "uuid"}
-
-      expected_span =
-        Timespan.from_date_time_and_duration(~D[2019-01-01], ~T[08:00:00], 4 * 60)
-
-      assert {:ok, data, "uuid"} =
-        UserTask.pour_into_struct(params, VM.Forms.Context)
-      data
-      |> assert_fields(
-           species_id: @bovine_id,
-           date: ~D[2019-01-01],
-           timeslot_id: 1,
-           responsible_person: "dster",
-           span: expected_span
-         )
-    end
-  end
 
   describe "processing of Animals" do
     # Procedures are the same with name changes
