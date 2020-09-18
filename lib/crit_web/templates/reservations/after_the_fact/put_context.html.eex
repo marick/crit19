@@ -26,7 +26,7 @@
     <%= species_dropdown f, @conn %> 
     <%= labeled_text_field(f, "Responsible person", :responsible_person,
         placeholder: "Usually the instructor") %>
-t  </div>    
+  </div>    
   <div class="fields">
     <%= small_calendar(f, "Date", :date, unique: "showable") %>
     <%= timeslot_dropdown f, @conn %>
