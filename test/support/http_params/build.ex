@@ -25,7 +25,7 @@ defmodule Crit.Params.Build do
 
   # ----------------------------------------------------------------------------
 
-  defp add_real_exemplar({new_name, %{params: params} = raw_data}, acc) do
+  def add_real_exemplar({new_name, %{params: params} = raw_data}, acc) do
     expanded_params =
       case params do
         {:__like, earlier_name, overriding_params} ->
