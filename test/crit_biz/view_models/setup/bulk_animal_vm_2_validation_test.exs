@@ -1,6 +1,6 @@
 defmodule CritBiz.ViewModels.Setup.BulkAnimalValidationTest do
   use Crit.DataCase
-  alias Crit.Exemplars.Params.BulkAnimal, as: Params
+  alias Crit.Exemplars.Params.BulkAnimal2, as: Params
 
   test "categories" do
     Params.check_form_validation(categories: [:valid])
