@@ -36,5 +36,17 @@ defmodule Crit.Params.Build2 do
     expanded_data = Map.put(raw_data, :params, expanded_params)
     Map.put(acc, new_name, expanded_data)
   end
+
+
+  defmacro __using__(_) do
+    quote do
+      use Crit.Errors
+      use Crit.TestConstants
+      import Crit.Params.Build
+      use FlowAssertions.Define
+      use Crit.Params.Validate
+      use Crit.Params.Exemplar
+    end
+  end
 end
 

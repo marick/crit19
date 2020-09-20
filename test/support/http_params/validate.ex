@@ -6,8 +6,6 @@ defmodule Crit.Params.Validate do
   alias Crit.Params.Get
   use FlowAssertions.Define
 
-  
-
   def note_name(name, verbose) do
     if verbose, do: IO.puts("+ #{inspect name}")
   end
@@ -90,5 +88,19 @@ defmodule Crit.Params.Validate do
     
     defp split_value(value) when is_list(value), do: value
     defp split_value(value) when is_binary(value), do: Namelist.to_list(value)
+  end
+
+
+  defmacro __using__(_) do
+    quote do
+      alias Crit.Params.Validate
+      
+      defchain validate(:form_checking, name, changeset) do 
+        FormChecking.check(test_data(), changeset, name)
+      end
+      
+      defchain validate(:lowered, name),
+        do: Lowering.check(test_data(), name, lower_changesets(name))
+    end
   end
 end

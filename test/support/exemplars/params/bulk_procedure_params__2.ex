@@ -1,15 +1,8 @@
 defmodule Crit.Exemplars.Params.BulkProcedures2 do
-
-  use Crit.Errors
-  use Crit.TestConstants
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
-  # alias Ecto.Datespan
-  # alias CritBiz.ViewModels.FieldValidators
-  import Crit.Params.Build
-  alias Crit.Params.{Validate,Exemplar}
+  use Crit.Params.Build2
   alias Crit.Params.Variants.SingletonToMany2, as: Variant
-  use FlowAssertions.Define
 
   @moduledoc """
   %{
@@ -82,12 +75,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
   def that_are(descriptor), do: that_are([descriptor])
   def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
 
-  def as_cast(descriptor, opts \\ []),
-    do: Exemplar.as_cast(test_data(), descriptor, opts)
-  
-  def cast_map(descriptor, opts \\ []),
-    do: Exemplar.cast_map(test_data(), descriptor, opts)
-
   def discarded, do: Variant.discarded()
 
   def check_changeset(result, name),
@@ -121,10 +108,4 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
     end
   end
 
-  defchain validate(:form_checking, name, changeset) do 
-    Validate.FormChecking.check(test_data(), changeset, name)
-  end
-
-  defchain validate(:lowered, name),
-    do: Validate.Lowering.check(test_data(), name, lower_changesets(name))
 end
