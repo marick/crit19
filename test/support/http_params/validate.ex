@@ -4,6 +4,9 @@ defmodule Crit.Params.Validate do
   use FlowAssertions.Ecto
   alias Pile.Namelist
   alias Crit.Params.Get
+  use FlowAssertions.Define
+
+  
 
   def note_name(name, verbose) do
     if verbose, do: IO.puts("+ #{inspect name}")
@@ -13,18 +16,18 @@ defmodule Crit.Params.Validate do
     use FlowAssertions.Ecto
     import Mockery.Assertions
 
-    def assert_error_expected(config, name) do
-      exemplar = Get.exemplar(config, name)
+    def assert_error_expected(test_data, name) do
+      exemplar = Get.exemplar(test_data, name)
       assert Map.has_key?(exemplar, :errors)
     end
     
-    def refute_error_expected(config, name) do
-      exemplar = Get.exemplar(config, name)
+    def refute_error_expected(test_data, name) do
+      exemplar = Get.exemplar(test_data, name)
       refute Map.has_key?(exemplar, :errors)
     end
     
-    def check(config, changeset, descriptor) do
-      item = Get.exemplar(config, descriptor)
+    def check(test_data, changeset, descriptor) do
+      item = Get.exemplar(test_data, descriptor)
 
       try do 
         assert changeset.valid? == Enum.member?(item.categories, :valid)
@@ -33,7 +36,7 @@ defmodule Crit.Params.Validate do
         errors = Map.get(item, :errors, [])
 
         changeset
-        |> assert_change(Get.as_cast(config, descriptor, without: unchanged_fields))
+        |> assert_change(Get.as_cast(test_data, descriptor, without: unchanged_fields))
         |> assert_no_changes(unchanged_fields)
         |> assert_errors(errors)
         check_spies(item[:because_of])
@@ -59,24 +62,24 @@ defmodule Crit.Params.Validate do
   
   # ----------------------------------------------------------------------------
   defmodule Lowering do
-    def check(config, descriptor, actuals) do
-      assert_non_split_values(config, descriptor, actuals)
-      assert_split_value(config, descriptor, actuals)
+    def check(test_data, descriptor, actuals) do
+      assert_non_split_values(test_data, descriptor, actuals)
+      assert_split_value(test_data, descriptor, actuals)
     end
     
-    defp assert_non_split_values(config, descriptor, actuals) do 
+    defp assert_non_split_values(test_data, descriptor, actuals) do 
       for struct <- actuals do
-        cast_map = Get.cast_map(config, descriptor)
+        cast_map = Get.cast_map(test_data, descriptor)
         
         struct
-        |> assert_schema_name(config.produces)
-        |> assert_same_map(cast_map, comparing: config.lowering_retains)
+        |> assert_schema_name(test_data.produces)
+        |> assert_same_map(cast_map, comparing: test_data.lowering_retains)
       end
     end
     
-    defp assert_split_value(config, descriptor, actuals) do
-      [{field_to_split, destination_field}] = Enum.into(config.lowering_splits, [])
-      split_cast_values = split(Get.as_cast(config, descriptor), field_to_split)
+    defp assert_split_value(test_data, descriptor, actuals) do
+      [{field_to_split, destination_field}] = Enum.into(test_data.lowering_splits, [])
+      split_cast_values = split(Get.as_cast(test_data, descriptor), field_to_split)
       
       for {struct, split_value} <- Enum.zip(actuals, split_cast_values),
         do: assert Map.get(struct, destination_field) == split_value

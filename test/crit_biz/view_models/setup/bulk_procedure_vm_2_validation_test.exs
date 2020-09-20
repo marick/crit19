@@ -1,7 +1,7 @@
 defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   use Crit.DataCase, async: true
   alias CritBiz.ViewModels.Setup, as: VM
-  alias Crit.Exemplars.Params.BulkProcedures, as: Params
+  alias Crit.Exemplars.Params.BulkProcedures2, as: Params
 
 
   # ----------------------------------------------------------------------------
