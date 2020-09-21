@@ -5,6 +5,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal2 do
   alias Ecto.Datespan
   alias CritBiz.ViewModels.FieldValidators
   alias Crit.Params.Variants.OneToMany2, as: Variant
+  alias Crit.Params.Validations
 
 
   @moduledoc """
@@ -69,13 +70,8 @@ defmodule Crit.Exemplars.Params.BulkAnimal2 do
     
   def test_data, do: @test_data
       
-  def module_under_test(), do: test_data().module_under_test
-
   def that_are(descriptor), do: Variant.that_are(test_data(), descriptor)
 
-  def check_changeset(result, name),
-    do: Variant.check_changeset(test_data(), result, name)
-  
   def accept_form(descriptor) do
     that_are(descriptor) |> module_under_test().accept_form(@institution)
   end
@@ -86,22 +82,6 @@ defmodule Crit.Exemplars.Params.BulkAnimal2 do
   end
 
   def check_form_validation(opts) do
-    opts = Enum.into(opts, %{verbose: false})
-    
-    check =
-      case Map.get(opts, :result) do
-        nil ->
-          fn result, name -> check_changeset(result, name) end
-        f -> f
-      end
-    
-    names = 
-      Crit.Params.Get.names_in_categories(test_data(), opts.categories, opts.verbose)
-    
-    for name <- names do
-      Validate.note_name(name, opts.verbose)
-      accept_form(name) |> check.(name)
-    end
+    Validations.check_form_validation(test_data(), &accept_form/1, opts)
   end
-  
 end

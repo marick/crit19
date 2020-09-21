@@ -3,6 +3,8 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
   alias Crit.Schemas
   use Crit.Params.Build2
   alias Crit.Params.Variants.SingletonToMany2, as: Variant
+  alias Crit.Params.Validations
+  use FlowAssertions
 
   @moduledoc """
   %{
@@ -23,9 +25,9 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
     lowering_retains: [:name, :frequency_id],
       
     exemplars: [
-      valid: %{
+      one_species: %{
         categories: [:valid, :filled],
-        params: to_strings(%{name: "valid", 
+        params: to_strings(%{name: "one species", 
                              species_ids: [@bovine_id],
                              frequency_id: @once_per_week_frequency_id}),
       },
@@ -67,18 +69,11 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
     
   def test_data, do: @test_data
 
-  def module_under_test(), do: test_data().module_under_test
-
   def that_are(descriptors) when is_list(descriptors),
     do: Variant.that_are(test_data(), descriptors)
 
   def that_are(descriptor), do: that_are([descriptor])
   def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
-
-  def discarded, do: Variant.discarded()
-
-  def check_changeset(result, name),
-    do: Variant.check_changeset(test_data(), result, name)
 
   def accept_form(descriptor) do
     that_are(descriptor) |> module_under_test().accept_form()
@@ -90,22 +85,14 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
   end
 
   def check_form_validation(opts) do
-    opts = Enum.into(opts, %{verbose: false})
-    
-    check =
-      case Map.get(opts, :result) do
-        nil ->
-          fn result, name -> check_changeset(result, name) end
-        f -> f
-      end
-    
-    names = 
-      Crit.Params.Get.names_in_categories(test_data(), opts.categories, opts.verbose)
-    
-    for name <- names do
-      Validate.note_name(name, opts.verbose)
-      accept_form(name) |> check.(name)
-    end
+    Validations.check_form_validation(test_data(), &accept_form/1, opts)
   end
 
+  def discarded do
+    fn result, name ->
+      if ok_content(result) != [] do
+        flunk("Exemplar #{name} is not supposed to produce a changeset")
+      end
+    end
+  end
 end

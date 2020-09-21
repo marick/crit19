@@ -27,19 +27,5 @@ defmodule Crit.Params.Variants.OneToMany2 do
   
   def that_are(test_data, descriptor), do: Get.params(test_data, descriptor)
   
-  # ----------------------------------------------------------------------------
-  
-  def check_changeset(test_data, {:error, :form, changeset}, name) do
-    assert_invalid(changeset)
-    Validate.FormChecking.assert_error_expected(test_data, name)
-    Validate.FormChecking.check(test_data, changeset, name)
-  end
-  
-  def check_changeset(test_data, {:ok, changeset}, name) do
-    assert_valid(changeset)
-    Validate.FormChecking.refute_error_expected(test_data, name)
-    Validate.FormChecking.check(test_data, changeset, name)
-  end
-  
   def make_params_for_name(test_data, name), do: Get.params(test_data, name)
 end

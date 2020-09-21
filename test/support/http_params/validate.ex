@@ -23,7 +23,7 @@ defmodule Crit.Params.Validate do
       exemplar = Get.exemplar(test_data, name)
       refute Map.has_key?(exemplar, :errors)
     end
-    
+
     def check(test_data, changeset, descriptor) do
       item = Get.exemplar(test_data, descriptor)
 

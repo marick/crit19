@@ -1,8 +1,7 @@
 defmodule Crit.Params.Variants.SingletonToMany2 do
-  alias Crit.Params.{Get,Validate}
+  alias Crit.Params.Get
   use FlowAssertions
   use FlowAssertions.Ecto
-  import ExUnit.Assertions
   
   @moduledoc """
   A builder for controller params of this form:
@@ -51,29 +50,6 @@ defmodule Crit.Params.Variants.SingletonToMany2 do
 
   def that_are(test_data, descriptors) when is_list(descriptors) do
     Get.doubly_numbered_params(test_data, descriptors, "index")
-  end
-  
-
-  def discarded do
-    fn result, name ->
-      if ok_content(result) != [] do
-        flunk("Exemplar #{name} is not supposed to produce a changeset")
-      end
-    end
-  end
-
-  # ----------------------------------------------------------------------------
-
-  def check_changeset(test_data, {:error, :form, [changeset]}, name) do
-    assert_invalid(changeset)
-    Validate.FormChecking.assert_error_expected(test_data, name)
-    Validate.FormChecking.check(test_data, changeset, name)
-  end
-  
-  def check_changeset(test_data, {:ok, [changeset]}, name) do
-    assert_valid(changeset)
-    Validate.FormChecking.refute_error_expected(test_data, name)
-    Validate.FormChecking.check(test_data, changeset, name)
   end
   
   def make_params_for_name(test_data, name),

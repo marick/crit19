@@ -14,15 +14,15 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   
   describe "successful form validation" do
     test "the empty procedure doesn't have to be at the end" do
-      params = Params.that_are([:all_blank, :valid])
+      params = Params.that_are([:all_blank, :one_species])
 
       assert [only] = become_correct(params)
-      assert_change(only, Params.as_cast(:valid))
+      assert_change(only, Params.as_cast(:one_species))
     end
 
     test "procedure names are trimmed" do
-      params = Params.that_are(:valid,  except: %{"name" => " proc  "})
-      as_cast = Params.as_cast(:valid, except: %{name:      "proc"})
+      params = Params.that_are(:one_species,  except: %{"name" => " proc  "})
+      as_cast = Params.as_cast(:one_species, except: %{name:      "proc"})
       
       params
       |> become_correct_singleton
@@ -36,7 +36,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
         Params.that_are([
           :all_blank,
           :blank_with_species,
-          :valid,
+          :one_species,
           :name_but_no_species
         ])
         |> become_incorrect
@@ -46,7 +46,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       :form_checking
       |> Params.validate(:all_blank, all_blank)
       |> Params.validate(:blank_with_species, blank_with_species)
-      |> Params.validate(:valid, valid)
+      |> Params.validate(:one_species, valid)
       |> Params.validate(:name_but_no_species, invalid)
     end
   end
@@ -58,7 +58,7 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
 
     test "numbering is retained when there are errors" do
       actual =
-        Params.that_are([:valid, :all_blank, :name_but_no_species])
+        Params.that_are([:one_species, :all_blank, :name_but_no_species])
         |> become_incorrect
       
       assert [0, 1, 2] == Enum.map(actual, &(ChangesetX.new!(&1, :index)))

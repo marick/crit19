@@ -46,6 +46,11 @@ defmodule Crit.Params.Build2 do
       use FlowAssertions.Define
       use Crit.Params.Validate
       use Crit.Params.Exemplar
+
+      def module_under_test(), do: test_data().module_under_test
+
+
+      
     end
   end
 end
