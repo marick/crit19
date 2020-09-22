@@ -1,9 +1,7 @@
 defmodule Crit.Exemplars.Params.BulkProcedures2 do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
-  use Crit.Params.Build2
-  alias Crit.Params.Variants.SingletonToMany2, as: Variant
-  alias Crit.Params.Validations
+  use Crit.Params.Variants.SingletonToMany2
   use FlowAssertions
 
   @moduledoc """
@@ -82,10 +80,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
   def lower_changesets(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
     module_under_test().lower_changesets(vm_changesets)
-  end
-
-  def check_form_validation(opts) do
-    Validations.check_form_validation(test_data(), &accept_form/1, opts)
   end
 
   def discarded do

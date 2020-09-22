@@ -54,4 +54,11 @@ defmodule Crit.Params.Variants.SingletonToMany2 do
   
   def make_params_for_name(test_data, name),
     do: Get.doubly_numbered_params(test_data, [name], "index")
+
+  defmacro __using__(_) do
+    quote do
+      alias Crit.Params.Variants.SingletonToMany2, as: Variant
+      use Crit.Params.Variants.Defines
+    end
+  end
 end

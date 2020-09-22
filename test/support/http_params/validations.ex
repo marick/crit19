@@ -30,6 +30,12 @@ defmodule Crit.Params.Validations do
     end
   end
 
+  def check_exampler_changeset(test_data, pairs) do
+    for {exemplar_name, changeset} <- pairs do 
+      Validate.FormChecking.check(test_data, changeset, exemplar_name)
+    end
+  end
+
   def check_validation_result(test_data, {:error, :form, [changeset]}, name),
     do: check_validation_result(test_data, {:error, :form, changeset}, name)
 

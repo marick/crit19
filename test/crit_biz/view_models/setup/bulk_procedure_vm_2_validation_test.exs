@@ -43,11 +43,11 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
       
       assert [all_blank, blank_with_species, valid, invalid] = actual
 
-      :form_checking
-      |> Params.validate(:all_blank, all_blank)
-      |> Params.validate(:blank_with_species, blank_with_species)
-      |> Params.validate(:one_species, valid)
-      |> Params.validate(:name_but_no_species, invalid)
+      Params.check_exampler_changeset(
+        all_blank: all_blank,
+        blank_with_species: blank_with_species,
+        one_species: valid,
+        name_but_no_species: invalid)
     end
   end
 

@@ -1,7 +1,7 @@
 defmodule Crit.Params.Variants.OneToMany2 do
-  alias Crit.Params.{Get,Validate}
+  alias Crit.Params.Get
   use FlowAssertions.Ecto
-
+  
   @moduledoc """
   A builder for controller params of this form:
 
@@ -28,4 +28,11 @@ defmodule Crit.Params.Variants.OneToMany2 do
   def that_are(test_data, descriptor), do: Get.params(test_data, descriptor)
   
   def make_params_for_name(test_data, name), do: Get.params(test_data, name)
+
+  defmacro __using__(_) do
+    quote do
+      alias Crit.Params.Variants.OneToMany2, as: Variant
+      use Crit.Params.Variants.Defines
+    end
+  end
 end

@@ -95,10 +95,6 @@ defmodule Crit.Params.Validate do
     quote do
       alias Crit.Params.Validate
       
-      defchain validate(:form_checking, name, changeset) do 
-        FormChecking.check(test_data(), changeset, name)
-      end
-      
       defchain validate(:lowered, name),
         do: Lowering.check(test_data(), name, lower_changesets(name))
     end

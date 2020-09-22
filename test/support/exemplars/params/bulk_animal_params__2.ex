@@ -1,12 +1,9 @@
 defmodule Crit.Exemplars.Params.BulkAnimal2 do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Schemas
-  use Crit.Params.Build2
   alias Ecto.Datespan
   alias CritBiz.ViewModels.FieldValidators
-  alias Crit.Params.Variants.OneToMany2, as: Variant
-  alias Crit.Params.Validations
-
+  use Crit.Params.Variants.OneToMany2
 
   @moduledoc """
   %{
@@ -72,16 +69,13 @@ defmodule Crit.Exemplars.Params.BulkAnimal2 do
       
   def that_are(descriptor), do: Variant.that_are(test_data(), descriptor)
 
-  def accept_form(descriptor) do
-    that_are(descriptor) |> module_under_test().accept_form(@institution)
-  end
-
   def lower_changesets(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
     module_under_test().lower_changeset(vm_changesets)
   end
 
-  def check_form_validation(opts) do
-    Validations.check_form_validation(test_data(), &accept_form/1, opts)
+  def accept_form(descriptor) do
+    that_are(descriptor) |> module_under_test().accept_form(@institution)
   end
+
 end
