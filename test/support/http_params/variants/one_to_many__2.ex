@@ -25,14 +25,16 @@ defmodule Crit.Params.Variants.OneToMany2 do
   """
 
   
-  def that_are(test_data, descriptor), do: Get.params(test_data, descriptor)
+  def that_are(test_data, descriptors) when is_list(descriptors) do 
+    Get.params(test_data, descriptors)
+  end
   
   def make_params_for_name(test_data, name), do: Get.params(test_data, name)
 
   defmacro __using__(_) do
     quote do
       alias Crit.Params.Variants.OneToMany2, as: Variant
-      use Crit.Params.Variants.Defines
+      use Crit.Params.Variants.Defines, Variant
     end
   end
 end

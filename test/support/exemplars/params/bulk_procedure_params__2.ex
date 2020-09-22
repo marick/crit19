@@ -67,12 +67,6 @@ defmodule Crit.Exemplars.Params.BulkProcedures2 do
     
   def test_data, do: @test_data
 
-  def that_are(descriptors) when is_list(descriptors),
-    do: Variant.that_are(test_data(), descriptors)
-
-  def that_are(descriptor), do: that_are([descriptor])
-  def that_are(descriptor, opts), do: that_are([[descriptor | opts]])
-
   def accept_form(descriptor) do
     that_are(descriptor) |> module_under_test().accept_form()
   end

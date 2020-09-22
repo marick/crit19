@@ -58,7 +58,7 @@ defmodule Crit.Params.Variants.SingletonToMany2 do
   defmacro __using__(_) do
     quote do
       alias Crit.Params.Variants.SingletonToMany2, as: Variant
-      use Crit.Params.Variants.Defines
+      use Crit.Params.Variants.Defines, Variant
     end
   end
 end

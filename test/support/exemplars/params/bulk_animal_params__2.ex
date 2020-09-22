@@ -67,8 +67,6 @@ defmodule Crit.Exemplars.Params.BulkAnimal2 do
     
   def test_data, do: @test_data
       
-  def that_are(descriptor), do: Variant.that_are(test_data(), descriptor)
-
   def lower_changesets(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
     module_under_test().lower_changeset(vm_changesets)

@@ -3,7 +3,6 @@ defmodule CritBiz.ViewModels.Setup.ProcedureVM.ValidationTest do
   alias CritBiz.ViewModels.Setup, as: VM
   alias Crit.Exemplars.Params.BulkProcedures2, as: Params
 
-
   # ----------------------------------------------------------------------------
   test "the representative kinds of forms" do
     Params.check_form_validation(categories: [:invalid])
