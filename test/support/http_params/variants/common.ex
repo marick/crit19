@@ -38,7 +38,7 @@ defmodule Crit.Params.Variants.Common do
       end
       
       defchain validate(:lowered, name),
-        do: Validate.Lowering.check(config(), name, lower_changesets(name))
+        do: Validate.Lowering.check(config(), name, accept_and_lower(name))
 
       defchain validate(:form_checking, name, changeset) do 
         Validate.FormChecking.check(config(), changeset, name)

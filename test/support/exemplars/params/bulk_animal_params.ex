@@ -73,7 +73,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal do
     that_are(descriptor) |> module_under_test.accept_form(@institution)
   end
 
-  def lower_changesets(descriptor) do
+  def accept_and_lower(descriptor) do
     {:ok, vm_changeset} = accept_form(descriptor)
     config(:module_under_test).lower_changeset(vm_changeset)
   end

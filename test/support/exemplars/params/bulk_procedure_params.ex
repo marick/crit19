@@ -76,7 +76,7 @@ defmodule Crit.Exemplars.Params.BulkProcedures do
     that_are(descriptor) |> config(:module_under_test).accept_form
   end
 
-  def lower_changesets(descriptor) do
+  def accept_and_lower(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
     config(:module_under_test).lower_changesets(vm_changesets)
   end

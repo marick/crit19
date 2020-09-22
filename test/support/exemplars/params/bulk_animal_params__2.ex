@@ -67,7 +67,7 @@ defmodule Crit.Exemplars.Params.BulkAnimal2 do
     
   def test_data, do: @test_data
       
-  def lower_changesets(descriptor) do
+  def accept_and_lower(descriptor) do
     {:ok, vm_changesets} = accept_form(descriptor)
     module_under_test().lower_changeset(vm_changesets)
   end
