@@ -6,7 +6,6 @@ defmodule Crit.Params.Variants.Defines do
       use Crit.TestConstants
       import Crit.Params.Build
       use FlowAssertions.Define
-      use Crit.Params.Validate
       alias Crit.Params.{Get, Validations}
 
       def module_under_test(), do: test_data().module_under_test
@@ -17,6 +16,10 @@ defmodule Crit.Params.Variants.Defines do
 
       def check_exampler_changeset(pairs) do
         Validations.check_exampler_changeset(test_data(), pairs)
+      end
+
+      def check_form_lowering(name) do
+        Validations.check_form_lowering(test_data(), name, &accept_and_lower/1)
       end
 
       def as_cast(descriptor, opts \\ []),

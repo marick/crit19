@@ -30,6 +30,11 @@ defmodule Crit.Params.Validations do
     end
   end
 
+
+  defchain check_form_lowering(test_data, name, accept_and_lower),
+    do: Validate.Lowering.check(test_data, name, accept_and_lower.(name))
+  
+
   def check_exampler_changeset(test_data, pairs) do
     for {exemplar_name, changeset} <- pairs do 
       Validate.FormChecking.check(test_data, changeset, exemplar_name)

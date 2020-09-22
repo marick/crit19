@@ -89,14 +89,4 @@ defmodule Crit.Params.Validate do
     defp split_value(value) when is_list(value), do: value
     defp split_value(value) when is_binary(value), do: Namelist.to_list(value)
   end
-
-
-  defmacro __using__(_) do
-    quote do
-      alias Crit.Params.Validate
-      
-      defchain validate(:lowered, name),
-        do: Lowering.check(test_data(), name, accept_and_lower(name))
-    end
-  end
 end
